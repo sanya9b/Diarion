@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="0" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppTitle" xml:space="preserve">
+    <value>Diarion</value>
+  </data>
+  <data name="Subtitle" xml:space="preserve">
+    <value>Your personal emotion diary</value>
+  </data>
+  <data name="NoEntries" xml:space="preserve">
+    <value>No entries</value>
+  </data>
+  <data name="NoEntriesDesc" xml:space="preserve">
+    <value>Start writing your thoughts and tracking emotions right now.</value>
+  </data>
+  <data name="TitleLabel" xml:space="preserve">
+    <value>Entry Title</value>
+  </data>
+  <data name="TitlePlaceholder" xml:space="preserve">
+    <value>What are you thinking about?</value>
+  </data>
+  <data name="EmotionLabel" xml:space="preserve">
+    <value>Your Emotional State</value>
+  </data>
+  <data name="EmotionPlaceholder" xml:space="preserve">
+    <value>Choose an emotion...</value>
+  </data>
+  <data name="ContentLabel" xml:space="preserve">
+    <value>Entry Content</value>
+  </data>
+  <data name="ContentPlaceholder" xml:space="preserve">
+    <value>Start writing here...</value>
+  </data>
+  <data name="SaveButton" xml:space="preserve">
+    <value>Save Entry</value>
+  </data>
+  <data name="DeleteButton" xml:space="preserve">
+    <value>Delete Entry</value>
+  </data>
+  <data name="DeleteConfirmTitle" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
+  <data name="DeleteConfirmMsg" xml:space="preserve">
+    <value>Are you sure you want to delete this entry?</value>
+  </data>
+  <data name="DeleteConfirmYes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="DeleteConfirmNo" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="AlertWarning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="AlertError" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="AlertEmptyContent" xml:space="preserve">
+    <value>Entry content cannot be empty</value>
+  </data>
+  <data name="AlertSaveError" xml:space="preserve">
+    <value>Failed to save entry</value>
+  </data>
+  <data name="AlertDeleteError" xml:space="preserve">
+    <value>Failed to delete entry</value>
+  </data>
+  <data name="NewEntryTitle" xml:space="preserve">
+    <value>New Entry</value>
+  </data>
+  <data name="EditEntryTitle" xml:space="preserve">
+    <value>Edit Entry</value>
+  </data>
+  <data name="MyEntriesTitle" xml:space="preserve">
+    <value>My Entries</value>
+  </data>
+  <data name="EmotionNone" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="EmotionHappy" xml:space="preserve">
+    <value>Happy</value>
+  </data>
+  <data name="EmotionCalm" xml:space="preserve">
+    <value>Calm</value>
+  </data>
+  <data name="EmotionAnxious" xml:space="preserve">
+    <value>Anxious</value>
+  </data>
+  <data name="EmotionSad" xml:space="preserve">
+    <value>Sad</value>
+  </data>
+  <data name="EmotionAngry" xml:space="preserve">
+    <value>Angry</value>
+  </data>
+  <data name="TodoListLabel" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="AddTodoPlaceholder" xml:space="preserve">
+    <value>Add a new task...</value>
+  </data>
+  <data name="AddTodoButton" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="PriorityLow" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="PriorityMedium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="PriorityHigh" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="SaveEntryFirstWarning" xml:space="preserve">
+    <value>Please save the diary entry first before adding tasks.</value>
+  </data>
+  <data name="TabPlanner" xml:space="preserve">
+    <value>Planner</value>
+  </data>
+  <data name="TabDiary" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="NoTasks" xml:space="preserve">
+    <value>No tasks for this day</value>
+  </data>
+</root>

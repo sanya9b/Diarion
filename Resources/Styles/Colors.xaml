@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Diarion Base Color Palette -->
+    <Color x:Key="Midnight">#22282C</Color>
+    <Color x:Key="Ocean">#929FA7</Color>
+    <Color x:Key="Earth">#E9E7E1</Color>
+    <Color x:Key="Dust">#E0E6EA</Color>
+    <Color x:Key="Snow">#FFFFFF</Color>
+
+    <!-- Semantic Colors -->
+    <Color x:Key="Primary">#929FA7</Color> <!-- Ocean -->
+    <Color x:Key="Secondary">#E0E6EA</Color> <!-- Dust -->
+    <Color x:Key="Tertiary">#E9E7E1</Color> <!-- Earth -->
+
+    <Color x:Key="White">#FFFFFF</Color>
+    <Color x:Key="Black">#22282C</Color> <!-- Midnight as Black for softer contrast -->
+
+    <!-- Gray scale for compatibility with default MAUI styles -->
+    <Color x:Key="Gray100">#E1E1E1</Color>
+    <Color x:Key="Gray200">#C8C8C8</Color>
+    <Color x:Key="Gray300">#ACACAC</Color>
+    <Color x:Key="Gray400">#919191</Color>
+    <Color x:Key="Gray500">#6E6E6E</Color>
+    <Color x:Key="Gray600">#404040</Color>
+    <Color x:Key="Gray900">#212121</Color>
+    <Color x:Key="Gray950">#141414</Color>
+
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
+    <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
+    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
+    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
+</ResourceDictionary>

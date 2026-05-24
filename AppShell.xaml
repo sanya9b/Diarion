@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Diarion.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Diarion.Views"
+    xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+    Title="{x:Static localization:AppResources.AppTitle}"
+    FlyoutBehavior="Flyout"
+    Shell.NavBarIsVisible="False"
+    Shell.FlyoutBackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
+
+    <Shell.FlyoutHeader>
+        <Grid HeightRequest="140" Padding="24,32,24,16">
+            <Label Text="{x:Static localization:AppResources.AppTitle}" 
+                   FontAttributes="Bold" 
+                   FontSize="28" 
+                   VerticalOptions="End" 
+                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <Shell.FlyoutFooter>
+        <HorizontalStackLayout Padding="24" Spacing="32" Margin="0,0,0,32" HorizontalOptions="Center">
+            <!-- Кнопка зміни мови -->
+            <Button Text="A/文" 
+                    Clicked="OnToggleLanguageClicked" 
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Dust}}"
+                    FontAttributes="Bold"
+                    FontSize="18" Padding="0" HeightRequest="50" WidthRequest="60" />
+            
+            <!-- Кнопка зміни теми -->
+            <Button Text="◑" 
+                    Clicked="OnToggleThemeClicked" 
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Dust}}"
+                    FontSize="28" Padding="0" HeightRequest="50" WidthRequest="50" />
+        </HorizontalStackLayout>
+    </Shell.FlyoutFooter>
+
+    <FlyoutItem Title="{x:Static localization:AppResources.MyEntriesTitle}">
+        <ShellContent Route="MainPage" ContentTemplate="{DataTemplate views:MainPage}" />
+    </FlyoutItem>
+
+</Shell>
