@@ -2,248 +2,121 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
-             xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.DiaryDetailPage"
              x:DataType="viewmodels:DiaryDetailViewModel"
              Title="{Binding Title}"
              BackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="20">
-            
-            <ActivityIndicator IsRunning="{Binding IsBusy}" 
-                                IsVisible="{Binding IsBusy}"
-                                HorizontalOptions="Center"
-                                Color="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"/>
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CloseCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+            </Grid>
 
-            <!-- Title Field -->
-            <VerticalStackLayout Spacing="6">
-                <Label Text="{x:Static localization:AppResources.TitleLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="0"
+            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                <Label Text="{Binding Title}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                <Label Text="{x:Static localization:AppResources.Subtitle}" FontSize="10" CharacterSpacing="1.4" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator Grid.Column="2"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               WidthRequest="24"
+                               HeightRequest="24"
+                               Color="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="24,10,24,24" Spacing="14">
+                <Border StrokeShape="RoundRectangle 24"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
-                        Padding="14,2">
+                        Padding="18,18">
                     <Border.Shadow>
                         <Shadow Brush="{StaticResource Midnight}" Offset="0,6" Radius="12" Opacity="{AppThemeBinding Light=0.06, Dark=0.3}" />
                     </Border.Shadow>
-                    <Entry Text="{Binding EntryTitle}" 
-                           Placeholder="{x:Static localization:AppResources.TitlePlaceholder}"
-                           PlaceholderColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
-                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
-                           BackgroundColor="Transparent"
-                           HeightRequest="46" />
+                    <VerticalStackLayout Spacing="14">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="{x:Static localization:AppResources.TitleLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                            <Entry Text="{Binding EntryTitle}"
+                                   Placeholder="{x:Static localization:AppResources.TitlePlaceholder}"
+                                   PlaceholderColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
+                                   BackgroundColor="Transparent"
+                                   HeightRequest="42" />
+                        </VerticalStackLayout>
+
+                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" Opacity="0.5" />
+
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="{x:Static localization:AppResources.EmotionLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                            <Picker ItemsSource="{Binding EmotionsList}"
+                                    ItemDisplayBinding="{Binding DisplayName}"
+                                    SelectedItem="{Binding SelectedEmotionItem}"
+                                    Title="{x:Static localization:AppResources.EmotionPlaceholder}"
+                                    TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
+                                    TitleColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="42" />
+                        </VerticalStackLayout>
+
+                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" Opacity="0.5" />
+
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="{x:Static localization:AppResources.ContentLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                            <Editor Text="{Binding EntryContent}"
+                                    Placeholder="{x:Static localization:AppResources.ContentPlaceholder}"
+                                    PlaceholderColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
+                                    TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="200"
+                                    AutoSize="Disabled" />
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
                 </Border>
-            </VerticalStackLayout>
 
-            <!-- Emotion Field -->
-            <VerticalStackLayout Spacing="6">
-                <Label Text="{x:Static localization:AppResources.EmotionLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
-                        Padding="14,2">
-                    <Border.Shadow>
-                        <Shadow Brush="{StaticResource Midnight}" Offset="0,6" Radius="12" Opacity="{AppThemeBinding Light=0.06, Dark=0.3}" />
-                    </Border.Shadow>
-                    <Picker ItemsSource="{Binding EmotionsList}"
-                            ItemDisplayBinding="{Binding DisplayName}"
-                            SelectedItem="{Binding SelectedEmotionItem}"
-                            Title="{x:Static localization:AppResources.EmotionPlaceholder}"
-                            TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
-                            TitleColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
-                            BackgroundColor="Transparent"
-                            HeightRequest="46" />
-                </Border>
-            </VerticalStackLayout>
-
-            <!-- Content Field -->
-            <VerticalStackLayout Spacing="6">
-                <Label Text="{x:Static localization:AppResources.ContentLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
-                        Padding="14,8"
-                        HeightRequest="200">
-                    <Border.Shadow>
-                        <Shadow Brush="{StaticResource Midnight}" Offset="0,6" Radius="12" Opacity="{AppThemeBinding Light=0.06, Dark=0.3}" />
-                    </Border.Shadow>
-                    <Editor Text="{Binding EntryContent}" 
-                            Placeholder="{x:Static localization:AppResources.ContentPlaceholder}" 
-                            PlaceholderColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
-                            TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
-                            BackgroundColor="Transparent"
-                            AutoSize="Disabled" />
-                </Border>
-            </VerticalStackLayout>
-
-            <!-- TODO List Section -->
-            <VerticalStackLayout Spacing="10" IsVisible="{Binding IsExistingEntry}">
-                <Label Text="{x:Static localization:AppResources.TodoListLabel}" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" Margin="0,10,0,0" />
-                
-                <!-- Add Todo Form -->
-                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" RowSpacing="8" ColumnSpacing="8">
-                    <!-- Task Name Input -->
-                    <Border Grid.Row="0" Grid.Column="0" StrokeShape="RoundRectangle 24" StrokeThickness="0"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
-                            Padding="14,2">
-                        <Border.Shadow>
-                            <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="8" Opacity="{AppThemeBinding Light=0.04, Dark=0.2}" />
-                        </Border.Shadow>
-                        <Entry Text="{Binding NewTodoDescription}" 
-                               Placeholder="{x:Static localization:AppResources.AddTodoPlaceholder}"
-                               PlaceholderColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
-                               TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
-                               BackgroundColor="Transparent"
-                               HeightRequest="42" />
-                    </Border>
-                    
-                    <!-- Add Button -->
-                    <Button Grid.Row="0" Grid.Column="1" Text="+" 
-                            Command="{Binding AddTodoCommand}"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
-                            TextColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}"
-                            FontAttributes="Bold"
-                            CornerRadius="24"
-                            WidthRequest="48"
-                            HeightRequest="46">
-                        <Button.Shadow>
-                            <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="8" Opacity="{AppThemeBinding Light=0.04, Dark=0.2}" />
-                        </Button.Shadow>
-                    </Button>
-
-                    <!-- Priority Picker -->
-                    <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" StrokeShape="RoundRectangle 24" StrokeThickness="0"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
-                            Padding="14,2">
-                        <Border.Shadow>
-                            <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="8" Opacity="{AppThemeBinding Light=0.04, Dark=0.2}" />
-                        </Border.Shadow>
-                        <Picker ItemsSource="{Binding PrioritiesList}"
-                                ItemDisplayBinding="{Binding DisplayName}"
-                                SelectedItem="{Binding SelectedPriorityItem}"
-                                TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
-                                BackgroundColor="Transparent"
-                                HeightRequest="42" />
-                    </Border>
-                </Grid>
-
-                <!-- Todos Collection -->
-                <CollectionView ItemsSource="{Binding Todos}" Margin="0,10,0,0">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:TodoItem">
-                            <Border Margin="0,4" StrokeShape="RoundRectangle 24" StrokeThickness="0"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}">
-                                <Border.Shadow>
-                                    <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="8" Opacity="{AppThemeBinding Light=0.05, Dark=0.2}" />
-                                </Border.Shadow>
-                                <Grid ColumnDefinitions="Auto, *, Auto, Auto" Padding="12" ColumnSpacing="10" VerticalOptions="Center">
-                                    
-                                    <!-- Checkbox Simulation (Tap to toggle) -->
-                                    <Border Grid.Column="0" WidthRequest="24" HeightRequest="24" StrokeShape="RoundRectangle 6" 
-                                            StrokeThickness="2" VerticalOptions="Center">
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="False">
-                                                <Setter Property="BackgroundColor" Value="Transparent" />
-                                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer 
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryDetailViewModel}}, Path=ToggleTodoCompletionCommand}" 
-                                                CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        
-                                        <!-- Checkmark icon -->
-                                        <Label Text="✓" TextColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
-                                    </Border>
-                                    
-                                    <!-- Task Name -->
-                                    <Label Grid.Column="1" Text="{Binding TaskDescription}" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
-                                                <Setter Property="TextDecorations" Value="Strikethrough" />
-                                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
-                                    
-                                    <!-- Priority Indicator -->
-                                    <Border Grid.Column="2" StrokeShape="RoundRectangle 6" Padding="6,2" VerticalOptions="Center">
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Low">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Black}}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Medium">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Midnight}}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="High">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Ocean}}" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                        <Label FontSize="10" FontAttributes="Bold">
-                                            <Label.Triggers>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Low">
-                                                    <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityLow}" />
-                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Medium">
-                                                    <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityMedium}" />
-                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="High">
-                                                    <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityHigh}" />
-                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
-                                                </DataTrigger>
-                                            </Label.Triggers>
-                                        </Label>
-                                    </Border>
-                                    
-                                    <!-- Delete Button -->
-                                    <ImageButton Grid.Column="3" WidthRequest="20" HeightRequest="20" VerticalOptions="Center" BackgroundColor="Transparent" 
-                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryDetailViewModel}}, Path=DeleteTodoCommand}" 
-                                                 CommandParameter="{Binding .}">
-                                        <ImageButton.Source>
-                                            <FontImageSource FontFamily="OpenSansRegular" Glyph="✕" Color="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Dust}}" Size="16" />
-                                        </ImageButton.Source>
-                                    </ImageButton>
-                                    
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </VerticalStackLayout>
-
-            <!-- Actions -->
-            <VerticalStackLayout Spacing="10" Margin="0,12,0,0">
-                <Button Text="{x:Static localization:AppResources.SaveButton}" 
-                        Command="{Binding SaveCommand}"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Ocean}}"
-                        TextColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}"
-                        FontAttributes="Bold"
-                        CornerRadius="12"
-                        HeightRequest="48">
-                    <Button.Shadow>
-                        <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="8" Opacity="0.2" />
-                    </Button.Shadow>
-                </Button>
-
-                <Button Text="{x:Static localization:AppResources.DeleteButton}" 
-                        Command="{Binding DeleteCommand}"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Dust}}"
-                        TextColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}"
-                        FontAttributes="Bold"
-                        CornerRadius="12"
+                <Border StrokeShape="RoundRectangle 14"
+                        StrokeThickness="0"
                         HeightRequest="48"
-                        IsVisible="{Binding IsExistingEntry}">
-                    <Button.Shadow>
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Ocean}}">
+                    <Border.Shadow>
                         <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="8" Opacity="0.2" />
-                    </Button.Shadow>
-                </Button>
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SaveCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="{x:Static localization:AppResources.SaveButton}"
+                           InputTransparent="True"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
+                </Border>
+
+                <Border StrokeShape="RoundRectangle 14"
+                        StrokeThickness="0"
+                        HeightRequest="48"
+                        IsVisible="{Binding IsExistingEntry}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Dust}}">
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="8" Opacity="0.2" />
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding DeleteCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="{x:Static localization:AppResources.DeleteButton}"
+                           InputTransparent="True"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
+                </Border>
             </VerticalStackLayout>
-            
-        </VerticalStackLayout>
-    </ScrollView>
+        </ScrollView>
+    </Grid>
 </ContentPage>

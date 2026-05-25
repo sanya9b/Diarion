@@ -13,6 +13,58 @@ public partial class DiaryDetailViewModel : BaseViewModel
     private readonly IDiaryService _diaryService;
     private DiaryEntry _currentEntry = new();
 
+    private static Page? GetActivePage()
+    {
+        if (Shell.Current?.CurrentPage is Page currentPage)
+        {
+            return currentPage;
+        }
+
+        if (Application.Current?.Windows.Count > 0)
+        {
+            return Application.Current.Windows[0].Page;
+        }
+
+        return null;
+    }
+
+    private static Task ShowAlertAsync(string title, string message)
+    {
+        var page = GetActivePage();
+        return page is null
+            ? Task.CompletedTask
+            : page.DisplayAlertAsync(title, message, Diarion.Resources.Localization.AppResources.OkButtonLabel);
+    }
+
+    private static Task<bool> ShowConfirmationAsync(string title, string message, string accept, string cancel)
+    {
+        var page = GetActivePage();
+        return page is null
+            ? Task.FromResult(false)
+            : page.DisplayAlertAsync(title, message, accept, cancel);
+    }
+
+    private static async Task NavigateBackAsync()
+    {
+        if (Shell.Current != null)
+        {
+            await Shell.Current.GoToAsync("..");
+            return;
+        }
+
+        var page = GetActivePage();
+        if (page?.Navigation?.NavigationStack.Count > 1)
+        {
+            await page.Navigation.PopAsync();
+        }
+    }
+
+    [RelayCommand]
+    public async Task CloseAsync()
+    {
+        await NavigateBackAsync();
+    }
+
     public DiaryDetailViewModel(IDiaryService diaryService)
     {
         _diaryService = diaryService;
@@ -92,14 +144,9 @@ public partial class DiaryDetailViewModel : BaseViewModel
 
         if (!IsExistingEntry)
         {
-            // Якщо щоденниковий запис ще не збережено, ми не маємо до чого прив'язати тудушки
-            if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
-            {
-                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(
-                    Diarion.Resources.Localization.AppResources.AlertWarning, 
-                    Diarion.Resources.Localization.AppResources.SaveEntryFirstWarning, 
-                    "OK");
-            }
+            await ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.AlertWarning,
+                Diarion.Resources.Localization.AppResources.SaveEntryFirstWarning);
             return;
         }
 
@@ -158,7 +205,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
 
     private async Task ReloadTodosAsync()
     {
-        var todos = await _diaryService.GetTodosForEntryAsync(_currentEntry.Id);
+        var todos = await _diaryService.GetTodosForDateAsync(_currentEntry.CreatedAt);
         Todos.Clear();
         foreach (var t in todos)
         {
@@ -211,10 +258,9 @@ public partial class DiaryDetailViewModel : BaseViewModel
     {
         if (string.IsNullOrWhiteSpace(EntryContent))
         {
-            if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
-            {
-                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(Diarion.Resources.Localization.AppResources.AlertWarning, Diarion.Resources.Localization.AppResources.AlertEmptyContent, "OK");
-            }
+            await ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.AlertWarning,
+                Diarion.Resources.Localization.AppResources.AlertEmptyContent);
             return;
         }
 
@@ -236,17 +282,13 @@ public partial class DiaryDetailViewModel : BaseViewModel
                 EntryId = _currentEntry.Id.ToString();
             }
 
-            if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
-            {
-                await Microsoft.Maui.Controls.Application.Current.MainPage.Navigation.PopAsync();
-            }
+            await NavigateBackAsync();
         }
         catch (Exception ex)
         {
-            if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
-            {
-                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(Diarion.Resources.Localization.AppResources.AlertError, Diarion.Resources.Localization.AppResources.AlertSaveError, "OK");
-            }
+            await ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.AlertError,
+                Diarion.Resources.Localization.AppResources.AlertSaveError);
             System.Diagnostics.Debug.WriteLine($"Помилка збереження: {ex.Message}");
         }
         finally
@@ -258,10 +300,10 @@ public partial class DiaryDetailViewModel : BaseViewModel
     [RelayCommand]
     public async Task DeleteAsync()
     {
-        if (_currentEntry == null || _currentEntry.Id == Guid.Empty || Microsoft.Maui.Controls.Application.Current?.MainPage == null)
+        if (_currentEntry == null || _currentEntry.Id == Guid.Empty)
             return;
 
-        bool confirm = await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(
+        bool confirm = await ShowConfirmationAsync(
             Diarion.Resources.Localization.AppResources.DeleteConfirmTitle,
             Diarion.Resources.Localization.AppResources.DeleteConfirmMsg,
             Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
@@ -273,18 +315,13 @@ public partial class DiaryDetailViewModel : BaseViewModel
             {
                 IsBusy = true;
                 await _diaryService.DeleteEntryAsync(_currentEntry.Id);
-                // Go back
-                if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
-                {
-                    await Microsoft.Maui.Controls.Application.Current.MainPage.Navigation.PopAsync();
-                }
+                await NavigateBackAsync();
             }
             catch (Exception ex)
             {
-                if (Microsoft.Maui.Controls.Application.Current?.MainPage != null)
-                {
-                    await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlert(Diarion.Resources.Localization.AppResources.AlertError, Diarion.Resources.Localization.AppResources.AlertDeleteError, "OK");
-                }
+                await ShowAlertAsync(
+                    Diarion.Resources.Localization.AppResources.AlertError,
+                    Diarion.Resources.Localization.AppResources.AlertDeleteError);
                 System.Diagnostics.Debug.WriteLine($"Помилка видалення: {ex.Message}");
             }
             finally

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("fix_fonts")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a7aee6db9a572d20a71ea15f4398371b0b3c6762")]
 [assembly: System.Reflection.AssemblyProductAttribute("fix_fonts")]
 [assembly: System.Reflection.AssemblyTitleAttribute("fix_fonts")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

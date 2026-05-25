@@ -1,7 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Diarion.Diagnostics;
 using Diarion.Models;
 using LiteDB;
 
@@ -10,91 +13,151 @@ namespace Diarion.Services;
 public class DiaryService : IDiaryService, IDisposable
 {
     private const string DbFileName = "diarion_local.db";
-    private readonly LiteDatabase _db;
-    private readonly ILiteCollection<DiaryEntry> _entriesCollection;
-    private readonly ILiteCollection<TodoItem> _todosCollection;
+    private readonly object _initializationLock = new();
+    private LiteDatabase? _db;
+    private ILiteCollection<DiaryEntry>? _entriesCollection;
+    private ILiteCollection<TodoItem>? _todosCollection;
+    private readonly bool _useInMemory;
 
-    public DiaryService()
+    public DiaryService(bool useInMemory = false)
     {
-        // Шлях до бази даних в локальній папці додатку
-        string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DbFileName);
-        
-        // Відкриваємо базу даних один раз на весь час життя додатку (Singleton)
-        _db = new LiteDatabase(dbPath);
-        _entriesCollection = _db.GetCollection<DiaryEntry>("entries");
-        _todosCollection = _db.GetCollection<TodoItem>("todos");
+        _useInMemory = useInMemory;
+    }
 
-        // Створюємо індекс для швидкого сортування за датою
-        _entriesCollection.EnsureIndex(x => x.CreatedAt);
-        // Створюємо індекс для швидкого пошуку тудушок за записом
-        _todosCollection.EnsureIndex(x => x.DiaryEntryId);
+    private void EnsureInitialized()
+    {
+        if (_db != null)
+        {
+            return;
+        }
+
+        lock (_initializationLock)
+        {
+            if (_db != null)
+            {
+                return;
+            }
+
+            using var _ = StartupTrace.Measure("DiaryService.EnsureInitialized");
+            
+            LiteDatabase database;
+            if (_useInMemory)
+            {
+                database = new LiteDatabase(new MemoryStream());
+            }
+            else
+            {
+                string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DbFileName);
+                database = new LiteDatabase(dbPath);
+            }
+            
+            var entriesCollection = database.GetCollection<DiaryEntry>("entries");
+            var todosCollection = database.GetCollection<TodoItem>("todos");
+
+            entriesCollection.EnsureIndex(x => x.CreatedAt);
+            todosCollection.EnsureIndex(x => x.TargetDate);
+
+            _db = database;
+            _entriesCollection = entriesCollection;
+            _todosCollection = todosCollection;
+        }
+    }
+
+    private ILiteCollection<DiaryEntry> EntriesCollection
+    {
+        get
+        {
+            EnsureInitialized();
+            return _entriesCollection!;
+        }
+    }
+
+    private ILiteCollection<TodoItem> TodosCollection
+    {
+        get
+        {
+            EnsureInitialized();
+            return _todosCollection!;
+        }
     }
 
     public Task<List<DiaryEntry>> GetAllEntriesAsync()
     {
+        return Task.Run(() => EntriesCollection.Query().OrderByDescending(x => x.CreatedAt).ToList());
+    }
+
+    public Task<List<DiaryEntry>> GetEntriesForDateAsync(DateTime date)
+    {
         return Task.Run(() =>
         {
-            // Повертаємо всі записи, відсортовані за датою (найновіші перші)
-            return _entriesCollection.Query().OrderByDescending(x => x.CreatedAt).ToList();
+            var startedAt = Stopwatch.GetTimestamp();
+            var dateOnly = date.Date;
+            var entries = EntriesCollection.Query()
+                .Where(x => x.CreatedAt >= dateOnly && x.CreatedAt < dateOnly.AddDays(1))
+                .OrderByDescending(x => x.CreatedAt)
+                .ToList();
+
+            StartupTrace.Mark($"DiaryService.GetEntriesForDateAsync count={entries.Count} duration={Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds:F1}ms");
+            return entries;
         });
     }
 
     public Task<DiaryEntry> GetEntryByIdAsync(Guid id)
     {
-        return Task.Run(() =>
-        {
-            return _entriesCollection.FindById(id);
-        });
+        return Task.Run(() => EntriesCollection.FindById(id));
     }
 
     public Task SaveEntryAsync(DiaryEntry entry)
     {
-        return Task.Run(() =>
-        {
-            // LiteDB Upsert додає новий запис або оновлює існуючий за Id
-            _entriesCollection.Upsert(entry);
-        });
+        return Task.Run(() => EntriesCollection.Upsert(entry));
     }
 
     public Task DeleteEntryAsync(Guid id)
     {
         return Task.Run(() =>
         {
-            _entriesCollection.Delete(id);
-            // Delete associated todos when entry is deleted
-            _todosCollection.DeleteMany(x => x.DiaryEntryId == id);
+            EntriesCollection.Delete(id);
+            TodosCollection.DeleteMany(x => x.DiaryEntryId == id);
         });
     }
 
-    public Task<List<TodoItem>> GetTodosForEntryAsync(Guid entryId)
+    public Task<TodoItem?> GetTodoByIdAsync(Guid id)
+    {
+        return Task.Run<TodoItem?>(() =>
+        {
+            return TodosCollection.FindById(id);
+        });
+    }
+
+    public Task<List<TodoItem>> GetTodosForDateAsync(DateTime date)
     {
         return Task.Run(() =>
         {
-            var items = _todosCollection.Query()
-                .Where(x => x.DiaryEntryId == entryId)
+            var startedAt = Stopwatch.GetTimestamp();
+            var dateOnly = date.Date;
+            var items = TodosCollection.Query()
+                .Where(x => x.TargetDate == dateOnly)
                 .ToList();
-                
-            return items
-                .OrderBy(x => x.IsCompleted) // Спочатку невиконані
-                .ThenByDescending(x => x.Priority) // Потім найпріоритетніші
-                .ToList();
+            
+            var todos = items.OrderBy(x => x.IsCompleted).ThenByDescending(x => x.Priority).ToList();
+            StartupTrace.Mark($"DiaryService.GetTodosForDateAsync count={todos.Count} duration={Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds:F1}ms");
+            return todos;
         });
+    }
+
+    public Task<List<TodoItem>> GetAllTodosAsync()
+    {
+        return Task.Run(() => TodosCollection.FindAll().ToList());
     }
 
     public Task SaveTodoAsync(TodoItem todo)
     {
-        return Task.Run(() =>
-        {
-            _todosCollection.Upsert(todo);
-        });
+        return Task.Run(() => TodosCollection.Upsert(todo));
     }
 
     public Task DeleteTodoAsync(Guid todoId)
     {
-        return Task.Run(() =>
-        {
-            _todosCollection.Delete(todoId);
-        });
+        return Task.Run(() => TodosCollection.Delete(todoId));
     }
 
     public void Dispose()

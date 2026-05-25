@@ -22,20 +22,57 @@
 
     <Shell.FlyoutFooter>
         <HorizontalStackLayout Padding="24" Spacing="32" Margin="0,0,0,32" HorizontalOptions="Center">
-            <!-- Кнопка зміни мови -->
-            <Button Text="A/文" 
-                    Clicked="OnToggleLanguageClicked" 
-                    BackgroundColor="Transparent"
-                    TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Dust}}"
-                    FontAttributes="Bold"
-                    FontSize="18" Padding="0" HeightRequest="50" WidthRequest="60" />
-            
-            <!-- Кнопка зміни теми -->
-            <Button Text="◑" 
-                    Clicked="OnToggleThemeClicked" 
-                    BackgroundColor="Transparent"
-                    TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Dust}}"
-                    FontSize="28" Padding="0" HeightRequest="50" WidthRequest="50" />
+            <!-- Language Switch -->
+            <Grid HeightRequest="40" WidthRequest="110" VerticalOptions="Center">
+                
+                <!-- Background Pill -->
+                <Border StrokeShape="RoundRectangle 20" 
+                        StrokeThickness="1" 
+                        Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}" />
+                
+                <!-- Moving Thumb -->
+                <Border x:Name="LangThumb"
+                        StrokeShape="RoundRectangle 16"
+                        StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                        WidthRequest="50"
+                        HorizontalOptions="Start"
+                        Margin="4">
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource Midnight}" Offset="0,2" Radius="4" Opacity="0.2" />
+                    </Border.Shadow>
+                </Border>
+                        
+                <!-- Text -->
+                <Grid ColumnDefinitions="*,*">
+                    <Label Grid.Column="0" Text="🇬🇧 EN" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                    <Label Grid.Column="1" Text="🇺🇦 UA" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                </Grid>
+
+                <!-- ABSOLUTE HITBOX -->
+                <BoxView BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill">
+                    <BoxView.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnToggleLanguageClicked" />
+                    </BoxView.GestureRecognizers>
+                </BoxView>
+            </Grid>
+
+            <!-- Theme Switch -->
+            <Grid HeightRequest="50" WidthRequest="50" Padding="6">
+                <Label Text="◑"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Dust}}"
+                       FontSize="28" />
+                       
+                <!-- ABSOLUTE HITBOX -->
+                <BoxView BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill">
+                    <BoxView.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnToggleThemeClicked" />
+                    </BoxView.GestureRecognizers>
+                </BoxView>
+            </Grid>
         </HorizontalStackLayout>
     </Shell.FlyoutFooter>
 

@@ -91,3 +91,23 @@ build_metadata.AdditionalFiles.Inflator = SourceGen
 build_metadata.AdditionalFiles.NoWarn = 
 build_metadata.AdditionalFiles.EnableDiagnostics = 
 build_metadata.AdditionalFiles.LineInfo = 
+
+[D:/WORK/SOURCE_CODE/Diarion/Views/PlannerView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Diarion.Views.PlannerView.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\PlannerView.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\PlannerView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[D:/WORK/SOURCE_CODE/Diarion/Views/TodoDetailPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Diarion.Views.TodoDetailPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\TodoDetailPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\TodoDetailPage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 

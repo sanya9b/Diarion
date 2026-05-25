@@ -52,6 +52,7 @@ namespace Diarion.Resources.Localization {
         public static string ContentLabel => ResourceManager.GetString("ContentLabel", resourceCulture) ?? "Entry Content";
         public static string ContentPlaceholder => ResourceManager.GetString("ContentPlaceholder", resourceCulture) ?? "Start writing here...";
         public static string SaveButton => ResourceManager.GetString("SaveButton", resourceCulture) ?? "Save Entry";
+        public static string EditTaskTitle => ResourceManager.GetString("EditTaskTitle", resourceCulture) ?? "Edit Task";
         public static string DeleteButton => ResourceManager.GetString("DeleteButton", resourceCulture) ?? "Delete Entry";
         public static string DeleteConfirmTitle => ResourceManager.GetString("DeleteConfirmTitle", resourceCulture) ?? "Confirmation";
         public static string DeleteConfirmMsg => ResourceManager.GetString("DeleteConfirmMsg", resourceCulture) ?? "Are you sure you want to delete this entry?";
@@ -158,6 +159,141 @@ namespace Diarion.Resources.Localization {
         public static string NoTasks {
             get {
                 return ResourceManager.GetString("NoTasks", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to TODAY.
+        /// </summary>
+        public static string TodayLabel {
+            get {
+                return ResourceManager.GetString("TodayLabel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to MON.
+        /// </summary>
+        public static string WeekdayMonShort {
+            get {
+                return ResourceManager.GetString("WeekdayMonShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to TUE.
+        /// </summary>
+        public static string WeekdayTueShort {
+            get {
+                return ResourceManager.GetString("WeekdayTueShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to WED.
+        /// </summary>
+        public static string WeekdayWedShort {
+            get {
+                return ResourceManager.GetString("WeekdayWedShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to THU.
+        /// </summary>
+        public static string WeekdayThuShort {
+            get {
+                return ResourceManager.GetString("WeekdayThuShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to FRI.
+        /// </summary>
+        public static string WeekdayFriShort {
+            get {
+                return ResourceManager.GetString("WeekdayFriShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to SAT.
+        /// </summary>
+        public static string WeekdaySatShort {
+            get {
+                return ResourceManager.GetString("WeekdaySatShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to SUN.
+        /// </summary>
+        public static string WeekdaySunShort {
+            get {
+                return ResourceManager.GetString("WeekdaySunShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to New Task.
+        /// </summary>
+        public static string NewTaskTitle {
+            get {
+                return ResourceManager.GetString("NewTaskTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Task.
+        /// </summary>
+        public static string TaskDescriptionLabel {
+            get {
+                return ResourceManager.GetString("TaskDescriptionLabel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Selected day.
+        /// </summary>
+        public static string TaskDateLabel {
+            get {
+                return ResourceManager.GetString("TaskDateLabel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Mark as completed.
+        /// </summary>
+        public static string TaskCompletedLabel {
+            get {
+                return ResourceManager.GetString("TaskCompletedLabel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Priority.
+        /// </summary>
+        public static string TaskPriorityLabel {
+            get {
+                return ResourceManager.GetString("TaskPriorityLabel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Create Task.
+        /// </summary>
+        public static string SaveTaskButton {
+            get {
+                return ResourceManager.GetString("SaveTaskButton", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        public static string OkButtonLabel {
+            get {
+                return ResourceManager.GetString("OkButtonLabel", resourceCulture);
             }
         }
     }

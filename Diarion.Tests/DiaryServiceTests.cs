@@ -13,7 +13,7 @@ public class DiaryServiceTests : IDisposable
 
     public DiaryServiceTests()
     {
-        _diaryService = new DiaryService();
+        _diaryService = new DiaryService(useInMemory: true);
     }
 
     [Fact]
@@ -36,8 +36,30 @@ public class DiaryServiceTests : IDisposable
         fetchedEntry.Title.Should().Be("Test Entry");
         fetchedEntry.Emotion.Should().Be(Emotion.Happy);
 
-        // Cleanup
+        // Cleanup (optional since it's in-memory, but good practice)
         await _diaryService.DeleteEntryAsync(entry.Id);
+    }
+
+    [Fact]
+    public async Task SaveTodoAsync_ShouldSaveAndRetrieveTodo()
+    {
+        // Arrange
+        var targetDate = new DateTime(2025, 1, 1);
+        var todo = new TodoItem
+        {
+            TaskDescription = "Write tests",
+            TargetDate = targetDate,
+            Priority = TodoPriority.High
+        };
+
+        // Act
+        await _diaryService.SaveTodoAsync(todo);
+        var todos = await _diaryService.GetTodosForDateAsync(targetDate);
+
+        // Assert
+        todos.Should().NotBeEmpty();
+        todos.Should().ContainSingle(t => t.TaskDescription == "Write tests");
+        todos[0].Priority.Should().Be(TodoPriority.High);
     }
 
     public void Dispose()

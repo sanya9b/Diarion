@@ -178,4 +178,52 @@
   <data name="NoTasks" xml:space="preserve">
     <value>No tasks for this day</value>
   </data>
+  <data name="TodayLabel" xml:space="preserve">
+    <value>TODAY</value>
+  </data>
+  <data name="WeekdayMonShort" xml:space="preserve">
+    <value>MON</value>
+  </data>
+  <data name="WeekdayTueShort" xml:space="preserve">
+    <value>TUE</value>
+  </data>
+  <data name="WeekdayWedShort" xml:space="preserve">
+    <value>WED</value>
+  </data>
+  <data name="WeekdayThuShort" xml:space="preserve">
+    <value>THU</value>
+  </data>
+  <data name="WeekdayFriShort" xml:space="preserve">
+    <value>FRI</value>
+  </data>
+  <data name="WeekdaySatShort" xml:space="preserve">
+    <value>SAT</value>
+  </data>
+  <data name="WeekdaySunShort" xml:space="preserve">
+    <value>SUN</value>
+  </data>
+  <data name="NewTaskTitle" xml:space="preserve">
+    <value>New Task</value>
+  </data>
+  <data name="TaskDescriptionLabel" xml:space="preserve">
+    <value>Task</value>
+  </data>
+  <data name="TaskDateLabel" xml:space="preserve">
+    <value>Selected day</value>
+  </data>
+  <data name="TaskCompletedLabel" xml:space="preserve">
+    <value>Mark as completed</value>
+  </data>
+  <data name="TaskPriorityLabel" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="SaveTaskButton" xml:space="preserve">
+    <value>Create Task</value>
+  </data>
+  <data name="OkButtonLabel" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="EditTaskTitle" xml:space="preserve">
+    <value>Edit Task</value>
+  </data>
 </root>

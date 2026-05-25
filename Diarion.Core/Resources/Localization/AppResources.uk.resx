@@ -178,4 +178,52 @@
   <data name="NoTasks" xml:space="preserve">
     <value>Немає завдань на цей день</value>
   </data>
+  <data name="TodayLabel" xml:space="preserve">
+    <value>СЬОГОДНІ</value>
+  </data>
+  <data name="WeekdayMonShort" xml:space="preserve">
+    <value>ПН</value>
+  </data>
+  <data name="WeekdayTueShort" xml:space="preserve">
+    <value>ВТ</value>
+  </data>
+  <data name="WeekdayWedShort" xml:space="preserve">
+    <value>СР</value>
+  </data>
+  <data name="WeekdayThuShort" xml:space="preserve">
+    <value>ЧТ</value>
+  </data>
+  <data name="WeekdayFriShort" xml:space="preserve">
+    <value>ПТ</value>
+  </data>
+  <data name="WeekdaySatShort" xml:space="preserve">
+    <value>СБ</value>
+  </data>
+  <data name="WeekdaySunShort" xml:space="preserve">
+    <value>НД</value>
+  </data>
+  <data name="NewTaskTitle" xml:space="preserve">
+    <value>Нове завдання</value>
+  </data>
+  <data name="TaskDescriptionLabel" xml:space="preserve">
+    <value>Завдання</value>
+  </data>
+  <data name="TaskDateLabel" xml:space="preserve">
+    <value>Обраний день</value>
+  </data>
+  <data name="TaskCompletedLabel" xml:space="preserve">
+    <value>Позначити як виконане</value>
+  </data>
+  <data name="TaskPriorityLabel" xml:space="preserve">
+    <value>Пріоритет</value>
+  </data>
+  <data name="SaveTaskButton" xml:space="preserve">
+    <value>Створити завдання</value>
+  </data>
+  <data name="OkButtonLabel" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="EditTaskTitle" xml:space="preserve">
+    <value>Редагувати завдання</value>
+  </data>
 </root>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace Diarion.Models;
 
@@ -13,7 +13,11 @@ public class TodoItem
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     
-    // Зовнішній ключ для зв'язку зі щоденниковим записом
+    // Now tasks are primarily bound to a specific Day. 
+    public DateTime TargetDate { get; set; } = DateTime.Now.Date;
+    public TimeSpan TargetTime { get; set; } = DateTime.Now.TimeOfDay;
+    
+    // Legacy mapping (optional, can be empty)
     public Guid DiaryEntryId { get; set; }
     
     public string TaskDescription { get; set; } = string.Empty;

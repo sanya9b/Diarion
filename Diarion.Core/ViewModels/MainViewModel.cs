@@ -1,7 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using System.Globalization;
+﻿using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Diarion.Diagnostics;
 using Diarion.Models;
 using Diarion.Services;
 
@@ -11,9 +11,18 @@ public partial class MainViewModel : BaseViewModel
 {
     private readonly IDiaryService _diaryService;
 
-    public ObservableCollection<DiaryEntry> Entries { get; } = new();
-    public ObservableCollection<CalendarDay> CalendarDays { get; } = new();
-    public ObservableCollection<TodoItem> Todos { get; } = new();
+    public bool HasEntries => Entries.Count > 0;
+
+    public bool HasNoEntries => !HasEntries;
+
+    [ObservableProperty]
+    private List<DiaryEntry> _entries = new();
+
+    [ObservableProperty]
+    private List<CalendarDay> _calendarDays = new();
+
+    [ObservableProperty]
+    private List<TodoItem> _todos = new();
 
     [ObservableProperty]
     private string _currentMonthName = string.Empty;
@@ -24,12 +33,11 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private string _selectedDateDayName = string.Empty;
 
-    private List<DiaryEntry> _allEntries = new();
-
     private DateTime _currentCalendarDate = DateTime.Now;
 
     public MainViewModel(IDiaryService diaryService)
     {
+        using var _ = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
         GenerateCalendar(_currentCalendarDate);
@@ -37,10 +45,12 @@ public partial class MainViewModel : BaseViewModel
 
     private void GenerateCalendar(DateTime date)
     {
-        CalendarDays.Clear();
-        CurrentMonthName = date.ToString("MMMM", CultureInfo.CurrentCulture);
+        using var _ = StartupTrace.Measure("MainViewModel.GenerateCalendar");
+        var culture = Diarion.Resources.Localization.AppResources.Culture ?? CultureInfo.CurrentCulture;
+        CurrentMonthName = date.ToString("MMMM", culture);
         CurrentYear = date.ToString("yyyy");
-        SelectedDateDayName = date.ToString("dddd", CultureInfo.CurrentCulture);
+        SelectedDateDayName = date.ToString("dddd", culture);
+        var calendarDays = new List<CalendarDay>(42);
 
         var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
         var daysInMonth = DateTime.DaysInMonth(date.Year, date.Month);
@@ -53,7 +63,7 @@ public partial class MainViewModel : BaseViewModel
         
         for (int i = startDayOfWeek - 1; i > 0; i--)
         {
-            CalendarDays.Add(new CalendarDay 
+            calendarDays.Add(new CalendarDay 
             { 
                 Day = daysInPrevMonth - i + 1, 
                 IsCurrentMonth = false,
@@ -64,7 +74,7 @@ public partial class MainViewModel : BaseViewModel
         for (int i = 1; i <= daysInMonth; i++)
         {
             var currentDate = new DateTime(date.Year, date.Month, i);
-            CalendarDays.Add(new CalendarDay 
+            calendarDays.Add(new CalendarDay 
             { 
                 Day = i, 
                 IsCurrentMonth = true,
@@ -74,17 +84,19 @@ public partial class MainViewModel : BaseViewModel
             });
         }
 
-        int remainingSlots = 42 - CalendarDays.Count;
+        int remainingSlots = 42 - calendarDays.Count;
         var nextMonth = firstDayOfMonth.AddMonths(1);
         for (int i = 1; i <= remainingSlots; i++)
         {
-            CalendarDays.Add(new CalendarDay 
+            calendarDays.Add(new CalendarDay 
             { 
                 Day = i, 
                 IsCurrentMonth = false,
                 Date = new DateTime(nextMonth.Year, nextMonth.Month, i)
             });
         }
+
+        CalendarDays = calendarDays;
     }
 
     [ObservableProperty]
@@ -93,12 +105,23 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isDiaryMode = true; // За замовчуванням увімкнено вкладку записів
 
-    [RelayCommand]
-    public void SwitchToPlannerMode()
+    partial void OnEntriesChanged(List<DiaryEntry> value)
     {
+        OnPropertyChanged(nameof(HasEntries));
+        OnPropertyChanged(nameof(HasNoEntries));
+    }
+
+    [RelayCommand]
+    public async Task SwitchToPlannerModeAsync()
+    {
+        if (IsPlannerMode)
+        {
+            return;
+        }
+
         IsPlannerMode = true;
         IsDiaryMode = false;
-        // Можна додати додаткову логіку фільтрації тут, якщо планувальник показує інші дані
+        await LoadTodosForDateAsync(GetSelectedDate());
     }
 
     [RelayCommand]
@@ -106,55 +129,108 @@ public partial class MainViewModel : BaseViewModel
     {
         IsPlannerMode = false;
         IsDiaryMode = true;
+        Todos = new List<TodoItem>();
     }
 
     [RelayCommand]
-    public void SelectDate(CalendarDay selectedDay)
+    public async Task SelectDate(CalendarDay selectedDay)
     {
         if (selectedDay == null) return;
-        
-        foreach (var day in CalendarDays)
-        {
-            day.IsSelected = false;
-        }
-        selectedDay.IsSelected = true;
-        
-        SelectedDateDayName = selectedDay.Date.ToString("dddd", CultureInfo.CurrentCulture);
-        FilterEntriesByDate(selectedDay.Date);
+
+        await SelectDateAsync(selectedDay.Date);
     }
 
     [RelayCommand]
-    public void PreviousMonth()
+    public async Task GoToToday()
     {
-        _currentCalendarDate = _currentCalendarDate.AddMonths(-1);
-        GenerateCalendar(_currentCalendarDate);
+        await SelectDateAsync(DateTime.Today);
     }
 
     [RelayCommand]
-    public void NextMonth()
+    public async Task PreviousMonth()
     {
-        _currentCalendarDate = _currentCalendarDate.AddMonths(1);
-        GenerateCalendar(_currentCalendarDate);
+        await SelectDateAsync(_currentCalendarDate.AddMonths(-1));
     }
 
-    private async void FilterEntriesByDate(DateTime date)
+    [RelayCommand]
+    public async Task NextMonth()
     {
-        Entries.Clear();
-        var filtered = _allEntries.Where(e => e.CreatedAt.Date == date.Date).ToList();
-        
-        foreach (var entry in filtered)
-        {
-            Entries.Add(entry);
-        }
+        await SelectDateAsync(_currentCalendarDate.AddMonths(1));
+    }
 
-        Todos.Clear();
-        foreach(var entry in filtered)
+    private async Task SelectDateAsync(DateTime date)
+    {
+        using var _ = StartupTrace.Measure("MainViewModel.SelectDateAsync");
+        
+        bool requiresFullRegeneration = _currentCalendarDate.Month != date.Month || _currentCalendarDate.Year != date.Year;
+        
+        _currentCalendarDate = date.Date;
+
+        if (requiresFullRegeneration || CalendarDays.Count == 0)
         {
-            var todosForEntry = await _diaryService.GetTodosForEntryAsync(entry.Id);
-            foreach(var todo in todosForEntry)
+            GenerateCalendar(_currentCalendarDate);
+        }
+        else
+        {
+            // Оновлюємо виділення без перегенерації всіх UI елементів календаря
+            foreach (var day in CalendarDays)
             {
-                Todos.Add(todo);
+                day.IsSelected = day.Date.Date == date.Date;
             }
+            var culture = Diarion.Resources.Localization.AppResources.Culture ?? CultureInfo.CurrentCulture;
+            SelectedDateDayName = date.ToString("dddd", culture);
+        }
+
+        await LoadDayContentAsync(_currentCalendarDate);
+    }
+
+    private async Task LoadDayContentAsync(DateTime date)
+    {
+        using var _ = StartupTrace.Measure("MainViewModel.LoadDayContentAsync");
+        await LoadEntriesForDateAsync(date);
+
+        if (IsPlannerMode)
+        {
+            await LoadTodosForDateAsync(date);
+            return;
+        }
+
+        Todos = new List<TodoItem>();
+    }
+
+    private async Task LoadEntriesForDateAsync(DateTime date)
+    {
+        using var _ = StartupTrace.Measure("MainViewModel.LoadEntriesForDateAsync");
+        Entries = await _diaryService.GetEntriesForDateAsync(date.Date);
+    }
+
+    private async Task LoadTodosForDateAsync(DateTime date)
+    {
+        using var _ = StartupTrace.Measure("MainViewModel.LoadTodosForDateAsync");
+        Todos = await _diaryService.GetTodosForDateAsync(date.Date);
+    }
+
+    private DateTime GetSelectedDate()
+    {
+        return CalendarDays.FirstOrDefault(day => day.IsSelected)?.Date.Date ?? _currentCalendarDate.Date;
+    }
+
+    [RelayCommand]
+    public async Task DeleteTodoAsync(TodoItem todo)
+    {
+        if (todo == null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _diaryService.DeleteTodoAsync(todo.Id);
+            await LoadTodosForDateAsync(GetSelectedDate());
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("Error deleting todo: " + ex.Message);
         }
     }
 
@@ -166,13 +242,8 @@ public partial class MainViewModel : BaseViewModel
         {
             todo.IsCompleted = !todo.IsCompleted;
             await _diaryService.SaveTodoAsync(todo);
-            
-            // Refresh to maintain sorting
-            var selectedDay = CalendarDays.FirstOrDefault(d => d.IsSelected);
-            if (selectedDay != null)
-            {
-                FilterEntriesByDate(selectedDay.Date);
-            }
+
+            await LoadTodosForDateAsync(GetSelectedDate());
         }
         catch (Exception ex)
         {
@@ -186,20 +257,12 @@ public partial class MainViewModel : BaseViewModel
         if (IsBusy)
             return;
 
+        using var _ = StartupTrace.Measure("MainViewModel.LoadEntriesAsync");
+
         try
         {
             IsBusy = true;
-            _allEntries = await _diaryService.GetAllEntriesAsync();
-            
-            var selectedDay = CalendarDays.FirstOrDefault(d => d.IsSelected);
-            if (selectedDay != null)
-            {
-                FilterEntriesByDate(selectedDay.Date);
-            }
-            else
-            {
-                FilterEntriesByDate(DateTime.Now.Date);
-            }
+            await LoadDayContentAsync(GetSelectedDate());
         }
         catch (Exception ex)
         {
@@ -226,6 +289,25 @@ public partial class MainViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    public async Task GoToNewTodoAsync()
+    {
+        var selectedDate = Uri.EscapeDataString(GetSelectedDate().ToString("O", CultureInfo.InvariantCulture));
+        await Shell.Current.GoToAsync($"TodoDetail?Date={selectedDate}");
+    }
+
+    [RelayCommand]
+    public async Task OpenCreateItemAsync()
+    {
+        if (IsPlannerMode)
+        {
+            await GoToNewTodoAsync();
+            return;
+        }
+
+        await GoToNewEntryAsync();
+    }
+
+    [RelayCommand]
     public async Task GoToEntryDetailsAsync(DiaryEntry entry)
     {
         if (entry == null)
@@ -233,5 +315,14 @@ public partial class MainViewModel : BaseViewModel
 
         // Передаємо ID запису як параметр
         await Shell.Current.GoToAsync($"DiaryDetail?Id={entry.Id}");
+    }
+
+    [RelayCommand]
+    public async Task GoToTodoDetailsAsync(TodoItem todo)
+    {
+        if (todo == null)
+            return;
+
+        await Shell.Current.GoToAsync($"TodoDetail?Id={todo.Id}");
     }
 }

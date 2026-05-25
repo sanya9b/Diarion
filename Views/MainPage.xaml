@@ -5,6 +5,7 @@
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.MainPage"
+             x:Name="PageRoot"
              x:DataType="viewmodels:MainViewModel"
              Title="{Binding Title}"
              BackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
@@ -12,241 +13,279 @@
     <Grid Padding="0" RowDefinitions="Auto, *">
         
         <!-- Custom Top Bar -->
-        <Grid Grid.Row="0" Padding="24,20,24,10" ColumnDefinitions="Auto, *">
+        <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="Auto, *">
             <!-- Hamburger Menu Button -->
-            <Label Grid.Column="0" Text="≡" FontSize="32" 
-                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" 
-                   VerticalOptions="Center" HorizontalOptions="Start">
-                <Label.GestureRecognizers>
+            <Grid Grid.Column="0" Padding="10,0">
+                <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding OpenMenuCommand}" />
-                </Label.GestureRecognizers>
-            </Label>
+                </Grid.GestureRecognizers>
+                <Label Text="≡" FontSize="32" 
+                       InputTransparent="True"
+                       TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" 
+                       VerticalOptions="Center" HorizontalOptions="Start" />
+            </Grid>
             
             <!-- TODAY Label -->
-            <Label Grid.Column="1" Text="TODAY" 
-                   HorizontalOptions="End" VerticalOptions="Center" 
-                   TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" 
-                   CharacterSpacing="2" FontSize="12" />
+            <Grid Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center" BackgroundColor="Transparent" Padding="10,5">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoToTodayCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="{x:Static localization:AppResources.TodayLabel}" 
+                       InputTransparent="True"
+                       HorizontalOptions="Center" VerticalOptions="Center" 
+                       TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" 
+                       CharacterSpacing="2" FontSize="11" />
+            </Grid>
         </Grid>
 
-        <!-- Список записів -->
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Entries}"
-                        SelectionMode="Single"
-                        SelectionChangedCommand="{Binding GoToEntryDetailsCommand}"
-                        SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
-            
-            <CollectionView.Header>
-                <VerticalStackLayout Padding="24,10,24,20" Spacing="4">
-                    
-                    <!-- Month and Year Navigation -->
-                    <Grid ColumnDefinitions="Auto, *, Auto" Margin="0,10,0,20">
-                        <!-- Previous Month Button -->
-                        <Label Grid.Column="0" Text="&lt;" FontSize="32" Padding="20,10" BackgroundColor="Transparent" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" VerticalOptions="Center" HorizontalOptions="Start">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding PreviousMonthCommand}" />
-                            </Label.GestureRecognizers>
-                        </Label>
-                        
-                        <!-- Month and Year Stack -->
-                        <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="-10">
-                            <Label Text="{Binding CurrentMonthName}" FontSize="48" FontAttributes="Italic" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" HorizontalOptions="Center" />
-                            <Label Text="{Binding CurrentYear}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" HorizontalOptions="Center" />
-                        </VerticalStackLayout>
-                        
-                        <!-- Next Month Button -->
-                        <Label Grid.Column="2" Text="&gt;" FontSize="32" Padding="20,10" BackgroundColor="Transparent" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" VerticalOptions="Center" HorizontalOptions="End">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding NextMonthCommand}" />
-                            </Label.GestureRecognizers>
-                        </Label>
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+            <VerticalStackLayout Grid.Row="0" Padding="24,4,24,10" Spacing="2">
+                <Grid ColumnDefinitions="Auto, *, Auto" Margin="0,4,0,12">
+                    <Grid Grid.Column="0" BackgroundColor="Transparent" Padding="20,10" VerticalOptions="Center" HorizontalOptions="Start">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding PreviousMonthCommand}" />
+                        </Grid.GestureRecognizers>
+                        <Label Text="&lt;" FontSize="32" InputTransparent="True" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
                     </Grid>
 
-                    <!-- Days of Week Header -->
-                    <Grid ColumnDefinitions="*,*,*,*,*,*,*" Margin="0,0,0,10">
-                        <Label Grid.Column="0" Text="MON" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                        <Label Grid.Column="1" Text="TUE" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                        <Label Grid.Column="2" Text="WED" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                        <Label Grid.Column="3" Text="THU" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                        <Label Grid.Column="4" Text="FRI" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                        <Label Grid.Column="5" Text="SAT" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                        <Label Grid.Column="6" Text="SUN" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                    </Grid>
+                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="-10">
+                        <Label Text="{Binding CurrentMonthName}" FontSize="40" FontAttributes="Italic" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" HorizontalOptions="Center" />
+                        <Label Text="{Binding CurrentYear}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
 
-                    <!-- Calendar Grid -->
-                    <CollectionView ItemsSource="{Binding CalendarDays}">
-                        <CollectionView.ItemsLayout>
-                            <GridItemsLayout Orientation="Vertical" Span="7" VerticalItemSpacing="8" HorizontalItemSpacing="0" />
-                        </CollectionView.ItemsLayout>
+                    <Grid Grid.Column="2" BackgroundColor="Transparent" Padding="20,10" VerticalOptions="Center" HorizontalOptions="End">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NextMonthCommand}" />
+                        </Grid.GestureRecognizers>
+                        <Label Text="&gt;" FontSize="32" InputTransparent="True" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    </Grid>
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*,*,*,*,*,*" Margin="0,0,0,8">
+                    <Label Grid.Column="0" Text="{x:Static localization:AppResources.WeekdayMonShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    <Label Grid.Column="1" Text="{x:Static localization:AppResources.WeekdayTueShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    <Label Grid.Column="2" Text="{x:Static localization:AppResources.WeekdayWedShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    <Label Grid.Column="3" Text="{x:Static localization:AppResources.WeekdayThuShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    <Label Grid.Column="4" Text="{x:Static localization:AppResources.WeekdayFriShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    <Label Grid.Column="5" Text="{x:Static localization:AppResources.WeekdaySatShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    <Label Grid.Column="6" Text="{x:Static localization:AppResources.WeekdaySunShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                </Grid>
+
+                <FlexLayout BindableLayout.ItemsSource="{Binding CalendarDays}"
+                            Wrap="Wrap"
+                            Direction="Row"
+                            JustifyContent="Start"
+                            AlignContent="Start"
+                            HeightRequest="252">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:CalendarDay">
+                            <ContentView FlexLayout.Basis="14.28%" HeightRequest="42">
+                                <Border HeightRequest="36"
+                                        WidthRequest="36"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        StrokeShape="RoundRectangle 20"
+                                        StrokeThickness="0"
+                                        BackgroundColor="Transparent"
+                                        Opacity="1">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference PageRoot}}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="StrokeThickness" Value="1" />
+                                            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsToday}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsCurrentMonth}" Value="False">
+                                            <Setter Property="Opacity" Value="0.25" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+
+                                    <Label Text="{Binding Day}" HorizontalOptions="Center" VerticalOptions="Center" FontSize="13"
+                                           InputTransparent="True"
+                                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                </Border>
+                            </ContentView>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+
+                <VerticalStackLayout Margin="0,12,0,6" Spacing="0" HorizontalOptions="Fill">
+                    <Label Text="{Binding SelectedDateDayName}" FontSize="24" FontAttributes="Italic" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*, *" Margin="0,4,0,6">
+                    <Border Grid.Column="0" StrokeThickness="0" BackgroundColor="Transparent" Padding="0,8">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SwitchToDiaryModeCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="{x:Static localization:AppResources.TabDiary}"
+                               InputTransparent="True"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               FontAttributes="Bold"
+                               FontSize="15">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="True">
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="False">
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Border>
+                    <Border Grid.Column="1" StrokeThickness="0" BackgroundColor="Transparent" Padding="0,8">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SwitchToPlannerModeCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="{x:Static localization:AppResources.TabPlanner}"
+                               InputTransparent="True"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               FontAttributes="Bold"
+                               FontSize="15">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="True">
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="False">
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Border>
+                    <BoxView Grid.Column="0" HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" VerticalOptions="End" IsVisible="{Binding IsDiaryMode}" />
+                    <BoxView Grid.Column="1" HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" VerticalOptions="End" IsVisible="{Binding IsPlannerMode}" />
+                </Grid>
+            </VerticalStackLayout>
+
+            <Grid Grid.Row="1">
+                <Grid x:Name="DiaryContainer" IsVisible="True">
+                    <VerticalStackLayout IsVisible="{Binding HasNoEntries}" HorizontalOptions="Center" VerticalOptions="Center" Padding="40" Spacing="16">
+                        <Label Text="—" FontSize="72" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                        <Label Text="{x:Static localization:AppResources.NoEntries}" FontAttributes="Bold" FontSize="20" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                        <Label Text="{x:Static localization:AppResources.NoEntriesDesc}" HorizontalTextAlignment="Center" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    </VerticalStackLayout>
+
+                    <CollectionView IsVisible="{Binding HasEntries}"
+                                    ItemsSource="{Binding Entries}"
+                                    ItemSizingStrategy="MeasureFirstItem"
+                                    SelectionMode="Single"
+                                    SelectionChangedCommand="{Binding GoToEntryDetailsCommand}"
+                                    SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="models:CalendarDay">
-                                <Grid HeightRequest="40" WidthRequest="40">
-                                    <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=SelectDateCommand}" CommandParameter="{Binding .}" />
-                                    </Grid.GestureRecognizers>
-                                    
-                                    <!-- Selected Circle -->
-                                    <Border StrokeShape="RoundRectangle 20" StrokeThickness="1" 
-                                            Stroke="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" 
-                                            BackgroundColor="Transparent"
-                                            IsVisible="{Binding IsSelected}" 
-                                            Margin="2" />
-                                            
-                                    <!-- Today Fill -->
-                                    <Border StrokeShape="RoundRectangle 20" StrokeThickness="0" 
-                                            BackgroundColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" 
-                                            IsVisible="{Binding IsToday}" 
-                                            Margin="2" Opacity="0.5" />
+                            <DataTemplate x:DataType="models:DiaryEntry">
+                                <Border Margin="20,6" StrokeShape="RoundRectangle 16" StrokeThickness="1"
+                                        Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}">
+                                    <Border.Shadow>
+                                        <Shadow Brush="{StaticResource Midnight}"
+                                                Offset="0,4"
+                                                Radius="8"
+                                                Opacity="{AppThemeBinding Light=0.08, Dark=0.3}" />
+                                    </Border.Shadow>
+                                    <Grid ColumnDefinitions="8, *">
+                                        <BoxView Grid.Column="0" CornerRadius="4,0,0,4" WidthRequest="8" HorizontalOptions="Start" VerticalOptions="Fill">
+                                            <BoxView.Triggers>
+                                                <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="None">
+                                                    <Setter Property="BackgroundColor" Value="#94A3B8" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="Happy">
+                                                    <Setter Property="BackgroundColor" Value="#10B981" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="Calm">
+                                                    <Setter Property="BackgroundColor" Value="#06B6D4" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="Anxious">
+                                                    <Setter Property="BackgroundColor" Value="#8B5CF6" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="Sad">
+                                                    <Setter Property="BackgroundColor" Value="#3B82F6" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="Angry">
+                                                    <Setter Property="BackgroundColor" Value="#EF4444" />
+                                                </DataTrigger>
+                                            </BoxView.Triggers>
+                                        </BoxView>
 
-                                    <Label Text="{Binding Day}" HorizontalOptions="Center" VerticalOptions="Center" 
-                                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsCurrentMonth}" Value="False">
-                                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
-                                </Grid>
+                                        <VerticalStackLayout Grid.Column="1" Padding="16" Spacing="6">
+                                            <Grid ColumnDefinitions="*, Auto">
+                                                <Label Grid.Column="0" Text="{Binding Title}" FontAttributes="Bold" FontSize="18"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" MaxLines="1" LineBreakMode="TailTruncation" />
+
+                                                <Border Grid.Column="1" StrokeShape="RoundRectangle 8" Padding="8,2" StrokeThickness="0" VerticalOptions="Center" HorizontalOptions="End">
+                                                    <Border.Triggers>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="None">
+                                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Black}}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="Happy">
+                                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="Calm">
+                                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="Anxious">
+                                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="Sad">
+                                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="Angry">
+                                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                                                        </DataTrigger>
+                                                    </Border.Triggers>
+                                                    <Label FontSize="11" FontAttributes="Bold">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="None">
+                                                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                                                <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionNone}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="Happy">
+                                                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                                                <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionHappy}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="Calm">
+                                                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                                                <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionCalm}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="Anxious">
+                                                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                                                <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionAnxious}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="Sad">
+                                                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                                                <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionSad}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="Angry">
+                                                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                                                <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionAngry}" />
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                </Border>
+                                            </Grid>
+
+                                            <Label Text="{Binding CreatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+
+                                            <Label Text="{Binding Content}" FontSize="14" MaxLines="2" LineBreakMode="TailTruncation"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Earth}}" Margin="0,4,0,0" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
+                </Grid>
 
-                    <!-- Selected Day Header -->
-                    <VerticalStackLayout Margin="0,30,0,10" Spacing="0">
-                        <Label Text="{Binding SelectedDateDayName}" FontSize="36" FontAttributes="Italic" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                    </VerticalStackLayout>
-
-                    <!-- Custom Tab Bar -->
-                    <Grid ColumnDefinitions="*, *" Margin="0,10,0,10">
-                        <Button Grid.Column="0" Text="{x:Static localization:AppResources.TabDiary}" 
-                                Command="{Binding SwitchToDiaryModeCommand}"
-                                BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
-                                FontAttributes="Bold" FontSize="16" />
-                        <Button Grid.Column="1" Text="{x:Static localization:AppResources.TabPlanner}" 
-                                Command="{Binding SwitchToPlannerModeCommand}"
-                                BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
-                                FontAttributes="Bold" FontSize="16" />
-                        <!-- Active Indicator -->
-                        <BoxView Grid.Column="0" HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" VerticalOptions="End" IsVisible="{Binding IsDiaryMode}" />
-                        <BoxView Grid.Column="1" HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" VerticalOptions="End" IsVisible="{Binding IsPlannerMode}" />
-                    </Grid>
-                </VerticalStackLayout>
-            </CollectionView.Header>
-
-            <CollectionView.EmptyView>
-                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="40" Spacing="16">
-                    <Label Text="—" FontSize="72" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                    <Label Text="{x:Static localization:AppResources.NoEntries}" FontAttributes="Bold" FontSize="20" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                    <Label Text="{x:Static localization:AppResources.NoEntriesDesc}" HorizontalTextAlignment="Center" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
-
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:DiaryEntry">
-                    <Border Margin="20,6" StrokeShape="RoundRectangle 16" StrokeThickness="1"
-                            Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}">
-                        <Border.Shadow>
-                            <Shadow Brush="{StaticResource Midnight}"
-                                    Offset="0,4"
-                                    Radius="8"
-                                    Opacity="{AppThemeBinding Light=0.08, Dark=0.3}" />
-                        </Border.Shadow>
-                        <Grid ColumnDefinitions="8, *">
-                            <!-- Emotion indicator line -->
-                            <BoxView Grid.Column="0" CornerRadius="4,0,0,4" WidthRequest="8" HorizontalOptions="Start" VerticalOptions="Fill">
-                                <BoxView.Triggers>
-                                    <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="None">
-                                        <Setter Property="BackgroundColor" Value="#94A3B8" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="Happy">
-                                        <Setter Property="BackgroundColor" Value="#10B981" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="Calm">
-                                        <Setter Property="BackgroundColor" Value="#06B6D4" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="Anxious">
-                                        <Setter Property="BackgroundColor" Value="#8B5CF6" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="Sad">
-                                        <Setter Property="BackgroundColor" Value="#3B82F6" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="BoxView" Binding="{Binding Emotion}" Value="Angry">
-                                        <Setter Property="BackgroundColor" Value="#EF4444" />
-                                    </DataTrigger>
-                                </BoxView.Triggers>
-                            </BoxView>
-
-                            <VerticalStackLayout Grid.Column="1" Padding="16" Spacing="6">
-                                <Grid ColumnDefinitions="*, Auto">
-                                    <Label Grid.Column="0" Text="{Binding Title}" FontAttributes="Bold" FontSize="18" 
-                                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" MaxLines="1" LineBreakMode="TailTruncation" />
-                                    
-                                    <!-- Emotion Badge -->
-                                    <Border Grid.Column="1" StrokeShape="RoundRectangle 8" Padding="8,2" StrokeThickness="0" VerticalOptions="Center" HorizontalOptions="End">
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="None">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Black}}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="Happy">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="Calm">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="Anxious">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="Sad">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="Angry">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                        <Label FontSize="11" FontAttributes="Bold">
-                                            <Label.Triggers>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="None">
-                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                                                    <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionNone}" />
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="Happy">
-                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                                    <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionHappy}" />
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="Calm">
-                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                                    <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionCalm}" />
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="Anxious">
-                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                                    <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionAnxious}" />
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="Sad">
-                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                                    <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionSad}" />
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Emotion}" Value="Angry">
-                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                                    <Setter Property="Text" Value="{x:Static localization:AppResources.EmotionAngry}" />
-                                                </DataTrigger>
-                                            </Label.Triggers>
-                                        </Label>
-                                    </Border>
-                                </Grid>
-                                
-                                <Label Text="{Binding CreatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="12" 
-                                       TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                                
-                                <Label Text="{Binding Content}" FontSize="14" MaxLines="2" LineBreakMode="TailTruncation"
-                                       TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Earth}}" Margin="0,4,0,0" />
-                            </VerticalStackLayout>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                <ContentView x:Name="PlannerContainer" IsVisible="False" />
+            </Grid>
+        </Grid>
 
         <!-- Завантаження -->
         <ActivityIndicator IsRunning="{Binding IsBusy}" 
@@ -265,9 +304,10 @@
                 <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="10" Opacity="0.3" />
             </Border.Shadow>
             <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding GoToNewEntryCommand}" />
+                <TapGestureRecognizer Tapped="OnFabTapped" Command="{Binding OpenCreateItemCommand}" />
             </Border.GestureRecognizers>
             <Label Text="+"
+                   InputTransparent="True"
                    TextColor="{StaticResource Snow}"
                    FontSize="32"
                    FontAttributes="Bold"
