@@ -57,11 +57,8 @@ public partial class MainPage : ContentPage
 
     private async void OnFabTapped(object? sender, TappedEventArgs e)
     {
-        if (sender is View view)
-        {
-            await view.ScaleToAsync(0.9, 100, Easing.CubicOut);
-            await view.ScaleToAsync(1.0, 100, Easing.CubicIn);
-        }
+        await FabBorder.ScaleToAsync(0.9, 100, Easing.CubicOut);
+        await FabBorder.ScaleToAsync(1.0, 100, Easing.CubicIn);
     }
 
     protected override void OnAppearing()

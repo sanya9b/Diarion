@@ -14,6 +14,8 @@ public static class MauiProgram
 				fonts.AddFont("Montserrat-Regular.ttf", "OpenSansRegular"); // Alias kept for compatibility with Styles
 				fonts.AddFont("Montserrat-SemiBold.ttf", "OpenSansSemibold");
 				fonts.AddFont("Lora-Italic.ttf", "LoraItalic");
+				fonts.AddFont("Parisienne-Regular.ttf", "Parisienne");
+				fonts.AddFont("MarckScript-Regular.ttf", "MarckScript");
 			});
 
 #if DEBUG

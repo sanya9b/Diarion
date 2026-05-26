@@ -49,7 +49,7 @@
                     </Grid>
 
                     <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="-10">
-                        <Label Text="{Binding CurrentMonthName}" FontSize="40" FontAttributes="Italic" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" HorizontalOptions="Center" />
+                        <Label Text="{Binding CurrentMonthName}" FontFamily="MarckScript" FontSize="40" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" HorizontalOptions="Center" />
                         <Label Text="{Binding CurrentYear}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" HorizontalOptions="Center" />
                     </VerticalStackLayout>
 
@@ -115,7 +115,7 @@
                 </FlexLayout>
 
                 <VerticalStackLayout Margin="0,12,0,6" Spacing="0" HorizontalOptions="Fill">
-                    <Label Text="{Binding SelectedDateDayName}" FontSize="24" FontAttributes="Italic" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                    <Label Text="{Binding SelectedDateDayName}" FontFamily="MarckScript" FontSize="32" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
                 </VerticalStackLayout>
 
                 <Grid ColumnDefinitions="*, *" Margin="0,4,0,6">
@@ -294,27 +294,33 @@
                            Color="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"/>
 
         <!-- Floating Add Button (FAB) -->
-        <Border Grid.Row="1" StrokeShape="RoundRectangle 28"
-                WidthRequest="56" HeightRequest="56"
-                HorizontalOptions="End" VerticalOptions="End"
-                Margin="0,0,24,24"
-                BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Ocean}}"
-                StrokeThickness="0">
-            <Border.Shadow>
-                <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="10" Opacity="0.3" />
-            </Border.Shadow>
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnFabTapped" Command="{Binding OpenCreateItemCommand}" />
-            </Border.GestureRecognizers>
-            <Label Text="+"
-                   InputTransparent="True"
-                   TextColor="{StaticResource Snow}"
-                   FontSize="32"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   VerticalOptions="Center"
-                   TranslationY="-1" />
-        </Border>
+        <Grid Grid.Row="1"
+              WidthRequest="56" HeightRequest="56"
+              HorizontalOptions="End" VerticalOptions="End"
+              Margin="0,0,24,24">
+            
+            <Border x:Name="FabBorder"
+                    StrokeShape="RoundRectangle 28"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Ocean}}"
+                    StrokeThickness="0">
+                <Border.Shadow>
+                    <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="10" Opacity="0.3" />
+                </Border.Shadow>
+                <Label Text="+"
+                       TextColor="{StaticResource Snow}"
+                       FontSize="32"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TranslationY="-1" />
+            </Border>
+
+            <BoxView BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnFabTapped" Command="{Binding OpenCreateItemCommand}" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+        </Grid>
     </Grid>
 
 </ContentPage>

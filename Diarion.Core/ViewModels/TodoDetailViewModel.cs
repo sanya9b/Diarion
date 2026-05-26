@@ -19,7 +19,7 @@ public partial class TodoDetailViewModel : BaseViewModel
     {
         _diaryService = diaryService;
         Title = Diarion.Resources.Localization.AppResources.NewTaskTitle;
-        SelectedPriorityItem = PrioritiesList[1];
+        PrioritiesList[1].IsSelected = true; // Medium is default
         UpdateTargetDateDisplay();
     }
 
@@ -41,15 +41,26 @@ public partial class TodoDetailViewModel : BaseViewModel
     [ObservableProperty]
     private TodoPriority _selectedPriority = TodoPriority.Medium;
 
-    [ObservableProperty]
-    private PriorityItem? _selectedPriorityItem;
-
     public List<PriorityItem> PrioritiesList { get; } = new()
     {
         new(TodoPriority.Low, Diarion.Resources.Localization.AppResources.PriorityLow),
         new(TodoPriority.Medium, Diarion.Resources.Localization.AppResources.PriorityMedium),
         new(TodoPriority.High, Diarion.Resources.Localization.AppResources.PriorityHigh)
     };
+
+    [RelayCommand]
+    public void SelectPriority(PriorityItem selectedItem)
+    {
+        if (selectedItem == null) return;
+
+        foreach (var item in PrioritiesList)
+        {
+            item.IsSelected = false;
+        }
+
+        selectedItem.IsSelected = true;
+        SelectedPriority = selectedItem.Value;
+    }
 
     partial void OnTargetDateValueChanged(string value)
     {
@@ -81,18 +92,16 @@ public partial class TodoDetailViewModel : BaseViewModel
         {
             TaskDescription = _currentTodo.TaskDescription;
             IsCompleted = _currentTodo.IsCompleted;
-            SelectedPriorityItem = PrioritiesList.FirstOrDefault(p => p.Value == _currentTodo.Priority) ?? PrioritiesList[1];
+            
+            foreach (var item in PrioritiesList)
+            {
+                item.IsSelected = item.Value == _currentTodo.Priority;
+            }
+            SelectedPriority = _currentTodo.Priority;
+            
             _targetDate = _currentTodo.TargetDate;
             UpdateTargetDateDisplay();
             Title = Diarion.Resources.Localization.AppResources.EditTaskTitle;
-        }
-    }
-
-    partial void OnSelectedPriorityItemChanged(PriorityItem? value)
-    {
-        if (value != null)
-        {
-            SelectedPriority = value.Value;
         }
     }
 

@@ -32,15 +32,14 @@
                                Color="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
         </Grid>
 
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="24,10,24,24" Spacing="14">
-                <Border StrokeShape="RoundRectangle 24"
-                        StrokeThickness="1"
+        <Grid Grid.Row="1" Padding="24,10,24,24" RowSpacing="14" RowDefinitions="Auto, Auto">
+            <Border Grid.Row="0" StrokeShape="RoundRectangle 24"
+                    StrokeThickness="1"
                         Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
                         Padding="18,18">
                     <Border.Shadow>
-                        <Shadow Brush="{StaticResource Midnight}" Offset="0,6" Radius="12" Opacity="{AppThemeBinding Light=0.06, Dark=0.28}" />
+                        <Shadow Brush="{StaticResource Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="14">
                         <VerticalStackLayout Spacing="8">
@@ -66,17 +65,56 @@
 
                         <VerticalStackLayout Spacing="8">
                             <Label Text="{x:Static localization:AppResources.TaskPriorityLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                            <Picker ItemsSource="{Binding PrioritiesList}"
-                                    ItemDisplayBinding="{Binding DisplayName}"
-                                    SelectedItem="{Binding SelectedPriorityItem}"
-                                    TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
-                                    BackgroundColor="Transparent"
-                                    HeightRequest="42" />
+                            
+                            <CollectionView ItemsSource="{Binding PrioritiesList}"
+                                            HeightRequest="48"
+                                            HorizontalScrollBarVisibility="Never">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="viewmodels:PriorityItem">
+                                        <Border StrokeShape="RoundRectangle 20" 
+                                                StrokeThickness="1"
+                                                Padding="20,0"
+                                                VerticalOptions="Center"
+                                                HeightRequest="40"
+                                                BackgroundColor="Transparent">
+                                            
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
+                                                    <Setter Property="BackgroundColor" Value="Transparent" />
+                                                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TodoDetailViewModel}}, Path=SelectPriorityCommand}" CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            
+                                            <Label Text="{Binding DisplayName}" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" FontSize="13" FontAttributes="Bold">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </Border>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
 
-                <Border StrokeShape="RoundRectangle 14"
+                <Border Grid.Row="1" StrokeShape="RoundRectangle 14"
                         StrokeThickness="0"
                         HeightRequest="48"
                         BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Ocean}}">
@@ -93,7 +131,6 @@
                            VerticalOptions="Center"
                            TextColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
                 </Border>
-            </VerticalStackLayout>
-        </ScrollView>
+        </Grid>
     </Grid>
 </ContentPage>

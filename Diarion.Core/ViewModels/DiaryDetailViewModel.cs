@@ -333,4 +333,18 @@ public partial class DiaryDetailViewModel : BaseViewModel
 }
 
 public record EmotionItem(Emotion Value, string DisplayName);
-public record PriorityItem(TodoPriority Value, string DisplayName);
+
+public partial class PriorityItem : ObservableObject
+{
+    public TodoPriority Value { get; }
+    public string DisplayName { get; }
+
+    [ObservableProperty]
+    private bool _isSelected;
+
+    public PriorityItem(TodoPriority value, string displayName)
+    {
+        Value = value;
+        DisplayName = displayName;
+    }
+}

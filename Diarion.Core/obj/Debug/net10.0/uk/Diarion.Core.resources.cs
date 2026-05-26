@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Diarion.Core")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute(" ")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a7aee6db9a572d20a71ea15f4398371b0b3c6762")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ee716b0048b7cb41229af07966788c2c923d1f9a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Diarion.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Diarion.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

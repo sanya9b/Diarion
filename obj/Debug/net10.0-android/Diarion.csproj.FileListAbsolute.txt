@@ -1618,3 +1618,7 @@ D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\stamp\_ConvertResourcesCas
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\stamp\_GenerateJavaStubs.stamp
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\stamp\_GeneratePackageManagerJava.stamp
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\stamp\_ResolveLibraryProjectImports.stamp
+D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\f\Parisienne-Regular.ttf
+D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\assets\Parisienne-Regular.ttf
+D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\f\MarckScript-Regular.ttf
+D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\assets\MarckScript-Regular.ttf
