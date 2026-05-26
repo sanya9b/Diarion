@@ -16,3 +16,4 @@ D:\WORK\SOURCE_CODE\Diarion\Diarion.Core\obj\Debug\net10.0\Diarion.Core.dll
 D:\WORK\SOURCE_CODE\Diarion\Diarion.Core\obj\Debug\net10.0\refint\Diarion.Core.dll
 D:\WORK\SOURCE_CODE\Diarion\Diarion.Core\obj\Debug\net10.0\Diarion.Core.pdb
 D:\WORK\SOURCE_CODE\Diarion\Diarion.Core\obj\Debug\net10.0\ref\Diarion.Core.dll
+D:\WORK\SOURCE_CODE\Diarion\Diarion.Core\obj\Debug\net10.0\Diarion.Core.sourcelink.json

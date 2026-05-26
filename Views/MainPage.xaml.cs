@@ -5,6 +5,17 @@ using Diarion.ViewModels;
 
 namespace Diarion.Views;
 
+public static class ViewExtensions
+{
+    public static Task<bool> HeightRequestTo(this VisualElement view, double height, uint length = 250, Easing? easing = null)
+    {
+        var tcs = new TaskCompletionSource<bool>();
+        var animation = new Animation(v => view.HeightRequest = v, view.Height, height, easing);
+        animation.Commit(view, "HeightRequestTo", 16, length, finished: (v, c) => tcs.SetResult(c));
+        return tcs.Task;
+    }
+}
+
 public partial class MainPage : ContentPage
 {
     private static readonly TimeSpan InitialLoadDelay = TimeSpan.FromMilliseconds(450);
@@ -24,7 +35,33 @@ public partial class MainPage : ContentPage
 
     private async void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(MainViewModel.IsPlannerMode))
+        if (e.PropertyName == nameof(MainViewModel.IsCalendarExpanded))
+        {
+            if (_viewModel.IsCalendarExpanded)
+            {
+                // Розгортаємо весь календар (включаючи шапку)
+                CalendarHeader.IsVisible = true;
+                CalendarGrid.IsVisible = true;
+                await Task.WhenAll(
+                    CalendarHeader.FadeToAsync(1, 200, Easing.CubicOut),
+                    CalendarGrid.FadeToAsync(1, 200, Easing.CubicOut),
+                    CalendarSection.HeightRequestTo(350, 250, Easing.CubicOut) // 252 (дні) + 100 (шапка)
+                );
+                CalendarSection.HeightRequest = -1; // Auto size
+            }
+            else
+            {
+                // Згортаємо ВЕСЬ блок календаря до 0
+                await Task.WhenAll(
+                    CalendarHeader.FadeToAsync(0, 150, Easing.CubicIn),
+                    CalendarGrid.FadeToAsync(0, 150, Easing.CubicIn),
+                    CalendarSection.HeightRequestTo(0, 200, Easing.CubicIn) 
+                );
+                CalendarHeader.IsVisible = false;
+                CalendarGrid.IsVisible = false;
+            }
+        }
+        else if (e.PropertyName == nameof(MainViewModel.IsPlannerMode))
         {
             if (_viewModel.IsPlannerMode)
             {
@@ -53,12 +90,6 @@ public partial class MainPage : ContentPage
                 await DiaryContainer.FadeToAsync(1, 150, Easing.CubicIn);
             }
         }
-    }
-
-    private async void OnFabTapped(object? sender, TappedEventArgs e)
-    {
-        await FabBorder.ScaleToAsync(0.9, 100, Easing.CubicOut);
-        await FabBorder.ScaleToAsync(1.0, 100, Easing.CubicIn);
     }
 
     protected override void OnAppearing()

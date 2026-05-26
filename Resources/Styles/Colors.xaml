@@ -9,6 +9,7 @@
     <Color x:Key="Earth">#E9E7E1</Color>
     <Color x:Key="Dust">#E0E6EA</Color>
     <Color x:Key="Snow">#FFFFFF</Color>
+    <Color x:Key="Coral">#C26D53</Color>
 
     <!-- Semantic Colors -->
     <Color x:Key="Primary">#929FA7</Color> <!-- Ocean -->

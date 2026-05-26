@@ -54,7 +54,7 @@ public class DiaryService : IDiaryService, IDisposable
             var entriesCollection = database.GetCollection<DiaryEntry>("entries");
             var todosCollection = database.GetCollection<TodoItem>("todos");
 
-            entriesCollection.EnsureIndex(x => x.CreatedAt);
+            entriesCollection.EnsureIndex(x => x.Date);
             todosCollection.EnsureIndex(x => x.TargetDate);
 
             _db = database;
@@ -83,22 +83,30 @@ public class DiaryService : IDiaryService, IDisposable
 
     public Task<List<DiaryEntry>> GetAllEntriesAsync()
     {
-        return Task.Run(() => EntriesCollection.Query().OrderByDescending(x => x.CreatedAt).ToList());
+        return Task.Run(() => EntriesCollection.Query().OrderByDescending(x => x.Date).ToList());
     }
 
-    public Task<List<DiaryEntry>> GetEntriesForDateAsync(DateTime date)
+    public Task<DiaryEntry> GetEntryForDateAsync(DateTime date)
     {
         return Task.Run(() =>
         {
             var startedAt = Stopwatch.GetTimestamp();
             var dateOnly = date.Date;
-            var entries = EntriesCollection.Query()
-                .Where(x => x.CreatedAt >= dateOnly && x.CreatedAt < dateOnly.AddDays(1))
-                .OrderByDescending(x => x.CreatedAt)
-                .ToList();
+            var entry = EntriesCollection.Query()
+                .Where(x => x.Date == dateOnly)
+                .FirstOrDefault();
 
-            StartupTrace.Mark($"DiaryService.GetEntriesForDateAsync count={entries.Count} duration={Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds:F1}ms");
-            return entries;
+            if (entry == null)
+            {
+                entry = new DiaryEntry 
+                { 
+                    Date = dateOnly,
+                    CreatedAt = DateTime.Now
+                };
+            }
+
+            StartupTrace.Mark($"DiaryService.GetEntryForDateAsync duration={Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds:F1}ms");
+            return entry;
         });
     }
 
@@ -142,6 +150,19 @@ public class DiaryService : IDiaryService, IDisposable
             var todos = items.OrderBy(x => x.IsCompleted).ThenByDescending(x => x.Priority).ToList();
             StartupTrace.Mark($"DiaryService.GetTodosForDateAsync count={todos.Count} duration={Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds:F1}ms");
             return todos;
+        });
+    }
+
+    public Task<List<TodoItem>> GetTodosForMonthAsync(int year, int month)
+    {
+        return Task.Run(() =>
+        {
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1);
+            
+            return TodosCollection.Query()
+                .Where(x => x.TargetDate >= startDate && x.TargetDate < endDate)
+                .ToList();
         });
     }
 

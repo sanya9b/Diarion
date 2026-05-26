@@ -53,6 +53,8 @@ namespace Diarion.Resources.Localization {
         public static string ContentPlaceholder => ResourceManager.GetString("ContentPlaceholder", resourceCulture) ?? "Start writing here...";
         public static string SaveButton => ResourceManager.GetString("SaveButton", resourceCulture) ?? "Save Entry";
         public static string EditTaskTitle => ResourceManager.GetString("EditTaskTitle", resourceCulture) ?? "Edit Task";
+        public static string MaxHighPriorityAlertTitle => ResourceManager.GetString("MaxHighPriorityAlertTitle", resourceCulture) ?? "Priority Limit Reached";
+        public static string MaxHighPriorityAlertMessage => ResourceManager.GetString("MaxHighPriorityAlertMessage", resourceCulture) ?? "Psychologists recommend setting no more than 3 high-priority tasks per day to maintain focus and prevent burnout. Please change the priority or move tasks to another day.";
         public static string DeleteButton => ResourceManager.GetString("DeleteButton", resourceCulture) ?? "Delete Entry";
         public static string DeleteConfirmTitle => ResourceManager.GetString("DeleteConfirmTitle", resourceCulture) ?? "Confirmation";
         public static string DeleteConfirmMsg => ResourceManager.GetString("DeleteConfirmMsg", resourceCulture) ?? "Are you sure you want to delete this entry?";

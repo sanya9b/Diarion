@@ -1,7 +1,0 @@
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_buttons.Diarion.Core.Resources.Localization.AppResources.resources
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_buttons.Diarion.Core.Resources.Localization.AppResources.uk.resources
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_buttons.csproj.GenerateResource.cache
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_buttons.GeneratedMSBuildEditorConfig.editorconfig
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_buttons.AssemblyInfoInputs.cache
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_buttons.AssemblyInfo.cs
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_buttons.csproj.CoreCompileInputs.cache

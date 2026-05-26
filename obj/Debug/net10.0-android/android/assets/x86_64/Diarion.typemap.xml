@@ -1,10 +1,10 @@
-<api type="debug" assembly-name="Diarion" mvid="65788c3ea6354ad697e9e8f818ea3e9b">
+<api type="debug" assembly-name="Diarion" mvid="103af8bb782d4365b60b844ed03a5807">
   <java-to-managed>
-    <entry java-name="crc64186095ae0d26e29e/MainActivity" managed-name="Diarion.MainActivity, Diarion" managed-type-token-id="33554440" />
-    <entry java-name="crc64186095ae0d26e29e/MainApplication" managed-name="Diarion.MainApplication, Diarion" managed-type-token-id="33554441" />
+    <entry java-name="crc64186095ae0d26e29e/MainActivity" managed-name="Diarion.MainActivity, Diarion" managed-type-token-id="33554442" />
+    <entry java-name="crc64186095ae0d26e29e/MainApplication" managed-name="Diarion.MainApplication, Diarion" managed-type-token-id="33554443" />
   </java-to-managed>
   <managed-to-java>
-    <entry java-name="crc64186095ae0d26e29e/MainActivity" managed-name="Diarion.MainActivity, Diarion" managed-type-token-id="33554440" />
-    <entry java-name="crc64186095ae0d26e29e/MainApplication" managed-name="Diarion.MainApplication, Diarion" managed-type-token-id="33554441" />
+    <entry java-name="crc64186095ae0d26e29e/MainActivity" managed-name="Diarion.MainActivity, Diarion" managed-type-token-id="33554442" />
+    <entry java-name="crc64186095ae0d26e29e/MainApplication" managed-name="Diarion.MainApplication, Diarion" managed-type-token-id="33554443" />
   </managed-to-java>
 </api>

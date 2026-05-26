@@ -123,6 +123,25 @@ public partial class TodoDetailViewModel : BaseViewModel
         {
             IsBusy = true;
 
+            // Перевірка ліміту 3-х завдань із високим пріоритетом на день
+            if (SelectedPriority == TodoPriority.High)
+            {
+                var existingTodos = await _diaryService.GetTodosForDateAsync(_targetDate);
+                
+                // Рахуємо скільки ВЖЕ є високих пріоритетів (виключаючи поточне завдання, якщо ми його редагуємо)
+                var currentId = _currentTodo?.Id ?? Guid.Empty;
+                int highPriorityCount = existingTodos.Count(t => t.Priority == TodoPriority.High && t.Id != currentId);
+                
+                if (highPriorityCount >= 3)
+                {
+                    IsBusy = false;
+                    var title = Diarion.Resources.Localization.AppResources.MaxHighPriorityAlertTitle;
+                    var message = Diarion.Resources.Localization.AppResources.MaxHighPriorityAlertMessage;
+                    await Shell.Current.DisplayAlert(title, message, "OK");
+                    return;
+                }
+            }
+
             if (_currentTodo == null)
             {
                 _currentTodo = new TodoItem

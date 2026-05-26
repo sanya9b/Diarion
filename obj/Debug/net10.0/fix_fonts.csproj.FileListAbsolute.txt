@@ -1,7 +1,0 @@
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_fonts.Diarion.Core.Resources.Localization.AppResources.resources
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_fonts.Diarion.Core.Resources.Localization.AppResources.uk.resources
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_fonts.csproj.GenerateResource.cache
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_fonts.GeneratedMSBuildEditorConfig.editorconfig
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_fonts.AssemblyInfoInputs.cache
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_fonts.AssemblyInfo.cs
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0\fix_fonts.csproj.CoreCompileInputs.cache

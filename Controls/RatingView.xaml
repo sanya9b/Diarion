@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             x:Class="Diarion.Controls.RatingView"
+             x:Name="Root">
+    <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Stars, Source={x:Reference Root}}" Spacing="2">
+        <BindableLayout.ItemTemplate>
+            <DataTemplate x:DataType="controls:RatingStar">
+                <Grid Padding="4" BackgroundColor="Transparent" WidthRequest="28" HeightRequest="32">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectRatingCommand, Source={x:Reference Root}}" CommandParameter="{Binding Value}" />
+                    </Grid.GestureRecognizers>
+                    <!-- Filled Star -->
+                    <Label Text="★" FontSize="18" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center"
+                           TextColor="{StaticResource Coral}"
+                           IsVisible="{Binding IsFilled}" />
+                    <!-- Empty Star -->
+                    <Label Text="☆" FontSize="18" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
+                           IsVisible="{Binding IsEmpty}" />
+                </Grid>
+            </DataTemplate>
+        </BindableLayout.ItemTemplate>
+    </HorizontalStackLayout>
+</ContentView>

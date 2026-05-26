@@ -226,4 +226,10 @@
   <data name="EditTaskTitle" xml:space="preserve">
     <value>Редагувати завдання</value>
   </data>
+  <data name="MaxHighPriorityAlertTitle" xml:space="preserve">
+    <value>Ліміт вичерпано</value>
+  </data>
+  <data name="MaxHighPriorityAlertMessage" xml:space="preserve">
+    <value>Психологи радять виділяти не більше 3-х головних завдань на день. Це допомагає уникнути вигорання, зберігає фокус та підвищує шанси на їх успішне виконання. Будь ласка, змініть пріоритет або перенесіть завдання на інший день.</value>
+  </data>
 </root>

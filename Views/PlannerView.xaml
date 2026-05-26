@@ -7,15 +7,33 @@
              x:Class="Diarion.Views.PlannerView"
              x:DataType="viewmodels:MainViewModel">
              
-    <VerticalStackLayout Padding="20,2,20,20" Spacing="10">
-        <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+    <Grid RowDefinitions="Auto, *" Padding="20,2,20,20" RowSpacing="10">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalOptions="Center" ColumnSpacing="12">
             <Label Grid.Column="0" Text="{x:Static localization:AppResources.TodoListLabel}" FontAttributes="Bold" FontSize="16" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-            <Border Grid.Column="1" Padding="10,4" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}">
-                <Label Text="{Binding SelectedDateDayName}" FontSize="11" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-            </Border>
+            
+            <Grid Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End">
+                <Border StrokeShape="RoundRectangle 8"
+                        WidthRequest="36" HeightRequest="28"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Ocean}}"
+                        StrokeThickness="0">
+                    <Label Text="+"
+                           TextColor="{StaticResource Snow}"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TranslationY="-1" />
+                </Border>
+                <!-- ABSOLUTE HITBOX -->
+                <BoxView BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill">
+                    <BoxView.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToNewTodoCommand}" />
+                    </BoxView.GestureRecognizers>
+                </BoxView>
+            </Grid>
         </Grid>
 
-        <CollectionView ItemsSource="{Binding Todos}" ItemSizingStrategy="MeasureFirstItem">
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Todos}" ItemSizingStrategy="MeasureFirstItem">
             <CollectionView.EmptyView>
                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="32" Spacing="12">
                     <Label Text="{x:Static localization:AppResources.NoTasks}" FontAttributes="Bold" FontSize="18" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
@@ -103,5 +121,5 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </VerticalStackLayout>
+    </Grid>
 </ContentView>

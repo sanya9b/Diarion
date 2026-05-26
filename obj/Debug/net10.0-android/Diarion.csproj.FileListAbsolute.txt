@@ -28,8 +28,10 @@ D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\sp\values\maui
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\mauisplash.stamp
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\mauifont.stamp
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\f\Lora-Italic.ttf
+D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\f\MarckScript-Regular.ttf
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\f\Montserrat-Regular.ttf
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\f\Montserrat-SemiBold.ttf
+D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\f\Parisienne-Regular.ttf
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\r\mipmap-xxxhdpi\appicon_round.png
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\r\mipmap-xxhdpi\appicon_round.png
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\r\mipmap-xhdpi\appicon_round.png
@@ -129,6 +131,7 @@ D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\Diarion.GeneratedMSBuildEd
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\Diarion.AssemblyInfoInputs.cache
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\Diarion.AssemblyInfo.cs
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\Diarion.csproj.CoreCompileInputs.cache
+D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\Diarion.sourcelink.json
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\XamlC.stamp
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\Diarion.csproj.Up2Date
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\Diarion.dll
@@ -1596,8 +1599,10 @@ D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\android\src\mono\MonoPacka
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\android\src\net\dot\android\ApplicationRegistration.java
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\assets\AboutAssets.txt
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\assets\Lora-Italic.ttf
+D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\assets\MarckScript-Regular.ttf
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\assets\Montserrat-Regular.ttf
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\assets\Montserrat-SemiBold.ttf
+D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\assets\Parisienne-Regular.ttf
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\android\bin\packaged_resources
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\android\src\com\companyname\diarion\R.java
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\_CompileJava.FileList.txt
@@ -1618,7 +1623,3 @@ D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\stamp\_ConvertResourcesCas
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\stamp\_GenerateJavaStubs.stamp
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\stamp\_GeneratePackageManagerJava.stamp
 D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\stamp\_ResolveLibraryProjectImports.stamp
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\f\Parisienne-Regular.ttf
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\assets\Parisienne-Regular.ttf
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\resizetizer\f\MarckScript-Regular.ttf
-D:\WORK\SOURCE_CODE\Diarion\obj\Debug\net10.0-android\assets\MarckScript-Regular.ttf

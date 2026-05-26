@@ -226,4 +226,10 @@
   <data name="EditTaskTitle" xml:space="preserve">
     <value>Edit Task</value>
   </data>
+  <data name="MaxHighPriorityAlertTitle" xml:space="preserve">
+    <value>Priority Limit Reached</value>
+  </data>
+  <data name="MaxHighPriorityAlertMessage" xml:space="preserve">
+    <value>Psychologists recommend setting no more than 3 high-priority tasks per day to maintain focus and prevent burnout. Please change the priority or move tasks to another day.</value>
+  </data>
 </root>

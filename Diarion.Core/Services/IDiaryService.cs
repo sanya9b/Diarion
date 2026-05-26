@@ -8,7 +8,7 @@ namespace Diarion.Services;
 public interface IDiaryService
 {
     Task<List<DiaryEntry>> GetAllEntriesAsync();
-    Task<List<DiaryEntry>> GetEntriesForDateAsync(DateTime date);
+    Task<DiaryEntry> GetEntryForDateAsync(DateTime date);
     Task<DiaryEntry> GetEntryByIdAsync(Guid id);
     Task SaveEntryAsync(DiaryEntry entry);
     Task DeleteEntryAsync(Guid id);
@@ -16,6 +16,7 @@ public interface IDiaryService
     // Todo functionality
     Task<TodoItem?> GetTodoByIdAsync(Guid id);
     Task<List<TodoItem>> GetTodosForDateAsync(DateTime date);
+    Task<List<TodoItem>> GetTodosForMonthAsync(int year, int month);
     Task<List<TodoItem>> GetAllTodosAsync();
     Task SaveTodoAsync(TodoItem todo);
     Task DeleteTodoAsync(Guid todoId);

@@ -11,12 +11,73 @@ public partial class MainViewModel : BaseViewModel
 {
     private readonly IDiaryService _diaryService;
 
-    public bool HasEntries => Entries.Count > 0;
+    [ObservableProperty]
+    private DiaryEntry? _currentEntry;
 
-    public bool HasNoEntries => !HasEntries;
+    private CancellationTokenSource? _autoSaveCts;
+
+    partial void OnCurrentEntryChanged(DiaryEntry? oldValue, DiaryEntry? newValue)
+    {
+        if (oldValue != null)
+        {
+            oldValue.PropertyChanged -= OnEntryPropertyChanged;
+            oldValue.PhysicalActivity.PropertyChanged -= OnEntryPropertyChanged;
+            oldValue.Breakfast.PropertyChanged -= OnEntryPropertyChanged;
+            oldValue.Lunch.PropertyChanged -= OnEntryPropertyChanged;
+            oldValue.Snack.PropertyChanged -= OnEntryPropertyChanged;
+            oldValue.Dinner.PropertyChanged -= OnEntryPropertyChanged;
+            oldValue.Water.PropertyChanged -= OnEntryPropertyChanged;
+            oldValue.Vitamins.PropertyChanged -= OnEntryPropertyChanged;
+            oldValue.Reading.PropertyChanged -= OnEntryPropertyChanged;
+            oldValue.SocialConnections.PropertyChanged -= OnEntryPropertyChanged;
+        }
+
+        if (newValue != null)
+        {
+            newValue.PropertyChanged += OnEntryPropertyChanged;
+            newValue.PhysicalActivity.PropertyChanged += OnEntryPropertyChanged;
+            newValue.Breakfast.PropertyChanged += OnEntryPropertyChanged;
+            newValue.Lunch.PropertyChanged += OnEntryPropertyChanged;
+            newValue.Snack.PropertyChanged += OnEntryPropertyChanged;
+            newValue.Dinner.PropertyChanged += OnEntryPropertyChanged;
+            newValue.Water.PropertyChanged += OnEntryPropertyChanged;
+            newValue.Vitamins.PropertyChanged += OnEntryPropertyChanged;
+            newValue.Reading.PropertyChanged += OnEntryPropertyChanged;
+            newValue.SocialConnections.PropertyChanged += OnEntryPropertyChanged;
+        }
+    }
+
+    private void OnEntryPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        // Ігноруємо службові події або якщо запис ще завантажується
+        if (IsBusy || CurrentEntry == null || e.PropertyName == "IsBusy") return;
+        
+        ScheduleAutoSave();
+    }
+
+    private void ScheduleAutoSave()
+    {
+        _autoSaveCts?.Cancel();
+        _autoSaveCts = new CancellationTokenSource();
+        var token = _autoSaveCts.Token;
+
+        Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(1000, token); // Debounce на 1 секунду
+                if (!token.IsCancellationRequested && CurrentEntry != null)
+                {
+                    await _diaryService.SaveEntryAsync(CurrentEntry);
+                    System.Diagnostics.Debug.WriteLine($"Auto-saved entry for {CurrentEntry.Date:dd.MM.yyyy}");
+                }
+            }
+            catch (TaskCanceledException) { }
+        }, token);
+    }
 
     [ObservableProperty]
-    private List<DiaryEntry> _entries = new();
+    private bool _isCalendarExpanded = true;
 
     [ObservableProperty]
     private List<CalendarDay> _calendarDays = new();
@@ -41,6 +102,7 @@ public partial class MainViewModel : BaseViewModel
         _diaryService = diaryService;
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
         GenerateCalendar(_currentCalendarDate);
+        Task.Run(() => UpdateCalendarTasksCompletion());
     }
 
     private void GenerateCalendar(DateTime date)
@@ -105,12 +167,6 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isDiaryMode = true; // За замовчуванням увімкнено вкладку записів
 
-    partial void OnEntriesChanged(List<DiaryEntry> value)
-    {
-        OnPropertyChanged(nameof(HasEntries));
-        OnPropertyChanged(nameof(HasNoEntries));
-    }
-
     [RelayCommand]
     public async Task SwitchToPlannerModeAsync()
     {
@@ -138,6 +194,12 @@ public partial class MainViewModel : BaseViewModel
         if (selectedDay == null) return;
 
         await SelectDateAsync(selectedDay.Date);
+    }
+
+    [RelayCommand]
+    public void ToggleCalendar()
+    {
+        IsCalendarExpanded = !IsCalendarExpanded;
     }
 
     [RelayCommand]
@@ -169,6 +231,7 @@ public partial class MainViewModel : BaseViewModel
         if (requiresFullRegeneration || CalendarDays.Count == 0)
         {
             GenerateCalendar(_currentCalendarDate);
+            Task.Run(() => UpdateCalendarTasksCompletion());
         }
         else
         {
@@ -182,6 +245,44 @@ public partial class MainViewModel : BaseViewModel
         }
 
         await LoadDayContentAsync(_currentCalendarDate);
+    }
+
+    private async Task UpdateCalendarTasksCompletion()
+    {
+        if (CalendarDays.Count == 0) return;
+
+        var firstDay = CalendarDays.First().Date.Date;
+        var lastDay = CalendarDays.Last().Date.Date;
+
+        var allTodos = new List<TodoItem>();
+        var currentMonth = new DateTime(firstDay.Year, firstDay.Month, 1);
+        var lastMonth = new DateTime(lastDay.Year, lastDay.Month, 1);
+
+        while (currentMonth <= lastMonth)
+        {
+            var monthTodos = await _diaryService.GetTodosForMonthAsync(currentMonth.Year, currentMonth.Month);
+            allTodos.AddRange(monthTodos);
+            currentMonth = currentMonth.AddMonths(1);
+        }
+
+        var grouped = allTodos.GroupBy(t => t.TargetDate.Date).ToDictionary(g => g.Key, g => g.ToList());
+
+        // Оновлюємо UI строго в головному потоці, щоб не збивати байндинги і не викликати гонку потоків
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            foreach (var day in CalendarDays)
+            {
+                if (grouped.TryGetValue(day.Date.Date, out var dayTodos) && dayTodos.Count > 0)
+                {
+                    int completed = dayTodos.Count(t => t.IsCompleted);
+                    day.TaskCompletionPercentage = (double)completed / dayTodos.Count;
+                }
+                else
+                {
+                    day.TaskCompletionPercentage = 0;
+                }
+            }
+        });
     }
 
     private async Task LoadDayContentAsync(DateTime date)
@@ -201,7 +302,9 @@ public partial class MainViewModel : BaseViewModel
     private async Task LoadEntriesForDateAsync(DateTime date)
     {
         using var _ = StartupTrace.Measure("MainViewModel.LoadEntriesForDateAsync");
-        Entries = await _diaryService.GetEntriesForDateAsync(date.Date);
+        IsBusy = true; // Вимикаємо автозбереження на час завантаження
+        CurrentEntry = await _diaryService.GetEntryForDateAsync(date.Date);
+        IsBusy = false;
     }
 
     private async Task LoadTodosForDateAsync(DateTime date)
@@ -227,6 +330,7 @@ public partial class MainViewModel : BaseViewModel
         {
             await _diaryService.DeleteTodoAsync(todo.Id);
             await LoadTodosForDateAsync(GetSelectedDate());
+            await UpdateCalendarTasksCompletion();
         }
         catch (Exception ex)
         {
@@ -244,10 +348,31 @@ public partial class MainViewModel : BaseViewModel
             await _diaryService.SaveTodoAsync(todo);
 
             await LoadTodosForDateAsync(GetSelectedDate());
+            await UpdateCalendarTasksCompletion();
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine("Error toggling todo: " + ex.Message);
+        }
+    }
+
+    [RelayCommand]
+    public async Task SaveEntryAsync()
+    {
+        if (CurrentEntry == null) return;
+        
+        IsBusy = true;
+        try
+        {
+            await _diaryService.SaveEntryAsync(CurrentEntry);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Помилка збереження запису: {ex.Message}");
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -263,6 +388,7 @@ public partial class MainViewModel : BaseViewModel
         {
             IsBusy = true;
             await LoadDayContentAsync(GetSelectedDate());
+            await UpdateCalendarTasksCompletion();
         }
         catch (Exception ex)
         {
