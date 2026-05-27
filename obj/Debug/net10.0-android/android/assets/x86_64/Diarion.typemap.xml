@@ -1,4 +1,4 @@
-<api type="debug" assembly-name="Diarion" mvid="103af8bb782d4365b60b844ed03a5807">
+<api type="debug" assembly-name="Diarion" mvid="d9d7ffab35754b34985e624067c47b2b">
   <java-to-managed>
     <entry java-name="crc64186095ae0d26e29e/MainActivity" managed-name="Diarion.MainActivity, Diarion" managed-type-token-id="33554442" />
     <entry java-name="crc64186095ae0d26e29e/MainApplication" managed-name="Diarion.MainApplication, Diarion" managed-type-token-id="33554443" />

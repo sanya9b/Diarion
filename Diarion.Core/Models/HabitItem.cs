@@ -6,8 +6,11 @@ namespace Diarion.Models;
 public partial class HabitItem : ObservableObject
 {
     [ObservableProperty]
-    private bool _isCompleted;
+    private Guid _habitId;
 
     [ObservableProperty]
-    private string _note = string.Empty;
+    private string _name = string.Empty;
+
+    [ObservableProperty]
+    private bool _isCompleted;
 }

@@ -114,6 +114,16 @@ build_metadata.AdditionalFiles.NoWarn =
 build_metadata.AdditionalFiles.EnableDiagnostics = 
 build_metadata.AdditionalFiles.LineInfo = 
 
+[D:/WORK/SOURCE_CODE/Diarion/Views/ProfilePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Diarion.Views.ProfilePage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\ProfilePage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\ProfilePage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
 [D:/WORK/SOURCE_CODE/Diarion/Views/TodoDetailPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Diarion.Views.TodoDetailPage.xaml

@@ -14,37 +14,63 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private DiaryEntry? _currentEntry;
 
+    [ObservableProperty]
+    private bool _isEditHabitsMode;
+
+    [ObservableProperty]
+    private string _cycleDayText = string.Empty;
+
+    [ObservableProperty]
+    private string _pregnancyProbabilityText = string.Empty;
+
+    [ObservableProperty]
+    private bool _isCycleInfoVisible;
+
+    [ObservableProperty]
+    private Microsoft.Maui.Graphics.Color _pregnancyProbabilityColor = Microsoft.Maui.Graphics.Colors.Transparent;
+
     private CancellationTokenSource? _autoSaveCts;
+
+    [RelayCommand]
+    public void ToggleEditHabitsMode()
+    {
+        IsEditHabitsMode = !IsEditHabitsMode;
+    }
 
     partial void OnCurrentEntryChanged(DiaryEntry? oldValue, DiaryEntry? newValue)
     {
         if (oldValue != null)
         {
             oldValue.PropertyChanged -= OnEntryPropertyChanged;
-            oldValue.PhysicalActivity.PropertyChanged -= OnEntryPropertyChanged;
-            oldValue.Breakfast.PropertyChanged -= OnEntryPropertyChanged;
-            oldValue.Lunch.PropertyChanged -= OnEntryPropertyChanged;
-            oldValue.Snack.PropertyChanged -= OnEntryPropertyChanged;
-            oldValue.Dinner.PropertyChanged -= OnEntryPropertyChanged;
-            oldValue.Water.PropertyChanged -= OnEntryPropertyChanged;
-            oldValue.Vitamins.PropertyChanged -= OnEntryPropertyChanged;
-            oldValue.Reading.PropertyChanged -= OnEntryPropertyChanged;
-            oldValue.SocialConnections.PropertyChanged -= OnEntryPropertyChanged;
+            oldValue.Habits.CollectionChanged -= OnHabitsCollectionChanged;
+            foreach (var h in oldValue.Habits)
+            {
+                h.PropertyChanged -= OnEntryPropertyChanged;
+            }
         }
 
         if (newValue != null)
         {
             newValue.PropertyChanged += OnEntryPropertyChanged;
-            newValue.PhysicalActivity.PropertyChanged += OnEntryPropertyChanged;
-            newValue.Breakfast.PropertyChanged += OnEntryPropertyChanged;
-            newValue.Lunch.PropertyChanged += OnEntryPropertyChanged;
-            newValue.Snack.PropertyChanged += OnEntryPropertyChanged;
-            newValue.Dinner.PropertyChanged += OnEntryPropertyChanged;
-            newValue.Water.PropertyChanged += OnEntryPropertyChanged;
-            newValue.Vitamins.PropertyChanged += OnEntryPropertyChanged;
-            newValue.Reading.PropertyChanged += OnEntryPropertyChanged;
-            newValue.SocialConnections.PropertyChanged += OnEntryPropertyChanged;
+            newValue.Habits.CollectionChanged += OnHabitsCollectionChanged;
+            foreach (var h in newValue.Habits)
+            {
+                h.PropertyChanged += OnEntryPropertyChanged;
+            }
         }
+    }
+
+    private void OnHabitsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems != null)
+        {
+            foreach (HabitItem item in e.OldItems) item.PropertyChanged -= OnEntryPropertyChanged;
+        }
+        if (e.NewItems != null)
+        {
+            foreach (HabitItem item in e.NewItems) item.PropertyChanged += OnEntryPropertyChanged;
+        }
+        ScheduleAutoSave();
     }
 
     private void OnEntryPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -290,6 +316,47 @@ public partial class MainViewModel : BaseViewModel
         using var _ = StartupTrace.Measure("MainViewModel.LoadDayContentAsync");
         await LoadEntriesForDateAsync(date);
 
+        var profile = await _diaryService.GetUserProfileAsync();
+        if (profile.IsMenstrualTrackingEnabled && profile.LastPeriodStartDate.HasValue)
+        {
+            IsCycleInfoVisible = true;
+            DateTime lastPeriod = profile.LastPeriodStartDate.Value.Date;
+            int diff = (date.Date - lastPeriod).Days;
+            int cycleDay = (diff % profile.CycleLength);
+            if (cycleDay < 0) cycleDay += profile.CycleLength;
+            cycleDay += 1; // Відлік днів починається з 1
+
+            CycleDayText = string.Format(Diarion.Resources.Localization.AppResources.CycleDayFormat, cycleDay);
+
+            int ovulationDay = profile.CycleLength - 14;
+            int fertileStart = ovulationDay - 5;
+            int fertileEnd = ovulationDay + 1;
+
+            if (cycleDay >= fertileStart && cycleDay <= fertileEnd)
+            {
+                PregnancyProbabilityText = Diarion.Resources.Localization.AppResources.ProbHigh;
+                PregnancyProbabilityColor = Microsoft.Maui.Graphics.Color.FromArgb("#C26D53"); // Coral
+            }
+            else if (cycleDay >= fertileStart - 2 && cycleDay <= fertileEnd + 2)
+            {
+                PregnancyProbabilityText = Diarion.Resources.Localization.AppResources.ProbMedium;
+                PregnancyProbabilityColor = Microsoft.Maui.Graphics.Color.FromArgb("#C9985A"); // Amber
+            }
+            else
+            {
+                PregnancyProbabilityText = Diarion.Resources.Localization.AppResources.ProbLow;
+                PregnancyProbabilityColor = Microsoft.Maui.Graphics.Color.FromArgb("#8FA083"); // Sage
+            }
+            
+            if (CurrentEntry != null) {
+                CurrentEntry.CycleDay = cycleDay.ToString();
+            }
+        }
+        else
+        {
+            IsCycleInfoVisible = false;
+        }
+
         if (IsPlannerMode)
         {
             await LoadTodosForDateAsync(date);
@@ -316,6 +383,34 @@ public partial class MainViewModel : BaseViewModel
     private DateTime GetSelectedDate()
     {
         return CalendarDays.FirstOrDefault(day => day.IsSelected)?.Date.Date ?? _currentCalendarDate.Date;
+    }
+
+    [RelayCommand]
+    public async Task AddHabitAsync()
+    {
+        string result = await Shell.Current.DisplayPromptAsync("Нова звичка", "Введіть назву звички:");
+        if (!string.IsNullOrWhiteSpace(result))
+        {
+            var def = new HabitDefinition { Name = result.Trim(), CreatedAt = GetSelectedDate() };
+            await _diaryService.AddHabitDefinitionAsync(def);
+            
+            if (CurrentEntry != null)
+            {
+                CurrentEntry.Habits.Add(new HabitItem { HabitId = def.Id, Name = def.Name });
+            }
+        }
+    }
+
+    [RelayCommand]
+    public async Task DeleteHabitAsync(HabitItem item)
+    {
+        if (item == null || CurrentEntry == null) return;
+        
+        bool confirm = await Shell.Current.DisplayAlert("Видалити звичку?", $"Ви впевнені, що хочете видалити '{item.Name}'? Вона зникне з цього дня і надалі, але залишиться в минулому.", "Так", "Ні");
+        if (!confirm) return;
+
+        await _diaryService.DeleteHabitDefinitionAsync(item.HabitId, GetSelectedDate());
+        CurrentEntry.Habits.Remove(item);
     }
 
     [RelayCommand]

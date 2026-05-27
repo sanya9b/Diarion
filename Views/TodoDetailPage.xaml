@@ -56,9 +56,42 @@
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <CheckBox IsChecked="{Binding IsCompleted}"
-                                      Color="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
-                                      VerticalOptions="Center" />
+                                      VerticalOptions="Center">
+                                <CheckBox.Triggers>
+                                    <DataTrigger TargetType="CheckBox" Binding="{Binding SelectedPriority}" Value="Low">
+                                        <Setter Property="Color" Value="{StaticResource Sage}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="CheckBox" Binding="{Binding SelectedPriority}" Value="Medium">
+                                        <Setter Property="Color" Value="{StaticResource Amber}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="CheckBox" Binding="{Binding SelectedPriority}" Value="High">
+                                        <Setter Property="Color" Value="{StaticResource Coral}" />
+                                    </DataTrigger>
+                                </CheckBox.Triggers>
+                            </CheckBox>
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskCompletedLabel}" VerticalOptions="Center" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                        </Grid>
+
+                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" Opacity="0.5" />
+
+                        <!-- Options section -->
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <CheckBox IsChecked="{Binding HasTime}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Додати час виконання" VerticalOptions="Center" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="12" IsVisible="{Binding HasTime}">
+                            <Label Grid.Column="0" Text="Час:" VerticalOptions="Center" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                            <TimePicker Grid.Column="1" Time="{Binding TargetTime}" Format="HH:mm" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <CheckBox IsChecked="{Binding IsDailyRepeat}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Повторювати щодня" VerticalOptions="Center" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <CheckBox IsChecked="{Binding HasReminder}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Увімкнути нагадування" VerticalOptions="Center" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
                         </Grid>
 
                         <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" Opacity="0.5" />
@@ -82,14 +115,37 @@
                                                 BackgroundColor="Transparent">
                                             
                                             <Border.Triggers>
-                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                                                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                                                </DataTrigger>
                                                 <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
                                                     <Setter Property="BackgroundColor" Value="Transparent" />
                                                     <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
                                                 </DataTrigger>
+                                                
+                                                <MultiTrigger TargetType="Border">
+                                                    <MultiTrigger.Conditions>
+                                                        <BindingCondition Binding="{Binding IsSelected}" Value="True" />
+                                                        <BindingCondition Binding="{Binding Value}" Value="Low" />
+                                                    </MultiTrigger.Conditions>
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource Sage}" />
+                                                    <Setter Property="Stroke" Value="{StaticResource Sage}" />
+                                                </MultiTrigger>
+                                                
+                                                <MultiTrigger TargetType="Border">
+                                                    <MultiTrigger.Conditions>
+                                                        <BindingCondition Binding="{Binding IsSelected}" Value="True" />
+                                                        <BindingCondition Binding="{Binding Value}" Value="Medium" />
+                                                    </MultiTrigger.Conditions>
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource Amber}" />
+                                                    <Setter Property="Stroke" Value="{StaticResource Amber}" />
+                                                </MultiTrigger>
+                                                
+                                                <MultiTrigger TargetType="Border">
+                                                    <MultiTrigger.Conditions>
+                                                        <BindingCondition Binding="{Binding IsSelected}" Value="True" />
+                                                        <BindingCondition Binding="{Binding Value}" Value="High" />
+                                                    </MultiTrigger.Conditions>
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource Coral}" />
+                                                    <Setter Property="Stroke" Value="{StaticResource Coral}" />
+                                                </MultiTrigger>
                                             </Border.Triggers>
                                             
                                             <Border.GestureRecognizers>

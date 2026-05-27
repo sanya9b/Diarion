@@ -232,4 +232,127 @@
   <data name="MaxHighPriorityAlertMessage" xml:space="preserve">
     <value>Psychologists recommend setting no more than 3 high-priority tasks per day to maintain focus and prevent burnout. Please change the priority or move tasks to another day.</value>
   </data>
+  <data name="SleepLabel" xml:space="preserve">
+    <value>SLEEP</value>
+  </data>
+  <data name="SleepStartLabel" xml:space="preserve">
+    <value>Start:</value>
+  </data>
+  <data name="SleepEndLabel" xml:space="preserve">
+    <value>Wake up:</value>
+  </data>
+  <data name="SleepQualityLabel" xml:space="preserve">
+    <value>Sleep quality:</value>
+  </data>
+  <data name="HealthLabel" xml:space="preserve">
+    <value>PHYSIOLOGY &amp; HEALTH</value>
+  </data>
+  <data name="CycleDayLabel" xml:space="preserve">
+    <value>Cycle day:</value>
+  </data>
+  <data name="HealthStatusLabel" xml:space="preserve">
+    <value>Health status:</value>
+  </data>
+  <data name="IntimateLifeLabel" xml:space="preserve">
+    <value>Intimate life:</value>
+  </data>
+  <data name="HabitsLabel" xml:space="preserve">
+    <value>HABITS</value>
+  </data>
+  <data name="AddHabitLabel" xml:space="preserve">
+    <value>+ Add habit</value>
+  </data>
+  <data name="TriggersLabel" xml:space="preserve">
+    <value>TRIGGERS:</value>
+  </data>
+  <data name="GratitudeLabel" xml:space="preserve">
+    <value>GRATITUDE:</value>
+  </data>
+  <data name="SoulFoodLabel" xml:space="preserve">
+    <value>SOUL FOOD:</value>
+  </data>
+  <data name="AddTimeLabel" xml:space="preserve">
+    <value>Add target time</value>
+  </data>
+  <data name="TimeLabel" xml:space="preserve">
+    <value>Time:</value>
+  </data>
+  <data name="DailyRepeatLabel" xml:space="preserve">
+    <value>Repeat daily</value>
+  </data>
+  <data name="ReminderLabel" xml:space="preserve">
+    <value>Enable reminder</value>
+  </data>
+  <data name="ProfileMenuTitle" xml:space="preserve">
+    <value>Personal Settings</value>
+  </data>
+  <data name="GeneralInfoLabel" xml:space="preserve">
+    <value>GENERAL INFORMATION</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="NamePlaceholder" xml:space="preserve">
+    <value>Your name</value>
+  </data>
+  <data name="GenderLabel" xml:space="preserve">
+    <value>Gender:</value>
+  </data>
+  <data name="GenderNotSpecified" xml:space="preserve">
+    <value>Not specified</value>
+  </data>
+  <data name="GenderMale" xml:space="preserve">
+    <value>Male</value>
+  </data>
+  <data name="GenderFemale" xml:space="preserve">
+    <value>Female</value>
+  </data>
+  <data name="GenderOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="AgeLabel" xml:space="preserve">
+    <value>Age:</value>
+  </data>
+  <data name="WeightLabel" xml:space="preserve">
+    <value>Weight (kg):</value>
+  </data>
+  <data name="HeightLabel" xml:space="preserve">
+    <value>Height (cm):</value>
+  </data>
+  <data name="MenstrualTrackingTitle" xml:space="preserve">
+    <value>MENSTRUAL CALENDAR</value>
+  </data>
+  <data name="EnableTrackingLabel" xml:space="preserve">
+    <value>Enable tracking</value>
+  </data>
+  <data name="CycleLengthLabel" xml:space="preserve">
+    <value>Average cycle length (days):</value>
+  </data>
+  <data name="PeriodLengthLabel" xml:space="preserve">
+    <value>Average period length (days):</value>
+  </data>
+  <data name="LastPeriodDateLabel" xml:space="preserve">
+    <value>Last period start date:</value>
+  </data>
+  <data name="SaveProfileButton" xml:space="preserve">
+    <value>SAVE SETTINGS</value>
+  </data>
+  <data name="ProfileSavedMessage" xml:space="preserve">
+    <value>Settings successfully saved!</value>
+  </data>
+  <data name="PregnancyProbabilityLabel" xml:space="preserve">
+    <value>Pregnancy probability:</value>
+  </data>
+  <data name="ProbLow" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="ProbMedium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="ProbHigh" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="CycleDayFormat" xml:space="preserve">
+    <value>Day {0}</value>
+  </data>
 </root>

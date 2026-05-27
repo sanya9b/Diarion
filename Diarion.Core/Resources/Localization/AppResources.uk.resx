@@ -232,4 +232,127 @@
   <data name="MaxHighPriorityAlertMessage" xml:space="preserve">
     <value>Психологи радять виділяти не більше 3-х головних завдань на день. Це допомагає уникнути вигорання, зберігає фокус та підвищує шанси на їх успішне виконання. Будь ласка, змініть пріоритет або перенесіть завдання на інший день.</value>
   </data>
+  <data name="SleepLabel" xml:space="preserve">
+    <value>СОН</value>
+  </data>
+  <data name="SleepStartLabel" xml:space="preserve">
+    <value>Початок:</value>
+  </data>
+  <data name="SleepEndLabel" xml:space="preserve">
+    <value>Пробудження:</value>
+  </data>
+  <data name="SleepQualityLabel" xml:space="preserve">
+    <value>Якість сну:</value>
+  </data>
+  <data name="HealthLabel" xml:space="preserve">
+    <value>ФІЗІОЛОГІЯ ТА ЗДОРОВ'Я</value>
+  </data>
+  <data name="CycleDayLabel" xml:space="preserve">
+    <value>День циклу:</value>
+  </data>
+  <data name="HealthStatusLabel" xml:space="preserve">
+    <value>Стан здоров'я:</value>
+  </data>
+  <data name="IntimateLifeLabel" xml:space="preserve">
+    <value>Інтимне життя:</value>
+  </data>
+  <data name="HabitsLabel" xml:space="preserve">
+    <value>ЗВИЧКИ</value>
+  </data>
+  <data name="AddHabitLabel" xml:space="preserve">
+    <value>+ Додати звичку</value>
+  </data>
+  <data name="TriggersLabel" xml:space="preserve">
+    <value>ТРИГЕРИ:</value>
+  </data>
+  <data name="GratitudeLabel" xml:space="preserve">
+    <value>ВДЯЧНІСТЬ:</value>
+  </data>
+  <data name="SoulFoodLabel" xml:space="preserve">
+    <value>ЇЖА ДЛЯ ДУШІ:</value>
+  </data>
+  <data name="AddTimeLabel" xml:space="preserve">
+    <value>Додати час виконання</value>
+  </data>
+  <data name="TimeLabel" xml:space="preserve">
+    <value>Час:</value>
+  </data>
+  <data name="DailyRepeatLabel" xml:space="preserve">
+    <value>Повторювати щодня</value>
+  </data>
+  <data name="ReminderLabel" xml:space="preserve">
+    <value>Увімкнути нагадування</value>
+  </data>
+  <data name="ProfileMenuTitle" xml:space="preserve">
+    <value>Особисті налаштування</value>
+  </data>
+  <data name="GeneralInfoLabel" xml:space="preserve">
+    <value>ЗАГАЛЬНА ІНФОРМАЦІЯ</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>Ім'я:</value>
+  </data>
+  <data name="NamePlaceholder" xml:space="preserve">
+    <value>Ваше ім'я</value>
+  </data>
+  <data name="GenderLabel" xml:space="preserve">
+    <value>Стать:</value>
+  </data>
+  <data name="GenderNotSpecified" xml:space="preserve">
+    <value>Не вказано</value>
+  </data>
+  <data name="GenderMale" xml:space="preserve">
+    <value>Чоловіча</value>
+  </data>
+  <data name="GenderFemale" xml:space="preserve">
+    <value>Жіноча</value>
+  </data>
+  <data name="GenderOther" xml:space="preserve">
+    <value>Інша</value>
+  </data>
+  <data name="AgeLabel" xml:space="preserve">
+    <value>Вік:</value>
+  </data>
+  <data name="WeightLabel" xml:space="preserve">
+    <value>Вага (кг):</value>
+  </data>
+  <data name="HeightLabel" xml:space="preserve">
+    <value>Зріст (см):</value>
+  </data>
+  <data name="MenstrualTrackingTitle" xml:space="preserve">
+    <value>МЕНСТРУАЛЬНИЙ КАЛЕНДАР</value>
+  </data>
+  <data name="EnableTrackingLabel" xml:space="preserve">
+    <value>Увімкнути відстеження</value>
+  </data>
+  <data name="CycleLengthLabel" xml:space="preserve">
+    <value>Середня тривалість циклу (днів):</value>
+  </data>
+  <data name="PeriodLengthLabel" xml:space="preserve">
+    <value>Середня тривалість менструації (днів):</value>
+  </data>
+  <data name="LastPeriodDateLabel" xml:space="preserve">
+    <value>Дата початку останнього циклу:</value>
+  </data>
+  <data name="SaveProfileButton" xml:space="preserve">
+    <value>ЗБЕРЕГТИ НАЛАШТУВАННЯ</value>
+  </data>
+  <data name="ProfileSavedMessage" xml:space="preserve">
+    <value>Налаштування успішно збережено!</value>
+  </data>
+  <data name="PregnancyProbabilityLabel" xml:space="preserve">
+    <value>Вірогідність вагітності:</value>
+  </data>
+  <data name="ProbLow" xml:space="preserve">
+    <value>Низька</value>
+  </data>
+  <data name="ProbMedium" xml:space="preserve">
+    <value>Середня</value>
+  </data>
+  <data name="ProbHigh" xml:space="preserve">
+    <value>Висока</value>
+  </data>
+  <data name="CycleDayFormat" xml:space="preserve">
+    <value>День {0}</value>
+  </data>
 </root>

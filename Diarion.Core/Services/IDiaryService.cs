@@ -7,6 +7,15 @@ namespace Diarion.Services;
 
 public interface IDiaryService
 {
+    // Profile
+    Task<UserProfile> GetUserProfileAsync();
+    Task SaveUserProfileAsync(UserProfile profile);
+
+    // Habits
+    Task<List<HabitDefinition>> GetActiveHabitsForDateAsync(DateTime date);
+    Task AddHabitDefinitionAsync(HabitDefinition habit);
+    Task DeleteHabitDefinitionAsync(Guid id, DateTime deleteDate);
+
     Task<List<DiaryEntry>> GetAllEntriesAsync();
     Task<DiaryEntry> GetEntryForDateAsync(DateTime date);
     Task<DiaryEntry> GetEntryByIdAsync(Guid id);

@@ -14,10 +14,20 @@ public partial class DiaryEntry : ObservableObject
     
     // Сон (Sleep)
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSleepStart))]
+    [NotifyPropertyChangedFor(nameof(IsSleepStartEmpty))]
     private TimeSpan? _sleepStart;
     
+    public bool HasSleepStart => SleepStart.HasValue;
+    public bool IsSleepStartEmpty => !SleepStart.HasValue;
+    
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSleepEnd))]
+    [NotifyPropertyChangedFor(nameof(IsSleepEndEmpty))]
     private TimeSpan? _sleepEnd;
+    
+    public bool HasSleepEnd => SleepEnd.HasValue;
+    public bool IsSleepEndEmpty => !SleepEnd.HasValue;
     
     [ObservableProperty]
     private int _sleepQuality = 0;
@@ -34,31 +44,7 @@ public partial class DiaryEntry : ObservableObject
 
     // Звички (Habits)
     [ObservableProperty]
-    private HabitItem _physicalActivity = new();
-    
-    [ObservableProperty]
-    private HabitItem _breakfast = new();
-    
-    [ObservableProperty]
-    private HabitItem _lunch = new();
-    
-    [ObservableProperty]
-    private HabitItem _snack = new();
-    
-    [ObservableProperty]
-    private HabitItem _dinner = new();
-    
-    [ObservableProperty]
-    private HabitItem _water = new();
-    
-    [ObservableProperty]
-    private HabitItem _vitamins = new();
-    
-    [ObservableProperty]
-    private HabitItem _reading = new();
-    
-    [ObservableProperty]
-    private HabitItem _socialConnections = new();
+    private System.Collections.ObjectModel.ObservableCollection<HabitItem> _habits = new();
 
     // Шкала настрою (Mood Scale) - hours 7 to 23
     [ObservableProperty]

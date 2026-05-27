@@ -79,5 +79,8 @@
     <FlyoutItem Title="{x:Static localization:AppResources.MyEntriesTitle}">
         <ShellContent Route="MainPage" ContentTemplate="{DataTemplate views:MainPage}" />
     </FlyoutItem>
+    <FlyoutItem Title="{x:Static localization:AppResources.ProfileMenuTitle}">
+        <ShellContent Route="ProfilePage" ContentTemplate="{DataTemplate views:ProfilePage}" />
+    </FlyoutItem>
 
 </Shell>

@@ -30,11 +30,13 @@ public static class MauiProgram
 		builder.Services.AddTransient<Diarion.ViewModels.MainViewModel>();
 		builder.Services.AddTransient<Diarion.ViewModels.DiaryDetailViewModel>();
 		builder.Services.AddTransient<Diarion.ViewModels.TodoDetailViewModel>();
+		builder.Services.AddTransient<Diarion.ViewModels.ProfileViewModel>();
 
 		// Views
 		builder.Services.AddTransient<Diarion.Views.MainPage>();
 		builder.Services.AddTransient<Diarion.Views.DiaryDetailPage>();
 		builder.Services.AddTransient<Diarion.Views.TodoDetailPage>();
+		builder.Services.AddTransient<Diarion.Views.ProfilePage>();
 
 		return builder.Build();
 	}

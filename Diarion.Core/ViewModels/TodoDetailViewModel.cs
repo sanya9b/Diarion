@@ -39,6 +39,18 @@ public partial class TodoDetailViewModel : BaseViewModel
     private bool _isCompleted;
 
     [ObservableProperty]
+    private bool _hasTime;
+
+    [ObservableProperty]
+    private TimeSpan _targetTime;
+
+    [ObservableProperty]
+    private bool _isDailyRepeat;
+
+    [ObservableProperty]
+    private bool _hasReminder;
+
+    [ObservableProperty]
     private TodoPriority _selectedPriority = TodoPriority.Medium;
 
     public List<PriorityItem> PrioritiesList { get; } = new()
@@ -92,6 +104,10 @@ public partial class TodoDetailViewModel : BaseViewModel
         {
             TaskDescription = _currentTodo.TaskDescription;
             IsCompleted = _currentTodo.IsCompleted;
+            HasTime = _currentTodo.HasTime;
+            TargetTime = _currentTodo.TargetTime;
+            IsDailyRepeat = _currentTodo.IsDailyRepeat;
+            HasReminder = _currentTodo.HasReminder;
             
             foreach (var item in PrioritiesList)
             {
@@ -152,10 +168,13 @@ public partial class TodoDetailViewModel : BaseViewModel
             }
 
             _currentTodo.TargetDate = _targetDate;
-            _currentTodo.TargetTime = DateTime.Now.TimeOfDay;
+            _currentTodo.HasTime = HasTime;
+            _currentTodo.TargetTime = HasTime ? TargetTime : TimeSpan.Zero;
             _currentTodo.TaskDescription = TaskDescription.Trim();
             _currentTodo.IsCompleted = IsCompleted;
             _currentTodo.Priority = SelectedPriority;
+            _currentTodo.IsDailyRepeat = IsDailyRepeat;
+            _currentTodo.HasReminder = HasReminder;
 
             await _diaryService.SaveTodoAsync(_currentTodo);
             await Shell.Current.GoToAsync("..");

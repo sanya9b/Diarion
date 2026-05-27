@@ -11,6 +11,21 @@
     <Color x:Key="Snow">#FFFFFF</Color>
     <Color x:Key="Coral">#C26D53</Color>
 
+    <!-- Semantic Accent Colors -->
+    <Color x:Key="Sage">#8FA083</Color>
+    <Color x:Key="Amber">#C9985A</Color>
+
+    <!-- Priority Aliases -->
+    <Color x:Key="PriorityHigh">#C26D53</Color>   <!-- Coral -->
+    <Color x:Key="PriorityMedium">#C9985A</Color> <!-- Amber -->
+    <Color x:Key="PriorityLow">#8FA083</Color>    <!-- Sage -->
+
+    <!-- State Aliases -->
+    <Color x:Key="Success">#8FA083</Color> <!-- Sage -->
+    <Color x:Key="Warning">#C9985A</Color> <!-- Amber -->
+    <Color x:Key="Error">#C26D53</Color>   <!-- Coral -->
+    <Color x:Key="Info">#929FA7</Color>    <!-- Ocean -->
+
     <!-- Semantic Colors -->
     <Color x:Key="Primary">#929FA7</Color> <!-- Ocean -->
     <Color x:Key="Secondary">#E0E6EA</Color> <!-- Dust -->
