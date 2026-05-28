@@ -20,8 +20,8 @@ jobs:
       run: dotnet workload install maui
 
     - name: Publish MAUI iOS App
-      # Збираємо додаток без сертифікатів Apple Developer (CodesignKey="-")
-      run: dotnet publish Diarion.csproj -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="-" -p:CodesignProvision="-"
+      # Збираємо додаток без сертифікатів Apple Developer (CodesignKey="-") та ігноруємо перевірку версії Xcode
+      run: dotnet publish Diarion.csproj -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="-" -p:CodesignProvision="-" -p:ValidateXcodeVersion=false
 
     - name: Package into IPA
       # Формуємо .ipa файл (це просто zip-архів з папкою Payload всередині)
