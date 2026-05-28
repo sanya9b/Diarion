@@ -42,10 +42,15 @@ public partial class MainPage : ContentPage
                 // Розгортаємо весь календар (включаючи шапку)
                 CalendarHeader.IsVisible = true;
                 CalendarGrid.IsVisible = true;
+
+                int rows = _viewModel.CalendarDays.Count / 7;
+                if (rows < 5) rows = 5;
+                int targetHeight = (rows * 60) + 70; // Зменшив висоту шапки/відступів ще на 20px
+
                 await Task.WhenAll(
                     CalendarHeader.FadeToAsync(1, 200, Easing.CubicOut),
                     CalendarGrid.FadeToAsync(1, 200, Easing.CubicOut),
-                    CalendarSection.HeightRequestTo(350, 250, Easing.CubicOut) // 252 (дні) + 100 (шапка)
+                    CalendarSection.HeightRequestTo(targetHeight, 250, Easing.CubicOut)
                 );
                 CalendarSection.HeightRequest = -1; // Auto size
             }

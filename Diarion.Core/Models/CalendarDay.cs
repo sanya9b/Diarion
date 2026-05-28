@@ -23,6 +23,18 @@ public partial class CalendarDay : ObservableObject
     private bool _hasTasks;
 
     [ObservableProperty]
+    private bool _isCycleDay;
+
+    [ObservableProperty]
+    private bool _isPredictedCycleDay;
+
+    [ObservableProperty]
+    private bool _isFertileWindow;
+
+    [ObservableProperty]
+    private Color _priorityDotColor = Colors.Transparent;
+
+    [ObservableProperty]
     private double _taskCompletionPercentage;
 
     [ObservableProperty]

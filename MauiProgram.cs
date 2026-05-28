@@ -1,4 +1,5 @@
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging; using CommunityToolkit.Maui;
+using CommunityToolkit.Maui;
 
 namespace Diarion;
 
@@ -8,7 +9,7 @@ public static class MauiProgram
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder
-			.UseMauiApp<App>()
+			.UseMauiApp<App>().UseMauiCommunityToolkit()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("Montserrat-Regular.ttf", "OpenSansRegular"); // Alias kept for compatibility with Styles

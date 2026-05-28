@@ -5,6 +5,7 @@
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Diarion.Views.MainPage"
              x:Name="PageRoot"
              x:DataType="viewmodels:MainViewModel"
@@ -84,54 +85,68 @@
                     <FlexLayout Grid.Row="1" x:Name="CalendarGrid" BindableLayout.ItemsSource="{Binding CalendarDays}"
                             Wrap="Wrap"
                             Direction="Row"
-                            JustifyContent="Start"
-                            AlignContent="Start"
-                            HeightRequest="252">
+                            JustifyContent="SpaceBetween"
+                              AlignContent="Start">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="models:CalendarDay">
-                            <ContentView FlexLayout.Basis="14.28%" HeightRequest="42">
-                                <Grid HeightRequest="36" WidthRequest="36" HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference PageRoot}}" CommandParameter="{Binding .}" />
-                                    </Grid.GestureRecognizers>
-                                    
-                                    <Border StrokeShape="RoundRectangle 18"
+                            <ContentView FlexLayout.Basis="13.5%" HeightRequest="52" Margin="0,0,0,8">
+                                <Grid>
+                                    <Border StrokeShape="RoundRectangle 8"
                                             StrokeThickness="0"
-                                            BackgroundColor="Transparent"
-                                            Opacity="1">
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Snow}}" />
-                                                <Setter Property="Opacity" Value="{AppThemeBinding Light=1.0, Dark=0.7}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsToday}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
-                                                <Setter Property="Opacity" Value="0.5" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsCurrentMonth}" Value="False">
-                                                <Setter Property="Opacity" Value="0.25" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                    </Border>
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                                            Padding="6">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference PageRoot}}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
                                     
-                                    <controls:ProgressRing Progress="{Binding TaskCompletionPercentage}" 
-                                                           RingColor="{Binding ProgressColor}"
-                                                           WidthRequest="40" HeightRequest="40" 
-                                                           HorizontalOptions="Center" VerticalOptions="Center"
-                                                           InputTransparent="True" />
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsPredictedCycleDay}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource BerryTransparent}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsCycleDay}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource BerryTransparent}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="StrokeThickness" Value="1.5" />
+                                            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsToday}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
 
-                                    <Label Text="{Binding Day}" HorizontalOptions="Center" VerticalOptions="Center" FontSize="13"
-                                           InputTransparent="True"
-                                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}">
-                                         <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
-                                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsCurrentMonth}" Value="False">
-                                                <Setter Property="Opacity" Value="0.25" />
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
+                                    <Grid>
+                                        <!-- Day Number (Top Left) -->
+                                        <Label Text="{Binding Day}" HorizontalOptions="Start" VerticalOptions="Start" FontSize="13" InputTransparent="True" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsCurrentMonth}" Value="False">
+                                                    <Setter Property="Opacity" Value="0.25" />
+                                                </DataTrigger>
+                                                <!-- IsCycleDay no longer forces Snow text color because BerryTransparent is lighter -->
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsToday}" Value="True">
+                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
+                                                    <Setter Property="Opacity" Value="1" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                        
+                                        <!-- Pacifier icon for fertile window (Bottom Left) -->
+                                        <Image Source="pacifier.png" WidthRequest="16" HeightRequest="16" HorizontalOptions="Start" VerticalOptions="End" Aspect="AspectFit" InputTransparent="True" IsVisible="{Binding IsFertileWindow}" Margin="-2,0,0,-2">
+                                            <Image.Behaviors>
+                                                <toolkit:IconTintColorBehavior TintColor="{StaticResource Berry}" />
+                                            </Image.Behaviors>
+                                        </Image>
+
+                                        <!-- Priority Task Dot (Bottom Right) -->
+                                        <Ellipse Fill="{Binding PriorityDotColor}" WidthRequest="6" HeightRequest="6" HorizontalOptions="End" VerticalOptions="End" IsVisible="{Binding HasTasks}" InputTransparent="True" />
+                                    </Grid>
+                                </Border>
+                                
+                                <!-- Progress Border Overlay OUTSIDE the clipping mask -->
+                                <controls:ProgressBorder Progress="{Binding TaskCompletionPercentage}" 
+                                                         StrokeColor="{Binding ProgressColor}"
+                                                         CornerRadius="8"
+                                                         InputTransparent="True" />
                                 </Grid>
                             </ContentView>
                         </DataTemplate>
@@ -139,7 +154,7 @@
                 </FlexLayout>
                 </Grid>
 
-                <VerticalStackLayout Margin="0,12,0,6" Spacing="0" HorizontalOptions="Fill">
+                <VerticalStackLayout Margin="0,-24,0,6" Spacing="0" HorizontalOptions="Fill">
                     <Label Text="{Binding SelectedDateDayName}" FontFamily="MarckScript" FontSize="32" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
                 </VerticalStackLayout>
 

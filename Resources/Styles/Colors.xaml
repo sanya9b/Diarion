@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"> 
 
     <!-- Diarion Base Color Palette -->
     <Color x:Key="Midnight">#22282C</Color>
@@ -10,6 +10,8 @@
     <Color x:Key="Dust">#E0E6EA</Color>
     <Color x:Key="Snow">#FFFFFF</Color>
     <Color x:Key="Coral">#C26D53</Color>
+    <Color x:Key="Berry">#A87C8E</Color>
+    <Color x:Key="BerryTransparent">#33A87C8E</Color>
 
     <!-- Semantic Accent Colors -->
     <Color x:Key="Sage">#8FA083</Color>

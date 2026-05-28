@@ -172,7 +172,8 @@ public partial class MainViewModel : BaseViewModel
             });
         }
 
-        int remainingSlots = 42 - calendarDays.Count;
+        int totalNeeded = calendarDays.Count <= 35 ? 35 : 42;
+        int remainingSlots = totalNeeded - calendarDays.Count;
         var nextMonth = firstDayOfMonth.AddMonths(1);
         for (int i = 1; i <= remainingSlots; i++)
         {
@@ -293,19 +294,74 @@ public partial class MainViewModel : BaseViewModel
 
         var grouped = allTodos.GroupBy(t => t.TargetDate.Date).ToDictionary(g => g.Key, g => g.ToList());
 
+        var profile = await _diaryService.GetUserProfileAsync();
+        bool trackingEnabled = profile.IsMenstrualTrackingEnabled && profile.LastPeriodStartDate.HasValue;
+        DateTime lastPeriod = trackingEnabled ? profile.LastPeriodStartDate!.Value.Date : DateTime.MinValue;
+        int cycleLength = profile.CycleLength > 0 ? profile.CycleLength : 28;
+        int periodLength = profile.PeriodLength > 0 ? profile.PeriodLength : 5;
+
         // Оновлюємо UI строго в головному потоці, щоб не збивати байндинги і не викликати гонку потоків
         MainThread.BeginInvokeOnMainThread(() =>
         {
             foreach (var day in CalendarDays)
             {
+                // Логіка менструального циклу
+                day.IsCycleDay = false;
+                day.IsPredictedCycleDay = false;
+                day.IsFertileWindow = false;
+                if (trackingEnabled)
+                {
+                    int diff = (day.Date.Date - lastPeriod).Days;
+                    if (diff >= 0)
+                    {
+                        int dayOfCycle = diff % cycleLength;
+                        if (dayOfCycle < periodLength)
+                        {
+                            if (day.Date.Date <= DateTime.Today) day.IsCycleDay = true;
+                            else day.IsPredictedCycleDay = true;
+                        }
+                        
+                        // Логіка фертильного вікна (іконка пустишки)
+                        int currentCycleDay = dayOfCycle + 1; // 1-based
+                        int ovulationDay = cycleLength - 14;
+                        int fertileStart = ovulationDay - 5;
+                        int fertileEnd = ovulationDay + 1;
+                        if (currentCycleDay >= fertileStart && currentCycleDay <= fertileEnd)
+                        {
+                            day.IsFertileWindow = true;
+                        }
+                    }
+                }
+
+                // Логіка завдань (крапки пріоритетів та прогрес виконання)
                 if (grouped.TryGetValue(day.Date.Date, out var dayTodos) && dayTodos.Count > 0)
                 {
+                    day.HasTasks = true;
+                    var incompleteTodos = dayTodos.Where(t => !t.IsCompleted).ToList();
+                    
                     int completed = dayTodos.Count(t => t.IsCompleted);
                     day.TaskCompletionPercentage = (double)completed / dayTodos.Count;
+
+                    if (incompleteTodos.Any())
+                    {
+                        var highest = incompleteTodos.OrderByDescending(t => t.Priority).First();
+                        day.PriorityDotColor = highest.Priority switch {
+                            TodoPriority.High => Microsoft.Maui.Graphics.Color.FromArgb("#C26D53"), // Coral
+                            TodoPriority.Medium => Microsoft.Maui.Graphics.Color.FromArgb("#C9985A"), // Amber
+                            _ => Microsoft.Maui.Graphics.Color.FromArgb("#8FA083") // Sage
+                        };
+                    }
+                    else
+                    {
+                        // Усі завдання виконані
+                        day.PriorityDotColor = Microsoft.Maui.Graphics.Color.FromArgb("#929FA7"); // Ocean
+                    }
                 }
                 else
                 {
+                    day.HasTasks = false;
                     day.TaskCompletionPercentage = 0;
+                    day.PriorityDotColor = Microsoft.Maui.Graphics.Colors.Transparent;
                 }
             }
         });
