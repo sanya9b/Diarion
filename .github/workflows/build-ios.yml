@@ -5,28 +5,28 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15 # Фіксуємо образ, де доступний Xcode 26.3
+    runs-on: macos-26 # На цьому образі доступний Xcode 26.5 і сумісний iOS 26.5 SDK
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Select Xcode 26.3
+    - name: Select Xcode 26.5
       run: |
-        sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+        sudo xcode-select -s /Applications/Xcode_26.5.app/Contents/Developer
         xcodebuild -version
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '10.0.103' # Беремо ранніший SDK, де bundled workload set не вимагає iOS 26.5
+        dotnet-version: '10.0.300' # Використовуємо поточний SDK, сумісний з iOS workload 26.5
 
-    - name: Install iOS workload
-      run: dotnet workload install maui-ios --skip-manifest-update
+    - name: Restore required workloads
+      run: dotnet workload restore Diarion.csproj --skip-manifest-update
 
     - name: Publish MAUI iOS App
-      # Збираємо додаток без сертифікатів Apple Developer (CodesignKey="-") та ігноруємо перевірку версії Xcode
-      run: dotnet publish Diarion.csproj -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="-" -p:CodesignProvision="-" -p:ValidateXcodeVersion=false
+      # Збираємо додаток без сертифікатів Apple Developer (CodesignKey="-")
+      run: dotnet publish Diarion.csproj -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="-" -p:CodesignProvision="-"
 
     - name: Package into IPA
       # Формуємо .ipa файл (це просто zip-архів з папкою Payload всередині)
