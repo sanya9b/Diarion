@@ -1,0 +1,38 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch: # Дозволяє запускати збірку вручну кнопкою
+
+jobs:
+  build:
+    runs-on: macos-latest # Використовуємо безкоштовний Mac-сервер від GitHub
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x' # Версія, яка використовується у вашому проєкті
+
+    - name: Install MAUI workload
+      run: dotnet workload install maui
+
+    - name: Publish MAUI iOS App
+      # Збираємо додаток без сертифікатів Apple Developer (CodesignKey="-")
+      run: dotnet publish Diarion.csproj -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="-" -p:CodesignProvision="-"
+
+    - name: Package into IPA
+      # Формуємо .ipa файл (це просто zip-архів з папкою Payload всередині)
+      run: |
+        APP_PATH=$(find . -type d -name "Diarion.app" | grep "Release" | head -n 1)
+        mkdir -p Payload
+        cp -R "$APP_PATH" Payload/
+        zip -qr Diarion.ipa Payload
+          
+    - name: Upload IPA Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Diarion-iOS-App
+        path: Diarion.ipa
