@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "iOS: Publish Release",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "publish",
+                "Diarion.csproj",
+                "-f",
+                "net10.0-ios",
+                "-c",
+                "Release",
+                "-p:RuntimeIdentifier=ios-arm64",
+                "-p:BuildIpa=true",
+                "-p:CodesignKey=-",
+                "-p:CodesignProvision=-",
+                "-v",
+                "minimal"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": "$msCompile",
+            "detail": "Publishes the iOS Release build with the local Windows toolchain. For a real IPA artifact, use the GitHub/macOS pipeline."
+        }
+    ]
+}

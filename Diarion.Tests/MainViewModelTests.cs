@@ -17,6 +17,18 @@ public class MainViewModelTests
     public MainViewModelTests()
     {
         _diaryServiceMock = new Mock<IDiaryService>();
+        _diaryServiceMock
+            .Setup(s => s.GetTodosForMonthAsync(It.IsAny<int>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<TodoItem>());
+        _diaryServiceMock
+            .Setup(s => s.GetUserProfileAsync())
+            .ReturnsAsync(new UserProfile());
+        _diaryServiceMock
+            .Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>()))
+            .ReturnsAsync(new List<TodoItem>());
+        _diaryServiceMock
+            .Setup(s => s.GetEntryForDateAsync(It.IsAny<DateTime>()))
+            .ReturnsAsync(new DiaryEntry());
     }
 
     [Fact]
@@ -29,7 +41,7 @@ public class MainViewModelTests
         viewModel.CalendarDays.Should().HaveCount(42);
         viewModel.IsDiaryMode.Should().BeTrue();
         viewModel.IsPlannerMode.Should().BeFalse();
-        viewModel.HasNoEntries.Should().BeTrue();
+        viewModel.CurrentEntry.Should().BeNull();
     }
 
     [Fact]
@@ -65,12 +77,12 @@ public class MainViewModelTests
     }
 
     [Fact]
-    public async Task LoadEntriesAsync_ShouldLoadEntriesForSelectedDate()
+    public async Task LoadEntriesAsync_ShouldLoadEntryForSelectedDate()
     {
         // Arrange
         _diaryServiceMock
-            .Setup(s => s.GetEntriesForDateAsync(It.IsAny<DateTime>()))
-            .ReturnsAsync(new List<DiaryEntry> { new DiaryEntry { Title = "Test Entry" } });
+            .Setup(s => s.GetEntryForDateAsync(It.IsAny<DateTime>()))
+            .ReturnsAsync(new DiaryEntry { Title = "Test Entry" });
 
         var viewModel = new MainViewModel(_diaryServiceMock.Object);
 
@@ -78,8 +90,8 @@ public class MainViewModelTests
         await viewModel.LoadEntriesAsync();
 
         // Assert
-        viewModel.Entries.Should().HaveCount(1);
-        viewModel.HasEntries.Should().BeTrue();
-        viewModel.HasNoEntries.Should().BeFalse();
+        viewModel.CurrentEntry.Should().NotBeNull();
+        viewModel.CurrentEntry!.Title.Should().Be("Test Entry");
+        viewModel.IsBusy.Should().BeFalse();
     }
 }

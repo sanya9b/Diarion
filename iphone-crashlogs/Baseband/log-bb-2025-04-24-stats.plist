@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SysInfoCrashReporterKey</key>
+	<string>ccbbacd523074d99e60c57939f85a51b0adc5216</string>
+	<key>bug_type</key>
+	<string>195</string>
+	<key>description</key>
+	<string>Version=4
+IncidentIdentifier=C544873A-C651-431E-922B-98FECE34816D
+Date=2025-04-24;AP=22D82;BB=6.01.01;Machine=iPhone12,5
+12:02:11 +0300 DST [clm] disconnect: duration=26;cause=kNoError;modemErr=16;rat=2
+17:02:18 +0300 DST [clm] disconnect: duration=0;cause=kNoError;modemErr=16;rat=2
+22:11:48 +0300 DST [rm] reset: reason=** baseband crash detected;uptime=1;count=2;
+9:05:42 +0300 DST [clm] disconnect: duration=0;cause=kNoError;modemErr=31;rat=2
+</string>
+	<key>os_version</key>
+	<string>iPhone OS 18.3.2 (22D82)</string>
+	<key>system_ID</key>
+	<string></string>
+</dict>
+</plist>

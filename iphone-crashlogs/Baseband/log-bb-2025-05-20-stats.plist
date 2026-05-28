@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SysInfoCrashReporterKey</key>
+	<string>ccbbacd523074d99e60c57939f85a51b0adc5216</string>
+	<key>bug_type</key>
+	<string>195</string>
+	<key>description</key>
+	<string>Version=4
+IncidentIdentifier=7E1E77D1-940C-425C-A12B-901D5719F237
+Date=2025-05-20;AP=22E252;BB=6.02.02;Machine=iPhone12,5
+16:07:21 +0300 DST [clm] disconnect: duration=0;cause=kNoError;modemErr=16;rat=2
+17:52:47 +0300 DST [clm] disconnect: duration=0;cause=kNoError;modemErr=16;rat=2
+2:30:07 +0300 DST [rm] reset: reason=PCI-EVENT: pdp error: kACIPCPDPControlCommandFailed: 0x0;uptime=0;count=1;
+</string>
+	<key>os_version</key>
+	<string>iPhone OS 18.4.1 (22E252)</string>
+	<key>system_ID</key>
+	<string></string>
+</dict>
+</plist>

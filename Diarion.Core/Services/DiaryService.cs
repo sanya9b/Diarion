@@ -221,15 +221,25 @@ public class DiaryService : IDiaryService, IDisposable
             if (profile == null)
             {
                 profile = new UserProfile();
+                profile.NormalizeCycleSettings();
                 ProfileCollection.Insert(profile);
             }
+            else if (profile.NormalizeCycleSettings())
+            {
+                ProfileCollection.Update(profile);
+            }
+
             return profile;
         });
     }
 
     public Task SaveUserProfileAsync(UserProfile profile)
     {
-        return Task.Run(() => ProfileCollection.Update(profile));
+        return Task.Run(() =>
+        {
+            profile.NormalizeCycleSettings();
+            ProfileCollection.Upsert(profile);
+        });
     }
 
     public Task<List<DiaryEntry>> GetAllEntriesAsync()

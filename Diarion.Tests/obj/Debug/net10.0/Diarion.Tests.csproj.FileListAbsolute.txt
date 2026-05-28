@@ -268,3 +268,4 @@ D:\WORK\SOURCE_CODE\Diarion\Diarion.Tests\bin\Debug\net10.0\vi\Microsoft.Maui.Co
 D:\WORK\SOURCE_CODE\Diarion\Diarion.Tests\bin\Debug\net10.0\zh-HK\Microsoft.Maui.Controls.resources.dll
 D:\WORK\SOURCE_CODE\Diarion\Diarion.Tests\bin\Debug\net10.0\zh-Hans\Microsoft.Maui.Controls.resources.dll
 D:\WORK\SOURCE_CODE\Diarion\Diarion.Tests\bin\Debug\net10.0\zh-Hant\Microsoft.Maui.Controls.resources.dll
+D:\WORK\SOURCE_CODE\Diarion\Diarion.Tests\obj\Debug\net10.0\Diarion.Tests.sourcelink.json

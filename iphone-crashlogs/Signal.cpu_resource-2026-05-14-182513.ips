@@ -1,0 +1,315 @@
+{"roots_installed":0,"app_name":"Signal","timestamp":"2026-05-14 18:25:13.00 +0300","app_version":"8.9","slice_uuid":"F579B77E-D667-321C-81C0-F57AFD0A0600","adam_id":"874139669","build_version":"1558","bundleID":"org.whispersystems.signal","duration_ms":"165233","is_first_party":0,"share_with_app_devs":0,"bug_type":"202","os_version":"iPhone OS 26.4.2 (23E261)","distributor_id":"com.apple.AppStore","name":"Signal","incident_id":"C0B3700F-565C-42D3-AEC8-16EB0C29E548"}
+Date/Time:        2026-05-14 18:22:20.409 +0300
+End time:         2026-05-14 18:25:05.643 +0300
+OS Version:       iPhone OS 26.4.2 (Build 23E261)
+Architecture:     arm64e
+Report Version:   72
+Incident Identifier: C0B3700F-565C-42D3-AEC8-16EB0C29E548
+
+Data Source:      Microstackshots
+Shared Cache:     B32B548C-ACB5-3344-BA79-2121B8F006BF slid base address 0x19143c000, slide 0x1143c000
+
+Command:          Signal
+Path:             /private/var/containers/Bundle/Application/DD69C03B-835A-4835-AC2F-DBF94CE3DB43/Signal.app/Signal
+Identifier:       org.whispersystems.signal
+Version:          8.9 (1558)
+Adam ID:          874139669
+Is First Party:   No
+Beta Identifier:  6D0AB2B4-C0C3-4EBA-94A5-0907E5DDC2E2
+Resource Coalition: "org.whispersystems.signal"(955)
+On Behalf Of:     9 samples UNKNOWN [85] (9 samples originated by UNKNOWN [152])
+Architecture:     arm64
+Parent:           UNKNOWN [1]
+PID:              12664
+
+Event:            cpu usage
+Action taken:     none
+CPU:              90 seconds cpu time over 165 seconds (54% cpu average), exceeding limit of 50% cpu over 180 seconds
+CPU limit:        90s
+Limit duration:   180s
+CPU used:         90s
+CPU duration:     165s
+Duration:         165.23s
+Duration Sampled: 136.30s (event starts 23.86s before samples, event ends 5.07s after samples)
+Steps:            9 (10 gigacycles/step, 39 samples lost)
+
+Hardware model:   iPhone12,5
+Active cpus:      6
+Memory size:      3.66 GB
+HW page size:     16384
+VM page size:     16384
+Shared cache residency: 6.77% (401.77 MB / 5935.28 MB)
+
+Time Since Boot:  412725s
+Time Awake Since Boot: 213102s
+Time Since Wake:  57s
+
+Total CPU Time:   87.673s
+Advisory levels:  Battery -> 3, User -> 3, ThermalPressure -> 0, Combined -> 3
+Free disk space:  137.49 GB/238.29 GB, low space threshold 150 MB
+Vnodes Available: 62.01% (12402/20000, 10000 allocated, 10000 soft limit)
+Models:           none
+
+Preferred User Language: uk-UA, en-GB
+Country Code:     UA
+Keyboards:        uk_UA Ukrainian, en_GB QWERTY
+OS Cryptex File Extents: 10157
+
+Heaviest stack for the target process:
+  9  ??? (libswift_Concurrency.dylib + 21380) [0x192a40384]
+  9  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 190172) [0x10755a6dc]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3902416) [0x1078e4bd0]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3877052) [0x1078de8bc]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3880668) [0x1078df6dc]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 181192) [0x1075583c8]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3225344) [0x10783f700]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 5198428) [0x107a2125c]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13483472) [0x108207dd0]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13483624) [0x108207e68]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13473984) [0x1082058c0]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 507804) [0x1075a7f9c]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13485788) [0x1082086dc]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13474540) [0x108205aec]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 342540) [0x103d3ba0c]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 344264) [0x103d3c0c8]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 754412) [0x103da02ec]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 356068) [0x103d3eee4]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 356256) [0x103d3efa0]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 991172) [0x103dd9fc4]
+  8  ??? (libswiftDispatch.dylib + 5528) [0x1a531d598]
+  8  ??? (libswiftDispatch.dylib + 6796) [0x1a531da8c]
+  8  ??? (libswiftDispatch.dylib + 6256) [0x1a531d870]
+  8  ??? (libswiftDispatch.dylib + 6920) [0x1a531db08]
+  8  ??? (libswiftDispatch.dylib + 7124) [0x1a531dbd4]
+  8  ??? (libdispatch.dylib + 70368) [0x1ceb742e0]
+  8  ??? (libdispatch.dylib + 111076) [0x1ceb7e1e4]
+  8  ??? (libswiftDispatch.dylib + 7336) [0x1a531dca8]
+  8  ??? (libswiftDispatch.dylib + 6644) [0x1a531d9f4]
+  8  ??? (libswiftDispatch.dylib + 5728) [0x1a531d660]
+  8  ??? (libswiftDispatch.dylib + 42948) [0x1a53267c4]
+  8  ??? (libswiftDispatch.dylib + 6604) [0x1a531d9cc]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 997244) [0x103ddb77c]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 994960) [0x103ddae90]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 357956) [0x103d3f644]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 148148) [0x103d0c2b4]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 152492) [0x103d0d3ac]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 178080) [0x103d137a0]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 153972) [0x103d0d974]
+  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 358028) [0x103d3f68c]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 11770392) [0x108065a18]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 11464672) [0x10801afe0]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13488044) [0x108208fac]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 11470388) [0x10801c634]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13488020) [0x108208f94]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13474816) [0x108205c00]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3292460) [0x10784fd2c]
+  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3227584) [0x10783ffc0]
+  7  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3242928) [0x107843bb0]
+  5  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 2953844) [0x1077fd274]
+  4  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 2955980) [0x1077fdacc]
+  4  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3422508) [0x10786f92c]
+  4  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3424536) [0x107870118]
+  2  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3453596) [0x10787729c]
+  2  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3469032) [0x10787aee8]
+  2  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 1193016) [0x10764f438]
+  2  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 1189520) [0x10764e690]
+  1  ??? (libswiftCore.dylib + 29132) [0x1916201cc]
+
+
+Powerstats for:   Signal [12664]
+UUID:             F579B77E-D667-321C-81C0-F57AFD0A0600
+Path:             /private/var/containers/Bundle/Application/DD69C03B-835A-4835-AC2F-DBF94CE3DB43/Signal.app/Signal
+Identifier:       org.whispersystems.signal
+Version:          8.9 (1558)
+Adam ID:          874139669
+Is First Party:   No
+Beta Identifier:  6D0AB2B4-C0C3-4EBA-94A5-0907E5DDC2E2
+Resource Coalition: 9 samples "org.whispersystems.signal"(955)
+On Behalf Of:     9 samples UNKNOWN [85] (9 samples originated by UNKNOWN [152])
+Architecture:     arm64
+Parent:           UNKNOWN [1]
+UID:              501
+Footprint:        115.56 MB -> 121.94 MB (+6528 KB)
+Pageins:          936 pages
+Start time:       2026-05-14 18:22:44.273 +0300
+End time:         2026-05-14 18:25:00.569 +0300
+Num samples:      9 (100%)
+Energy:           1896.70 uWh
+Num threads:      2
+Primary state:    8 samples Non-Frontmost App, Non-Suppressed, User mode, Effective Thread QoS Background, Requested Thread QoS Background, Override Thread QoS Unspecified, e-core
+User Activity:    9 samples Idle, 0 samples Active
+Power Source:     0 samples on Battery, 9 samples on AC
+  9  ??? (libswift_Concurrency.dylib + 21380) [0x192a40384]
+    9  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 190172) [0x10755a6dc]
+      8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3902416) [0x1078e4bd0]
+        8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3877052) [0x1078de8bc]
+          8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3880668) [0x1078df6dc]
+            8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 181192) [0x1075583c8]
+              8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3225344) [0x10783f700]
+                8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 5198428) [0x107a2125c]
+                  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13483472) [0x108207dd0]
+                    8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13483624) [0x108207e68]
+                      8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13473984) [0x1082058c0]
+                        8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 507804) [0x1075a7f9c]
+                          8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13485788) [0x1082086dc]
+                            8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13474540) [0x108205aec]
+                              8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 342540) [0x103d3ba0c]
+                                8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 344264) [0x103d3c0c8]
+                                  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 754412) [0x103da02ec]
+                                    8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 356068) [0x103d3eee4]
+                                      8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 356256) [0x103d3efa0]
+                                        8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 991172) [0x103dd9fc4]
+                                          8  ??? (libswiftDispatch.dylib + 5528) [0x1a531d598]
+                                            8  ??? (libswiftDispatch.dylib + 6796) [0x1a531da8c]
+                                              8  ??? (libswiftDispatch.dylib + 6256) [0x1a531d870]
+                                                8  ??? (libswiftDispatch.dylib + 6920) [0x1a531db08]
+                                                  8  ??? (libswiftDispatch.dylib + 7124) [0x1a531dbd4]
+                                                    8  ??? (libdispatch.dylib + 70368) [0x1ceb742e0]
+                                                      8  ??? (libdispatch.dylib + 111076) [0x1ceb7e1e4]
+                                                        8  ??? (libswiftDispatch.dylib + 7336) [0x1a531dca8]
+                                                          8  ??? (libswiftDispatch.dylib + 6644) [0x1a531d9f4]
+                                                            8  ??? (libswiftDispatch.dylib + 5728) [0x1a531d660]
+                                                              8  ??? (libswiftDispatch.dylib + 42948) [0x1a53267c4]
+                                                                8  ??? (libswiftDispatch.dylib + 6604) [0x1a531d9cc]
+                                                                  8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 997244) [0x103ddb77c]
+                                                                    8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 994960) [0x103ddae90]
+                                                                      8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 357956) [0x103d3f644]
+                                                                        8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 148148) [0x103d0c2b4]
+                                                                          8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 152492) [0x103d0d3ac]
+                                                                            8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 178080) [0x103d137a0]
+                                                                              8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 153972) [0x103d0d974]
+                                                                                8  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 358028) [0x103d3f68c]
+                                                                                  8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 11770392) [0x108065a18]
+                                                                                    8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 11464672) [0x10801afe0]
+                                                                                      8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13488044) [0x108208fac]
+                                                                                        8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 11470388) [0x10801c634]
+                                                                                          8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13488020) [0x108208f94]
+                                                                                            8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 13474816) [0x108205c00]
+                                                                                              8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3292460) [0x10784fd2c]
+                                                                                                8  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3227584) [0x10783ffc0]
+                                                                                                  7  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3242928) [0x107843bb0]
+                                                                                                    5  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 2953844) [0x1077fd274]
+                                                                                                      4  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 2955980) [0x1077fdacc]
+                                                                                                        4  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3422508) [0x10786f92c]
+                                                                                                          4  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3424536) [0x107870118]
+                                                                                                            2  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3453596) [0x10787729c]
+                                                                                                              2  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3469032) [0x10787aee8]
+                                                                                                                2  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 1193016) [0x10764f438]
+                                                                                                                  2  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 1189520) [0x10764e690]
+                                                                                                                    1  ??? (libswiftCore.dylib + 29132) [0x1916201cc]
+                                                                                                                      1  <on behalf of UNKNOWN [85] (originated by UNKNOWN [152])>
+                                                                                                                    1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 1186060) [0x10764d90c]
+                                                                                                                      1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 599304) [0x103d7a508]
+                                                                                                                        1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 531272) [0x103d69b48]
+                                                                                                                          1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 527972) [0x103d68e64]
+                                                                                                                            1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 779088) [0x103da6350]
+                                                                                                                              1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 757336) [0x103da0e58]
+                                                                                                                                1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1160088) [0x103e03398]
+                                                                                                                                  1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1167456) [0x103e05060]
+                                                                                                                                    1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1181336) [0x103e08698]
+                                                                                                                                      1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 232096) [0x103d20aa0]
+                                                                                                                                        1  ??? (libswiftCore.dylib + 3491156) [0x19196d554]
+                                                                                                                                          1  <on behalf of UNKNOWN [85] (originated by UNKNOWN [152])>
+                                                                                                            1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3457156) [0x107878084]
+                                                                                                              1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3496456) [0x107881a08]
+                                                                                                                1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3370456) [0x107862dd8]
+                                                                                                                  1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3376956) [0x10786473c]
+                                                                                                                    1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 527072) [0x103d68ae0]
+                                                                                                                      1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 75916) [0x103cfa88c]
+                                                                                                                        1  ??? (libswiftCore.dylib + 17708) [0x19161d52c]
+                                                                                                                          1  ??? (libswiftCore.dylib + 14964) [0x19161ca74]
+                                                                                                                            1  ??? (libswiftCore.dylib + 12836) [0x19161c224]
+                                                                                                                              1  <on behalf of UNKNOWN [85] (originated by UNKNOWN [152])>
+                                                                                                            1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3453624) [0x1078772b8]
+                                                                                                              1  ??? (libswiftCore.dylib + 461224) [0x1916899a8]
+                                                                                                                1  ??? (libobjc.A.dylib + 56584) [0x1914e1d08]
+                                                                                                                  1  ??? (libobjc.A.dylib + 45104) [0x1914df030]
+                                                                                                                    1  ??? (libobjc.A.dylib + 44356) [0x1914ded44]
+                                                                                                                      1  ??? (libobjc.A.dylib + 46504) [0x1914df5a8]
+                                                                                                                        1  ??? (libobjc.A.dylib + 116188) [0x1914f05dc]
+                                                                                                                          1  ??? (libobjc.A.dylib + 116428) [0x1914f06cc]
+                                                                                                                            1  ??? (dyld + 167180) [0x191581d0c]
+                                                                                                                              1  ??? (dyld + 9576) [0x19155b568]
+                                                                                                                                1  ??? (dyld + 167328) [0x191581da0]
+                                                                                                                                  1  <on behalf of UNKNOWN [85] (originated by UNKNOWN [152])>
+                                                                                                      1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 2956056) [0x1077fdb18]
+                                                                                                        1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3586584) [0x107897a18]
+                                                                                                          1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3584116) [0x107897074]
+                                                                                                            1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3457156) [0x107878084]
+                                                                                                              1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3496456) [0x107881a08]
+                                                                                                                1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3370456) [0x107862dd8]
+                                                                                                                  1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3376508) [0x10786457c]
+                                                                                                                    1  ??? (libswiftCore.dylib + 123684) [0x191637324]
+                                                                                                                      1  <on behalf of UNKNOWN [85] (originated by UNKNOWN [152])>
+                                                                                                    2  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 2953356) [0x1077fd08c]
+                                                                                                      1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 17470984) [0x1085d5608]
+                                                                                                        1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 17301112) [0x1085abe78]
+                                                                                                          1  ??? (Foundation + 3901200) [0x191f6a710]
+                                                                                                            1  ??? (Foundation + 1869368) [0x191d7a638]
+                                                                                                              1  ??? (Foundation + 208064) [0x191be4cc0]
+                                                                                                                1  ??? (Foundation + 1868340) [0x191d7a234]
+                                                                                                                  1  ??? (libobjc.A.dylib + 22148) [0x1914d9684]
+                                                                                                                    1  ??? (libobjc.A.dylib + 7044) [0x1914d5b84]
+                                                                                                                      1  <on behalf of UNKNOWN [85] (originated by UNKNOWN [152])>
+                                                                                                      1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 17416276) [0x1085c8054]
+                                                                                                        1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 17300276) [0x1085abb34]
+                                                                                                          1  ??? (Foundation + 3360020) [0x191ee6514]
+                                                                                                            1  ??? (Foundation + 1725312) [0x191d57380]
+                                                                                                              1  ??? (Foundation + 208064) [0x191be4cc0]
+                                                                                                                1  ??? (Foundation + 1868332) [0x191d7a22c]
+                                                                                                                  1  ??? (Foundation + 133840) [0x191bd2ad0]
+                                                                                                                    1  ??? (Foundation + 26020) [0x191bb85a4]
+                                                                                                                      1  ??? (Foundation + 225152) [0x191be8f80]
+                                                                                                                        1  ??? (CoreFoundation + 372348) [0x194975e7c]
+                                                                                                                          1  ??? (Foundation + 14172) [0x191bb575c]
+                                                                                                                            1  ??? (CoreFoundation + 63948) [0x19492a9cc]
+                                                                                                                              1  ??? (CoreFoundation + 1399908) [0x194a70c64]
+                                                                                                                                1  <on behalf of UNKNOWN [85] (originated by UNKNOWN [152])>
+                                                                                                  1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3237928) [0x107842828]
+                                                                                                    1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3068768) [0x107819360]
+                                                                                                      1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 16674736) [0x108512fb0]
+                                                                                                        1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 16684508) [0x1085155dc]
+                                                                                                          1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 2950380) [0x1077fc4ec]
+                                                                                                            1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 2950320) [0x1077fc4b0]
+                                                                                                              1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3412996) [0x10786d404]
+                                                                                                                1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3405620) [0x10786b734]
+                                                                                                                  1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3405780) [0x10786b7d4]
+                                                                                                                    1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3091684) [0x10781ece4]
+                                                                                                                      1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3069528) [0x107819658]
+                                                                                                                        1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 3071160) [0x107819cb8]
+                                                                                                                          1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 16245920) [0x1084aa4a0]
+                                                                                                                            1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 16060076) [0x10847ceac]
+                                                                                                                              1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 16076188) [0x108480d9c]
+                                                                                                                                1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 529972) [0x103d69634]
+                                                                                                                                  1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 779088) [0x103da6350]
+                                                                                                                                    1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 757336) [0x103da0e58]
+                                                                                                                                      1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1160264) [0x103e03448]
+                                                                                                                                        1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1114580) [0x103df81d4]
+                                                                                                                                          1  <on behalf of UNKNOWN [85] (originated by UNKNOWN [152])>
+      1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 435432) [0x1075964e8]
+        1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 190172) [0x10755a6dc]
+          1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 10785600) [0x107f75340]
+            1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 10777260) [0x107f732ac]
+              1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 602256) [0x1075bf090]
+                1  ??? (<E74248E0-5F3B-3DA2-9EE0-62023F570E1F> + 576660) [0x1075b8c94]
+                  1  ??? (libswift_Concurrency.dylib + 12604) [0x192a3e13c]
+                    1  ??? (libswift_Concurrency.dylib + 14096) [0x192a3e710]
+                      1  ??? (libswift_Concurrency.dylib + 16048) [0x192a3eeb0]
+                        1  ??? (libswift_Concurrency.dylib + 16524) [0x192a3f08c]
+                          1  ??? (libdispatch.dylib + 62884) [0x1ceb725a4]
+                            1  ??? (libsystem_kernel.dylib + 2688) [0x2433e0a80]
+                              1  <on behalf of UNKNOWN [85] (originated by UNKNOWN [152]), Kernel mode>
+
+  Binary Images:
+           0x102bd4000 -                ???  org.whispersystems.signal 8.9 (1558) <F579B77E-D667-321C-81C0-F57AFD0A0600>  /private/var/containers/Bundle/Application/DD69C03B-835A-4835-AC2F-DBF94CE3DB43/Signal.app/Signal
+           0x103ce8000 -                ???  ???                                  <0B6F3863-B781-36CC-BD24-05A9852A9967>
+           0x10752c000 -                ???  ???                                  <E74248E0-5F3B-3DA2-9EE0-62023F570E1F>
+           0x1914d4000 -        0x19152547f  libobjc.A.dylib                      <DBE3F13E-EFC4-31C5-B762-3455CEE83E7F>  /usr/lib/libobjc.A.dylib
+           0x191559000 -        0x1915fdebf  dyld                                 <80DD1800-F68D-354F-8106-8CB5EA621ACA>  /usr/lib/dyld
+           0x191619000 -        0x191bb19bf  libswiftCore.dylib                   <7B8E8119-3BF5-300D-9FFB-B7DBEC0695CE>  /usr/lib/swift/libswiftCore.dylib
+           0x191bb2000 -        0x192a3a45f  Foundation                           <66BF417C-1D00-3457-A302-196BBAEC23D0>  /System/Library/Frameworks/Foundation.framework/Foundation
+           0x192a3b000 -        0x192ac5925  libswift_Concurrency.dylib           <619001C3-706D-3BCD-BFF2-E7A9324C9A53>  /usr/lib/swift/libswift_Concurrency.dylib
+           0x19491b000 -        0x194eb70ff  CoreFoundation                       <11F13078-E01B-343B-A020-8D60BAE7BBB6>  /System/Library/Frameworks/CoreFoundation.framework/CoreFoundation
+           0x1a531c000 -        0x1a53326a0  libswiftDispatch.dylib               <67B43890-C919-336A-803D-718FD340F781>  /usr/lib/swift/libswiftDispatch.dylib
+           0x1ceb63000 -        0x1ceba95ff  libdispatch.dylib                    <5FCAC52F-01E9-3BF0-8AAC-42C442C53560>  /usr/lib/system/libdispatch.dylib
+           0x2433e0000 -        0x24341bac7  libsystem_kernel.dylib               <5F4E68E1-021C-3A8F-A6F6-2C4C077D0676>  /usr/lib/system/libsystem_kernel.dylib

@@ -1,0 +1,436 @@
+{"app_name":"com.apple.MobileSoftwareUpdate.UpdateBrainService","timestamp":"2026-05-09 03:38:00.00 +0300","app_version":"1.0","slice_uuid":"7CEA02E7-D872-38BB-ACD0-9B88C809C822","build_version":"1","bundleID":"com.apple.MobileSoftwareUpdate.UpdateBrainService","duration_ms":"534386","share_with_app_devs":0,"is_first_party":0,"bug_type":"202","os_version":"iPhone OS 26.3.1 (23D771330a)","roots_installed":0,"name":"com.apple.MobileSoftwareUpdate.UpdateBrainService","incident_id":"59188CF5-CB05-4312-8E78-D6AE6A403878"}
+Date/Time:        2026-05-09 03:29:02.461 +0300
+End time:         2026-05-09 03:37:56.847 +0300
+OS Version:       iPhone OS 26.3.1 (Build 23D771330a)
+Architecture:     arm64e
+Report Version:   67
+Incident Identifier: 59188CF5-CB05-4312-8E78-D6AE6A403878
+
+Data Source:      Microstackshots
+Shared Cache:     71B333E2-E8C7-327B-A072-E7501AC09CB4 slid base address 0x19a724000, slide 0x1a724000
+
+Command:          com.apple.MobileSoftwareUpdate.UpdateBrainService
+Path:             /private/var/MobileSoftwareUpdate/MobileAsset/AssetsV2/com_apple_MobileAsset_MobileSoftwareUpdate_UpdateBrain/c57982133efe296bf2238eaf3017d97711a3ebd2.asset/AssetData/com.apple.MobileSoftwareUpdate.UpdateBrainService.xpc/com.apple.MobileSoftwareUpdate.UpdateBrainService
+Identifier:       com.apple.MobileSoftwareUpdate.UpdateBrainService
+Version:          1.0 (1)
+Resource Coalition: "com.apple.mobile.softwareupdated"(16804)
+On Behalf Of:     67 samples UNKNOWN [14651] (67 samples originated by UNKNOWN [85711])
+Architecture:     arm64
+Parent:           UNKNOWN [1]
+PID:              15604
+
+Event:            cpu usage
+Action taken:     none
+CPU:              300 seconds cpu time over 534 seconds (56% cpu average), exceeding limit of 50% cpu over 600 seconds
+CPU limit:        300s
+Limit duration:   600s
+CPU used:         300s
+CPU duration:     534s
+Duration:         534.39s
+Duration Sampled: 533.88s (event starts 0.25s before samples, event ends 0.26s after samples)
+Steps:            85 (10 gigacycles/step)
+
+Hardware model:   iPhone12,5
+Active cpus:      6
+Memory size:      3.66 GB
+HW page size:     16384
+VM page size:     16384
+Shared cache residency: 6.15% (353.20 MB / 5739.09 MB)
+
+Time Since Boot:  3730839s
+Time Awake Since Boot: 1865974s
+Time Since Wake:  749s
+
+Total CPU Time:   527.440s
+Advisory levels:  Battery -> 2, User -> 3, ThermalPressure -> 0, Combined -> 2
+Free disk space:  124.44 GB/238.29 GB, low space threshold 150 MB
+Vnodes Available: 60.70% (12140/20000, 10000 allocated, 10000 soft limit)
+Models:           none
+
+Preferred User Language: uk-UA, en-GB
+Country Code:     UA
+Keyboards:        uk_UA Ukrainian, en_GB QWERTY
+OS Cryptex File Extents: 1839
+
+Heaviest stack for the target process:
+  46  ??? (libsystem_pthread.dylib + 2240) [0x1fa3bc8c0]
+  46  ??? (libsystem_pthread.dylib + 4988) [0x1fa3bd37c]
+  46  ??? (libdispatch.dylib + 83708) [0x1d65836fc]
+  46  ??? (libdispatch.dylib + 81736) [0x1d6582f48]
+  46  ??? (libdispatch.dylib + 23768) [0x1d6574cd8]
+  46  ??? (libdispatch.dylib + 26212) [0x1d6575664]
+  46  ??? (libdispatch.dylib + 112636) [0x1d658a7fc]
+  46  ??? (libdispatch.dylib + 70736) [0x1d6580450]
+  46  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 231296) [0x105478780]
+  46  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 278736) [0x1054840d0]
+  46  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 234668) [0x1054794ac]
+  46  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 218724) [0x105475664]
+  34  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2045288) [0x105633568]
+  31  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 285728) [0x105485c20]
+  31  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 70604) [0x1054513cc]
+  30  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1329012) [0x105584774]
+  30  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1212664) [0x1055680f8]
+  30  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+  30  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+  26  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+  26  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+  16  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+  13  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213580) [0x10556848c]
+  11  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1331352) [0x105585098]
+  10  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1258520) [0x105573418]
+  6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1256976) [0x105572e10]
+  6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1226520) [0x10556b718]
+  6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1334304) [0x105585c20]
+  6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1225272) [0x10556b238]
+  6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1235692) [0x10556daec]
+  6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1611028) [0x1055c9514]
+  6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1409196) [0x1055980ac]
+  6   ??? (libz.1.dylib + 5568) [0x2b794b5c0]
+  2   ??? (libz.1.dylib + 7100) [0x2b794bbbc]
+
+
+Powerstats for:   com.apple.MobileSoftwareUpdate.UpdateBrainService (com.apple.MobileSoftwareUpdate.UpdateBrainService) [15604] [unique pid 115503]
+UUID:             7CEA02E7-D872-38BB-ACD0-9B88C809C822
+Path:             /private/var/MobileSoftwareUpdate/MobileAsset/AssetsV2/com_apple_MobileAsset_MobileSoftwareUpdate_UpdateBrain/c57982133efe296bf2238eaf3017d97711a3ebd2.asset/AssetData/com.apple.MobileSoftwareUpdate.UpdateBrainService.xpc/com.apple.MobileSoftwareUpdate.UpdateBrainService
+Identifier:       com.apple.MobileSoftwareUpdate.UpdateBrainService
+Version:          1.0 (1)
+Resource Coalition: 67 samples "com.apple.mobile.softwareupdated"(16804)
+On Behalf Of:     67 samples UNKNOWN [14651] (67 samples originated by UNKNOWN [85711])
+Architecture:     arm64
+Parent:           UNKNOWN [1]
+UID:              0
+Sudden Term:      Tracked (allows idle exit)
+Footprint:        29.20 MB -> 5136 KB (-24.19 MB)
+Pageins:          15297 pages
+Start time:       2026-05-09 03:29:02.711 +0300
+End time:         2026-05-09 03:37:56.589 +0300
+Num samples:      67 (79%)
+Num threads:      10
+Primary state:    67 samples Non-Frontmost App, Non-Suppressed, User mode, Effective Thread QoS Utility, Requested Thread QoS Utility, Override Thread QoS Unspecified, e-core
+User Activity:    67 samples Idle, 0 samples Active
+Power Source:     67 samples on Battery, 0 samples on AC
+  46  ??? (libsystem_pthread.dylib + 2240) [0x1fa3bc8c0]
+    46  ??? (libsystem_pthread.dylib + 4988) [0x1fa3bd37c]
+      46  ??? (libdispatch.dylib + 83708) [0x1d65836fc]
+        46  ??? (libdispatch.dylib + 81736) [0x1d6582f48]
+          46  ??? (libdispatch.dylib + 23768) [0x1d6574cd8]
+            46  ??? (libdispatch.dylib + 26212) [0x1d6575664]
+              46  ??? (libdispatch.dylib + 112636) [0x1d658a7fc]
+                46  ??? (libdispatch.dylib + 70736) [0x1d6580450]
+                  46  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 231296) [0x105478780]
+                    46  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 278736) [0x1054840d0]
+                      46  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 234668) [0x1054794ac]
+                        46  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 218724) [0x105475664]
+                          34  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2045288) [0x105633568]
+                            31  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 285728) [0x105485c20]
+                              31  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 70604) [0x1054513cc]
+                                30  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1329012) [0x105584774]
+                                  30  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1212664) [0x1055680f8]
+                                    30  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+                                      30  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+                                        26  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+                                          26  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+                                            16  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+                                              13  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213580) [0x10556848c]
+                                                11  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1331352) [0x105585098]
+                                                  10  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1258520) [0x105573418]
+                                                    6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1256976) [0x105572e10]
+                                                      6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1226520) [0x10556b718]
+                                                        6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1334304) [0x105585c20]
+                                                          6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1225272) [0x10556b238]
+                                                            6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1235692) [0x10556daec]
+                                                              6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1611028) [0x1055c9514]
+                                                                6   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1409196) [0x1055980ac]
+                                                                  6   ??? (libz.1.dylib + 5568) [0x2b794b5c0]
+                                                                    2   ??? (libz.1.dylib + 7100) [0x2b794bbbc]
+                                                                      2   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                                    2   ??? (libz.1.dylib + 6744) [0x2b794ba58]
+                                                                      2   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                                    1   ??? (libz.1.dylib + 7220) [0x2b794bc34]
+                                                                      1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                                    1   ??? (libz.1.dylib + 6724) [0x2b794ba44]
+                                                                      1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                    1   ??? (libsystem_kernel.dylib + 4560) [0x24b0071d0]
+                                                      1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                    1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1257072) [0x105572e70]
+                                                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1300252) [0x10557d71c]
+                                                        1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1200412) [0x10556511c]
+                                                          1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1611744) [0x1055c97e0]
+                                                            1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1609224) [0x1055c8e08]
+                                                              1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2247132) [0x1056649dc]
+                                                                1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                    1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1256936) [0x105572de8]
+                                                      1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                    1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1255696) [0x105572910]
+                                                      1   ??? (libcommonCrypto.dylib + 12816) [0x2b7be1210]
+                                                        1   ??? (libcorecrypto.dylib + 20356) [0x1fa2d5f84]
+                                                          1   ??? (libcorecrypto.dylib + 25372) [0x1fa2d731c]
+                                                            1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                  1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1258340) [0x105573364]
+                                                    1   ??? (libsystem_kernel.dylib + 26480) [0x24b00c770]
+                                                      1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1331364) [0x1055850a4]
+                                                  1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1224740) [0x10556b024]
+                                                    1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1236340) [0x10556dd74]
+                                                      1   ??? (libsystem_kernel.dylib + 31284) [0x24b00da34]
+                                                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1331308) [0x10558506c]
+                                                  1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1224072) [0x10556ad88]
+                                                    1   ??? (libsystem_kernel.dylib + 21300) [0x24b00b334]
+                                                      1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                              3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+                                                3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213580) [0x10556848c]
+                                                  3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1331352) [0x105585098]
+                                                    3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1258520) [0x105573418]
+                                                      2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1256976) [0x105572e10]
+                                                        2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1226520) [0x10556b718]
+                                                          2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1334304) [0x105585c20]
+                                                            2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1225272) [0x10556b238]
+                                                              2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1235692) [0x10556daec]
+                                                                2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1611028) [0x1055c9514]
+                                                                  2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1409196) [0x1055980ac]
+                                                                    2   ??? (libz.1.dylib + 5568) [0x2b794b5c0]
+                                                                      1   ??? (libz.1.dylib + 7100) [0x2b794bbbc]
+                                                                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                                      1   ??? (libz.1.dylib + 6724) [0x2b794ba44]
+                                                                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1256800) [0x105572d60]
+                                                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                            10  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213580) [0x10556848c]
+                                              9   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1331352) [0x105585098]
+                                                9   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1258520) [0x105573418]
+                                                  7   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1256976) [0x105572e10]
+                                                    7   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1226520) [0x10556b718]
+                                                      7   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1334304) [0x105585c20]
+                                                        7   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1225272) [0x10556b238]
+                                                          7   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1235692) [0x10556daec]
+                                                            7   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1611028) [0x1055c9514]
+                                                              7   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1409196) [0x1055980ac]
+                                                                7   ??? (libz.1.dylib + 5568) [0x2b794b5c0]
+                                                                  2   ??? (libz.1.dylib + 7100) [0x2b794bbbc]
+                                                                    2   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                                  1   ??? (libz.1.dylib + 7716) [0x2b794be24]
+                                                                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                                  1   ??? (libz.1.dylib + 7380) [0x2b794bcd4]
+                                                                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                                  1   ??? (libz.1.dylib + 7020) [0x2b794bb6c]
+                                                                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                                  1   ??? (libz.1.dylib + 6756) [0x2b794ba64]
+                                                                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                                  1   ??? (libz.1.dylib + 6744) [0x2b794ba58]
+                                                                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                  1   ??? (libsystem_kernel.dylib + 4560) [0x24b0071d0]
+                                                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                  1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1257096) [0x105572e88]
+                                                    1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1226520) [0x10556b718]
+                                                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1334304) [0x105585c20]
+                                                        1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1225272) [0x10556b238]
+                                                          1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1235692) [0x10556daec]
+                                                            1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1611028) [0x1055c9514]
+                                                              1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1409196) [0x1055980ac]
+                                                                1   ??? (libz.1.dylib + 5568) [0x2b794b5c0]
+                                                                  1   ??? (libz.1.dylib + 8076) [0x2b794bf8c]
+                                                                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                              1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1330184) [0x105584c08]
+                                                1   ??? (libsystem_kernel.dylib + 25760) [0x24b00c4a0]
+                                                  1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                        4   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213580) [0x10556848c]
+                                          4   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1331352) [0x105585098]
+                                            4   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1258520) [0x105573418]
+                                              1   ??? (libsystem_kernel.dylib + 4560) [0x24b0071d0]
+                                                1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                              1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1256976) [0x105572e10]
+                                                1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1226520) [0x10556b718]
+                                                  1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1334304) [0x105585c20]
+                                                    1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1225272) [0x10556b238]
+                                                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1235692) [0x10556daec]
+                                                        1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1611028) [0x1055c9514]
+                                                          1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1409196) [0x1055980ac]
+                                                            1   ??? (libz.1.dylib + 5568) [0x2b794b5c0]
+                                                              1   ??? (libz.1.dylib + 7240) [0x2b794bc48]
+                                                                1   ??? (libz.1.dylib + 8592) [0x2b794c190]
+                                                                  1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                              1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1256880) [0x105572db0]
+                                                1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1300252) [0x10557d71c]
+                                                  1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1200412) [0x10556511c]
+                                                    1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1611744) [0x1055c97e0]
+                                                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1609224) [0x1055c8e08]
+                                                        1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2244952) [0x105664158]
+                                                          1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                              1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1256720) [0x105572d10]
+                                                1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1300252) [0x10557d71c]
+                                                  1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1200412) [0x10556511c]
+                                                    1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1611744) [0x1055c97e0]
+                                                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1609224) [0x1055c8e08]
+                                                        1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2243648) [0x105663c40]
+                                                          1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1328908) [0x10558470c]
+                                  1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1150568) [0x105558e68]
+                                    1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1212664) [0x1055680f8]
+                                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+                                        1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+                                          1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+                                            1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+                                              1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1213620) [0x1055684b4]
+                                                1   ??? (libsystem_kernel.dylib + 26112) [0x24b00c600]
+                                                  1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                            3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 285716) [0x105485c14]
+                              3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 71784) [0x105451868]
+                                3   ??? (libsystem_kernel.dylib + 26112) [0x24b00c600]
+                                  3   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                          12  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2045196) [0x10563350c]
+                            12  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 80896) [0x105453c00]
+                              12  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 81792) [0x105453f80]
+                                12  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1060724) [0x105542f74]
+                                  12  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 87788) [0x1054556ec]
+                                    12  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 83864) [0x105454798]
+                                      12  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1322928) [0x105582fb0]
+                                        5   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1163792) [0x10555c210]
+                                          4   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1171848) [0x10555e188]
+                                            3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1171848) [0x10555e188]
+                                              3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1339948) [0x10558722c]
+                                                2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1306236) [0x10557ee7c]
+                                                  2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1307972) [0x10557f544]
+                                                    2   ??? (libsystem_kernel.dylib + 4560) [0x24b0071d0]
+                                                      2   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1306184) [0x10557ee48]
+                                                  1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1307568) [0x10557f3b0]
+                                                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                            1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1172228) [0x10555e304]
+                                              1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                          1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1173084) [0x10555e65c]
+                                            1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                        3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1164632) [0x10555c558]
+                                          3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1292304) [0x10557b810]
+                                            3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1173268) [0x10555e714]
+                                              3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1340352) [0x1055873c0]
+                                                2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1306572) [0x10557efcc]
+                                                  2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1307672) [0x10557f418]
+                                                    2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1308364) [0x10557f6cc]
+                                                      2   ??? (libsystem_kernel.dylib + 27964) [0x24b00cd3c]
+                                                        2   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1306624) [0x10557f000]
+                                                  1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1307972) [0x10557f544]
+                                                    1   ??? (libsystem_kernel.dylib + 4560) [0x24b0071d0]
+                                                      1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                        2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1164136) [0x10555c368]
+                                          2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1292304) [0x10557b810]
+                                            2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1173268) [0x10555e714]
+                                              2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1340248) [0x105587358]
+                                                2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1341436) [0x1055877fc]
+                                                  1   ??? (libsystem_platform.dylib + 2376) [0x2b7dcf948]
+                                                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                                  1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1306572) [0x10557efcc]
+                                                    1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1307672) [0x10557f418]
+                                                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1308364) [0x10557f6cc]
+                                                        1   ??? (libsystem_kernel.dylib + 27964) [0x24b00cd3c]
+                                                          1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                        2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1164004) [0x10555c2e4]
+                                          2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1217400) [0x105569378]
+                                            1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1216632) [0x105569078]
+                                              1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                                            1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1216572) [0x10556903c]
+                                              1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+  21  ??? (libsystem_pthread.dylib + 2252) [0x1fa3bc8cc]
+    21  ??? (libsystem_pthread.dylib + 17484) [0x1fa3c044c]
+      21  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1193476) [0x105563604]
+        21  ??? (libdispatch.dylib + 27572) [0x1d6575bb4]
+          21  ??? (libdispatch.dylib + 112636) [0x1d658a7fc]
+            18  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1263440) [0x105574750]
+              18  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1266448) [0x105575310]
+                18  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1200412) [0x10556511c]
+                  18  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1611744) [0x1055c97e0]
+                    18  ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1609224) [0x1055c8e08]
+                      2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2244220) [0x105663e7c]
+                        2   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      2   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2243772) [0x105663cbc]
+                        2   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2248004) [0x105664d44]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2247804) [0x105664c7c]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2247512) [0x105664b58]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2246400) [0x105664700]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2244968) [0x105664168]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2244940) [0x10566414c]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2244564) [0x105663fd4]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2244472) [0x105663f78]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2244360) [0x105663f08]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2244316) [0x105663edc]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2244044) [0x105663dcc]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2243756) [0x105663cac]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2243656) [0x105663c48]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                      1   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 2243496) [0x105663ba8]
+                        1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+            3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1252288) [0x105571bc0]
+              3   ??? (<E12F2C55-6D64-3E35-8F83-3C93E3E5EA66> + 1249716) [0x1055711b4]
+                3   ??? (libcommonCrypto.dylib + 4840) [0x2b7bdf2e8]
+                  1   ??? (libcorecrypto.dylib + 19968) [0x1fa2d5e00]
+                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                  1   ??? (libcorecrypto.dylib + 19856) [0x1fa2d5d90]
+                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+                  1   ??? (libcorecrypto.dylib + 19772) [0x1fa2d5d3c]
+                    1   <on behalf of UNKNOWN [14651] (originated by UNKNOWN [85711])>
+
+  Binary Images:
+           0x104ff0000 -                ???  com.apple.MobileSoftwareUpdate.UpdateBrainService 1.0 (1) <7CEA02E7-D872-38BB-ACD0-9B88C809C822>  /private/var/MobileSoftwareUpdate/MobileAsset/AssetsV2/com_apple_MobileAsset_MobileSoftwareUpdate_UpdateBrain/c57982133efe296bf2238eaf3017d97711a3ebd2.asset/AssetData/com.apple.MobileSoftwareUpdate.UpdateBrainService.xpc/com.apple.MobileSoftwareUpdate.UpdateBrainService
+           0x105440000 -                ???  ???                                                       <E12F2C55-6D64-3E35-8F83-3C93E3E5EA66>
+           0x1d656f000 -        0x1d65b521f  libdispatch.dylib                                         <904D48A3-D99E-3962-BFA9-C3DFB66BBA83>  /usr/lib/system/libdispatch.dylib
+           0x1fa2d1000 -        0x1fa37dc9f  libcorecrypto.dylib                                       <750CB60B-7AA1-32AE-AC77-C7517F9EA49B>  /usr/lib/system/libcorecrypto.dylib
+           0x1fa3bc000 -        0x1fa3c845f  libsystem_pthread.dylib                                   <4F94107B-94D2-3E88-8542-F5403C581B50>  /usr/lib/system/libsystem_pthread.dylib
+           0x24b006000 -        0x24b040d2b  libsystem_kernel.dylib                                    <8D830129-2CBE-32A9-B61E-CE493EECB399>  /usr/lib/system/libsystem_kernel.dylib
+           0x2b794a000 -        0x2b795913f  libz.1.dylib                                              <81D90164-515B-37E5-936E-9EC32A0B2525>  /usr/lib/libz.1.dylib
+           0x2b7bde000 -        0x2b7beb5d7  libcommonCrypto.dylib                                     <235BE85D-6C59-3D15-8F10-D0AA89ADB4EA>  /usr/lib/system/libcommonCrypto.dylib
+           0x2b7dcf000 -        0x2b7dd6f3b  libsystem_platform.dylib                                  <440513F7-C74E-35A6-A34A-D06A9DF88547>  /usr/lib/system/libsystem_platform.dylib
+
+
+Powerstats for:   kernel_task
+UUID:             9908FEED-68B2-3325-B0B7-F75FD768223A
+Version:          Darwin Kernel Version 25.3.0: Wed Feb  4 23:02:15 PST 2026; root:xnu-12377.82.2~13/RELEASE_ARM64_T8030
+Resource Coalition: 5 samples 1
+Architecture:     arm64
+Start time:       2026-05-09 03:29:47.225 +0300
+End time:         2026-05-09 03:34:24.164 +0300
+Num samples:      5 (6%)
+Primary state:    5 samples Non-Frontmost App, Non-Suppressed, Kernel mode, Effective Thread QoS Unspecified, Requested Thread QoS Unspecified, Override Thread QoS Unspecified, e-core
+User Activity:    5 samples Idle, 0 samples Active
+Power Source:     5 samples on Battery, 0 samples on AC
+ *2  ??? (<9908FEED-68B2-3325-B0B7-F75FD768223A> + 7603316) [0xfffffff0086f4474]
+   *2  ??? (<9908FEED-68B2-3325-B0B7-F75FD768223A> + 7600836) [0xfffffff0086f3ac4]
+     *2  ??? (<9908FEED-68B2-3325-B0B7-F75FD768223A> + 7615468) [0xfffffff0086f73ec]
+       *1  ??? (IONVMeFamily + 173760) [0xfffffff00a099ae0]
+         *1  ??? (IONVMeFamily + 184580) [0xfffffff00a09c524]
+           *1  ??? (IONVMeFamily + 234532) [0xfffffff00a0a8844]
+             *1  ??? (IOStorageFamily + 23784) [0xfffffff00a1acc68]
+               *1  ??? (<9908FEED-68B2-3325-B0B7-F75FD768223A> + 1825176) [0xfffffff008171998]
+                  1  <p-core>
+       *1  ??? (IONVMeFamily + 173740) [0xfffffff00a099acc]
+         *1  ??? (IONVMeFamily + 183452) [0xfffffff00a09c0bc]
+ *2  ??? (<9908FEED-68B2-3325-B0B7-F75FD768223A> + 523532) [0xfffffff008033d0c]
+   *1  ??? (<9908FEED-68B2-3325-B0B7-F75FD768223A> + 522820) [0xfffffff008033a44]
+   *1  ??? (<9908FEED-68B2-3325-B0B7-F75FD768223A> + 522816) [0xfffffff008033a40]
+     *1  ??? (<9908FEED-68B2-3325-B0B7-F75FD768223A> + 1705152) [0xfffffff0081544c0]
+ *1  ??? (apfs + 1345060) [0xfffffff00a6bab04]
+   *1  ??? (apfs + 1346372) [0xfffffff00a6bb024]
+     *1  ??? (apfs + 1215940) [0xfffffff00a69b2a4]
+       *1  ??? (apfs + 1219580) [0xfffffff00a69c0dc]
+         *1  ??? (apfs + 1317992) [0xfffffff00a6b4148]
+           *1  ??? (apfs + 1327784) [0xfffffff00a6b6788]
+             *1  ??? (apfs + 1238528) [0xfffffff00a6a0ae0]
+
+  Binary Images:
+   *0xfffffff007fb4000 - 0xfffffff0087fbfff  ??? (25.3.0)                           <9908FEED-68B2-3325-B0B7-F75FD768223A>__TEXT_EXEC
+   *0xfffffff00a06f420 - 0xfffffff00a0cdcfb  com.apple.iokit.IONVMeFamily (2.1.0)   <B25A1A6F-1830-31A5-B2D4-790EFE5B8E33>__TEXT_EXEC  /System/Library/Extensions/IONVMeFamily.kext/IONVMeFamily
+   *0xfffffff00a1a6f80 - 0xfffffff00a1c525b  com.apple.iokit.IOStorageFamily (2.1)  <088F6808-1A84-3AA6-8ECA-B3397CCA89D5>__TEXT_EXEC  /System/Library/Extensions/IOStorageFamily.kext/IOStorageFamily
+   *0xfffffff00a5724e0 - 0xfffffff00a6cc0e7  com.apple.filesystems.apfs (2632.80.1) <BC9E8789-6EE4-34DF-A47A-99F28D9AE851>__TEXT_EXEC  /System/Library/Extensions/apfs.kext/apfs

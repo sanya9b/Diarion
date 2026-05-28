@@ -8,10 +8,10 @@
             <inheritdoc/>
         </member>
         <member name="P:Diarion.Controls.RatingStar.Value">
-            <inheritdoc cref="F:Diarion.Controls.RatingStar._value"/>
+            <inheritdoc/>
         </member>
         <member name="P:Diarion.Controls.RatingStar.IsFilled">
-            <inheritdoc cref="F:Diarion.Controls.RatingStar._isFilled"/>
+            <inheritdoc/>
         </member>
         <member name="T:Diarion.Resource">
             <summary>

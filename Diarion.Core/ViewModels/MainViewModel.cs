@@ -297,8 +297,8 @@ public partial class MainViewModel : BaseViewModel
         var profile = await _diaryService.GetUserProfileAsync();
         bool trackingEnabled = profile.IsMenstrualTrackingEnabled && profile.LastPeriodStartDate.HasValue;
         DateTime lastPeriod = trackingEnabled ? profile.LastPeriodStartDate!.Value.Date : DateTime.MinValue;
-        int cycleLength = profile.CycleLength > 0 ? profile.CycleLength : 28;
-        int periodLength = profile.PeriodLength > 0 ? profile.PeriodLength : 5;
+        int cycleLength = profile.GetNormalizedCycleLength();
+        int periodLength = profile.GetNormalizedPeriodLength();
 
         // Оновлюємо UI строго в головному потоці, щоб не збивати байндинги і не викликати гонку потоків
         MainThread.BeginInvokeOnMainThread(() =>
@@ -377,14 +377,16 @@ public partial class MainViewModel : BaseViewModel
         {
             IsCycleInfoVisible = true;
             DateTime lastPeriod = profile.LastPeriodStartDate.Value.Date;
+            int cycleLength = profile.GetNormalizedCycleLength();
+            int periodLength = profile.GetNormalizedPeriodLength();
             int diff = (date.Date - lastPeriod).Days;
-            int cycleDay = (diff % profile.CycleLength);
-            if (cycleDay < 0) cycleDay += profile.CycleLength;
+            int cycleDay = diff % cycleLength;
+            if (cycleDay < 0) cycleDay += cycleLength;
             cycleDay += 1; // Відлік днів починається з 1
 
             CycleDayText = string.Format(Diarion.Resources.Localization.AppResources.CycleDayFormat, cycleDay);
 
-            int ovulationDay = profile.CycleLength - 14;
+            int ovulationDay = cycleLength - 14;
             int fertileStart = ovulationDay - 5;
             int fertileEnd = ovulationDay + 1;
 

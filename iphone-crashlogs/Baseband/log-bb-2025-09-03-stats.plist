@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SysInfoCrashReporterKey</key>
+	<string>ccbbacd523074d99e60c57939f85a51b0adc5216</string>
+	<key>bug_type</key>
+	<string>195</string>
+	<key>description</key>
+	<string>Version=4
+IncidentIdentifier=A5723AA6-F4FE-4862-A4D0-5D8359338826
+Date=2025-09-03;AP=22G100;BB=6.03.01;Machine=iPhone12,5
+12:09:33 +0300 DST [rm] reset: reason=** baseband crash detected;uptime=0;count=1;
+</string>
+	<key>os_version</key>
+	<string>iPhone OS 18.6.2 (22G100)</string>
+	<key>system_ID</key>
+	<string></string>
+</dict>
+</plist>

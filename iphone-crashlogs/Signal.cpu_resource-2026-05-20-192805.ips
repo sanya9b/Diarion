@@ -1,0 +1,343 @@
+{"roots_installed":0,"app_name":"Signal","timestamp":"2026-05-20 19:28:05.00 +0300","app_version":"8.10","slice_uuid":"5ABE6370-96DC-3A7A-B7A3-476E0EC12011","adam_id":"874139669","build_version":"1570","bundleID":"org.whispersystems.signal","duration_ms":"103214","is_first_party":0,"share_with_app_devs":0,"bug_type":"202","os_version":"iPhone OS 26.4.2 (23E261)","distributor_id":"com.apple.AppStore","name":"Signal","incident_id":"8E334205-3309-4E32-89A5-9DFC7CB145A9"}
+Date/Time:        2026-05-20 19:26:16.281 +0300
+End time:         2026-05-20 19:27:59.496 +0300
+OS Version:       iPhone OS 26.4.2 (Build 23E261)
+Architecture:     arm64e
+Report Version:   72
+Incident Identifier: 8E334205-3309-4E32-89A5-9DFC7CB145A9
+
+Data Source:      Microstackshots
+Shared Cache:     B32B548C-ACB5-3344-BA79-2121B8F006BF slid base address 0x1934a4000, slide 0x134a4000
+
+Command:          Signal
+Path:             /private/var/containers/Bundle/Application/0E2CF04F-990E-4018-BBF3-A35135C3E123/Signal.app/Signal
+Identifier:       org.whispersystems.signal
+Version:          8.10 (1570)
+Adam ID:          874139669
+Is First Party:   No
+Beta Identifier:  6D0AB2B4-C0C3-4EBA-94A5-0907E5DDC2E2
+Resource Coalition: "org.whispersystems.signal"(5631)
+On Behalf Of:     7 samples UNKNOWN [30129] (7 samples originated by Signal [36436])
+Architecture:     arm64
+Parent:           UNKNOWN [1]
+PID:              36436
+
+Event:            cpu usage
+Action taken:     none
+CPU:              90 seconds cpu time over 103 seconds (87% cpu average), exceeding limit of 50% cpu over 180 seconds
+CPU limit:        90s
+Limit duration:   180s
+CPU used:         90s
+CPU duration:     103s
+Duration:         103.21s
+Duration Sampled: 79.68s (event starts 12.09s before samples, event ends 11.45s after samples)
+Steps:            7 (10 gigacycles/step, 3 samples lost)
+
+Hardware model:   iPhone12,5
+Active cpus:      6
+Memory size:      3.66 GB
+HW page size:     16384
+VM page size:     16384
+Shared cache residency: 8.65% (513.67 MB / 5935.28 MB)
+
+Time Since Boot:  934958s
+Time Awake Since Boot: 490070s
+Time Since Wake:  1857s
+
+Total CPU Time:   73.637s
+Advisory levels:  Battery -> 3, User -> 3, ThermalPressure -> 0, Combined -> 3
+Free disk space:  135.85 GB/236.83 GB, low space threshold 150 MB
+Vnodes Available: 66.68% (13336/20000, 10000 allocated, 10000 soft limit)
+Models:           none
+
+Preferred User Language: uk-UA, en-GB
+Country Code:     UA
+Keyboards:        uk_UA Ukrainian, en_GB QWERTY
+OS Cryptex File Extents: 10157
+
+Heaviest stack for the target process:
+  7  ??? (libswift_Concurrency.dylib + 21380) [0x194aa8384]
+  7  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 190136) [0x1096f26b8]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3905500) [0x109a7d7dc]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3880136) [0x109a774c8]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3883752) [0x109a782e8]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 181156) [0x1096f03a4]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3228428) [0x1099d830c]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 5209064) [0x109bbbbe8]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13470616) [0x10a39cb98]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13470768) [0x10a39cc30]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13461128) [0x10a39a688]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 507768) [0x10973ff78]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13472932) [0x10a39d4a4]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13461684) [0x10a39a8b4]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 342540) [0x105e8fa0c]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 344264) [0x105e900c8]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 754412) [0x105ef42ec]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 356068) [0x105e92ee4]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 356256) [0x105e92fa0]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 991172) [0x105f2dfc4]
+  6  ??? (libswiftDispatch.dylib + 5528) [0x1a7385598]
+  6  ??? (libswiftDispatch.dylib + 6796) [0x1a7385a8c]
+  6  ??? (libswiftDispatch.dylib + 6256) [0x1a7385870]
+  6  ??? (libswiftDispatch.dylib + 6920) [0x1a7385b08]
+  6  ??? (libswiftDispatch.dylib + 7124) [0x1a7385bd4]
+  6  ??? (libdispatch.dylib + 70368) [0x1d0bdc2e0]
+  6  ??? (libdispatch.dylib + 111076) [0x1d0be61e4]
+  6  ??? (libswiftDispatch.dylib + 7336) [0x1a7385ca8]
+  6  ??? (libswiftDispatch.dylib + 6644) [0x1a73859f4]
+  6  ??? (libswiftDispatch.dylib + 5728) [0x1a7385660]
+  6  ??? (libswiftDispatch.dylib + 42948) [0x1a738e7c4]
+  6  ??? (libswiftDispatch.dylib + 6604) [0x1a73859cc]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 997244) [0x105f2f77c]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 994960) [0x105f2ee90]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 357956) [0x105e93644]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 148148) [0x105e602b4]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 152492) [0x105e613ac]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 178080) [0x105e677a0]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 153972) [0x105e61974]
+  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 358028) [0x105e9368c]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 11757104) [0x10a1fa630]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 11451384) [0x10a1afbf8]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13475188) [0x10a39dd74]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 11457100) [0x10a1b124c]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13475164) [0x10a39dd5c]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13461960) [0x10a39a9c8]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3295544) [0x1099e8938]
+  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3230668) [0x1099d8bcc]
+  5  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3246012) [0x1099dc7bc]
+  4  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2956712) [0x109995da8]
+  2  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2960116) [0x109996af4]
+  2  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3361148) [0x1099f897c]
+  2  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3354768) [0x1099f7090]
+  2  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 16775832) [0x10a6c3a98]
+  2  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 16774108) [0x10a6c33dc]
+  1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 7767660) [0x109e2c66c]
+  1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 7766096) [0x109e2c050]
+  1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 7769208) [0x109e2cc78]
+  1  ??? (libz.1.dylib + 5564) [0x2b61235bc]
+  1  ??? (libz.1.dylib + 7092) [0x2b6123bb4]
+
+
+Powerstats for:   Signal [36436]
+UUID:             5ABE6370-96DC-3A7A-B7A3-476E0EC12011
+Path:             /private/var/containers/Bundle/Application/0E2CF04F-990E-4018-BBF3-A35135C3E123/Signal.app/Signal
+Identifier:       org.whispersystems.signal
+Version:          8.10 (1570)
+Adam ID:          874139669
+Is First Party:   No
+Beta Identifier:  6D0AB2B4-C0C3-4EBA-94A5-0907E5DDC2E2
+Resource Coalition: 7 samples "org.whispersystems.signal"(5631)
+On Behalf Of:     7 samples UNKNOWN [30129] (7 samples originated by Signal [36436])
+Architecture:     arm64
+Parent:           UNKNOWN [1]
+UID:              501
+Footprint:        28.53 MB -> 33.86 MB (+5456 KB)
+Pageins:          53 pages
+Start time:       2026-05-20 19:26:28.368 +0300
+End time:         2026-05-20 19:27:48.046 +0300
+Num samples:      7 (100%)
+Energy:           821.11 uWh
+Num threads:      2
+Primary state:    6 samples Non-Frontmost App, Non-Suppressed, User mode, Effective Thread QoS Background, Requested Thread QoS Background, Override Thread QoS Unspecified, e-core
+User Activity:    7 samples Idle, 0 samples Active
+Power Source:     0 samples on Battery, 7 samples on AC
+  7  ??? (libswift_Concurrency.dylib + 21380) [0x194aa8384]
+    7  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 190136) [0x1096f26b8]
+      6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3905500) [0x109a7d7dc]
+        6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3880136) [0x109a774c8]
+          6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3883752) [0x109a782e8]
+            6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 181156) [0x1096f03a4]
+              6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3228428) [0x1099d830c]
+                6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 5209064) [0x109bbbbe8]
+                  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13470616) [0x10a39cb98]
+                    6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13470768) [0x10a39cc30]
+                      6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13461128) [0x10a39a688]
+                        6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 507768) [0x10973ff78]
+                          6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13472932) [0x10a39d4a4]
+                            6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13461684) [0x10a39a8b4]
+                              6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 342540) [0x105e8fa0c]
+                                6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 344264) [0x105e900c8]
+                                  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 754412) [0x105ef42ec]
+                                    6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 356068) [0x105e92ee4]
+                                      6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 356256) [0x105e92fa0]
+                                        6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 991172) [0x105f2dfc4]
+                                          6  ??? (libswiftDispatch.dylib + 5528) [0x1a7385598]
+                                            6  ??? (libswiftDispatch.dylib + 6796) [0x1a7385a8c]
+                                              6  ??? (libswiftDispatch.dylib + 6256) [0x1a7385870]
+                                                6  ??? (libswiftDispatch.dylib + 6920) [0x1a7385b08]
+                                                  6  ??? (libswiftDispatch.dylib + 7124) [0x1a7385bd4]
+                                                    6  ??? (libdispatch.dylib + 70368) [0x1d0bdc2e0]
+                                                      6  ??? (libdispatch.dylib + 111076) [0x1d0be61e4]
+                                                        6  ??? (libswiftDispatch.dylib + 7336) [0x1a7385ca8]
+                                                          6  ??? (libswiftDispatch.dylib + 6644) [0x1a73859f4]
+                                                            6  ??? (libswiftDispatch.dylib + 5728) [0x1a7385660]
+                                                              6  ??? (libswiftDispatch.dylib + 42948) [0x1a738e7c4]
+                                                                6  ??? (libswiftDispatch.dylib + 6604) [0x1a73859cc]
+                                                                  6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 997244) [0x105f2f77c]
+                                                                    6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 994960) [0x105f2ee90]
+                                                                      6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 357956) [0x105e93644]
+                                                                        6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 148148) [0x105e602b4]
+                                                                          6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 152492) [0x105e613ac]
+                                                                            6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 178080) [0x105e677a0]
+                                                                              6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 153972) [0x105e61974]
+                                                                                6  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 358028) [0x105e9368c]
+                                                                                  6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 11757104) [0x10a1fa630]
+                                                                                    6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 11451384) [0x10a1afbf8]
+                                                                                      6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13475188) [0x10a39dd74]
+                                                                                        6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 11457100) [0x10a1b124c]
+                                                                                          6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13475164) [0x10a39dd5c]
+                                                                                            6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 13461960) [0x10a39a9c8]
+                                                                                              6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3295544) [0x1099e8938]
+                                                                                                6  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3230668) [0x1099d8bcc]
+                                                                                                  5  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3246012) [0x1099dc7bc]
+                                                                                                    4  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2956712) [0x109995da8]
+                                                                                                      2  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2960116) [0x109996af4]
+                                                                                                        2  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3361148) [0x1099f897c]
+                                                                                                          2  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3354768) [0x1099f7090]
+                                                                                                            2  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 16775832) [0x10a6c3a98]
+                                                                                                              2  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 16774108) [0x10a6c33dc]
+                                                                                                                1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 7767660) [0x109e2c66c]
+                                                                                                                  1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 7766096) [0x109e2c050]
+                                                                                                                    1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 7769208) [0x109e2cc78]
+                                                                                                                      1  ??? (libz.1.dylib + 5564) [0x2b61235bc]
+                                                                                                                        1  ??? (libz.1.dylib + 7092) [0x2b6123bb4]
+                                                                                                                          1  <on behalf of UNKNOWN [30129] (originated by Signal [36436])>
+                                                                                                                1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 5858012) [0x109c5a2dc]
+                                                                                                                  1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 5857620) [0x109c5a154]
+                                                                                                                    1  ??? (libcommonCrypto.dylib + 15184) [0x2b6382b50]
+                                                                                                                      1  <on behalf of UNKNOWN [30129] (originated by Signal [36436])>
+                                                                                                      2  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2958848) [0x109996600]
+                                                                                                        1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3425764) [0x109a085e4]
+                                                                                                          1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3443016) [0x109a0c948]
+                                                                                                            1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 5825580) [0x109c5242c]
+                                                                                                              1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 5826064) [0x109c52610]
+                                                                                                                1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 526148) [0x105ebc744]
+                                                                                                                  1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 526504) [0x105ebc8a8]
+                                                                                                                    1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 528136) [0x105ebcf08]
+                                                                                                                      1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 527440) [0x105ebcc50]
+                                                                                                                        1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 105288) [0x105e55b48]
+                                                                                                                          1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1278152) [0x105f740c8]
+                                                                                                                            1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1277296) [0x105f73d70]
+                                                                                                                              1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 38736) [0x108555750]
+                                                                                                                                1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 252236) [0x10858994c]
+                                                                                                                                  1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 258208) [0x10858b0a0]
+                                                                                                                                    1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 185764) [0x1085795a4]
+                                                                                                                                      1  <on behalf of UNKNOWN [30129] (originated by Signal [36436])>
+                                                                                                        1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3425592) [0x109a08538]
+                                                                                                          1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3427620) [0x109a08d24]
+                                                                                                            1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3456680) [0x109a0fea8]
+                                                                                                              1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3472116) [0x109a13af4]
+                                                                                                                1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 1195928) [0x1097e7f98]
+                                                                                                                  1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 1192432) [0x1097e71f0]
+                                                                                                                    1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 1188972) [0x1097e646c]
+                                                                                                                      1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 599304) [0x105ece508]
+                                                                                                                        1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 531272) [0x105ebdb48]
+                                                                                                                          1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 527972) [0x105ebce64]
+                                                                                                                            1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 779088) [0x105efa350]
+                                                                                                                              1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 757336) [0x105ef4e58]
+                                                                                                                                1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1160088) [0x105f57398]
+                                                                                                                                  1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1167272) [0x105f58fa8]
+                                                                                                                                    1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 275740) [0x105e7f51c]
+                                                                                                                                      1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 278816) [0x105e80120]
+                                                                                                                                        1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1290992) [0x105f772f0]
+                                                                                                                                          1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 97864) [0x108563e48]
+                                                                                                                                            1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 309580) [0x10859794c]
+                                                                                                                                              1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 103384) [0x1085653d8]
+                                                                                                                                                1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 335516) [0x10859de9c]
+                                                                                                                                                  1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 360556) [0x1085a406c]
+                                                                                                                                                    1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 469120) [0x1085be880]
+                                                                                                                                                      1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 439868) [0x1085b763c]
+                                                                                                                                                        1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 465052) [0x1085bd89c]
+                                                                                                                                                          1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 457356) [0x1085bba8c]
+                                                                                                                                                            1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 439600) [0x1085b7530]
+                                                                                                                                                              1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 464356) [0x1085bd5e4]
+                                                                                                                                                                1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 468336) [0x1085be570]
+                                                                                                                                                                  1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 138520) [0x105e5dd18]
+                                                                                                                                                                    1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1296428) [0x105f7882c]
+                                                                                                                                                                      1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1030020) [0x105f37784]
+                                                                                                                                                                        1  ??? (libswiftCore.dylib + 88940) [0x193696b6c]
+                                                                                                                                                                          1  ??? (libswiftCore.dylib + 18684) [0x1936858fc]
+                                                                                                                                                                            1  ??? (libswiftCore.dylib + 17652) [0x1936854f4]
+                                                                                                                                                                              1  <on behalf of UNKNOWN [30129] (originated by Signal [36436])>
+                                                                                                    1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2956224) [0x109995bc0]
+                                                                                                      1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 17405904) [0x10a75d7d0]
+                                                                                                        1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 17288540) [0x10a740d5c]
+                                                                                                          1  ??? (Foundation + 2354356) [0x193e58cb4]
+                                                                                                            1  ??? (Foundation + 515824) [0x193c97ef0]
+                                                                                                              1  ??? (Foundation + 405888) [0x193c7d180]
+                                                                                                                1  ??? (Foundation + 208616) [0x193c4cee8]
+                                                                                                                  1  ??? (Foundation + 208064) [0x193c4ccc0]
+                                                                                                                    1  ??? (Foundation + 129928) [0x193c39b88]
+                                                                                                                      1  ??? (Foundation + 129420) [0x193c3998c]
+                                                                                                                        1  ??? (Foundation + 126868) [0x193c38f94]
+                                                                                                                          1  ??? (Foundation + 135080) [0x193c3afa8]
+                                                                                                                            1  ??? (Foundation + 139332) [0x193c3c044]
+                                                                                                                              1  ??? (CoreFoundation + 35284) [0x19698b9d4]
+                                                                                                                                1  <on behalf of UNKNOWN [30129] (originated by Signal [36436])>
+                                                                                                  1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3244912) [0x1099dc370]
+                                                                                                    1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2933304) [0x109990238]
+                                                                                                      1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 16705900) [0x10a6b296c]
+                                                                                                        1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 16708144) [0x10a6b3230]
+                                                                                                          1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2953248) [0x109995020]
+                                                                                                            1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2953188) [0x109994fe4]
+                                                                                                              1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3416080) [0x109a06010]
+                                                                                                                1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3408704) [0x109a04340]
+                                                                                                                  1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 3408864) [0x109a043e0]
+                                                                                                                    1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2953148) [0x109994fbc]
+                                                                                                                      1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2936568) [0x109990ef8]
+                                                                                                                        1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2935384) [0x109990a58]
+                                                                                                                          1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2938060) [0x1099914cc]
+                                                                                                                            1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2939572) [0x109991ab4]
+                                                                                                                              1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 2948896) [0x109993f20]
+                                                                                                                                1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 18334456) [0x10a8402f8]
+                                                                                                                                  1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 4161204) [0x109abbeb4]
+                                                                                                                                    1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 11002964) [0x10a142454]
+                                                                                                                                      1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 190176) [0x1096f26e0]
+                                                                                                                                        1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 189232) [0x1096f2330]
+                                                                                                                                          1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 189724) [0x1096f251c]
+                                                                                                                                            1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 8284612) [0x109eaa9c4]
+                                                                                                                                              1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 16783068) [0x10a6c56dc]
+                                                                                                                                                1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 453440) [0x105eaab40]
+                                                                                                                                                  1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 453600) [0x105eaabe0]
+                                                                                                                                                    1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 452388) [0x105eaa724]
+                                                                                                                                                      1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1261248) [0x105f6fec0]
+                                                                                                                                                        1  ??? (<0B6F3863-B781-36CC-BD24-05A9852A9967> + 1283192) [0x105f75478]
+                                                                                                                                                          1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 38736) [0x108555750]
+                                                                                                                                                            1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 224208) [0x108582bd0]
+                                                                                                                                                              1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 263976) [0x10858c728]
+                                                                                                                                                                1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 281300) [0x108590ad4]
+                                                                                                                                                                  1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 153744) [0x108571890]
+                                                                                                                                                                    1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 156012) [0x10857216c]
+                                                                                                                                                                      1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 88936) [0x108561b68]
+                                                                                                                                                                        1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 325060) [0x10859b5c4]
+                                                                                                                                                                          1  ??? (<DDD60E21-1E55-32F6-A78D-3697C88AE117> + 93940) [0x108562ef4]
+                                                                                                                                                                            1  ??? (libcommonCrypto.dylib + 11932) [0x2b6381e9c]
+                                                                                                                                                                              1  <on behalf of UNKNOWN [30129] (originated by Signal [36436])>
+      1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 435396) [0x10972e4c4]
+        1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 190136) [0x1096f26b8]
+          1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 10769200) [0x10a109330]
+            1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 10760860) [0x10a10729c]
+              1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 602220) [0x10975706c]
+                1  ??? (<5592290C-2379-3760-8999-66367BE01CDF> + 576624) [0x109750c70]
+                  1  ??? (libswift_Concurrency.dylib + 12604) [0x194aa613c]
+                    1  ??? (libswift_Concurrency.dylib + 14096) [0x194aa6710]
+                      1  ??? (libswift_Concurrency.dylib + 16048) [0x194aa6eb0]
+                        1  ??? (libswift_Concurrency.dylib + 16524) [0x194aa708c]
+                          1  ??? (libdispatch.dylib + 62884) [0x1d0bda5a4]
+                            1  ??? (libsystem_kernel.dylib + 2688) [0x245448a80]
+                              1  <on behalf of UNKNOWN [30129] (originated by Signal [36436]), Kernel mode>
+
+  Binary Images:
+           0x104d28000 -                ???  org.whispersystems.signal 8.10 (1570) <5ABE6370-96DC-3A7A-B7A3-476E0EC12011>  /private/var/containers/Bundle/Application/0E2CF04F-990E-4018-BBF3-A35135C3E123/Signal.app/Signal
+           0x105e3c000 -                ???  ???                                   <0B6F3863-B781-36CC-BD24-05A9852A9967>
+           0x10854c000 -                ???  ???                                   <DDD60E21-1E55-32F6-A78D-3697C88AE117>
+           0x1096c4000 -                ???  ???                                   <5592290C-2379-3760-8999-66367BE01CDF>
+           0x193681000 -        0x193c199bf  libswiftCore.dylib                    <7B8E8119-3BF5-300D-9FFB-B7DBEC0695CE>  /usr/lib/swift/libswiftCore.dylib
+           0x193c1a000 -        0x194aa245f  Foundation                            <66BF417C-1D00-3457-A302-196BBAEC23D0>  /System/Library/Frameworks/Foundation.framework/Foundation
+           0x194aa3000 -        0x194b2d925  libswift_Concurrency.dylib            <619001C3-706D-3BCD-BFF2-E7A9324C9A53>  /usr/lib/swift/libswift_Concurrency.dylib
+           0x196983000 -        0x196f1f0ff  CoreFoundation                        <11F13078-E01B-343B-A020-8D60BAE7BBB6>  /System/Library/Frameworks/CoreFoundation.framework/CoreFoundation
+           0x1a7384000 -        0x1a739a6a0  libswiftDispatch.dylib                <67B43890-C919-336A-803D-718FD340F781>  /usr/lib/swift/libswiftDispatch.dylib
+           0x1d0bcb000 -        0x1d0c115ff  libdispatch.dylib                     <5FCAC52F-01E9-3BF0-8AAC-42C442C53560>  /usr/lib/system/libdispatch.dylib
+           0x245448000 -        0x245483ac7  libsystem_kernel.dylib                <5F4E68E1-021C-3A8F-A6F6-2C4C077D0676>  /usr/lib/system/libsystem_kernel.dylib
+           0x2b6122000 -        0x2b6130d37  libz.1.dylib                          <871F48EE-9F01-375B-957C-2DD89F1CA935>  /usr/lib/libz.1.dylib
+           0x2b637f000 -        0x2b638c357  libcommonCrypto.dylib                 <9DEAA7F3-1115-3A28-A07A-29A529F40C8D>  /usr/lib/system/libcommonCrypto.dylib

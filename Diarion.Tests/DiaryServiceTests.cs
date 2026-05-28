@@ -62,6 +62,46 @@ public class DiaryServiceTests : IDisposable
         todos[0].Priority.Should().Be(TodoPriority.High);
     }
 
+    [Fact]
+    public async Task SaveUserProfileAsync_WithZeroCycleValues_NormalizesDefaults()
+    {
+        // Arrange
+        var profile = new UserProfile
+        {
+            IsMenstrualTrackingEnabled = true,
+            CycleLength = 0,
+            PeriodLength = 0,
+            LastPeriodStartDate = new DateTime(2025, 1, 1)
+        };
+
+        // Act
+        await _diaryService.SaveUserProfileAsync(profile);
+        var savedProfile = await _diaryService.GetUserProfileAsync();
+
+        // Assert
+        savedProfile.CycleLength.Should().Be(UserProfile.DefaultCycleLength);
+        savedProfile.PeriodLength.Should().Be(UserProfile.DefaultPeriodLength);
+    }
+
+    [Fact]
+    public async Task SaveUserProfileAsync_WithPeriodLongerThanCycle_ClampsPeriodLength()
+    {
+        // Arrange
+        var profile = new UserProfile
+        {
+            CycleLength = 21,
+            PeriodLength = 30
+        };
+
+        // Act
+        await _diaryService.SaveUserProfileAsync(profile);
+        var savedProfile = await _diaryService.GetUserProfileAsync();
+
+        // Assert
+        savedProfile.CycleLength.Should().Be(21);
+        savedProfile.PeriodLength.Should().Be(21);
+    }
+
     public void Dispose()
     {
         _diaryService.Dispose();
