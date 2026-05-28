@@ -19,10 +19,10 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '10.0.203' # Фіксуємо SDK, щоб контролювати сумісний workload set
+        dotnet-version: '10.0.103' # Беремо ранніший SDK, де bundled workload set не вимагає iOS 26.5
 
-    - name: Install MAUI workload
-      run: dotnet workload install maui --version 10.0.20
+    - name: Install iOS workload
+      run: dotnet workload install maui-ios --skip-manifest-update
 
     - name: Publish MAUI iOS App
       # Збираємо додаток без сертифікатів Apple Developer (CodesignKey="-") та ігноруємо перевірку версії Xcode
