@@ -5,19 +5,24 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest # Використовуємо безкоштовний Mac-сервер від GitHub
+    runs-on: macos-15 # Фіксуємо образ, де доступний Xcode 26.3
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Select Xcode 26.3
+      run: |
+        sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+        xcodebuild -version
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '10.0.x' # Версія, яка використовується у вашому проєкті
+        dotnet-version: '10.0.203' # Фіксуємо SDK, щоб контролювати сумісний workload set
 
     - name: Install MAUI workload
-      run: dotnet workload install maui
+      run: dotnet workload install maui --version 10.0.20
 
     - name: Publish MAUI iOS App
       # Збираємо додаток без сертифікатів Apple Developer (CodesignKey="-") та ігноруємо перевірку версії Xcode

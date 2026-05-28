@@ -153,7 +153,7 @@ public partial class TodoDetailViewModel : BaseViewModel
                     IsBusy = false;
                     var title = Diarion.Resources.Localization.AppResources.MaxHighPriorityAlertTitle;
                     var message = Diarion.Resources.Localization.AppResources.MaxHighPriorityAlertMessage;
-                    await Shell.Current.DisplayAlert(title, message, "OK");
+                    await Shell.Current.DisplayAlertAsync(title, message, Diarion.Resources.Localization.AppResources.OkButtonLabel);
                     return;
                 }
             }

@@ -339,7 +339,6 @@ public class DiaryService : IDiaryService, IDisposable
                 .Select(g => g.OrderByDescending(x => x.TargetDate).First())
                 .ToList();
 
-            bool addedNew = false;
             foreach (var task in pastRepeatingTodos)
             {
                 // Якщо на сьогодні ще немає завдання з такою ж назвою і позначкою повторення
@@ -360,7 +359,6 @@ public class DiaryService : IDiaryService, IDisposable
                     };
                     TodosCollection.Insert(clone);
                     items.Add(clone);
-                    addedNew = true;
                 }
             }
 

@@ -70,9 +70,9 @@ public partial class ProfileViewModel : BaseViewModel
         await _diaryService.SaveUserProfileAsync(Profile);
         IsBusy = false;
         
-        await Shell.Current.DisplayAlert(
+        await Shell.Current.DisplayAlertAsync(
             Title, 
             Diarion.Resources.Localization.AppResources.ProfileSavedMessage, 
-            "OK");
+            Diarion.Resources.Localization.AppResources.OkButtonLabel);
     }
 }

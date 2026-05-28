@@ -259,8 +259,20 @@
   <data name="HabitsLabel" xml:space="preserve">
     <value>HABITS</value>
   </data>
+  <data name="AddHabitPromptTitle" xml:space="preserve">
+    <value>New habit</value>
+  </data>
+  <data name="AddHabitPromptMessage" xml:space="preserve">
+    <value>Enter the habit name:</value>
+  </data>
   <data name="AddHabitLabel" xml:space="preserve">
     <value>+ Add habit</value>
+  </data>
+  <data name="DeleteHabitConfirmTitle" xml:space="preserve">
+    <value>Delete habit?</value>
+  </data>
+  <data name="DeleteHabitConfirmMessage" xml:space="preserve">
+    <value>Are you sure you want to delete '{0}'? It will disappear from this day onward, but remain in previous entries.</value>
   </data>
   <data name="TriggersLabel" xml:space="preserve">
     <value>TRIGGERS:</value>

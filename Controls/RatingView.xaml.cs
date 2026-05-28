@@ -8,11 +8,11 @@ namespace Diarion.Controls;
 public partial class RatingStar : ObservableObject
 {
     [ObservableProperty]
-    private int _value;
+    public partial int Value { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsEmpty))]
-    private bool _isFilled;
+    public partial bool IsFilled { get; set; }
 
     public bool IsEmpty => !IsFilled;
 }

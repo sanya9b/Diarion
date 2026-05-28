@@ -206,7 +206,7 @@
 
             <Grid Grid.Row="1">
                 <ScrollView x:Name="DiaryContainer" IsVisible="True" Padding="24,10,24,40">
-                    <VerticalStackLayout Spacing="24" BindingContext="{Binding CurrentEntry}">
+                    <VerticalStackLayout Spacing="24" BindingContext="{Binding CurrentEntry}" x:DataType="models:DiaryEntry">
                         
                         <!-- Sleep Block -->
                         <VerticalStackLayout Spacing="8">

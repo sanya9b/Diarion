@@ -64,7 +64,11 @@ namespace Diarion.Resources.Localization {
         public static string HealthStatusLabel => ResourceManager.GetString("HealthStatusLabel", resourceCulture) ?? "Health status:";
         public static string IntimateLifeLabel => ResourceManager.GetString("IntimateLifeLabel", resourceCulture) ?? "Intimate life:";
         public static string HabitsLabel => ResourceManager.GetString("HabitsLabel", resourceCulture) ?? "HABITS";
+        public static string AddHabitPromptTitle => ResourceManager.GetString("AddHabitPromptTitle", resourceCulture) ?? "New habit";
+        public static string AddHabitPromptMessage => ResourceManager.GetString("AddHabitPromptMessage", resourceCulture) ?? "Enter the habit name:";
         public static string AddHabitLabel => ResourceManager.GetString("AddHabitLabel", resourceCulture) ?? "+ Add habit";
+        public static string DeleteHabitConfirmTitle => ResourceManager.GetString("DeleteHabitConfirmTitle", resourceCulture) ?? "Delete habit?";
+        public static string DeleteHabitConfirmMessage => ResourceManager.GetString("DeleteHabitConfirmMessage", resourceCulture) ?? "Are you sure you want to delete '{0}'? It will disappear from this day onward, but remain in previous entries.";
         public static string TriggersLabel => ResourceManager.GetString("TriggersLabel", resourceCulture) ?? "TRIGGERS:";
         public static string GratitudeLabel => ResourceManager.GetString("GratitudeLabel", resourceCulture) ?? "GRATITUDE:";
         public static string SoulFoodLabel => ResourceManager.GetString("SoulFoodLabel", resourceCulture) ?? "SOUL FOOD:";

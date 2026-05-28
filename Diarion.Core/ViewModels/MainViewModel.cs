@@ -124,11 +124,11 @@ public partial class MainViewModel : BaseViewModel
 
     public MainViewModel(IDiaryService diaryService)
     {
-        using var _ = StartupTrace.Measure("MainViewModel..ctor");
+        using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
         GenerateCalendar(_currentCalendarDate);
-        Task.Run(() => UpdateCalendarTasksCompletion());
+        _ = UpdateCalendarTasksCompletion();
     }
 
     private void GenerateCalendar(DateTime date)
@@ -249,7 +249,7 @@ public partial class MainViewModel : BaseViewModel
 
     private async Task SelectDateAsync(DateTime date)
     {
-        using var _ = StartupTrace.Measure("MainViewModel.SelectDateAsync");
+        using var trace = StartupTrace.Measure("MainViewModel.SelectDateAsync");
         
         bool requiresFullRegeneration = _currentCalendarDate.Month != date.Month || _currentCalendarDate.Year != date.Year;
         
@@ -258,7 +258,7 @@ public partial class MainViewModel : BaseViewModel
         if (requiresFullRegeneration || CalendarDays.Count == 0)
         {
             GenerateCalendar(_currentCalendarDate);
-            Task.Run(() => UpdateCalendarTasksCompletion());
+            _ = UpdateCalendarTasksCompletion();
         }
         else
         {
@@ -444,7 +444,9 @@ public partial class MainViewModel : BaseViewModel
     [RelayCommand]
     public async Task AddHabitAsync()
     {
-        string result = await Shell.Current.DisplayPromptAsync("Нова звичка", "Введіть назву звички:");
+        string result = await Shell.Current.DisplayPromptAsync(
+            Diarion.Resources.Localization.AppResources.AddHabitPromptTitle,
+            Diarion.Resources.Localization.AppResources.AddHabitPromptMessage);
         if (!string.IsNullOrWhiteSpace(result))
         {
             var def = new HabitDefinition { Name = result.Trim(), CreatedAt = GetSelectedDate() };
@@ -462,7 +464,11 @@ public partial class MainViewModel : BaseViewModel
     {
         if (item == null || CurrentEntry == null) return;
         
-        bool confirm = await Shell.Current.DisplayAlert("Видалити звичку?", $"Ви впевнені, що хочете видалити '{item.Name}'? Вона зникне з цього дня і надалі, але залишиться в минулому.", "Так", "Ні");
+        bool confirm = await Shell.Current.DisplayAlertAsync(
+            Diarion.Resources.Localization.AppResources.DeleteHabitConfirmTitle,
+            string.Format(Diarion.Resources.Localization.AppResources.DeleteHabitConfirmMessage, item.Name),
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
         if (!confirm) return;
 
         await _diaryService.DeleteHabitDefinitionAsync(item.HabitId, GetSelectedDate());
