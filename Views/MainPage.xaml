@@ -80,17 +80,11 @@
                             WidthRequest="50"
                             HeightRequest="50">
                         <Grid BackgroundColor="Transparent">
-                            <Image Source="habit_tracker.svg"
-                                   InputTransparent="True"
-                                   WidthRequest="22"
-                                   HeightRequest="22"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"
-                                   Aspect="AspectFit">
-                                <Image.Behaviors>
-                                    <toolkit:IconTintColorBehavior TintColor="{StaticResource Coral}" />
-                                </Image.Behaviors>
-                            </Image>
+                            <Path Stroke="{StaticResource Coral}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
+                                  Fill="Transparent" WidthRequest="24" HeightRequest="24"
+                                  HorizontalOptions="Center" VerticalOptions="Center" 
+                                  InputTransparent="True"
+                                  Data="M 7.9 20 A 9 9 0 1 0 4 16.1 L 2 22 Z M 9 12 L 11 14 L 15 10" />
 
                             <BoxView BackgroundColor="Transparent">
                                 <BoxView.GestureRecognizers>
@@ -108,17 +102,11 @@
                             WidthRequest="50"
                             HeightRequest="50">
                         <Grid BackgroundColor="Transparent">
-                            <Image Source="reading_tracker.svg"
-                                   InputTransparent="True"
-                                   WidthRequest="22"
-                                   HeightRequest="22"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"
-                                   Aspect="AspectFit">
-                                <Image.Behaviors>
-                                    <toolkit:IconTintColorBehavior TintColor="{StaticResource Sage}" />
-                                </Image.Behaviors>
-                            </Image>
+                            <Path Stroke="{StaticResource Sage}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
+                                  Fill="Transparent" WidthRequest="24" HeightRequest="24"
+                                  HorizontalOptions="Center" VerticalOptions="Center" 
+                                  InputTransparent="True"
+                                  Data="M 3 4 H 7 V 20 H 3 Z M 3 8 H 7 M 10 6 H 14 V 20 H 10 Z M 10 10 H 14 M 17 5 H 21 V 20 H 17 Z M 17 9 H 21" />
 
                             <BoxView BackgroundColor="Transparent">
                                 <BoxView.GestureRecognizers>
@@ -136,17 +124,11 @@
                             WidthRequest="50"
                             HeightRequest="50">
                         <Grid BackgroundColor="Transparent">
-                            <Image Source="happy_moments.svg"
-                                   InputTransparent="True"
-                                   WidthRequest="22"
-                                   HeightRequest="22"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"
-                                   Aspect="AspectFit">
-                                <Image.Behaviors>
-                                    <toolkit:IconTintColorBehavior TintColor="{StaticResource Berry}" />
-                                </Image.Behaviors>
-                            </Image>
+                            <Path Stroke="{StaticResource Berry}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
+                                  Fill="Transparent" WidthRequest="24" HeightRequest="24"
+                                  HorizontalOptions="Center" VerticalOptions="Center" 
+                                  InputTransparent="True"
+                                  Data="M 19 14 C 20.49 12.54 22 10.79 22 8.5 A 5.5 5.5 0 0 0 16.5 3 C 14.74 3 13.5 3.5 12 5 C 10.5 3.5 9.26 3 7.5 3 A 5.5 5.5 0 0 0 2 8.5 C 2 10.79 3.51 12.54 5 14 L 12 21.35 Z" />
 
                             <BoxView BackgroundColor="Transparent">
                                 <BoxView.GestureRecognizers>
@@ -164,17 +146,10 @@
                             WidthRequest="50"
                             HeightRequest="50">
                         <Grid BackgroundColor="Transparent">
-                            <Image Source="good_deeds.svg"
-                                   InputTransparent="True"
-                                   WidthRequest="22"
-                                   HeightRequest="22"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"
-                                   Aspect="AspectFit">
-                                <Image.Behaviors>
-                                    <toolkit:IconTintColorBehavior TintColor="{StaticResource Amber}" />
-                                </Image.Behaviors>
-                            </Image>
+                            <Path Fill="{StaticResource Amber}" WidthRequest="24" HeightRequest="24"
+                                  HorizontalOptions="Center" VerticalOptions="Center" 
+                                  InputTransparent="True"
+                                  Data="M 19 14 C 20.49 12.54 22 10.79 22 8.5 A 5.5 5.5 0 0 0 16.5 3 C 14.74 3 13.5 3.5 12 5 C 10.5 3.5 9.26 3 7.5 3 A 5.5 5.5 0 0 0 2 8.5 C 2 10.79 3.51 12.54 5 14 L 12 21.35 Z" />
 
                             <BoxView BackgroundColor="Transparent">
                                 <BoxView.GestureRecognizers>
