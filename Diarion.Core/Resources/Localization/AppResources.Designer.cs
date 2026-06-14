@@ -643,6 +643,51 @@ namespace Diarion.Resources.Localization {
                 return ResourceManager.GetString("HabitSocial", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Statistics.
+        /// </summary>
+        public static string StatisticsMenuTitle {
+            get {
+                return ResourceManager.GetString("StatisticsMenuTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dashboard.
+        /// </summary>
+        public static string StatisticsTitle {
+            get {
+                return ResourceManager.GetString("StatisticsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Average Duration:.
+        /// </summary>
+        public static string StatsSleepDuration {
+            get {
+                return ResourceManager.GetString("StatsSleepDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Average Quality:.
+        /// </summary>
+        public static string StatsSleepQuality {
+            get {
+                return ResourceManager.GetString("StatsSleepQuality", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top Emotion:.
+        /// </summary>
+        public static string StatsTopEmotion {
+            get {
+                return ResourceManager.GetString("StatsTopEmotion", resourceCulture);
+            }
+        }
     }
 }
 

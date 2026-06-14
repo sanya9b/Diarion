@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Views.StatisticsPage"
+             x:DataType="viewmodels:StatisticsViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,18,24,32" Spacing="20">
+            
+            <Grid ColumnDefinitions="Auto, *" Margin="0,0,0,8">
+                <!-- Hamburger Menu Button -->
+                <Grid Grid.Column="0" Padding="10,0">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenMenuCommand}" />
+                    </Grid.GestureRecognizers>
+                    <Label Text="≡" FontSize="32" 
+                           InputTransparent="True"
+                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" 
+                           VerticalOptions="Center" HorizontalOptions="Start" />
+                </Grid>
+                
+                <!-- Заголовок -->
+                <Label Grid.Column="1" Text="{Binding Title}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" Margin="-40,0,0,0" />
+            </Grid>
+            
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+
+            <!-- Sleep Stats Card -->
+            <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                    Padding="16">
+                <Border.Shadow>
+                    <Shadow Brush="{StaticResource Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                </Border.Shadow>
+                
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{x:Static localization:AppResources.SleepLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{StaticResource Amber}" />
+                    
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                        <Label Grid.Column="0" Text="{x:Static localization:AppResources.StatsSleepDuration}" VerticalOptions="Center" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                        <Label Grid.Column="1" Text="{Binding AverageSleepDurationText}" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="End" TextColor="{StaticResource Amber}" />
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" Opacity="0.5" />
+                    
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                        <Label Grid.Column="0" Text="{x:Static localization:AppResources.StatsSleepQuality}" VerticalOptions="Center" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                        <Label Grid.Column="1" Text="{Binding AverageSleepQualityText}" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="End" TextColor="{StaticResource Amber}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Mood Stats Card -->
+            <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                    Padding="16">
+                <Border.Shadow>
+                    <Shadow Brush="{StaticResource Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                </Border.Shadow>
+                
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{x:Static localization:AppResources.EmotionLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{StaticResource Coral}" />
+                    
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                        <Label Grid.Column="0" Text="{x:Static localization:AppResources.StatsTopEmotion}" VerticalOptions="Center" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                        <Label Grid.Column="1" Text="{Binding TopEmotionText}" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="End" TextColor="{StaticResource Coral}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

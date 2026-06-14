@@ -517,4 +517,19 @@
   <data name="HabitSocial" xml:space="preserve">
     <value>Social connections</value>
   </data>
+  <data name="StatisticsMenuTitle" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="StatisticsTitle" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="StatsSleepDuration" xml:space="preserve">
+    <value>Average Duration:</value>
+  </data>
+  <data name="StatsSleepQuality" xml:space="preserve">
+    <value>Average Quality:</value>
+  </data>
+  <data name="StatsTopEmotion" xml:space="preserve">
+    <value>Top Emotion:</value>
+  </data>
 </root>

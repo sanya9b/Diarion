@@ -34,6 +34,10 @@ public interface IDiaryService
     Task SaveEntryAsync(DiaryEntry entry);
     Task DeleteEntryAsync(Guid id);
 
+    // Statistics
+    Task<SleepStatistics> GetSleepStatisticsAsync(int days);
+    Task<MoodStatistics> GetMoodStatisticsAsync(int days);
+
     // Todo functionality
     Task<TodoItem?> GetTodoByIdAsync(Guid id);
     Task<List<TodoItem>> GetTodosForDateAsync(DateTime date);

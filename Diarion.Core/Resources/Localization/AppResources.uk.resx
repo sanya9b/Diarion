@@ -517,4 +517,19 @@
   <data name="HabitSocial" xml:space="preserve">
     <value>Соціальні зв'язки</value>
   </data>
+  <data name="StatisticsMenuTitle" xml:space="preserve">
+    <value>Статистика</value>
+  </data>
+  <data name="StatisticsTitle" xml:space="preserve">
+    <value>Дашборд</value>
+  </data>
+  <data name="StatsSleepDuration" xml:space="preserve">
+    <value>Середня тривалість:</value>
+  </data>
+  <data name="StatsSleepQuality" xml:space="preserve">
+    <value>Середня якість:</value>
+  </data>
+  <data name="StatsTopEmotion" xml:space="preserve">
+    <value>Головна емоція:</value>
+  </data>
 </root>

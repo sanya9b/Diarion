@@ -609,6 +609,97 @@ public class DiaryService : IDiaryService, IDisposable
         });
     }
 
+    public Task<SleepStatistics> GetSleepStatisticsAsync(int days)
+    {
+        return Task.Run(() =>
+        {
+            var startDate = DateTime.Today.AddDays(-days);
+            var entries = EntriesCollection.Query()
+                .Where(x => x.Date >= startDate && x.Date <= DateTime.Today)
+                .ToList();
+
+            var validSleepEntries = entries.Where(x => x.HasSleepStart && x.HasSleepEnd).ToList();
+            var validQualityEntries = entries.Where(x => x.SleepQuality > 0).ToList();
+
+            double averageQuality = validQualityEntries.Count > 0
+                ? validQualityEntries.Average(x => x.SleepQuality)
+                : 0;
+
+            TimeSpan averageDuration = TimeSpan.Zero;
+            if (validSleepEntries.Count > 0)
+            {
+                double totalHours = validSleepEntries.Sum(x =>
+                {
+                    var duration = x.SleepEnd!.Value - x.SleepStart!.Value;
+                    if (duration.TotalHours < 0)
+                    {
+                        duration = duration.Add(TimeSpan.FromHours(24));
+                    }
+                    return duration.TotalHours;
+                });
+                averageDuration = TimeSpan.FromHours(totalHours / validSleepEntries.Count);
+            }
+
+            return new SleepStatistics
+            {
+                AverageSleepDuration = averageDuration,
+                AverageSleepQuality = averageQuality
+            };
+        });
+    }
+
+    public Task<MoodStatistics> GetMoodStatisticsAsync(int days)
+    {
+        return Task.Run(() =>
+        {
+            var startDate = DateTime.Today.AddDays(-days);
+            var entries = EntriesCollection.Query()
+                .Where(x => x.Date >= startDate && x.Date <= DateTime.Today)
+                .ToList();
+
+            var counts = new Dictionary<Emotion, int>();
+            foreach (var emotion in Enum.GetValues<Emotion>())
+            {
+                if (emotion != Emotion.None)
+                {
+                    counts[emotion] = 0;
+                }
+            }
+
+            foreach (var entry in entries)
+            {
+                if (entry.Emotion != Emotion.None)
+                {
+                    if (counts.ContainsKey(entry.Emotion))
+                    {
+                        counts[entry.Emotion]++;
+                    }
+                    else
+                    {
+                        counts[entry.Emotion] = 1;
+                    }
+                }
+            }
+
+            var topEmotion = Emotion.None;
+            int maxCount = 0;
+            foreach (var kvp in counts)
+            {
+                if (kvp.Value > maxCount)
+                {
+                    maxCount = kvp.Value;
+                    topEmotion = kvp.Key;
+                }
+            }
+
+            return new MoodStatistics
+            {
+                EmotionCounts = counts,
+                TopEmotion = topEmotion
+            };
+        });
+    }
+
     public Task<TodoItem?> GetTodoByIdAsync(Guid id)
     {
         return Task.Run<TodoItem?>(() =>
