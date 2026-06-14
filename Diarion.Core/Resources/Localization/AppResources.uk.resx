@@ -344,7 +344,7 @@
     <value>Пріоритет</value>
   </data>
   <data name="SaveTaskButton" xml:space="preserve">
-    <value>Створити завдання</value>
+    <value>Зберегти</value>
   </data>
   <data name="OkButtonLabel" xml:space="preserve">
     <value>OK</value>

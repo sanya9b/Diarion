@@ -49,9 +49,16 @@ public partial class AppShell : Shell
         // тому перезавантаження сторінки гарантує ідеальне застосування нової теми.
         if (Application.Current?.Windows.Count > 0)
         {
-            Dispatcher.Dispatch(() =>
+            Dispatcher.Dispatch(async () =>
             {
-                Application.Current.Windows[0].Page = new AppShell();
+                var window = Application.Current.Windows[0];
+#if IOS || MACCATALYST
+                // На iOS заміна AppShell на новий AppShell може викликати краш. 
+                // Спочатку ставимо порожню сторінку, щоб коректно вивантажити старий Shell.
+                window.Page = new ContentPage { BackgroundColor = Application.Current.UserAppTheme == AppTheme.Dark ? Colors.Black : Colors.White };
+                await Task.Delay(50);
+#endif
+                window.Page = new AppShell();
             });
         }
     }
@@ -82,9 +89,16 @@ public partial class AppShell : Shell
         // Перезавантажуємо AppShell, щоб оновити всі x:Static Binding-и
         if (Application.Current?.Windows.Count > 0)
         {
-            Dispatcher.Dispatch(() =>
+            Dispatcher.Dispatch(async () =>
             {
-                Application.Current.Windows[0].Page = new AppShell();
+                var window = Application.Current.Windows[0];
+#if IOS || MACCATALYST
+                // На iOS заміна AppShell на новий AppShell може викликати краш. 
+                // Спочатку ставимо порожню сторінку, щоб коректно вивантажити старий Shell.
+                window.Page = new ContentPage { BackgroundColor = Application.Current.UserAppTheme == AppTheme.Dark ? Colors.Black : Colors.White };
+                await Task.Delay(50);
+#endif
+                window.Page = new AppShell();
             });
         }
     }
