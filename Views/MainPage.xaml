@@ -240,7 +240,7 @@
                                 <Grid>
                                     <Border StrokeShape="RoundRectangle 8"
                                             StrokeThickness="0"
-                                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark=#1AFFFFFF}"
                                             Padding="6">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference PageRoot}}" CommandParameter="{Binding .}" />
@@ -361,26 +361,26 @@
                             <Grid ColumnDefinitions="Auto, *, Auto, *" ColumnSpacing="12">
                                 <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepStartLabel}" VerticalOptions="Center" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
                                 <Grid Grid.Column="1" VerticalOptions="Center">
-                                    <Label Text="{Binding SleepStart, StringFormat='{0:hh\\:mm}'}" 
+                                    <Label Text="{Binding SleepStart, StringFormat='{0:HH\\:mm}'}" 
                                            IsVisible="{Binding HasSleepStart}"
                                            TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" FontSize="14" VerticalOptions="Center" />
-                                    <Label Text="hh:mm" 
+                                    <Label Text="HH:mm" 
                                            IsVisible="{Binding IsSleepStartEmpty}"
                                            TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" FontSize="14" VerticalOptions="Center" />
                                     <!-- Transparent TimePicker intercepts touches and opens the native dialog -->
-                                    <TimePicker Time="{Binding SleepStart, TargetNullValue='00:00', FallbackValue='00:00'}" 
+                                    <TimePicker Time="{Binding SleepStart, TargetNullValue='00:00', FallbackValue='00:00'}" Format="HH:mm"
                                                 Opacity="0.01" HeightRequest="36" />
                                 </Grid>
 
                                 <Label Grid.Column="2" Text="{x:Static localization:AppResources.SleepEndLabel}" VerticalOptions="Center" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
                                 <Grid Grid.Column="3" VerticalOptions="Center">
-                                    <Label Text="{Binding SleepEnd, StringFormat='{0:hh\\:mm}'}" 
+                                    <Label Text="{Binding SleepEnd, StringFormat='{0:HH\\:mm}'}" 
                                            IsVisible="{Binding HasSleepEnd}"
                                            TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" FontSize="14" VerticalOptions="Center" />
-                                    <Label Text="hh:mm" 
+                                    <Label Text="HH:mm" 
                                            IsVisible="{Binding IsSleepEndEmpty}"
                                            TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" FontSize="14" VerticalOptions="Center" />
-                                    <TimePicker Time="{Binding SleepEnd, TargetNullValue='00:00', FallbackValue='00:00'}" 
+                                    <TimePicker Time="{Binding SleepEnd, TargetNullValue='00:00', FallbackValue='00:00'}" Format="HH:mm"
                                                 Opacity="0.01" HeightRequest="36" />
                                 </Grid>
                             </Grid>

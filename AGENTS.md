@@ -65,5 +65,5 @@
 - Add or update tests when behavior changes, especially for spatial/SRID logic.
 - **Testing**: Обов'язково створюй Unit-тести (використовуючи xUnit, Moq, FluentAssertions) для нових сервісів (з In-Memory LiteDB) та ViewModels. Усі тести повинні знаходитись у відповідних файлах `*Tests.cs`.
 - **Zero Warnings Policy**: Код повинен збиратися без жодних попереджень (Warnings). Завжди перевіряй лог компіляції і автоматично виправляй усі warnings (наприклад, застарілі методи, відсутні `await`, чи MAUI конфігураційні попередження).
-- **Android Emulator Testing**: Постійно тестуй і запускай застосунок на Android Емуляторі (`dotnet build Diarion.csproj -t:Run -f net10.0-android`), щоб гарантувати коректну роботу мобільного UI.
+- **Android Emulator Testing**: Постійно тестуй і запускай застосунок на Android Емуляторі (`dotnet watch build Diarion.csproj -t:Run -f net10.0-android`), щоб гарантувати коректну роботу мобільного UI.
 
