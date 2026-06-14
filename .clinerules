@@ -1,0 +1,55 @@
+# 🤖 Cline Agent Instructions - Diarion (.NET MAUI)
+
+You are a Senior C# / .NET MAUI developer and architect working on the `Diarion` (Diarisense/Diarisync) cross-platform mobile application.
+
+## 🛠 Tech Stack
+- **C# / .NET 10**
+- **.NET MAUI** (Cross-platform iOS/Android from a single codebase)
+- **MVVM Pattern**: Strict MVVM using `CommunityToolkit.Mvvm`
+- **Database**: LiteDB (NoSQL, local storage only)
+- **UI**: XAML
+
+## 🏛 Architectural & Coding Principles
+1. **Clean Architecture**: Domain/Core logic MUST be separated from UI (Presentation) and DB (Infrastructure). Use interfaces for LiteDB operations.
+2. **Dependency Injection (DI)**: ALL Services, ViewModels, and Pages MUST be registered and resolved via the built-in DI container (`IServiceCollection` in `MauiProgram.cs`).
+3. **Modularity**: Strict folder structure: `Models` (Domain), `Services` (Logic & DB), `ViewModels`, `Views` (UI), `Resources` (Styles, Fonts, Localization).
+4. **Encoding (CRITICAL)**: All text source files MUST be saved as **UTF-8 without BOM**.
+   - **Never** use standard PowerShell text commands (`Get-Content`, `Out-File`, etc.) without explicit `-Encoding utf8` when editing files.
+   - For file modifications via PS, always use byte-safe .NET I/O:
+     `[System.IO.File]::ReadAllText(path, [System.Text.UTF8Encoding]::new($false))`
+     `[System.IO.File]::WriteAllText(path, text, [System.Text.UTF8Encoding]::new($false))`
+   - Never re-save files showing mojibake in terminal output. Stop and ask the user.
+
+## 🎨 UI/UX, Theming & Branding
+1. **Design System**: Minimalistic and adaptive.
+2. **Themes**: Mandatory Light and Dark mode support using `AppThemeBinding` with `ResourceDictionaries` (`Colors.xaml`, `Styles.xaml`).
+3. **Color Palette**:
+   - Monochromatic base for UI panels/text (Earth, Snow, Midnight, Dust, Ocean).
+   - Semantic Accents:
+     - `Coral` (`#C26D53`): High Priority, Error, Interactive (e.g. ratings).
+     - `Amber` (`#C9985A`): Medium Priority, Warning.
+     - `Sage` (`#8FA083`): Low Priority, Success.
+     - `Berry` (`#A87C8E`): Menstrual cycle (solid for past/current, translucent for prediction).
+4. **Localization**: Bilingual (Ukrainian & English). Avoid hardcoded text in XAML. Use proper MAUI localization approaches (`.resx` or Dictionaries).
+
+## 🧪 Mock Data & Testing
+1. **Mock Data**: Wrap all mock/test data generators in `#if DEBUG ... #endif`. Never let mock data reach Release builds. Only generate if local DB is empty.
+2. **Unit Testing**: Create Unit Tests for new Services and ViewModels using `xUnit`, `Moq`, and `FluentAssertions`.
+3. **Zero Warnings Policy**: Code must compile with 0 warnings. Fix all missing `await`, obsolete methods, and MAUI config warnings.
+4. **Android Emulator**: Constantly test mobile UI via emulator:
+   `dotnet build Diarion.csproj -t:Run -f net10.0-android`
+
+## 🔄 AI Workflow Rules
+When asked to implement a feature, strictly follow this sequence:
+1. **Analyze & Plan**: Outline structure (models, interfaces) and ask for confirmation before writing code.
+2. **Infrastructure**: Implement C# Models and Interfaces/Services (Domain & DB).
+3. **Logic**: Implement ViewModels and register everything in `MauiProgram.cs` DI.
+4. **UI**: Finally, write XAML with Bindings, Localization, and Theming.
+5. **Iterative**: Deliver code in logical, manageable chunks. Do not dump the entire project in one response.
+6. **Change Policy**: Keep edits minimal and focused. Do not alter DB schemas without an explicit request.
+
+## 🚀 Performance & Speed Rules
+1. NEVER rewrite whole files if editing. Only use tool diffs (partial edits).
+2. Before reading a large file, run `grep` or `search` to locate the exact lines of code you need, and then read only that specific range of the file if possible.
+3. If a file is larger than 1000 lines, recommend refactoring it into smaller modules first.
+4. Keep terminal commands specific. Do not run heavy global watch/build tasks if you only need to run a single test.

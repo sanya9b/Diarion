@@ -32,12 +32,20 @@ public static class MauiProgram
 		builder.Services.AddTransient<Diarion.ViewModels.DiaryDetailViewModel>();
 		builder.Services.AddTransient<Diarion.ViewModels.TodoDetailViewModel>();
 		builder.Services.AddTransient<Diarion.ViewModels.ProfileViewModel>();
+                builder.Services.AddTransient<Diarion.ViewModels.HabitTrackerViewModel>();
+                builder.Services.AddTransient<Diarion.ViewModels.GoodDeedsViewModel>();
+                builder.Services.AddTransient<Diarion.ViewModels.ReadingTrackerViewModel>();
+                builder.Services.AddTransient<Diarion.ViewModels.HappyMomentsViewModel>();
 
 		// Views
 		builder.Services.AddTransient<Diarion.Views.MainPage>();
 		builder.Services.AddTransient<Diarion.Views.DiaryDetailPage>();
 		builder.Services.AddTransient<Diarion.Views.TodoDetailPage>();
 		builder.Services.AddTransient<Diarion.Views.ProfilePage>();
+                builder.Services.AddTransient<Diarion.Views.HabitTrackerPage>();
+                builder.Services.AddTransient<Diarion.Views.GoodDeedsPage>();
+                builder.Services.AddTransient<Diarion.Views.ReadingTrackerPage>();
+                builder.Services.AddTransient<Diarion.Views.HappyMomentsPage>();
 
 		return builder.Build();
 	}

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             x:Class="Diarion.Views.ReadingTrackerPage"
+             x:Name="RootPage"
+             x:DataType="viewModels:ReadingTrackerViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{localization:Translate Key=ReadingTrackerTitle}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCloseTapped" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <Label Text="{localization:Translate Key=ReadingTrackerTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                <Label Text="{localization:Translate Key=ReadingTrackerSubtitle}" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator Grid.Column="2"
+                               WidthRequest="28"
+                               HeightRequest="28"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Sage}"
+                               VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="24,10,24,32" Spacing="16">
+                <CollectionView ItemsSource="{Binding Slots}"
+                                SelectionMode="None"
+                                VerticalOptions="Start">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="3" HorizontalItemSpacing="10" VerticalItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:ReadingTrackerSlotItemViewModel">
+                            <Grid WidthRequest="120" HeightRequest="160" Margin="0,0,8,16">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectSlotCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+                                
+                                <Grid.Triggers>
+                                    <DataTrigger TargetType="Grid" Binding="{Binding IsEmpty}" Value="True">
+                                        <Setter Property="Opacity" Value="0.4" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Grid" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="Scale" Value="1.05" />
+                                    </DataTrigger>
+                                </Grid.Triggers>
+
+                                <!-- === 3D Вектор Обкладинки === -->
+                                <!-- Спинка (ліва грань) -->
+                                <Path Fill="#47553F" Data="M 10,10 L 25,22 L 25,152 L 10,140 Z" />
+                                
+                                <!-- Задня обкладинка -->
+                                <Path Fill="#55684B" Data="M 25,22 L 112,22 L 112,152 L 25,152 Z" />
+                                
+                                <!-- Сторінки (права грань та нижня) -->
+                                <Path Fill="#F8FAFC" Data="M 95,13 L 109,24 L 109,149 L 95,138 Z" />
+                                <Path Fill="#E2E8F0" Data="M 13,140 L 95,140 L 109,149 L 27,149 Z" />
+                                
+                                <!-- Лінії сторінок -->
+                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 95,30 L 109,41" />
+                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 95,60 L 109,71" />
+                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 95,90 L 109,101" />
+                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 95,120 L 109,131" />
+                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 30,140 L 44,149" />
+                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 50,140 L 64,149" />
+                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 70,140 L 84,149" />
+
+                                <!-- Передня обкладинка -->
+                                <Path Fill="#8FA083" Data="M 10,10 L 95,10 L 95,140 L 10,140 Z" />
+                                
+                                <!-- Деталі корінця -->
+                                <Path Fill="#7D9071" Data="M 10,10 L 25,10 L 25,140 L 10,140 Z" />
+                                <Path Fill="#55684B" Data="M 10,25 L 25,25 L 25,28 L 10,28 Z" />
+                                <Path Fill="#55684B" Data="M 10,122 L 25,122 L 25,125 L 10,125 Z" />
+                                <Path Stroke="#6A7B5F" StrokeThickness="1.5" Data="M 30,10 L 30,140" />
+                                <Path Stroke="#55684B" StrokeThickness="1" Data="M 25,10 L 25,140" />
+
+                                <!-- Закладка -->
+                                <Path Fill="#D97706" Data="M 60,140 L 68,140 L 68,157 L 64,153 L 60,157 Z" />
+
+                                <!-- Номер слоту -->
+                                <Label Text="{Binding SlotNumberText}"
+                                       TextColor="White" Opacity="0.7"
+                                       FontSize="10" FontAttributes="Bold"
+                                       HorizontalOptions="End" VerticalOptions="Start"
+                                       Margin="0,14,30,0" InputTransparent="True" />
+
+                                <!-- === Динамічний Текст (Filled) === -->
+                                <Label Text="{Binding BookTitle}"
+                                       IsVisible="{Binding IsFilled}"
+                                       TextColor="White"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="4"
+                                       Margin="32,15,28,25" InputTransparent="True" />
+
+                                <!-- === Значок плюса (Empty) === -->
+                                <Label Text="+"
+                                       IsVisible="{Binding IsEmpty}"
+                                       TextColor="White"
+                                       FontSize="36"
+                                       FontAttributes="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"
+                                       Margin="32,15,28,25" InputTransparent="True" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Popup Overlay -->
+        <Grid Grid.RowSpan="2"
+              BackgroundColor="{AppThemeBinding Light=#99000000, Dark=#B3000000}"
+              IsVisible="{Binding IsAddBookFormVisible}"
+              InputTransparent="False">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding SelectSlotCommand}" CommandParameter="{Binding SelectedSlot}" />
+            </Grid.GestureRecognizers>
+
+            <Border StrokeShape="RoundRectangle 24"
+                    StrokeThickness="1"
+                    Stroke="{StaticResource Sage}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}"
+                    Padding="24"
+                    Margin="24"
+                    VerticalOptions="Center"
+                    Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.2}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer />
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="16">
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                        <Label Text="{Binding SelectedSlotTitle}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+
+                        <!-- Close Button -->
+                        <Grid Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectSlotCommand}" CommandParameter="{Binding SelectedSlot}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✕" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                        </Grid>
+                    </Grid>
+
+                    <Label Text="{localization:Translate Key=ReadingTrackerBookTitleLabel}"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           CharacterSpacing="1.2"
+                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    <Entry Text="{Binding NewBookTitle}"
+                           Placeholder="{localization:Translate Key=ReadingTrackerBookTitlePlaceholder}"
+                           ClearButtonVisibility="WhileEditing"
+                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
+                           PlaceholderColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+
+                    <Label Text="{localization:Translate Key=ReadingTrackerCompletionDateLabel}"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           CharacterSpacing="1.2"
+                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    <DatePicker Date="{Binding NewCompletionDate}"
+                                MaximumDate="{Binding MaxCompletionDate}"
+                                TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+
+                    <Label Text="{Binding ValidationMessage}"
+                           IsVisible="{Binding HasValidationMessage}"
+                           FontSize="12"
+                           TextColor="{StaticResource Coral}" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
+                        <Button Grid.Column="0"
+                                Text="{localization:Translate Key=DeleteButton}"
+                                Command="{Binding DeleteBookCommand}"
+                                IsVisible="{Binding SelectedSlot.IsFilled}"
+                                CornerRadius="18"
+                                Padding="18,12"
+                                BackgroundColor="Transparent"
+                                BorderColor="{StaticResource Coral}"
+                                BorderWidth="1"
+                                TextColor="{StaticResource Coral}"
+                                FontAttributes="Bold" />
+                                
+                        <Button Grid.Column="1"
+                                Text="{localization:Translate Key=ReadingTrackerSaveBookButton}"
+                                Command="{Binding SaveBookCommand}"
+                                IsVisible="{Binding SelectedSlot.IsFilled}"
+                                CornerRadius="18"
+                                Padding="18,12"
+                                BackgroundColor="{StaticResource Sage}"
+                                TextColor="{StaticResource Snow}"
+                                FontAttributes="Bold" />
+
+                        <Button Grid.Column="0" Grid.ColumnSpan="2"
+                                Text="{localization:Translate Key=ReadingTrackerSaveBookButton}"
+                                Command="{Binding SaveBookCommand}"
+                                IsVisible="{Binding SelectedSlot.IsEmpty}"
+                                CornerRadius="18"
+                                Padding="18,12"
+                                BackgroundColor="{StaticResource Sage}"
+                                TextColor="{StaticResource Snow}"
+                                FontAttributes="Bold" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

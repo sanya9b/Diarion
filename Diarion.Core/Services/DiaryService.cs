@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,6 +18,10 @@ public class DiaryService : IDiaryService, IDisposable
     private ILiteCollection<DiaryEntry>? _entriesCollection;
     private ILiteCollection<TodoItem>? _todosCollection;
     private ILiteCollection<HabitDefinition>? _habitsCollection;
+    private ILiteCollection<HarmfulHabitTracker>? _harmfulHabitTrackersCollection;
+    private ILiteCollection<ReadingTrackerBook>? _readingTrackerBooksCollection;
+    private ILiteCollection<HappyMoment>? _happyMomentsCollection;
+    private ILiteCollection<GoodDeed>? _goodDeedsCollection;
     private ILiteCollection<UserProfile>? _profileCollection;
     private readonly bool _useInMemory;
 
@@ -56,18 +60,36 @@ public class DiaryService : IDiaryService, IDisposable
             var entriesCollection = database.GetCollection<DiaryEntry>("entries");
             var todosCollection = database.GetCollection<TodoItem>("todos");
             var habitsCollection = database.GetCollection<HabitDefinition>("habit_definitions");
+            var harmfulHabitTrackersCollection = database.GetCollection<HarmfulHabitTracker>("harmful_habit_trackers");
+            var readingTrackerBooksCollection = database.GetCollection<ReadingTrackerBook>("reading_tracker_books");
+            var happyMomentsCollection = database.GetCollection<HappyMoment>("happy_moments");
+            var goodDeedsCollection = database.GetCollection<GoodDeed>("good_deeds");
             var profileCollection = database.GetCollection<UserProfile>("profile");
 
             entriesCollection.EnsureIndex(x => x.Date);
             todosCollection.EnsureIndex(x => x.TargetDate);
+            harmfulHabitTrackersCollection.EnsureIndex(x => x.StartDate);
+            readingTrackerBooksCollection.EnsureIndex(x => x.SlotNumber, true);
+            happyMomentsCollection.EnsureIndex(x => x.SlotNumber, true);
+            goodDeedsCollection.EnsureIndex(x => x.SlotNumber, true);
 
             // Pre-seed defaults if empty
             if (habitsCollection.Count() == 0)
             {
-                var defaults = new[] { "Фізична активність", "Сніданок", "Обід", "Вечеря", "Вода", "Вітаміни/Ліки", "Читання / Нові знання", "Соціальні зв'язки" };
+                var defaults = new[] 
+                { 
+                    Diarion.Resources.Localization.AppResources.HabitPhysicalActivity, 
+                    Diarion.Resources.Localization.AppResources.HabitBreakfast, 
+                    Diarion.Resources.Localization.AppResources.HabitLunch, 
+                    Diarion.Resources.Localization.AppResources.HabitDinner, 
+                    Diarion.Resources.Localization.AppResources.HabitWater, 
+                    Diarion.Resources.Localization.AppResources.HabitVitamins, 
+                    Diarion.Resources.Localization.AppResources.HabitReading, 
+                    Diarion.Resources.Localization.AppResources.HabitSocial 
+                };
                 foreach (var d in defaults)
                 {
-                    habitsCollection.Insert(new HabitDefinition { Name = d, CreatedAt = DateTime.MinValue });
+                    habitsCollection.Insert(new HabitDefinition { Name = d ?? string.Empty, CreatedAt = DateTime.MinValue });
                 }
             }
 
@@ -75,6 +97,10 @@ public class DiaryService : IDiaryService, IDisposable
             _entriesCollection = entriesCollection;
             _todosCollection = todosCollection;
             _habitsCollection = habitsCollection;
+            _harmfulHabitTrackersCollection = harmfulHabitTrackersCollection;
+            _readingTrackerBooksCollection = readingTrackerBooksCollection;
+            _happyMomentsCollection = happyMomentsCollection;
+            _goodDeedsCollection = goodDeedsCollection;
             _profileCollection = profileCollection;
 
 #if DEBUG
@@ -166,6 +192,42 @@ public class DiaryService : IDiaryService, IDisposable
         }
     }
 
+    private ILiteCollection<HarmfulHabitTracker> HarmfulHabitTrackersCollection
+    {
+        get
+        {
+            EnsureInitialized();
+            return _harmfulHabitTrackersCollection!;
+        }
+    }
+
+    private ILiteCollection<ReadingTrackerBook> ReadingTrackerBooksCollection
+    {
+        get
+        {
+            EnsureInitialized();
+            return _readingTrackerBooksCollection!;
+        }
+    }
+
+    private ILiteCollection<HappyMoment> HappyMomentsCollection
+    {
+        get
+        {
+            EnsureInitialized();
+            return _happyMomentsCollection!;
+        }
+    }
+
+    private ILiteCollection<GoodDeed> GoodDeedsCollection
+    {
+        get
+        {
+            EnsureInitialized();
+            return _goodDeedsCollection!;
+        }
+    }
+
     private ILiteCollection<DiaryEntry> EntriesCollection
     {
         get
@@ -209,6 +271,222 @@ public class DiaryService : IDiaryService, IDisposable
             {
                 def.DeletedAt = deleteDate.Date;
                 HabitsCollection.Update(def);
+            }
+        });
+    }
+
+    public Task<List<HarmfulHabitTracker>> GetHarmfulHabitTrackersAsync()
+    {
+        return Task.Run(() => HarmfulHabitTrackersCollection.Query().OrderByDescending(x => x.CreatedAt).ToList());
+    }
+
+    public Task SaveHarmfulHabitTrackerAsync(HarmfulHabitTracker tracker)
+    {
+        return Task.Run(() =>
+        {
+            var normalizedName = (tracker.HarmfulHabitName ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(normalizedName))
+            {
+                throw new ArgumentException("Tracker name is required.", nameof(tracker));
+            }
+
+            var normalizedStartDate = tracker.StartDate.Date > DateTime.Today ? DateTime.Today : tracker.StartDate.Date;
+            var hasDuplicate = HarmfulHabitTrackersCollection.FindAll()
+                .Any(x => x.Id != tracker.Id && string.Equals(x.HarmfulHabitName.Trim(), normalizedName, StringComparison.OrdinalIgnoreCase));
+
+            if (hasDuplicate)
+            {
+                throw new InvalidOperationException("Tracker with the same name already exists.");
+            }
+
+            tracker.HarmfulHabitName = normalizedName;
+            tracker.StartDate = normalizedStartDate;
+            tracker.CreatedAt = tracker.CreatedAt == default ? DateTime.UtcNow : tracker.CreatedAt;
+            tracker.MarkedDays = (tracker.MarkedDays ?? new List<DateTime>())
+                .Select(x => x.Date)
+                .Where(x => x >= tracker.StartDate && x <= DateTime.Today)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToList();
+
+            HarmfulHabitTrackersCollection.Upsert(tracker);
+        });
+    }
+
+    public Task SetHarmfulHabitDayMarkedAsync(Guid trackerId, DateTime date, bool isMarked)
+    {
+        return Task.Run(() =>
+        {
+            var tracker = HarmfulHabitTrackersCollection.FindById(trackerId)
+                ?? throw new InvalidOperationException("Tracker was not found.");
+
+            var targetDate = date.Date;
+            if (targetDate < tracker.StartDate.Date || targetDate > DateTime.Today)
+            {
+                return;
+            }
+
+            tracker.MarkedDays ??= new List<DateTime>();
+            tracker.MarkedDays = tracker.MarkedDays
+                .Select(x => x.Date)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToList();
+
+            if (isMarked)
+            {
+                if (!tracker.MarkedDays.Contains(targetDate))
+                {
+                    tracker.MarkedDays.Add(targetDate);
+                }
+            }
+            else
+            {
+                tracker.MarkedDays.RemoveAll(x => x == targetDate);
+            }
+
+            tracker.MarkedDays = tracker.MarkedDays.OrderBy(x => x).ToList();
+            HarmfulHabitTrackersCollection.Update(tracker);
+        });
+    }
+
+    public Task<List<ReadingTrackerBook>> GetReadingTrackerBooksAsync()
+    {
+        return Task.Run(() => ReadingTrackerBooksCollection.Query().OrderBy(x => x.SlotNumber).ToList());
+    }
+
+    public Task SaveReadingTrackerBookAsync(ReadingTrackerBook book)
+    {
+        return Task.Run(() =>
+        {
+            var normalizedTitle = (book.BookTitle ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(normalizedTitle))
+            {
+                throw new ArgumentException("Book title is required.", nameof(book));
+            }
+
+            if (book.SlotNumber <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(book), "Slot number must be greater than zero.");
+            }
+
+            var completedOn = book.CompletedOn.Date > DateTime.Today ? DateTime.Today : book.CompletedOn.Date;
+            var hasDuplicateSlot = ReadingTrackerBooksCollection.FindAll()
+                .Any(x => x.Id != book.Id && x.SlotNumber == book.SlotNumber);
+
+            if (hasDuplicateSlot)
+            {
+                throw new InvalidOperationException("Book slot is already filled.");
+            }
+
+            book.BookTitle = normalizedTitle;
+            book.CompletedOn = completedOn;
+            book.CreatedAt = book.CreatedAt == default ? DateTime.UtcNow : book.CreatedAt;
+
+            ReadingTrackerBooksCollection.Upsert(book);
+        });
+    }
+
+    public Task DeleteReadingTrackerBookAsync(int slotNumber)
+    {
+        return Task.Run(() =>
+        {
+            var existingSlot = ReadingTrackerBooksCollection.FindOne(x => x.SlotNumber == slotNumber);
+            if (existingSlot != null)
+            {
+                ReadingTrackerBooksCollection.Delete(existingSlot.Id);
+            }
+        });
+    }
+
+    public Task<List<HappyMoment>> GetHappyMomentsAsync()
+    {
+        return Task.Run(() => HappyMomentsCollection.Query().OrderBy(x => x.SlotNumber).ToList());
+    }
+
+    public Task SaveHappyMomentAsync(HappyMoment moment)
+    {
+        return Task.Run(() =>
+        {
+            var normalizedTitle = (moment.Title ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(normalizedTitle))
+            {
+                throw new ArgumentException("Moment title is required.", nameof(moment));
+            }
+
+            if (moment.SlotNumber <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(moment), "Slot number must be positive.");
+            }
+
+            var momentDate = moment.Date.Date > DateTime.Today ? DateTime.Today : moment.Date.Date;
+            var existingSlot = HappyMomentsCollection.FindOne(x => x.SlotNumber == moment.SlotNumber);
+
+            if (existingSlot != null)
+            {
+                moment.Id = existingSlot.Id;
+                moment.CreatedAt = existingSlot.CreatedAt;
+            }
+            else if (moment.CreatedAt == default)
+            {
+                moment.CreatedAt = DateTime.UtcNow;
+            }
+
+            moment.Title = normalizedTitle;
+            moment.Date = momentDate;
+
+            HappyMomentsCollection.Upsert(moment);
+        });
+    }
+
+    public Task<List<GoodDeed>> GetGoodDeedsAsync()
+    {
+        return Task.Run(() => GoodDeedsCollection.Query().OrderBy(x => x.SlotNumber).ToList());
+    }
+
+    public Task SaveGoodDeedAsync(GoodDeed deed)
+    {
+        return Task.Run(() =>
+        {
+            var normalizedTitle = (deed.Title ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(normalizedTitle))
+            {
+                throw new ArgumentException("Deed title is required.", nameof(deed));
+            }
+
+            if (deed.SlotNumber <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(deed), "Slot number must be positive.");
+            }
+
+            var deedDate = deed.Date.Date > DateTime.Today ? DateTime.Today : deed.Date.Date;
+            var existingSlot = GoodDeedsCollection.FindOne(x => x.SlotNumber == deed.SlotNumber);
+
+            if (existingSlot != null)
+            {
+                deed.Id = existingSlot.Id;
+                deed.CreatedAt = existingSlot.CreatedAt;
+            }
+            else if (deed.CreatedAt == default)
+            {
+                deed.CreatedAt = DateTime.UtcNow;
+            }
+
+            deed.Title = normalizedTitle;
+            deed.Date = deedDate;
+
+            GoodDeedsCollection.Upsert(deed);
+        });
+    }
+
+    public Task DeleteGoodDeedAsync(int slotNumber)
+    {
+        return Task.Run(() =>
+        {
+            var existingSlot = GoodDeedsCollection.FindOne(x => x.SlotNumber == slotNumber);
+            if (existingSlot != null)
+            {
+                GoodDeedsCollection.Delete(existingSlot.Id);
             }
         });
     }

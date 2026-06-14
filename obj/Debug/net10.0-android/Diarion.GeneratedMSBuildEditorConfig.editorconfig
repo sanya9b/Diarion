@@ -94,6 +94,36 @@ build_metadata.AdditionalFiles.NoWarn =
 build_metadata.AdditionalFiles.EnableDiagnostics = 
 build_metadata.AdditionalFiles.LineInfo = 
 
+[D:/WORK/SOURCE_CODE/Diarion/Views/GoodDeedsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Diarion.Views.GoodDeedsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\GoodDeedsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\GoodDeedsPage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[D:/WORK/SOURCE_CODE/Diarion/Views/HabitTrackerPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Diarion.Views.HabitTrackerPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\HabitTrackerPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\HabitTrackerPage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[D:/WORK/SOURCE_CODE/Diarion/Views/HappyMomentsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Diarion.Views.HappyMomentsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\HappyMomentsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\HappyMomentsPage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
 [D:/WORK/SOURCE_CODE/Diarion/Views/MainPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Diarion.Views.MainPage.xaml
@@ -119,6 +149,16 @@ build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Diarion.Views.ProfilePage.xaml
 build_metadata.AdditionalFiles.TargetPath = Views\ProfilePage.xaml
 build_metadata.AdditionalFiles.RelativePath = Views\ProfilePage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[D:/WORK/SOURCE_CODE/Diarion/Views/ReadingTrackerPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Diarion.Views.ReadingTrackerPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\ReadingTrackerPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\ReadingTrackerPage.xaml
 build_metadata.AdditionalFiles.Inflator = SourceGen
 build_metadata.AdditionalFiles.NoWarn = 
 build_metadata.AdditionalFiles.EnableDiagnostics = 

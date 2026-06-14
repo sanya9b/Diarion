@@ -181,6 +181,132 @@
   <data name="TodayLabel" xml:space="preserve">
     <value>СЬОГОДНІ</value>
   </data>
+  <data name="HabitTrackerTitle" xml:space="preserve">
+    <value>Трекер шкідливих звичок</value>
+  </data>
+  <data name="HabitTrackerSubtitle" xml:space="preserve">
+    <value>Створи окремий трекер для кожної звички та відмічай кожен чистий день.</value>
+  </data>
+  <data name="HabitTrackerSetupTitle" xml:space="preserve">
+    <value>Новий трекер</value>
+  </data>
+  <data name="HabitTrackerSetupSubtitle" xml:space="preserve">
+    <value>Додай назву шкідливої звички, обери дату старту та веди щоденні відмітки в одному місці.</value>
+  </data>
+  <data name="HabitTrackerNameLabel" xml:space="preserve">
+    <value>Назва шкідливої звички</value>
+  </data>
+  <data name="HabitTrackerNamePlaceholder" xml:space="preserve">
+    <value>Наприклад: куріння або безкінечний скролінг</value>
+  </data>
+  <data name="HabitTrackerStartDateLabel" xml:space="preserve">
+    <value>Дата старту трекера</value>
+  </data>
+  <data name="HabitTrackerAddButton" xml:space="preserve">
+    <value>Додати трекер</value>
+  </data>
+  <data name="HabitTrackerEmptyState" xml:space="preserve">
+    <value>Поки що немає жодного трекера. Створи перший і почни відмічати дні.</value>
+  </data>
+  <data name="HabitTrackerDaysSectionTitle" xml:space="preserve">
+    <value>Дні для відмітки</value>
+  </data>
+  <data name="HabitTrackerMarkedDaysLabel" xml:space="preserve">
+    <value>Відмічено днів</value>
+  </data>
+  <data name="HabitTrackerNameRequiredMessage" xml:space="preserve">
+    <value>Вкажи назву шкідливої звички.</value>
+  </data>
+  <data name="HabitTrackerDuplicateMessage" xml:space="preserve">
+    <value>Трекер з такою назвою вже існує.</value>
+  </data>
+  <data name="ReadingTrackerTitle" xml:space="preserve">
+    <value>Трекер читання</value>
+  </data>
+  <data name="ReadingTrackerSubtitle" xml:space="preserve">
+    <value>Натисни на порожній слот, додай назву книги й дату завершення читання.</value>
+  </data>
+  <data name="ReadingTrackerSlotFormat" xml:space="preserve">
+    <value>Слот {0}</value>
+  </data>
+  <data name="ReadingTrackerBookTitleLabel" xml:space="preserve">
+    <value>Назва книги</value>
+  </data>
+  <data name="ReadingTrackerBookTitlePlaceholder" xml:space="preserve">
+    <value>Наприклад: Атомні звички</value>
+  </data>
+  <data name="ReadingTrackerCompletionDateLabel" xml:space="preserve">
+    <value>Дата завершення читання</value>
+  </data>
+  <data name="ReadingTrackerSaveBookButton" xml:space="preserve">
+    <value>Зберегти книгу</value>
+  </data>
+  <data name="ReadingTrackerBookTitleRequiredMessage" xml:space="preserve">
+    <value>Вкажи назву книги.</value>
+  </data>
+  <data name="HappyMomentsTitle" xml:space="preserve">
+    <value>Щасливі миті</value>
+  </data>
+  <data name="HappyMomentsSubtitle" xml:space="preserve">
+    <value>Натисни на порожню картку, запиши світлий спогад і збережи дату.</value>
+  </data>
+  <data name="HappyMomentsSlotFormat" xml:space="preserve">
+    <value>Місяць {0}</value>
+  </data>
+  <data name="HappyMomentsFormTitle" xml:space="preserve">
+    <value>Нова мить</value>
+  </data>
+  <data name="HappyMomentsTitleLabel" xml:space="preserve">
+    <value>Що змусило посміхнутись?</value>
+  </data>
+  <data name="HappyMomentsTitlePlaceholder" xml:space="preserve">
+    <value>Наприклад: Вихідні в горах</value>
+  </data>
+  <data name="HappyMomentsDateLabel" xml:space="preserve">
+    <value>Дата</value>
+  </data>
+  <data name="HappyMomentsSaveButton" xml:space="preserve">
+    <value>Зберегти мить</value>
+  </data>
+  <data name="HappyMomentsTitleRequiredMessage" xml:space="preserve">
+    <value>Будь ласка, додай опис миті.</value>
+  </data>
+  <data name="GoodDeedsTitle" xml:space="preserve">
+    <value>Скарбничка добрих справ</value>
+  </data>
+  <data name="GoodDeedsSubtitle" xml:space="preserve">
+    <value>Натисни на порожню картку, запиши добру справу і збережи дату.</value>
+  </data>
+  <data name="GoodDeedsSlotFormat" xml:space="preserve">
+    <value>Місяць {0}</value>
+  </data>
+  <data name="GoodDeedsFormTitle" xml:space="preserve">
+    <value>Нова добра справа</value>
+  </data>
+  <data name="GoodDeedsTitleLabel" xml:space="preserve">
+    <value>Що хорошого ти зробив(ла)?</value>
+  </data>
+  <data name="GoodDeedsTitlePlaceholder" xml:space="preserve">
+    <value>Наприклад: Допоміг сусіду</value>
+  </data>
+  <data name="GoodDeedsDateLabel" xml:space="preserve">
+    <value>Дата</value>
+  </data>
+  <data name="GoodDeedsSaveButton" xml:space="preserve">
+    <value>Зберегти</value>
+  </data>
+  <data name="GoodDeedsTitleRequiredMessage" xml:space="preserve">
+    <value>Будь ласка, додай опис справи.</value>
+  </data>
+  <data name="TrackerPrototypeLabel" xml:space="preserve">
+    <value>АДАПТИВНИЙ МАКЕТ</value>
+  </data>
+  <data name="TrackerPreviewTitle" xml:space="preserve">
+    <value>Попередній макет</value>
+  </data>
+  <data name="TrackerReadyMessage" xml:space="preserve">
+    <value>Навігація та макет готові для детальної реалізації.</value>
+  </data>
   <data name="WeekdayMonShort" xml:space="preserve">
     <value>ПН</value>
   </data>
@@ -366,5 +492,29 @@
   </data>
   <data name="CycleDayFormat" xml:space="preserve">
     <value>День {0}</value>
+  </data>
+  <data name="HabitPhysicalActivity" xml:space="preserve">
+    <value>Фізична активність</value>
+  </data>
+  <data name="HabitBreakfast" xml:space="preserve">
+    <value>Сніданок</value>
+  </data>
+  <data name="HabitLunch" xml:space="preserve">
+    <value>Обід</value>
+  </data>
+  <data name="HabitDinner" xml:space="preserve">
+    <value>Вечеря</value>
+  </data>
+  <data name="HabitWater" xml:space="preserve">
+    <value>Вода</value>
+  </data>
+  <data name="HabitVitamins" xml:space="preserve">
+    <value>Вітаміни/Ліки</value>
+  </data>
+  <data name="HabitReading" xml:space="preserve">
+    <value>Читання / Нові знання</value>
+  </data>
+  <data name="HabitSocial" xml:space="preserve">
+    <value>Соціальні зв'язки</value>
   </data>
 </root>

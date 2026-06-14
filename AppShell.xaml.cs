@@ -6,18 +6,26 @@ namespace Diarion;
 
 public partial class AppShell : Shell
 {
-	public AppShell()
-	{
+        public AppShell()
+        {
         using var _ = StartupTrace.Measure("AppShell..ctor");
-		InitializeComponent();
+                InitializeComponent();
         StartupTrace.Mark("AppShell.InitializeComponent complete");
-		Routing.RegisterRoute("DiaryDetail", typeof(Views.DiaryDetailPage));
+                Routing.RegisterRoute("DiaryDetail", typeof(Views.DiaryDetailPage));
         Routing.RegisterRoute("TodoDetail", typeof(Views.TodoDetailPage));
+        Routing.RegisterRoute("HabitTracker", typeof(Views.HabitTrackerPage));
+        Routing.RegisterRoute("ReadingTracker", typeof(Views.ReadingTrackerPage));
+        Routing.RegisterRoute("HappyMoments", typeof(Views.HappyMomentsPage));
+        Routing.RegisterRoute("GoodDeeds", typeof(Views.GoodDeedsPage));
 
         // Налаштовуємо позицію бігунка (switch) для мови при старті
         var currentLanguage = Preferences.Get("AppLanguage", "en");
         LangThumb.HorizontalOptions = currentLanguage == "uk" ? LayoutOptions.End : LayoutOptions.Start;
-	}
+
+        // Налаштовуємо позицію бігунка (switch) для теми при старті
+        var currentTheme = Preferences.Get("AppTheme", "Light");
+        ThemeThumb.HorizontalOptions = currentTheme == "Dark" ? LayoutOptions.End : LayoutOptions.Start;
+        }
 
     private async void OnToggleThemeClicked(object? sender, TappedEventArgs e)
     {
@@ -65,6 +73,7 @@ public partial class AppShell : Shell
         CultureInfo.DefaultThreadCurrentCulture = culture;
         CultureInfo.DefaultThreadCurrentUICulture = culture;
         Diarion.Resources.Localization.AppResources.Culture = culture;
+        Diarion.Resources.Localization.LocalizationResourceManager.Instance.SetCulture(culture);
 
         // Закриваємо меню перед перестворенням сторінки
         Current.FlyoutIsPresented = false;

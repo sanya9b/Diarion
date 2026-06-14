@@ -15,7 +15,7 @@
     <Grid Padding="0" RowDefinitions="Auto, *">
         
         <!-- Custom Top Bar -->
-        <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="Auto, *">
+        <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="Auto, *" ColumnSpacing="12">
             <!-- Hamburger Menu Button -->
             <Grid Grid.Column="0" Padding="10,0">
                 <Grid.GestureRecognizers>
@@ -27,17 +27,164 @@
                        VerticalOptions="Center" HorizontalOptions="Start" />
             </Grid>
             
-            <!-- TODAY Label -->
-            <Grid Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center" BackgroundColor="Transparent" Padding="10,5">
-                <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding GoToTodayCommand}" />
-                </Grid.GestureRecognizers>
-                <Label Text="{x:Static localization:AppResources.TodayLabel}" 
-                       InputTransparent="True"
-                       HorizontalOptions="Center" VerticalOptions="Center" 
-                       TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" 
-                       CharacterSpacing="2" FontSize="11" />
-            </Grid>
+            <ScrollView Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalScrollBarVisibility="Never"
+                        VerticalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="8" Padding="6,0,0,0">
+                    <Border StrokeShape="RoundRectangle 16"
+                            StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                            Padding="0"
+                            WidthRequest="50"
+                            HeightRequest="50"
+                            Margin="0,0,2,0">
+                        <Grid RowDefinitions="Auto,*">
+                            <Border Grid.Row="0"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 16,16,0,0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
+                                    Padding="0,2">
+                                <Label Text="{Binding TodayMonthShort}"
+                                       InputTransparent="True"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       FontSize="9"
+                                       FontAttributes="Bold"
+                                       CharacterSpacing="1.2"
+                                       TextColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
+                            </Border>
+                            <Label Grid.Row="1"
+                                   Text="{Binding TodayDayNumber}"
+                                   InputTransparent="True"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+
+                            <BoxView Grid.RowSpan="2" BackgroundColor="Transparent">
+                                <BoxView.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding GoToTodayCommand}" />
+                                </BoxView.GestureRecognizers>
+                            </BoxView>
+                        </Grid>
+                    </Border>
+
+                    <Border StrokeShape="RoundRectangle 16"
+                            StrokeThickness="1"
+                            Stroke="{StaticResource Coral}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                            Padding="0"
+                            WidthRequest="50"
+                            HeightRequest="50">
+                        <Grid BackgroundColor="Transparent">
+                            <Image Source="habit_tracker.svg"
+                                   InputTransparent="True"
+                                   WidthRequest="22"
+                                   HeightRequest="22"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Aspect="AspectFit">
+                                <Image.Behaviors>
+                                    <toolkit:IconTintColorBehavior TintColor="{StaticResource Coral}" />
+                                </Image.Behaviors>
+                            </Image>
+
+                            <BoxView BackgroundColor="Transparent">
+                                <BoxView.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenHabitTrackerCommand}" />
+                                </BoxView.GestureRecognizers>
+                            </BoxView>
+                        </Grid>
+                    </Border>
+
+                    <Border StrokeShape="RoundRectangle 16"
+                            StrokeThickness="1"
+                            Stroke="{StaticResource Sage}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                            Padding="0"
+                            WidthRequest="50"
+                            HeightRequest="50">
+                        <Grid BackgroundColor="Transparent">
+                            <Image Source="reading_tracker.svg"
+                                   InputTransparent="True"
+                                   WidthRequest="22"
+                                   HeightRequest="22"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Aspect="AspectFit">
+                                <Image.Behaviors>
+                                    <toolkit:IconTintColorBehavior TintColor="{StaticResource Sage}" />
+                                </Image.Behaviors>
+                            </Image>
+
+                            <BoxView BackgroundColor="Transparent">
+                                <BoxView.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenReadingTrackerCommand}" />
+                                </BoxView.GestureRecognizers>
+                            </BoxView>
+                        </Grid>
+                    </Border>
+
+                    <Border StrokeShape="RoundRectangle 16"
+                            StrokeThickness="1"
+                            Stroke="{StaticResource Berry}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                            Padding="0"
+                            WidthRequest="50"
+                            HeightRequest="50">
+                        <Grid BackgroundColor="Transparent">
+                            <Image Source="happy_moments.svg"
+                                   InputTransparent="True"
+                                   WidthRequest="22"
+                                   HeightRequest="22"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Aspect="AspectFit">
+                                <Image.Behaviors>
+                                    <toolkit:IconTintColorBehavior TintColor="{StaticResource Berry}" />
+                                </Image.Behaviors>
+                            </Image>
+
+                            <BoxView BackgroundColor="Transparent">
+                                <BoxView.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenHappyMomentsCommand}" />
+                                </BoxView.GestureRecognizers>
+                            </BoxView>
+                        </Grid>
+                    </Border>
+
+                    <Border StrokeShape="RoundRectangle 16"
+                            StrokeThickness="1"
+                            Stroke="{StaticResource Amber}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                            Padding="0"
+                            WidthRequest="50"
+                            HeightRequest="50">
+                        <Grid BackgroundColor="Transparent">
+                            <Image Source="good_deeds.svg"
+                                   InputTransparent="True"
+                                   WidthRequest="22"
+                                   HeightRequest="22"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Aspect="AspectFit">
+                                <Image.Behaviors>
+                                    <toolkit:IconTintColorBehavior TintColor="{StaticResource Amber}" />
+                                </Image.Behaviors>
+                            </Image>
+
+                            <BoxView BackgroundColor="Transparent">
+                                <BoxView.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenGoodDeedsCommand}" />
+                                </BoxView.GestureRecognizers>
+                            </BoxView>
+                        </Grid>
+                    </Border>
+                </HorizontalStackLayout>
+            </ScrollView>
         </Grid>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
@@ -154,7 +301,7 @@
                 </FlexLayout>
                 </Grid>
 
-                <VerticalStackLayout Margin="0,-24,0,6" Spacing="0" HorizontalOptions="Fill">
+                <VerticalStackLayout Margin="0,8,0,10" Spacing="0" HorizontalOptions="Fill">
                     <Label Text="{Binding SelectedDateDayName}" FontFamily="MarckScript" FontSize="32" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
                 </VerticalStackLayout>
 

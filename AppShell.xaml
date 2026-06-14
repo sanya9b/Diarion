@@ -11,8 +11,15 @@
     Shell.FlyoutBackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
 
     <Shell.FlyoutHeader>
-        <Grid HeightRequest="140" Padding="24,32,24,16">
-            <Label Text="{x:Static localization:AppResources.AppTitle}" 
+        <Grid HeightRequest="140" Padding="24,32,24,16" RowDefinitions="Auto,*">
+            <Image Grid.Row="0"
+                   Source="app_logo.png"
+                   HeightRequest="48"
+                   WidthRequest="48"
+                   HorizontalOptions="Start"
+                   VerticalOptions="Start" />
+            <Label Grid.Row="1"
+                   Text="{x:Static localization:AppResources.AppTitle}" 
                    FontAttributes="Bold" 
                    FontSize="28" 
                    VerticalOptions="End" 
@@ -21,7 +28,7 @@
     </Shell.FlyoutHeader>
 
     <Shell.FlyoutFooter>
-        <HorizontalStackLayout Padding="24" Spacing="32" Margin="0,0,0,32" HorizontalOptions="Center">
+        <HorizontalStackLayout Padding="24" Spacing="16" Margin="0,0,0,32" HorizontalOptions="Center">
             <!-- Language Switch -->
             <Grid HeightRequest="40" WidthRequest="110" VerticalOptions="Center">
                 
@@ -59,13 +66,35 @@
             </Grid>
 
             <!-- Theme Switch -->
-            <Grid HeightRequest="50" WidthRequest="50" Padding="6">
-                <Label Text="◑"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center"
-                       TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Dust}}"
-                       FontSize="28" />
-                       
+            <Grid HeightRequest="40" WidthRequest="110" VerticalOptions="Center">
+                
+                <!-- Background Pill -->
+                <Border StrokeShape="RoundRectangle 20" 
+                        StrokeThickness="1" 
+                        Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}" />
+                
+                <!-- Moving Thumb -->
+                <Border x:Name="ThemeThumb"
+                        StrokeShape="RoundRectangle 16"
+                        StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                        WidthRequest="50"
+                        HorizontalOptions="Start"
+                        Margin="4">
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource Midnight}" Offset="0,2" Radius="4" Opacity="0.2" />
+                    </Border.Shadow>
+                </Border>
+                        
+                <!-- Text/Icons -->
+                <Grid ColumnDefinitions="*,*">
+                    <!-- Light Theme -->
+                    <Label Grid.Column="0" Text="☀️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <!-- Dark Theme -->
+                    <Label Grid.Column="1" Text="🌙" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Grid>
+
                 <!-- ABSOLUTE HITBOX -->
                 <BoxView BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill">
                     <BoxView.GestureRecognizers>

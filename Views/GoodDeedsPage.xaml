@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             x:Class="Diarion.Views.GoodDeedsPage"
+             x:Name="RootPage"
+             x:DataType="viewModels:GoodDeedsViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{localization:Translate Key=GoodDeedsTitle}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCloseTapped" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <Label Text="{localization:Translate Key=GoodDeedsTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                <Label Text="{localization:Translate Key=GoodDeedsSubtitle}" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator Grid.Column="2"
+                               WidthRequest="28"
+                               HeightRequest="28"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Amber}"
+                               VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="24,10,24,32" Spacing="16">
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding DeedSlots}" Spacing="8">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:GoodDeedSlotItemViewModel">
+                            <Border Padding="12,10"
+                                    StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}"
+                                    StrokeShape="RoundRectangle 14">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectSlotCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="Stroke" Value="{StaticResource Amber}" />
+                                        <Setter Property="StrokeThickness" Value="2" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                    <Border Grid.Column="0"
+                                            WidthRequest="36"
+                                            HeightRequest="36"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 8"
+                                            BackgroundColor="{AppThemeBinding Light=#1AC9985A, Dark=#26C9985A}">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsEmpty}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#14C9985A, Dark=#1AFFFFFF}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Grid>
+                                            <Label Text="+"
+                                                   IsVisible="{Binding IsEmpty}"
+                                                   FontSize="20"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   InputTransparent="True"
+                                                   TextColor="{StaticResource Amber}" />
+                                            <Label Text="♥"
+                                                   IsVisible="{Binding IsFilled}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   InputTransparent="True"
+                                                   TextColor="{StaticResource Amber}" />
+                                        </Grid>
+                                    </Border>
+
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding SlotCaption}"
+                                               IsVisible="{Binding IsEmpty}"
+                                               FontSize="13"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center"
+                                               InputTransparent="True"
+                                               TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                        
+                                        <Label Text="{Binding DeedTitle}"
+                                               IsVisible="{Binding IsFilled}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="WordWrap"
+                                               MaxLines="2"
+                                               InputTransparent="True"
+                                               TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                        
+                                        <Label Text="{Binding SlotCaption}"
+                                               IsVisible="{Binding IsFilled}"
+                                               FontSize="10"
+                                               InputTransparent="True"
+                                               TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Column="2"
+                                           Text="{Binding DateText}"
+                                           IsVisible="{Binding IsFilled}"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           VerticalOptions="Center"
+                                           InputTransparent="True"
+                                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Popup Overlay -->
+        <Grid Grid.RowSpan="2"
+              BackgroundColor="{AppThemeBinding Light=#99000000, Dark=#B3000000}"
+              IsVisible="{Binding IsAddDeedFormVisible}"
+              InputTransparent="False">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding SelectSlotCommand}" CommandParameter="{Binding SelectedSlot}" />
+            </Grid.GestureRecognizers>
+
+            <Border StrokeShape="RoundRectangle 24"
+                    StrokeThickness="1"
+                    Stroke="{StaticResource Amber}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}"
+                    Padding="24"
+                    Margin="24"
+                    VerticalOptions="Center"
+                    Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.2}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer />
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="16">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Margin="0,0,0,8">
+                        <Border WidthRequest="42"
+                                HeightRequest="42"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="{StaticResource Amber}">
+                            <Label Text="♥"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   TextColor="{StaticResource Snow}" />
+                        </Border>
+
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="{localization:Translate Key=GoodDeedsFormTitle}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                            <Label Text="{Binding SelectedSlot.SlotCaption}"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                        </VerticalStackLayout>
+
+                        <!-- Close Button -->
+                        <Grid Grid.Column="2" VerticalOptions="Start" Padding="8,0,0,8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectSlotCommand}" CommandParameter="{Binding SelectedSlot}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✕" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                        </Grid>
+                    </Grid>
+
+                    <Label Text="{localization:Translate Key=GoodDeedsTitleLabel}"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           CharacterSpacing="1.2"
+                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    <Entry Text="{Binding NewDeedTitle}"
+                           Placeholder="{localization:Translate Key=GoodDeedsTitlePlaceholder}"
+                           ClearButtonVisibility="WhileEditing"
+                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
+                           PlaceholderColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+
+                    <Label Text="{localization:Translate Key=GoodDeedsDateLabel}"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           CharacterSpacing="1.2"
+                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                    <DatePicker Date="{Binding NewDeedDate}"
+                                MaximumDate="{Binding MaxDeedDate}"
+                                TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+
+                    <Label Text="{Binding ValidationMessage}"
+                           IsVisible="{Binding HasValidationMessage}"
+                           FontSize="12"
+                           TextColor="{StaticResource Coral}" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
+                        <Button Grid.Column="0"
+                                Text="{localization:Translate Key=DeleteButton}"
+                                Command="{Binding DeleteSelectedDeedCommand}"
+                                IsVisible="{Binding SelectedSlot.IsFilled}"
+                                CornerRadius="18"
+                                Padding="18,12"
+                                BackgroundColor="Transparent"
+                                BorderColor="{StaticResource Coral}"
+                                BorderWidth="1"
+                                TextColor="{StaticResource Coral}"
+                                FontAttributes="Bold" />
+                                
+                        <Button Grid.Column="1"
+                                Text="{localization:Translate Key=GoodDeedsSaveButton}"
+                                Command="{Binding SaveSelectedDeedCommand}"
+                                IsVisible="{Binding SelectedSlot.IsFilled}"
+                                CornerRadius="18"
+                                Padding="18,12"
+                                BackgroundColor="{StaticResource Amber}"
+                                TextColor="{StaticResource Snow}"
+                                FontAttributes="Bold" />
+
+                        <Button Grid.Column="0" Grid.ColumnSpan="2"
+                                Text="{localization:Translate Key=GoodDeedsSaveButton}"
+                                Command="{Binding SaveSelectedDeedCommand}"
+                                IsVisible="{Binding SelectedSlot.IsEmpty}"
+                                CornerRadius="18"
+                                Padding="18,12"
+                                BackgroundColor="{StaticResource Amber}"
+                                TextColor="{StaticResource Snow}"
+                                FontAttributes="Bold" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

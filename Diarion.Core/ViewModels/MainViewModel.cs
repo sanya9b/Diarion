@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Diagnostics;
@@ -120,6 +120,12 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private string _selectedDateDayName = string.Empty;
 
+    [ObservableProperty]
+    private string _todayMonthShort = string.Empty;
+
+    [ObservableProperty]
+    private string _todayDayNumber = string.Empty;
+
     private DateTime _currentCalendarDate = DateTime.Now;
 
     public MainViewModel(IDiaryService diaryService)
@@ -127,6 +133,11 @@ public partial class MainViewModel : BaseViewModel
         using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
+        
+        var culture = Diarion.Resources.Localization.AppResources.Culture ?? CultureInfo.CurrentCulture;
+        TodayMonthShort = DateTime.Now.ToString("MMM", culture).ToUpper();
+        TodayDayNumber = DateTime.Now.ToString("dd");
+        
         GenerateCalendar(_currentCalendarDate);
         _ = UpdateCalendarTasksCompletion();
     }
@@ -609,5 +620,29 @@ public partial class MainViewModel : BaseViewModel
             return;
 
         await Shell.Current.GoToAsync($"TodoDetail?Id={todo.Id}");
+    }
+
+    [RelayCommand]
+    public async Task OpenHabitTrackerAsync()
+    {
+        await Shell.Current.GoToAsync("HabitTracker");
+    }
+
+    [RelayCommand]
+    public async Task OpenReadingTrackerAsync()
+    {
+        await Shell.Current.GoToAsync("ReadingTracker");
+    }
+
+    [RelayCommand]
+    public async Task OpenHappyMomentsAsync()
+    {
+        await Shell.Current.GoToAsync("HappyMoments");
+    }
+
+    [RelayCommand]
+    public async Task OpenGoodDeedsAsync()
+    {
+        await Shell.Current.GoToAsync("GoodDeeds");
     }
 }

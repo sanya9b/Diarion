@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             x:Class="Diarion.Views.HabitTrackerPage"
+             x:Name="RootPage"
+             x:DataType="viewModels:HabitTrackerViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{localization:Translate Key=HabitTrackerTitle}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCloseTapped" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <Label Text="{localization:Translate Key=HabitTrackerTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                <Label Text="{localization:Translate Key=HabitTrackerSubtitle}" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator Grid.Column="2"
+                               WidthRequest="28"
+                               HeightRequest="28"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Coral}"
+                               VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="24,10,24,32" Spacing="14">
+                <Button Text="{localization:Translate Key=HabitTrackerAddButton}"
+                        Command="{Binding ShowAddTrackerFormCommand}"
+                        CornerRadius="24"
+                        Padding="18,14"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                        TextColor="{StaticResource Coral}"
+                        BorderColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                        BorderWidth="1"
+                        FontAttributes="Bold" />
+
+                <Border StrokeShape="RoundRectangle 20"
+                        StrokeThickness="0"
+                        IsVisible="{Binding HasNoTrackers}"
+                        BackgroundColor="{AppThemeBinding Light=#1AC26D53, Dark=#26FFFFFF}"
+                        Padding="16,14">
+                    <Label Text="{localization:Translate Key=HabitTrackerEmptyState}"
+                           FontSize="13"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                </Border>
+
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding HasTrackers}">
+                    <ScrollView Orientation="Horizontal">
+                        <HorizontalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Trackers}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:HarmfulHabitTrackerItemViewModel">
+                                    <Border Padding="14,10"
+                                            StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                                            BackgroundColor="Transparent"
+                                            StrokeShape="RoundRectangle 18">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectTrackerCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Coral}" />
+                                                <Setter Property="Stroke" Value="{StaticResource Coral}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="{Binding HarmfulHabitName}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   InputTransparent="True"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="TextColor" Value="{StaticResource Snow}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+
+                                            <Label Text="{Binding StartDateText}"
+                                                   FontSize="12"
+                                                   InputTransparent="True"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="TextColor" Value="#FBE7E1" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                        <Border StrokeShape="RoundRectangle 24"
+                            StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                            Padding="14"
+                            IsVisible="{Binding HasSelectedTracker}">
+                        <VerticalStackLayout Spacing="16">
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                <Border StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 18"
+                                        BackgroundColor="{AppThemeBinding Light=#14C9985A, Dark=#18FFFFFF}"
+                                        Padding="14,12">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="{localization:Translate Key=HabitTrackerStartDateLabel}"
+                                               FontSize="11"
+                                               TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                        <Label Text="{Binding SelectedTracker.StartDateText}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border Grid.Column="1"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 18"
+                                        BackgroundColor="{AppThemeBinding Light=#148FA083, Dark=#18FFFFFF}"
+                                        Padding="14,12">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="{localization:Translate Key=HabitTrackerMarkedDaysLabel}"
+                                               FontSize="11"
+                                               TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                        <Label Text="{Binding SelectedTracker.MarkedDaysCountText}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
+
+                            <FlexLayout BindableLayout.ItemsSource="{Binding TrackerDays}"
+                                        Padding="0"
+                                        Direction="Row"
+                                        Wrap="Wrap"
+                                        JustifyContent="SpaceBetween"
+                                        AlignItems="Start">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:HarmfulHabitDayViewModel">
+                                        <Border Padding="0"
+                                            Margin="0,0,0,5"
+                                            WidthRequest="60"
+                                            HeightRequest="60"
+                                                StrokeThickness="1"
+                                                Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                                                BackgroundColor="Transparent"
+                                            StrokeShape="RoundRectangle 30">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleDayCommand}"
+                                                                      CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsMarked}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource Coral}" />
+                                                    <Setter Property="Stroke" Value="{StaticResource Coral}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsFuture}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#1A000000, Dark=#33000000}" />
+                                                    <Setter Property="StrokeThickness" Value="0" />
+                                                    <Setter Property="Opacity" Value="0.5" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+
+                                            <VerticalStackLayout Spacing="0" HorizontalOptions="Center" VerticalOptions="Center">
+                                                <Label Text="{Binding DayNumberText}"
+                                                       FontSize="14"
+                                                       FontAttributes="Bold"
+                                                       HorizontalTextAlignment="Center"
+                                                       InputTransparent="True"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsMarked}" Value="True">
+                                                            <Setter Property="TextColor" Value="{StaticResource Snow}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                                <Label Text="{Binding DateText}"
+                                                          FontSize="10"
+                                                       HorizontalTextAlignment="Center"
+                                                       InputTransparent="True"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsMarked}" Value="True">
+                                                            <Setter Property="TextColor" Value="#FBE7E1" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </FlexLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Popup Overlay -->
+        <Grid Grid.RowSpan="2"
+              BackgroundColor="{AppThemeBinding Light=#99000000, Dark=#B3000000}"
+              IsVisible="{Binding IsAddTrackerFormVisible}"
+              InputTransparent="False">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding HideAddTrackerFormCommand}" />
+            </Grid.GestureRecognizers>
+
+            <Border StrokeShape="RoundRectangle 24"
+                    StrokeThickness="1"
+                    Stroke="{StaticResource Coral}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}"
+                    Padding="24"
+                    Margin="24"
+                    VerticalOptions="Center"
+                    Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.2}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer />
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="16">
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                        <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                            <Label Text="{localization:Translate Key=HabitTrackerSetupTitle}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                            <Label Text="{localization:Translate Key=HabitTrackerSetupSubtitle}"
+                                   FontSize="11"
+                                   LineBreakMode="WordWrap"
+                                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                        </VerticalStackLayout>
+
+                        <!-- Close Button -->
+                        <Grid Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding HideAddTrackerFormCommand}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✕" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                        </Grid>
+                    </Grid>
+
+                    <Label Text="{localization:Translate Key=HabitTrackerNameLabel}" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                    <Entry Text="{Binding NewTrackerName}"
+                           Placeholder="{localization:Translate Key=HabitTrackerNamePlaceholder}"
+                           ClearButtonVisibility="WhileEditing"
+                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
+                           PlaceholderColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+
+                    <Label Text="{localization:Translate Key=HabitTrackerStartDateLabel}" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                    <DatePicker Date="{Binding NewTrackerStartDate}"
+                                MaximumDate="{Binding MaxTrackerStartDate}"
+                                TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+
+                    <Label Text="{Binding ValidationMessage}"
+                           IsVisible="{Binding HasValidationMessage}"
+                           FontSize="12"
+                           TextColor="{StaticResource Coral}" />
+
+                    <Button Text="{localization:Translate Key=HabitTrackerAddButton}"
+                            Command="{Binding AddTrackerCommand}"
+                            CornerRadius="18"
+                            Padding="18,12"
+                            Margin="0,8,0,0"
+                            BackgroundColor="{StaticResource Coral}"
+                            TextColor="{StaticResource Snow}"
+                            FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

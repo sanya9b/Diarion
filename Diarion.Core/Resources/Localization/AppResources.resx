@@ -181,6 +181,132 @@
   <data name="TodayLabel" xml:space="preserve">
     <value>TODAY</value>
   </data>
+  <data name="HabitTrackerTitle" xml:space="preserve">
+    <value>Harmful Habit Tracker</value>
+  </data>
+  <data name="HabitTrackerSubtitle" xml:space="preserve">
+    <value>Create a separate tracker for each habit and mark every clean day.</value>
+  </data>
+  <data name="HabitTrackerSetupTitle" xml:space="preserve">
+    <value>New tracker</value>
+  </data>
+  <data name="HabitTrackerSetupSubtitle" xml:space="preserve">
+    <value>Add the harmful habit name, choose the start date, and keep daily marks in one place.</value>
+  </data>
+  <data name="HabitTrackerNameLabel" xml:space="preserve">
+    <value>Harmful habit name</value>
+  </data>
+  <data name="HabitTrackerNamePlaceholder" xml:space="preserve">
+    <value>For example: smoking or doomscrolling</value>
+  </data>
+  <data name="HabitTrackerStartDateLabel" xml:space="preserve">
+    <value>Tracker start date</value>
+  </data>
+  <data name="HabitTrackerAddButton" xml:space="preserve">
+    <value>Add tracker</value>
+  </data>
+  <data name="HabitTrackerEmptyState" xml:space="preserve">
+    <value>You do not have any trackers yet. Create the first one to start marking days.</value>
+  </data>
+  <data name="HabitTrackerDaysSectionTitle" xml:space="preserve">
+    <value>Days to mark</value>
+  </data>
+  <data name="HabitTrackerMarkedDaysLabel" xml:space="preserve">
+    <value>Marked days</value>
+  </data>
+  <data name="HabitTrackerNameRequiredMessage" xml:space="preserve">
+    <value>Enter the harmful habit name.</value>
+  </data>
+  <data name="HabitTrackerDuplicateMessage" xml:space="preserve">
+    <value>A tracker with this name already exists.</value>
+  </data>
+  <data name="ReadingTrackerTitle" xml:space="preserve">
+    <value>Reading Tracker</value>
+  </data>
+  <data name="ReadingTrackerSubtitle" xml:space="preserve">
+    <value>Tap an empty slot, add a book title, and save the finish date.</value>
+  </data>
+  <data name="ReadingTrackerSlotFormat" xml:space="preserve">
+    <value>Slot {0}</value>
+  </data>
+  <data name="ReadingTrackerBookTitleLabel" xml:space="preserve">
+    <value>Book title</value>
+  </data>
+  <data name="ReadingTrackerBookTitlePlaceholder" xml:space="preserve">
+    <value>For example: Atomic Habits</value>
+  </data>
+  <data name="ReadingTrackerCompletionDateLabel" xml:space="preserve">
+    <value>Reading finish date</value>
+  </data>
+  <data name="ReadingTrackerSaveBookButton" xml:space="preserve">
+    <value>Save book</value>
+  </data>
+  <data name="ReadingTrackerBookTitleRequiredMessage" xml:space="preserve">
+    <value>Enter the book title.</value>
+  </data>
+  <data name="HappyMomentsTitle" xml:space="preserve">
+    <value>Happy Moments</value>
+  </data>
+  <data name="HappyMomentsSubtitle" xml:space="preserve">
+    <value>Tap an empty card, write down a bright moment, and save the date.</value>
+  </data>
+  <data name="HappyMomentsSlotFormat" xml:space="preserve">
+    <value>Month {0}</value>
+  </data>
+  <data name="HappyMomentsFormTitle" xml:space="preserve">
+    <value>New moment</value>
+  </data>
+  <data name="HappyMomentsTitleLabel" xml:space="preserve">
+    <value>What made you smile?</value>
+  </data>
+  <data name="HappyMomentsTitlePlaceholder" xml:space="preserve">
+    <value>For example: Weekend in the mountains</value>
+  </data>
+  <data name="HappyMomentsDateLabel" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="HappyMomentsSaveButton" xml:space="preserve">
+    <value>Save moment</value>
+  </data>
+  <data name="HappyMomentsTitleRequiredMessage" xml:space="preserve">
+    <value>Please enter the moment description.</value>
+  </data>
+  <data name="GoodDeedsTitle" xml:space="preserve">
+    <value>Good Deeds</value>
+  </data>
+  <data name="GoodDeedsSubtitle" xml:space="preserve">
+    <value>Tap an empty card, write down a good deed, and save the date.</value>
+  </data>
+  <data name="GoodDeedsSlotFormat" xml:space="preserve">
+    <value>Month {0}</value>
+  </data>
+  <data name="GoodDeedsFormTitle" xml:space="preserve">
+    <value>New good deed</value>
+  </data>
+  <data name="GoodDeedsTitleLabel" xml:space="preserve">
+    <value>What good deed did you do?</value>
+  </data>
+  <data name="GoodDeedsTitlePlaceholder" xml:space="preserve">
+    <value>For example: Helped a neighbor</value>
+  </data>
+  <data name="GoodDeedsDateLabel" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="GoodDeedsSaveButton" xml:space="preserve">
+    <value>Save deed</value>
+  </data>
+  <data name="GoodDeedsTitleRequiredMessage" xml:space="preserve">
+    <value>Please enter the deed description.</value>
+  </data>
+  <data name="TrackerPrototypeLabel" xml:space="preserve">
+    <value>ADAPTIVE PREVIEW</value>
+  </data>
+  <data name="TrackerPreviewTitle" xml:space="preserve">
+    <value>Preview layout</value>
+  </data>
+  <data name="TrackerReadyMessage" xml:space="preserve">
+    <value>Navigation and layout are ready for detailed implementation.</value>
+  </data>
   <data name="WeekdayMonShort" xml:space="preserve">
     <value>MON</value>
   </data>
@@ -366,5 +492,29 @@
   </data>
   <data name="CycleDayFormat" xml:space="preserve">
     <value>Day {0}</value>
+  </data>
+  <data name="HabitPhysicalActivity" xml:space="preserve">
+    <value>Physical Activity</value>
+  </data>
+  <data name="HabitBreakfast" xml:space="preserve">
+    <value>Breakfast</value>
+  </data>
+  <data name="HabitLunch" xml:space="preserve">
+    <value>Lunch</value>
+  </data>
+  <data name="HabitDinner" xml:space="preserve">
+    <value>Dinner</value>
+  </data>
+  <data name="HabitWater" xml:space="preserve">
+    <value>Water</value>
+  </data>
+  <data name="HabitVitamins" xml:space="preserve">
+    <value>Vitamins/Meds</value>
+  </data>
+  <data name="HabitReading" xml:space="preserve">
+    <value>Reading / New Knowledge</value>
+  </data>
+  <data name="HabitSocial" xml:space="preserve">
+    <value>Social connections</value>
   </data>
 </root>
