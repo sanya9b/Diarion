@@ -404,8 +404,16 @@ public class DiaryService : IDiaryService, IDisposable
         return Task.Run(() => HappyMomentsCollection.Query().OrderBy(x => x.SlotNumber).ToList());
     }
 
-    public Task SaveHappyMomentAsync(HappyMoment moment)
-    {
+      public Task DeleteHappyMomentAsync(int slotNumber)
+      {
+          return Task.Run(() =>
+          {
+              HappyMomentsCollection.DeleteMany(x => x.SlotNumber == slotNumber);
+          });
+      }
+
+      public Task SaveHappyMomentAsync(HappyMoment moment)
+      {
         return Task.Run(() =>
         {
             var normalizedTitle = (moment.Title ?? string.Empty).Trim();

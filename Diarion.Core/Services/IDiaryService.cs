@@ -23,6 +23,7 @@ public interface IDiaryService
     Task DeleteReadingTrackerBookAsync(int slotNumber);
     Task<List<HappyMoment>> GetHappyMomentsAsync();
     Task SaveHappyMomentAsync(HappyMoment moment);
+    Task DeleteHappyMomentAsync(int slotNumber);
     Task<List<GoodDeed>> GetGoodDeedsAsync();
     Task SaveGoodDeedAsync(GoodDeed deed);
     Task DeleteGoodDeedAsync(int slotNumber);

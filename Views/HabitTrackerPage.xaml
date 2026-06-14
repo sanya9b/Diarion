@@ -258,11 +258,11 @@
                     </Grid>
 
                     <Label Text="{localization:Translate Key=HabitTrackerNameLabel}" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                    <Entry Text="{Binding NewTrackerName}"
-                           Placeholder="{localization:Translate Key=HabitTrackerNamePlaceholder}"
-                           ClearButtonVisibility="WhileEditing"
-                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
-                           PlaceholderColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                    <Editor Text="{Binding NewTrackerName}"
+                            Placeholder="{localization:Translate Key=HabitTrackerNamePlaceholder}"
+                            AutoSize="TextChanges"
+                            TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
+                            PlaceholderColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
 
                     <Label Text="{localization:Translate Key=HabitTrackerStartDateLabel}" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
                     <DatePicker Date="{Binding NewTrackerStartDate}"

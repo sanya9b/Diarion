@@ -170,11 +170,11 @@
                            FontAttributes="Bold"
                            CharacterSpacing="1.2"
                            TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                    <Entry Text="{Binding NewBookTitle}"
-                           Placeholder="{localization:Translate Key=ReadingTrackerBookTitlePlaceholder}"
-                           ClearButtonVisibility="WhileEditing"
-                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
-                           PlaceholderColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                    <Editor Text="{Binding NewBookTitle}"
+                            Placeholder="{localization:Translate Key=ReadingTrackerBookTitlePlaceholder}"
+                            AutoSize="TextChanges"
+                            TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
+                            PlaceholderColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
 
                     <Label Text="{localization:Translate Key=ReadingTrackerCompletionDateLabel}"
                            FontSize="12"

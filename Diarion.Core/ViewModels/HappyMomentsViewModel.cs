@@ -13,7 +13,6 @@ namespace Diarion.ViewModels;
 
 public partial class HappyMomentsViewModel : BaseViewModel
 {
-    private const int TotalSlots = 12; // 12 months
     private readonly IDiaryService _diaryService;
 
     public ObservableCollection<HappyMomentSlotItemViewModel> MomentSlots { get; } = new();
@@ -26,6 +25,7 @@ public partial class HappyMomentsViewModel : BaseViewModel
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsAddMomentFormVisible))]
+    [NotifyPropertyChangedFor(nameof(IsViewMomentFormVisible))]
     private HappyMomentSlotItemViewModel? _selectedEmptySlot;
 
     [ObservableProperty]
@@ -39,6 +39,7 @@ public partial class HappyMomentsViewModel : BaseViewModel
     }
 
     public bool IsAddMomentFormVisible => SelectedEmptySlot != null;
+    public bool IsViewMomentFormVisible => SelectedEmptySlot?.IsFilled == true;
     public bool HasValidationMessage => !string.IsNullOrWhiteSpace(ValidationMessage);
     public DateTime MaxMomentDate => DateTime.Today;
 
@@ -50,17 +51,22 @@ public partial class HappyMomentsViewModel : BaseViewModel
         try
         {
             var moments = await _diaryService.GetHappyMomentsAsync();
-            var momentsBySlot = moments.ToDictionary(x => x.SlotNumber);
 
             MomentSlots.Clear();
-            for (var slotNumber = 1; slotNumber <= TotalSlots; slotNumber++)
+            
+            // Завжди порожній слот зверху
+            int nextSlotNumber = moments.Any() ? moments.Max(x => x.SlotNumber) + 1 : 1;
+            MomentSlots.Add(new HappyMomentSlotItemViewModel(nextSlotNumber, null));
+
+            // Відмічені події спускаються вниз, сортовані за датою
+            var orderedMoments = moments.OrderByDescending(x => x.Date).ThenByDescending(x => x.CreatedAt);
+            foreach (var moment in orderedMoments)
             {
-                momentsBySlot.TryGetValue(slotNumber, out var moment);
-                MomentSlots.Add(new HappyMomentSlotItemViewModel(slotNumber, moment));
+                MomentSlots.Add(new HappyMomentSlotItemViewModel(moment.SlotNumber, moment));
             }
 
             SelectedEmptySlot = selectedSlotNumber.HasValue
-                ? MomentSlots.FirstOrDefault(x => x.SlotNumber == selectedSlotNumber && x.IsEmpty)
+                ? MomentSlots.FirstOrDefault(x => x.SlotNumber == selectedSlotNumber)
                 : null;
 
             UpdateSelectedStates();
@@ -74,15 +80,15 @@ public partial class HappyMomentsViewModel : BaseViewModel
     [RelayCommand]
     private void SelectSlot(HappyMomentSlotItemViewModel? slot)
     {
-        if (slot == null || slot.IsFilled)
+        if (slot == null)
         {
             return;
         }
 
         ValidationMessage = string.Empty;
         SelectedEmptySlot = ReferenceEquals(SelectedEmptySlot, slot) ? null : slot;
-        NewMomentTitle = string.Empty;
-        NewMomentDate = DateTime.Today;
+        NewMomentTitle = slot.MomentTitle;
+        NewMomentDate = slot.Date ?? DateTime.Today;
         UpdateSelectedStates();
     }
 
@@ -115,6 +121,18 @@ public partial class HappyMomentsViewModel : BaseViewModel
         await LoadAsync();
     }
 
+    [RelayCommand]
+    private async Task DeleteSelectedMomentAsync()
+    {
+        if (SelectedEmptySlot == null || SelectedEmptySlot.IsEmpty)
+            return;
+
+        await _diaryService.DeleteHappyMomentAsync(SelectedEmptySlot.SlotNumber);
+        
+        SelectedEmptySlot = null;
+        await LoadAsync();
+    }
+
     private void UpdateSelectedStates()
     {
         foreach (var slot in MomentSlots)
@@ -140,7 +158,7 @@ public partial class HappyMomentSlotItemViewModel : ObservableObject
     public string DateText => Date?.ToString("dd.MM", CultureInfo.CurrentCulture) ?? string.Empty;
     public bool IsFilled => !string.IsNullOrWhiteSpace(MomentTitle);
     public bool IsEmpty => !IsFilled;
-    public string SlotCaption => string.Format(CultureInfo.CurrentCulture, AppResources.HappyMomentsSlotFormat, SlotNumberText);
+    public string SlotCaption => IsEmpty ? AppResources.HappyMomentsFormTitle : string.Format(CultureInfo.CurrentCulture, AppResources.HappyMomentsSlotFormat, SlotNumberText);
 
     [ObservableProperty]
     private bool _isSelected;

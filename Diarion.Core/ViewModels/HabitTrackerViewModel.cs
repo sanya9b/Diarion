@@ -110,7 +110,7 @@ public partial class HabitTrackerViewModel : BaseViewModel
     [RelayCommand]
     private async Task ToggleDayAsync(HarmfulHabitDayViewModel? day)
     {
-        if (day == null || SelectedTracker == null)
+        if (day == null || SelectedTracker == null || day.IsFuture)
         {
             return;
         }

@@ -13,7 +13,6 @@ namespace Diarion.ViewModels;
 
 public partial class GoodDeedsViewModel : BaseViewModel
 {
-    private const int TotalSlots = 12; // 12 slots for good deeds
     private readonly IDiaryService _diaryService;
 
     public ObservableCollection<GoodDeedSlotItemViewModel> DeedSlots { get; } = new();
@@ -52,13 +51,18 @@ public partial class GoodDeedsViewModel : BaseViewModel
         try
         {
             var deeds = await _diaryService.GetGoodDeedsAsync();
-            var deedsBySlot = deeds.ToDictionary(x => x.SlotNumber);
 
             DeedSlots.Clear();
-            for (var slotNumber = 1; slotNumber <= TotalSlots; slotNumber++)
+
+            // Завжди порожній слот зверху
+            int nextSlotNumber = deeds.Any() ? deeds.Max(x => x.SlotNumber) + 1 : 1;
+            DeedSlots.Add(new GoodDeedSlotItemViewModel(nextSlotNumber, null));
+
+            // Відмічені події спускаються вниз, сортовані за датою
+            var orderedDeeds = deeds.OrderByDescending(x => x.Date).ThenByDescending(x => x.CreatedAt);
+            foreach (var deed in orderedDeeds)
             {
-                deedsBySlot.TryGetValue(slotNumber, out var deed);
-                DeedSlots.Add(new GoodDeedSlotItemViewModel(slotNumber, deed));
+                DeedSlots.Add(new GoodDeedSlotItemViewModel(deed.SlotNumber, deed));
             }
 
             SelectedSlot = selectedSlotNumber.HasValue
@@ -154,7 +158,7 @@ public partial class GoodDeedSlotItemViewModel : ObservableObject
     public string DateText => Date?.ToString("dd.MM", CultureInfo.CurrentCulture) ?? string.Empty;
     public bool IsFilled => !string.IsNullOrWhiteSpace(DeedTitle);
     public bool IsEmpty => !IsFilled;
-    public string SlotCaption => string.Format(CultureInfo.CurrentCulture, AppResources.GoodDeedsSlotFormat, SlotNumberText);
+    public string SlotCaption => IsEmpty ? AppResources.GoodDeedsFormTitle : string.Format(CultureInfo.CurrentCulture, AppResources.GoodDeedsSlotFormat, SlotNumberText);
 
     [ObservableProperty]
     private bool _isSelected;
