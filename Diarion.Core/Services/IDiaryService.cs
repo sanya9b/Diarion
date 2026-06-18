@@ -37,6 +37,7 @@ public interface IDiaryService
     // Statistics
     Task<SleepStatistics> GetSleepStatisticsAsync(int days);
     Task<MoodStatistics> GetMoodStatisticsAsync(int days);
+    Task<TodoStatistics> GetTodoStatisticsAsync(int days);
 
     // Todo functionality
     Task<TodoItem?> GetTodoByIdAsync(Guid id);

@@ -688,6 +688,54 @@ namespace Diarion.Resources.Localization {
                 return ResourceManager.GetString("StatsTopEmotion", resourceCulture);
             }
         }
+        
+        public static string StatsProductivity {
+            get {
+                return ResourceManager.GetString("StatsProductivity", resourceCulture);
+            }
+        }
+        
+        public static string StatsTasksCompleted {
+            get {
+                return ResourceManager.GetString("StatsTasksCompleted", resourceCulture);
+            }
+        }
+        
+        public static string TimeRangeWeek {
+            get {
+                return ResourceManager.GetString("TimeRangeWeek", resourceCulture);
+            }
+        }
+        
+        public static string TimeRangeTwoWeeks {
+            get {
+                return ResourceManager.GetString("TimeRangeTwoWeeks", resourceCulture);
+            }
+        }
+        
+        public static string TimeRangeMonth {
+            get {
+                return ResourceManager.GetString("TimeRangeMonth", resourceCulture);
+            }
+        }
+        
+        public static string TimeRange3Months {
+            get {
+                return ResourceManager.GetString("TimeRange3Months", resourceCulture);
+            }
+        }
+        
+        public static string TimeRange6Months {
+            get {
+                return ResourceManager.GetString("TimeRange6Months", resourceCulture);
+            }
+        }
+        
+        public static string TimeRangeYear {
+            get {
+                return ResourceManager.GetString("TimeRangeYear", resourceCulture);
+            }
+        }
     }
 }
 

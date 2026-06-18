@@ -532,4 +532,28 @@
   <data name="StatsTopEmotion" xml:space="preserve">
     <value>Головна емоція:</value>
   </data>
+  <data name="StatsProductivity" xml:space="preserve">
+    <value>ПРОДУКТИВНІСТЬ</value>
+  </data>
+  <data name="StatsTasksCompleted" xml:space="preserve">
+    <value>Виконано завдань:</value>
+  </data>
+  <data name="TimeRangeWeek" xml:space="preserve">
+    <value>1 Тиждень</value>
+  </data>
+  <data name="TimeRangeTwoWeeks" xml:space="preserve">
+    <value>2 Тижні</value>
+  </data>
+  <data name="TimeRangeMonth" xml:space="preserve">
+    <value>1 Місяць</value>
+  </data>
+  <data name="TimeRange3Months" xml:space="preserve">
+    <value>3 Місяці</value>
+  </data>
+  <data name="TimeRange6Months" xml:space="preserve">
+    <value>Півроку</value>
+  </data>
+  <data name="TimeRangeYear" xml:space="preserve">
+    <value>Рік</value>
+  </data>
 </root>

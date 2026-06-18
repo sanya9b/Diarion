@@ -532,4 +532,28 @@
   <data name="StatsTopEmotion" xml:space="preserve">
     <value>Top Emotion:</value>
   </data>
+  <data name="StatsProductivity" xml:space="preserve">
+    <value>PRODUCTIVITY</value>
+  </data>
+  <data name="StatsTasksCompleted" xml:space="preserve">
+    <value>Tasks Completed:</value>
+  </data>
+  <data name="TimeRangeWeek" xml:space="preserve">
+    <value>1 Week</value>
+  </data>
+  <data name="TimeRangeTwoWeeks" xml:space="preserve">
+    <value>2 Weeks</value>
+  </data>
+  <data name="TimeRangeMonth" xml:space="preserve">
+    <value>1 Month</value>
+  </data>
+  <data name="TimeRange3Months" xml:space="preserve">
+    <value>3 Months</value>
+  </data>
+  <data name="TimeRange6Months" xml:space="preserve">
+    <value>6 Months</value>
+  </data>
+  <data name="TimeRangeYear" xml:space="preserve">
+    <value>1 Year</value>
+  </data>
 </root>

@@ -119,10 +119,14 @@ public class DiaryService : IDiaryService, IDisposable
         var random = new Random();
         var today = DateTime.Today;
 
-        // Генеруємо 14 днів: від 10 днів у минуле до 3 у майбутнє
-        for (int i = -10; i <= 3; i++)
+        // Генеруємо дні: від 10 травня до 3 днів у майбутнє
+        var startDate = new DateTime(today.Year > 2000 ? today.Year : 2026, 5, 10);
+        if (startDate > today) startDate = startDate.AddYears(-1);
+        int daysDiff = (int)(today.AddDays(3) - startDate).TotalDays;
+
+        for (int i = 0; i <= daysDiff; i++)
         {
-            var date = today.AddDays(i);
+            var date = startDate.AddDays(i);
             
             // Заповнення моделі дня
             var entry = new DiaryEntry
@@ -626,24 +630,50 @@ public class DiaryService : IDiaryService, IDisposable
                 : 0;
 
             TimeSpan averageDuration = TimeSpan.Zero;
+            var dataPoints = new List<SleepDataPoint>();
+
             if (validSleepEntries.Count > 0)
             {
-                double totalHours = validSleepEntries.Sum(x =>
+                double totalHours = 0;
+                foreach (var x in validSleepEntries.OrderBy(e => e.Date))
                 {
                     var duration = x.SleepEnd!.Value - x.SleepStart!.Value;
                     if (duration.TotalHours < 0)
                     {
                         duration = duration.Add(TimeSpan.FromHours(24));
                     }
-                    return duration.TotalHours;
-                });
+                    totalHours += duration.TotalHours;
+
+                    dataPoints.Add(new SleepDataPoint
+                    {
+                        Date = x.Date,
+                        Duration = duration,
+                        Quality = x.SleepQuality
+                    });
+                }
                 averageDuration = TimeSpan.FromHours(totalHours / validSleepEntries.Count);
+            }
+
+            // Fill gaps with 0 duration for chart
+            var fullDataPoints = new List<SleepDataPoint>();
+            for (var d = startDate.Date; d <= DateTime.Today; d = d.AddDays(1))
+            {
+                var pt = dataPoints.FirstOrDefault(p => p.Date.Date == d);
+                if (pt != null)
+                {
+                    fullDataPoints.Add(pt);
+                }
+                else
+                {
+                    fullDataPoints.Add(new SleepDataPoint { Date = d, Duration = TimeSpan.Zero, Quality = 0 });
+                }
             }
 
             return new SleepStatistics
             {
                 AverageSleepDuration = averageDuration,
-                AverageSleepQuality = averageQuality
+                AverageSleepQuality = averageQuality,
+                DailyData = fullDataPoints
             };
         });
     }
@@ -696,6 +726,26 @@ public class DiaryService : IDiaryService, IDisposable
             {
                 EmotionCounts = counts,
                 TopEmotion = topEmotion
+            };
+        });
+    }
+
+    public Task<TodoStatistics> GetTodoStatisticsAsync(int days)
+    {
+        return Task.Run(() =>
+        {
+            var startDate = DateTime.Today.AddDays(-days);
+            var items = TodosCollection.Query()
+                .Where(x => x.TargetDate >= startDate && x.TargetDate <= DateTime.Today)
+                .ToList();
+
+            int completed = items.Count(x => x.IsCompleted);
+            int total = items.Count;
+
+            return new TodoStatistics
+            {
+                CompletedCount = completed,
+                TotalCount = total
             };
         });
     }
