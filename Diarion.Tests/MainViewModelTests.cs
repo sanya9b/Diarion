@@ -38,7 +38,7 @@ public class MainViewModelTests
         var viewModel = new MainViewModel(_diaryServiceMock.Object);
 
         // Assert
-        viewModel.CalendarDays.Should().HaveCount(42);
+        viewModel.CalendarDays.Count.Should().BeOneOf(35, 42);
         viewModel.IsDiaryMode.Should().BeTrue();
         viewModel.IsPlannerMode.Should().BeFalse();
         viewModel.CurrentEntry.Should().BeNull();

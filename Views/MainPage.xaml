@@ -35,9 +35,16 @@
                     <Grid Margin="0,0,2,0" WidthRequest="50" HeightRequest="50">
                         <Border StrokeShape="RoundRectangle 16"
                                 StrokeThickness="1"
-                                Stroke="{DynamicResource Theme_Dust_Ocean}"
                                 BackgroundColor="{DynamicResource Theme_Snow_Black}"
                                 Padding="0">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsCalendarExpanded}" Value="True">
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsCalendarExpanded}" Value="False">
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+                                </DataTrigger>
+                            </Border.Triggers>
                             <Grid RowDefinitions="Auto,*">
                                 <Border Grid.Row="0"
                                         StrokeThickness="0"
@@ -64,7 +71,7 @@
 
                                 <BoxView Grid.RowSpan="2" BackgroundColor="Transparent">
                                     <BoxView.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding GoToTodayCommand}" />
+                                        <TapGestureRecognizer Command="{Binding ToggleCalendarCommand}" />
                                     </BoxView.GestureRecognizers>
                                 </BoxView>
                             </Grid>
@@ -174,7 +181,7 @@
 
             <VerticalStackLayout Grid.Row="0" Padding="24,4,24,10" Spacing="2">
                 
-                <Grid x:Name="CalendarSection" RowDefinitions="Auto, Auto" IsClippedToBounds="True">
+                <Grid x:Name="CalendarSection" RowDefinitions="Auto, Auto" IsClippedToBounds="True" IsVisible="{Binding IsCalendarExpanded}">
                     <Grid x:Name="CalendarHeader" Grid.Row="0" RowDefinitions="Auto, Auto">
                         <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Margin="0,4,0,12">
                             <Grid Grid.Column="0" BackgroundColor="Transparent" Padding="20,10" VerticalOptions="Center" HorizontalOptions="Start">
@@ -419,6 +426,38 @@
                             </VerticalStackLayout>
                         </Border>
 
+                        <!-- Food Block -->
+                        <Border StrokeShape="RoundRectangle 16"
+                                StrokeThickness="1"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                Padding="16">
+                            <Border.Shadow>
+                                <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{x:Static localization:AppResources.FoodLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                
+                                <Grid ColumnDefinitions="Auto, 70, *" ColumnSpacing="8" Margin="0,-4">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsBreakfastDone}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
+                                    <Label Grid.Column="1" Text="{x:Static localization:AppResources.BreakfastLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Entry Grid.Column="2" Text="{Binding BreakfastFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HeightRequest="32" />
+                                </Grid>
+                                
+                                <Grid ColumnDefinitions="Auto, 70, *" ColumnSpacing="8" Margin="0,-4">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsLunchDone}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
+                                    <Label Grid.Column="1" Text="{x:Static localization:AppResources.LunchLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Entry Grid.Column="2" Text="{Binding LunchFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HeightRequest="32" />
+                                </Grid>
+                                
+                                <Grid ColumnDefinitions="Auto, 70, *" ColumnSpacing="8" Margin="0,-4">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsDinnerDone}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
+                                    <Label Grid.Column="1" Text="{x:Static localization:AppResources.DinnerLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Entry Grid.Column="2" Text="{Binding DinnerFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HeightRequest="32" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+
                         <!-- Habits Block -->
                         <Border StrokeShape="RoundRectangle 16"
                                 StrokeThickness="1"
@@ -443,6 +482,15 @@
                                     <BindableLayout.ItemTemplate>
                                         <DataTemplate x:DataType="models:HabitItem">
                                             <ContentView FlexLayout.Basis="48%">
+                                                <ContentView.GestureRecognizers>
+                                                    <DragGestureRecognizer CanDrag="{Binding BindingContext.IsEditHabitsMode, Source={x:Reference PageRoot}}"
+                                                                           DragStartingCommand="{Binding BindingContext.DragHabitStartingCommand, Source={x:Reference PageRoot}}"
+                                                                           DragStartingCommandParameter="{Binding .}"
+                                                                           DropCompletedCommand="{Binding BindingContext.DropHabitCompletedCommand, Source={x:Reference PageRoot}}" />
+                                                    <DropGestureRecognizer AllowDrop="{Binding BindingContext.IsEditHabitsMode, Source={x:Reference PageRoot}}"
+                                                                           DropCommand="{Binding BindingContext.ReorderHabitsCommand, Source={x:Reference PageRoot}}"
+                                                                           DropCommandParameter="{Binding .}" />
+                                                </ContentView.GestureRecognizers>
                                                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="6" HeightRequest="36">
                                                     <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
                                                     <Label Grid.Column="1" Text="{Binding Name}" VerticalOptions="Center" FontSize="12" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}" />

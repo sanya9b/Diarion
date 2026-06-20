@@ -18,6 +18,9 @@ public partial class UserProfile : ObservableObject
     [ObservableProperty] private int? _height;
     [ObservableProperty] private GenderType _gender = GenderType.NotSpecified;
 
+    // Налаштування завдань
+    [ObservableProperty] private bool _autoMigrateUncompletedTasksEnabled = true;
+
     // Менструальний календар
     [ObservableProperty] private bool _isMenstrualTrackingEnabled;
     [ObservableProperty] private int _cycleLength = DefaultCycleLength;

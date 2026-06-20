@@ -24,9 +24,11 @@ public class DiaryService : IDiaryService, IDisposable
     private ILiteCollection<GoodDeed>? _goodDeedsCollection;
     private ILiteCollection<UserProfile>? _profileCollection;
     private readonly bool _useInMemory;
+    private readonly INotificationService? _notificationService;
 
-    public DiaryService(bool useInMemory = false)
+    public DiaryService(INotificationService? notificationService = null, bool useInMemory = false)
     {
+        _notificationService = notificationService;
         _useInMemory = useInMemory;
     }
 
@@ -79,9 +81,6 @@ public class DiaryService : IDiaryService, IDisposable
                 var defaults = new[] 
                 { 
                     Diarion.Resources.Localization.AppResources.HabitPhysicalActivity, 
-                    Diarion.Resources.Localization.AppResources.HabitBreakfast, 
-                    Diarion.Resources.Localization.AppResources.HabitLunch, 
-                    Diarion.Resources.Localization.AppResources.HabitDinner, 
                     Diarion.Resources.Localization.AppResources.HabitWater, 
                     Diarion.Resources.Localization.AppResources.HabitVitamins, 
                     Diarion.Resources.Localization.AppResources.HabitReading, 
@@ -102,6 +101,28 @@ public class DiaryService : IDiaryService, IDisposable
             _happyMomentsCollection = happyMomentsCollection;
             _goodDeedsCollection = goodDeedsCollection;
             _profileCollection = profileCollection;
+
+            // One-time cleanup for old default food habits from the database
+            var foodHabits = new[] { "Breakfast", "Сніданок", "Lunch", "Обід", "Dinner", "Вечеря" };
+            var habitsToDelete = habitsCollection.FindAll()
+                .Where(h => foodHabits.Contains(h.Name))
+                .ToList();
+            
+            foreach (var h in habitsToDelete)
+            {
+                habitsCollection.Delete(h.Id);
+                // Also remove them from existing entries
+                var entriesWithHabit = entriesCollection.FindAll().Where(e => e.Habits.Any(x => x.HabitId == h.Id)).ToList();
+                foreach (var entry in entriesWithHabit)
+                {
+                    var item = entry.Habits.FirstOrDefault(x => x.HabitId == h.Id);
+                    if (item != null)
+                    {
+                        entry.Habits.Remove(item);
+                        entriesCollection.Update(entry);
+                    }
+                }
+            }
 
 #if DEBUG
             SeedMockDataIfEmpty();
@@ -275,6 +296,22 @@ public class DiaryService : IDiaryService, IDisposable
             {
                 def.DeletedAt = deleteDate.Date;
                 HabitsCollection.Update(def);
+            }
+        });
+    }
+
+    public Task UpdateHabitDefinitionsOrderAsync(List<Guid> orderedIds)
+    {
+        return Task.Run(() =>
+        {
+            for (int i = 0; i < orderedIds.Count; i++)
+            {
+                var def = HabitsCollection.FindById(orderedIds[i]);
+                if (def != null)
+                {
+                    def.Order = i;
+                    HabitsCollection.Update(def);
+                }
             }
         });
     }
@@ -586,6 +623,10 @@ public class DiaryService : IDiaryService, IDisposable
             entry.Habits = new System.Collections.ObjectModel.ObservableCollection<HabitItem>(filteredHabits.OrderBy(h => 
             {
                 var def = activeDefs.FirstOrDefault(d => d.Id == h.HabitId);
+                return def?.Order ?? int.MaxValue;
+            }).ThenBy(h => 
+            {
+                var def = activeDefs.FirstOrDefault(d => d.Id == h.HabitId);
                 return def?.CreatedAt ?? DateTime.MaxValue;
             }));
 
@@ -768,19 +809,61 @@ public class DiaryService : IDiaryService, IDisposable
                 .Where(x => x.TargetDate == dateOnly)
                 .ToList();
 
-            // Перевіряємо, чи є завдання з минулого, які повторюються щодня
-            var pastRepeatingTodos = TodosCollection.Query()
+            var profile = ProfileCollection.FindAll().FirstOrDefault();
+            bool autoMigrate = profile?.AutoMigrateUncompletedTasksEnabled ?? true;
+
+            if (autoMigrate && dateOnly == DateTime.Today)
+            {
+                var pastUncompletedTasks = TodosCollection.Query()
+                    .Where(x => x.TargetDate < dateOnly && !x.IsCompleted && !x.IsDailyRepeat)
+                    .ToList();
+
+                foreach (var task in pastUncompletedTasks)
+                {
+                    if (task.Priority == TodoPriority.High)
+                    {
+                        int currentHighCount = items.Count(t => t.Priority == TodoPriority.High && !t.IsCompleted);
+                        if (currentHighCount >= 3)
+                        {
+                            task.Priority = TodoPriority.Medium;
+                        }
+                    }
+
+                    task.TargetDate = dateOnly;
+                    TodosCollection.Update(task);
+                    items.Add(task);
+                }
+            }
+
+            // Отримуємо ВСІ завдання з IsDailyRepeat == true, у яких TargetDate < dateOnly
+            // і RepeatEndDate або null, або >= dateOnly
+            var repeatingPastTasks = TodosCollection.Query()
                 .Where(x => x.IsDailyRepeat && x.TargetDate < dateOnly)
-                .ToList()
-                .GroupBy(x => x.TaskDescription)
+                .ToList() // fetch into memory
+                .Where(x => x.RepeatEndDate == null || x.RepeatEndDate.Value.Date >= dateOnly)
+                .GroupBy(x => string.IsNullOrEmpty(x.RepeatGroupId) ? x.TaskDescription : x.RepeatGroupId)
                 .Select(g => g.OrderByDescending(x => x.TargetDate).First())
                 .ToList();
 
-            foreach (var task in pastRepeatingTodos)
+            foreach (var task in repeatingPastTasks)
             {
-                // Якщо на сьогодні ще немає завдання з такою ж назвою і позначкою повторення
-                if (!items.Any(x => x.TaskDescription == task.TaskDescription && x.IsDailyRepeat))
+                // Якщо на сьогодні ще немає завдання з таким самим RepeatGroupId або TaskDescription
+                var alreadyExists = items.Any(x => 
+                    (x.RepeatGroupId == task.RepeatGroupId && !string.IsNullOrEmpty(task.RepeatGroupId)) ||
+                    (x.TaskDescription == task.TaskDescription && x.IsDailyRepeat));
+
+                if (!alreadyExists)
                 {
+                    var clonePriority = task.Priority;
+                    if (clonePriority == TodoPriority.High)
+                    {
+                        int currentHighCount = items.Count(t => t.Priority == TodoPriority.High && !t.IsCompleted);
+                        if (currentHighCount >= 3)
+                        {
+                            clonePriority = TodoPriority.Medium;
+                        }
+                    }
+
                     var clone = new TodoItem
                     {
                         Id = Guid.NewGuid(),
@@ -789,9 +872,10 @@ public class DiaryService : IDiaryService, IDisposable
                         HasTime = task.HasTime,
                         TaskDescription = task.TaskDescription,
                         IsCompleted = false, // Нове завдання на новий день ще не виконано
-                        Priority = task.Priority,
+                        Priority = clonePriority,
                         CreatedAt = DateTime.Now,
                         IsDailyRepeat = true,
+                        RepeatGroupId = task.RepeatGroupId,
                         HasReminder = task.HasReminder
                     };
                     TodosCollection.Insert(clone);
@@ -835,12 +919,72 @@ public class DiaryService : IDiaryService, IDisposable
 
     public Task SaveTodoAsync(TodoItem todo)
     {
-        return Task.Run(() => TodosCollection.Upsert(todo));
+        return Task.Run(() =>
+        {
+            var existing = TodosCollection.FindById(todo.Id);
+            
+            // Якщо раніше було увімкнене повторення, а тепер вимкнуто
+            if (existing != null && existing.IsDailyRepeat && !todo.IsDailyRepeat)
+            {
+                var groupId = todo.RepeatGroupId ?? todo.TaskDescription;
+                var pastRepeats = TodosCollection.Query()
+                    .Where(x => x.IsDailyRepeat)
+                    .ToList()
+                    .Where(x => x.RepeatGroupId == groupId || (string.IsNullOrEmpty(x.RepeatGroupId) && x.TaskDescription == groupId))
+                    .ToList();
+                    
+                foreach (var p in pastRepeats)
+                {
+                    p.RepeatEndDate = todo.TargetDate.Date;
+                    TodosCollection.Update(p);
+                }
+                
+                todo.RepeatEndDate = todo.TargetDate.Date;
+            }
+            
+            // Якщо увімкнули повторення (або створюють нове)
+            if (todo.IsDailyRepeat && string.IsNullOrEmpty(todo.RepeatGroupId))
+            {
+                todo.RepeatGroupId = Guid.NewGuid().ToString();
+            }
+
+            TodosCollection.Upsert(todo);
+            UpdateLocalNotification(todo);
+        });
     }
 
     public Task DeleteTodoAsync(Guid todoId)
     {
-        return Task.Run(() => TodosCollection.Delete(todoId));
+        return Task.Run(() =>
+        {
+            TodosCollection.Delete(todoId);
+            _notificationService?.CancelTodoReminder(todoId);
+        });
+    }
+
+    private void UpdateLocalNotification(TodoItem todo)
+    {
+        if (_notificationService == null) return;
+        
+        _notificationService.CancelTodoReminder(todo.Id);
+
+        if (!todo.HasReminder || todo.IsCompleted)
+            return;
+
+        var targetDateTime = todo.TargetDate.Date;
+        if (todo.HasTime)
+        {
+            targetDateTime = targetDateTime.Add(todo.TargetTime);
+        }
+        else
+        {
+            targetDateTime = targetDateTime.AddHours(9); // За замовчуванням о 9:00, якщо час не вказано
+        }
+
+        if (targetDateTime > DateTime.Now)
+        {
+            _notificationService.ScheduleTodoReminder(todo.Id, "Diarion", todo.TaskDescription, targetDateTime);
+        }
     }
 
     public void Dispose()

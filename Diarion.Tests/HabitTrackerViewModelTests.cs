@@ -46,7 +46,7 @@ public class HabitTrackerViewModelTests
         storedTrackers.Should().ContainSingle();
         viewModel.SelectedTracker.Should().NotBeNull();
         viewModel.SelectedTracker!.HarmfulHabitName.Should().Be("Smoking");
-        viewModel.TrackerDays.Should().HaveCount(4);
+        viewModel.TrackerDays.Should().HaveCount(30);
         viewModel.ValidationMessage.Should().BeEmpty();
     }
 

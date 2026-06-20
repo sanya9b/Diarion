@@ -97,10 +97,18 @@ public partial class MainPage : ContentPage
         }
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         using var _ = StartupTrace.Measure("MainPage.OnAppearing");
         base.OnAppearing();
+
+#if ANDROID || IOS || MACCATALYST
+        if (await Plugin.LocalNotification.LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
+        {
+            await Plugin.LocalNotification.LocalNotificationCenter.Current.RequestNotificationPermission();
+        }
+#endif
+
         StartupTrace.Mark($"MainPage.OnAppearing hasRenderedOnce={_hasRenderedOnce}");
 
         if (!_hasRenderedOnce)

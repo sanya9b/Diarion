@@ -407,7 +407,7 @@
     <value>ВДЯЧНІСТЬ:</value>
   </data>
   <data name="SoulFoodLabel" xml:space="preserve">
-    <value>ЇЖА ДЛЯ ДУШІ:</value>
+    <value>ДЛЯ СЕБЕ:</value>
   </data>
   <data name="AddTimeLabel" xml:space="preserve">
     <value>Додати час виконання</value>
@@ -496,15 +496,6 @@
   <data name="HabitPhysicalActivity" xml:space="preserve">
     <value>Фізична активність</value>
   </data>
-  <data name="HabitBreakfast" xml:space="preserve">
-    <value>Сніданок</value>
-  </data>
-  <data name="HabitLunch" xml:space="preserve">
-    <value>Обід</value>
-  </data>
-  <data name="HabitDinner" xml:space="preserve">
-    <value>Вечеря</value>
-  </data>
   <data name="HabitWater" xml:space="preserve">
     <value>Вода</value>
   </data>
@@ -555,5 +546,26 @@
   </data>
   <data name="TimeRangeYear" xml:space="preserve">
     <value>Рік</value>
+  </data>
+  <data name="FoodLabel" xml:space="preserve">
+    <value>ЇЖА</value>
+  </data>
+  <data name="BreakfastLabel" xml:space="preserve">
+    <value>Сніданок</value>
+  </data>
+  <data name="LunchLabel" xml:space="preserve">
+    <value>Обід</value>
+  </data>
+  <data name="DinnerLabel" xml:space="preserve">
+    <value>Вечеря</value>
+  </data>
+  <data name="FoodPlaceholder" xml:space="preserve">
+    <value>Що ви їли?</value>
+  </data>
+  <data name="TaskSettingsTitle" xml:space="preserve">
+    <value>ЗАВДАННЯ</value>
+  </data>
+  <data name="AutoMigrateTasksLabel" xml:space="preserve">
+    <value>Автоматично переносити невиконані завдання на наступний день</value>
   </data>
 </root>

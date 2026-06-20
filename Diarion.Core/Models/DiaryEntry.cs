@@ -42,6 +42,25 @@ public partial class DiaryEntry : ObservableObject
     [ObservableProperty]
     private string _intimateLife = string.Empty;
 
+    // Їжа (Food)
+    [ObservableProperty]
+    private bool _isBreakfastDone;
+    
+    [ObservableProperty]
+    private string _breakfastFood = string.Empty;
+    
+    [ObservableProperty]
+    private bool _isLunchDone;
+    
+    [ObservableProperty]
+    private string _lunchFood = string.Empty;
+    
+    [ObservableProperty]
+    private bool _isDinnerDone;
+    
+    [ObservableProperty]
+    private string _dinnerFood = string.Empty;
+
     // Звички (Habits)
     [ObservableProperty]
     private System.Collections.ObjectModel.ObservableCollection<HabitItem> _habits = new();

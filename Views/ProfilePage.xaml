@@ -69,6 +69,25 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Налаштування завдань -->
+            <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    Padding="16">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                </Border.Shadow>
+                
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{x:Static localization:AppResources.TaskSettingsTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                        <CheckBox Grid.Column="0" IsChecked="{Binding Profile.AutoMigrateUncompletedTasksEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="{x:Static localization:AppResources.AutoMigrateTasksLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Менструальний календар (Menstrual Tracker) -->
             <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Dust_Ocean}"

@@ -48,7 +48,7 @@
                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=GoToTodoDetailsCommand}" CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
                         <Border.Shadow>
-                            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="{DynamicResource Theme_Val_0_05_0_2}" />
+                            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="{AppThemeBinding Light=0.05, Dark=0.2}" />
                         </Border.Shadow>
                         <Grid ColumnDefinitions="Auto, *, Auto, Auto" Padding="12,10" ColumnSpacing="10" VerticalOptions="Center">
                             <Border Grid.Column="0" WidthRequest="28" HeightRequest="28" StrokeShape="RoundRectangle 8"

@@ -16,6 +16,20 @@ public class DiaryServiceTests : IDisposable
         _diaryService = new DiaryService(useInMemory: true);
     }
 
+    private async Task ClearDatabaseAsync()
+    {
+        var todos = await _diaryService.GetAllTodosAsync();
+        foreach (var t in todos)
+        {
+            await _diaryService.DeleteTodoAsync(t.Id);
+        }
+        var entries = await _diaryService.GetAllEntriesAsync();
+        foreach (var e in entries)
+        {
+            await _diaryService.DeleteEntryAsync(e.Id);
+        }
+    }
+
     [Fact]
     public async Task SaveEntryAsync_ShouldSaveNewEntry()
     {
@@ -100,6 +114,190 @@ public class DiaryServiceTests : IDisposable
         // Assert
         savedProfile.CycleLength.Should().Be(21);
         savedProfile.PeriodLength.Should().Be(21);
+    }
+
+    [Fact]
+    public async Task GetTodosForDateAsync_ShouldAutoMigrateUncompletedTasksToToday()
+    {
+        await ClearDatabaseAsync();
+
+        // Arrange
+        var today = DateTime.Today;
+        var yesterday = today.AddDays(-1);
+        var todo = new TodoItem
+        {
+            TaskDescription = "Yesterday Task",
+            TargetDate = yesterday,
+            IsCompleted = false
+        };
+        await _diaryService.SaveTodoAsync(todo);
+
+        // Ensure setting is true (it is by default, but let's be explicit)
+        var profile = await _diaryService.GetUserProfileAsync();
+        profile.AutoMigrateUncompletedTasksEnabled = true;
+        await _diaryService.SaveUserProfileAsync(profile);
+
+        // Act
+        var todos = await _diaryService.GetTodosForDateAsync(today);
+
+        // Assert
+        todos.Should().ContainSingle(t => t.TaskDescription == "Yesterday Task");
+        todos[0].TargetDate.Should().Be(today);
+    }
+
+    [Fact]
+    public async Task GetTodosForDateAsync_ShouldNotAutoMigrateIfSettingIsFalse()
+    {
+        await ClearDatabaseAsync();
+
+        // Arrange
+        var today = DateTime.Today;
+        var yesterday = today.AddDays(-1);
+        var todo = new TodoItem
+        {
+            TaskDescription = "Yesterday Task",
+            TargetDate = yesterday,
+            IsCompleted = false
+        };
+        await _diaryService.SaveTodoAsync(todo);
+
+        var profile = await _diaryService.GetUserProfileAsync();
+        profile.AutoMigrateUncompletedTasksEnabled = false;
+        await _diaryService.SaveUserProfileAsync(profile);
+
+        // Act
+        var todos = await _diaryService.GetTodosForDateAsync(today);
+
+        // Assert
+        todos.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetTodosForDateAsync_ShouldDowngradeMigratedHighPriorityTaskToMedium_WhenLimitReached()
+    {
+        await ClearDatabaseAsync();
+
+        // Arrange
+        var today = DateTime.Today;
+        var yesterday = today.AddDays(-1);
+
+        // Create 3 High-priority tasks for Today
+        for (int i = 0; i < 3; i++)
+        {
+            await _diaryService.SaveTodoAsync(new TodoItem
+            {
+                TaskDescription = $"Today Task {i}",
+                TargetDate = today,
+                Priority = TodoPriority.High
+            });
+        }
+
+        // Create 1 High-priority task for Yesterday (uncompleted)
+        var pastTodo = new TodoItem
+        {
+            TaskDescription = "Yesterday High Priority Task",
+            TargetDate = yesterday,
+            IsCompleted = false,
+            Priority = TodoPriority.High
+        };
+        await _diaryService.SaveTodoAsync(pastTodo);
+
+        var profile = await _diaryService.GetUserProfileAsync();
+        profile.AutoMigrateUncompletedTasksEnabled = true;
+        await _diaryService.SaveUserProfileAsync(profile);
+
+        // Act
+        var todos = await _diaryService.GetTodosForDateAsync(today);
+
+        // Assert
+        todos.Should().HaveCount(4);
+        var migratedTask = todos.Find(t => t.TaskDescription == "Yesterday High Priority Task");
+        migratedTask.Should().NotBeNull();
+        migratedTask!.Priority.Should().Be(TodoPriority.Medium);
+    }
+
+    [Fact]
+    public async Task GetTodosForDateAsync_ShouldNotDowngradeMigratedHighPriorityTask_WhenLimitNotReached()
+    {
+        await ClearDatabaseAsync();
+
+        // Arrange
+        var today = DateTime.Today;
+        var yesterday = today.AddDays(-1);
+
+        // Create 2 High-priority tasks for Today
+        for (int i = 0; i < 2; i++)
+        {
+            await _diaryService.SaveTodoAsync(new TodoItem
+            {
+                TaskDescription = $"Today Task {i}",
+                TargetDate = today,
+                Priority = TodoPriority.High
+            });
+        }
+
+        // Create 1 High-priority task for Yesterday
+        var pastTodo = new TodoItem
+        {
+            TaskDescription = "Yesterday High Priority Task",
+            TargetDate = yesterday,
+            IsCompleted = false,
+            Priority = TodoPriority.High
+        };
+        await _diaryService.SaveTodoAsync(pastTodo);
+
+        var profile = await _diaryService.GetUserProfileAsync();
+        profile.AutoMigrateUncompletedTasksEnabled = true;
+        await _diaryService.SaveUserProfileAsync(profile);
+
+        // Act
+        var todos = await _diaryService.GetTodosForDateAsync(today);
+
+        // Assert
+        todos.Should().HaveCount(3);
+        var migratedTask = todos.Find(t => t.TaskDescription == "Yesterday High Priority Task");
+        migratedTask.Should().NotBeNull();
+        migratedTask!.Priority.Should().Be(TodoPriority.High); // Limit not exceeded, so it remains High
+    }
+
+    [Fact]
+    public async Task GetTodosForDateAsync_ShouldDowngradeRepeatingHighPriorityTaskToMedium_WhenLimitReached()
+    {
+        await ClearDatabaseAsync();
+
+        // Arrange
+        var today = DateTime.Today;
+        var yesterday = today.AddDays(-1);
+
+        // Create 3 High-priority tasks for Today
+        for (int i = 0; i < 3; i++)
+        {
+            await _diaryService.SaveTodoAsync(new TodoItem
+            {
+                TaskDescription = $"Today Task {i}",
+                TargetDate = today,
+                Priority = TodoPriority.High
+            });
+        }
+
+        // Create 1 High-priority daily repeating task from Yesterday
+        var repeatingTodo = new TodoItem
+        {
+            TaskDescription = "Repeating High Priority Task",
+            TargetDate = yesterday,
+            IsDailyRepeat = true,
+            RepeatGroupId = Guid.NewGuid().ToString(),
+            Priority = TodoPriority.High
+        };
+        await _diaryService.SaveTodoAsync(repeatingTodo);
+
+        // Act
+        var todos = await _diaryService.GetTodosForDateAsync(today);
+
+        // Assert
+        var clonedTask = todos.Find(t => t.TaskDescription == "Repeating High Priority Task" && t.TargetDate == today);
+        clonedTask.Should().NotBeNull();
+        clonedTask!.Priority.Should().Be(TodoPriority.Medium); // Downgraded because limit reached
     }
 
     public void Dispose()

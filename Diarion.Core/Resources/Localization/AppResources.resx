@@ -407,7 +407,7 @@
     <value>GRATITUDE:</value>
   </data>
   <data name="SoulFoodLabel" xml:space="preserve">
-    <value>SOUL FOOD:</value>
+    <value>FOR MYSELF:</value>
   </data>
   <data name="AddTimeLabel" xml:space="preserve">
     <value>Add target time</value>
@@ -496,15 +496,6 @@
   <data name="HabitPhysicalActivity" xml:space="preserve">
     <value>Physical Activity</value>
   </data>
-  <data name="HabitBreakfast" xml:space="preserve">
-    <value>Breakfast</value>
-  </data>
-  <data name="HabitLunch" xml:space="preserve">
-    <value>Lunch</value>
-  </data>
-  <data name="HabitDinner" xml:space="preserve">
-    <value>Dinner</value>
-  </data>
   <data name="HabitWater" xml:space="preserve">
     <value>Water</value>
   </data>
@@ -555,5 +546,26 @@
   </data>
   <data name="TimeRangeYear" xml:space="preserve">
     <value>1 Year</value>
+  </data>
+  <data name="FoodLabel" xml:space="preserve">
+    <value>FOOD</value>
+  </data>
+  <data name="BreakfastLabel" xml:space="preserve">
+    <value>Breakfast</value>
+  </data>
+  <data name="LunchLabel" xml:space="preserve">
+    <value>Lunch</value>
+  </data>
+  <data name="DinnerLabel" xml:space="preserve">
+    <value>Dinner</value>
+  </data>
+  <data name="FoodPlaceholder" xml:space="preserve">
+    <value>What did you eat?</value>
+  </data>
+  <data name="TaskSettingsTitle" xml:space="preserve">
+    <value>TASKS</value>
+  </data>
+  <data name="AutoMigrateTasksLabel" xml:space="preserve">
+    <value>Auto-migrate uncompleted tasks to next day</value>
   </data>
 </root>

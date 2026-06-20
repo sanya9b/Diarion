@@ -103,13 +103,12 @@ public partial class MainViewModel : BaseViewModel
     }
 
     [ObservableProperty]
-    private bool _isCalendarExpanded = true;
+    private bool _isCalendarExpanded = false;
 
     [ObservableProperty]
     private List<CalendarDay> _calendarDays = new();
 
-    [ObservableProperty]
-    private List<TodoItem> _todos = new();
+    public System.Collections.ObjectModel.ObservableCollection<TodoItem> Todos { get; } = new();
 
     [ObservableProperty]
     private string _currentMonthName = string.Empty;
@@ -229,7 +228,7 @@ public partial class MainViewModel : BaseViewModel
     {
         IsPlannerMode = false;
         IsDiaryMode = true;
-        Todos = new List<TodoItem>();
+        Todos.Clear();
     }
 
     [RelayCommand]
@@ -444,7 +443,7 @@ public partial class MainViewModel : BaseViewModel
             return;
         }
 
-        Todos = new List<TodoItem>();
+        Todos.Clear();
     }
 
     private async Task LoadEntriesForDateAsync(DateTime date)
@@ -458,12 +457,51 @@ public partial class MainViewModel : BaseViewModel
     private async Task LoadTodosForDateAsync(DateTime date)
     {
         using var _ = StartupTrace.Measure("MainViewModel.LoadTodosForDateAsync");
-        Todos = await _diaryService.GetTodosForDateAsync(date.Date);
+        var items = await _diaryService.GetTodosForDateAsync(date.Date);
+        Todos.Clear();
+        foreach (var item in items)
+        {
+            Todos.Add(item);
+        }
     }
 
     private DateTime GetSelectedDate()
     {
         return CalendarDays.FirstOrDefault(day => day.IsSelected)?.Date.Date ?? _currentCalendarDate.Date;
+    }
+
+    private HabitItem? _draggedHabit;
+
+    [RelayCommand]
+    public void DragHabitStarting(HabitItem item)
+    {
+        _draggedHabit = item;
+    }
+
+    [RelayCommand]
+    public void DropHabitCompleted()
+    {
+        _draggedHabit = null;
+    }
+
+    [RelayCommand]
+    public async Task ReorderHabitsAsync(HabitItem targetItem)
+    {
+        if (_draggedHabit == null || targetItem == null || _draggedHabit == targetItem)
+            return;
+
+        if (CurrentEntry == null) return;
+
+        int oldIndex = CurrentEntry.Habits.IndexOf(_draggedHabit);
+        int newIndex = CurrentEntry.Habits.IndexOf(targetItem);
+
+        if (oldIndex < 0 || newIndex < 0)
+            return;
+
+        CurrentEntry.Habits.Move(oldIndex, newIndex);
+
+        var orderedIds = CurrentEntry.Habits.Select(h => h.HabitId).ToList();
+        await _diaryService.UpdateHabitDefinitionsOrderAsync(orderedIds);
     }
 
     [RelayCommand]

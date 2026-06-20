@@ -1,5 +1,6 @@
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Plugin.LocalNotification;
 
 namespace Diarion;
 
@@ -9,7 +10,9 @@ public static class MauiProgram
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder
-			.UseMauiApp<App>().UseMauiCommunityToolkit()
+			.UseMauiApp<App>()
+			.UseMauiCommunityToolkit()
+			.UseLocalNotification()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("Montserrat-Regular.ttf", "OpenSansRegular"); // Alias kept for compatibility with Styles
@@ -25,6 +28,7 @@ public static class MauiProgram
 
 		// -- DEPENDENCY INJECTION --
 		// Services (Infrastructure & Core Logic)
+		builder.Services.AddSingleton<Diarion.Services.INotificationService, Diarion.Services.LocalNotificationService>();
 		builder.Services.AddSingleton<Diarion.Services.IDiaryService, Diarion.Services.DiaryService>();
 
 		// ViewModels

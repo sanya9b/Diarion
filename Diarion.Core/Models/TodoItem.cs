@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Diarion.Models;
 
@@ -26,6 +26,8 @@ public class TodoItem
     public bool IsCompleted { get; set; }
     
     public bool IsDailyRepeat { get; set; }
+    public DateTime? RepeatEndDate { get; set; }
+    public string? RepeatGroupId { get; set; }
     public bool HasReminder { get; set; }
     
     public TodoPriority Priority { get; set; } = TodoPriority.Medium;

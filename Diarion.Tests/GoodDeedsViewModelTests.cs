@@ -31,9 +31,9 @@ public class GoodDeedsViewModelTests
         await viewModel.LoadAsync();
 
         // Assert
-        viewModel.DeedSlots.Should().HaveCount(12);
-        viewModel.DeedSlots[0].DeedTitle.Should().Be("Helped a neighbor");
-        viewModel.DeedSlots[1].IsEmpty.Should().BeTrue();
+        viewModel.DeedSlots.Should().HaveCount(2);
+        viewModel.DeedSlots[1].DeedTitle.Should().Be("Helped a neighbor");
+        viewModel.DeedSlots[0].IsEmpty.Should().BeTrue();
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class GoodDeedsViewModelTests
         var diaryServiceMock = new Mock<IDiaryService>();
         diaryServiceMock
             .Setup(s => s.GetGoodDeedsAsync())
-            .ReturnsAsync(() => storedDeeds.OrderBy(x => x.SlotNumber).ToList());
+            .ReturnsAsync(() => storedDeeds.OrderByDescending(x => x.Date).ToList());
 
         diaryServiceMock
             .Setup(s => s.SaveGoodDeedAsync(It.IsAny<GoodDeed>()))
@@ -57,7 +57,7 @@ public class GoodDeedsViewModelTests
 
         var viewModel = new GoodDeedsViewModel(diaryServiceMock.Object);
         await viewModel.LoadAsync();
-        viewModel.SelectSlotCommand.Execute(viewModel.DeedSlots[0]);
+        viewModel.SelectSlotCommand.Execute(viewModel.DeedSlots[0]); // Select empty slot
         viewModel.NewDeedTitle = "Donated to charity";
         viewModel.NewDeedDate = new DateTime(2025, 5, 20);
 
@@ -68,7 +68,7 @@ public class GoodDeedsViewModelTests
         storedDeeds.Should().ContainSingle();
         storedDeeds[0].SlotNumber.Should().Be(1);
         storedDeeds[0].Title.Should().Be("Donated to charity");
-        viewModel.DeedSlots[0].DeedTitle.Should().Be("Donated to charity");
+        viewModel.DeedSlots[1].DeedTitle.Should().Be("Donated to charity");
         viewModel.IsAddDeedFormVisible.Should().BeFalse();
     }
 

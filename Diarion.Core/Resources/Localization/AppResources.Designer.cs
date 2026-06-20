@@ -71,7 +71,7 @@ namespace Diarion.Resources.Localization {
         public static string DeleteHabitConfirmMessage => ResourceManager.GetString("DeleteHabitConfirmMessage", resourceCulture) ?? "Are you sure you want to delete '{0}'? It will disappear from this day onward, but remain in previous entries.";
         public static string TriggersLabel => ResourceManager.GetString("TriggersLabel", resourceCulture) ?? "TRIGGERS:";
         public static string GratitudeLabel => ResourceManager.GetString("GratitudeLabel", resourceCulture) ?? "GRATITUDE:";
-        public static string SoulFoodLabel => ResourceManager.GetString("SoulFoodLabel", resourceCulture) ?? "SOUL FOOD:";
+        public static string SoulFoodLabel => ResourceManager.GetString("SoulFoodLabel", resourceCulture) ?? "FOR MYSELF:";
         public static string AddTimeLabel => ResourceManager.GetString("AddTimeLabel", resourceCulture) ?? "Add target time";
         public static string TimeLabel => ResourceManager.GetString("TimeLabel", resourceCulture) ?? "Time:";
         public static string DailyRepeatLabel => ResourceManager.GetString("DailyRepeatLabel", resourceCulture) ?? "Repeat daily";
@@ -602,24 +602,6 @@ namespace Diarion.Resources.Localization {
             }
         }
 
-        public static string HabitBreakfast {
-            get {
-                return ResourceManager.GetString("HabitBreakfast", resourceCulture);
-            }
-        }
-
-        public static string HabitLunch {
-            get {
-                return ResourceManager.GetString("HabitLunch", resourceCulture);
-            }
-        }
-
-        public static string HabitDinner {
-            get {
-                return ResourceManager.GetString("HabitDinner", resourceCulture);
-            }
-        }
-
         public static string HabitWater {
             get {
                 return ResourceManager.GetString("HabitWater", resourceCulture);
@@ -734,6 +716,48 @@ namespace Diarion.Resources.Localization {
         public static string TimeRangeYear {
             get {
                 return ResourceManager.GetString("TimeRangeYear", resourceCulture);
+            }
+        }
+        
+        public static string FoodLabel {
+            get {
+                return ResourceManager.GetString("FoodLabel", resourceCulture) ?? "FOOD";
+            }
+        }
+        
+        public static string BreakfastLabel {
+            get {
+                return ResourceManager.GetString("BreakfastLabel", resourceCulture) ?? "Breakfast";
+            }
+        }
+        
+        public static string LunchLabel {
+            get {
+                return ResourceManager.GetString("LunchLabel", resourceCulture) ?? "Lunch";
+            }
+        }
+        
+        public static string DinnerLabel {
+            get {
+                return ResourceManager.GetString("DinnerLabel", resourceCulture) ?? "Dinner";
+            }
+        }
+        
+        public static string FoodPlaceholder {
+            get {
+                return ResourceManager.GetString("FoodPlaceholder", resourceCulture) ?? "What did you eat?";
+            }
+        }
+
+        public static string TaskSettingsTitle {
+            get {
+                return ResourceManager.GetString("TaskSettingsTitle", resourceCulture) ?? "TASKS";
+            }
+        }
+
+        public static string AutoMigrateTasksLabel {
+            get {
+                return ResourceManager.GetString("AutoMigrateTasksLabel", resourceCulture) ?? "Auto-migrate uncompleted tasks to next day";
             }
         }
     }

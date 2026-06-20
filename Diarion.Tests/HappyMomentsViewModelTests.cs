@@ -31,9 +31,9 @@ public class HappyMomentsViewModelTests
         await viewModel.LoadAsync();
 
         // Assert
-        viewModel.MomentSlots.Should().HaveCount(12);
-        viewModel.MomentSlots[0].MomentTitle.Should().Be("A great day");
-        viewModel.MomentSlots[1].IsEmpty.Should().BeTrue();
+        viewModel.MomentSlots.Should().HaveCount(2);
+        viewModel.MomentSlots[1].MomentTitle.Should().Be("A great day");
+        viewModel.MomentSlots[0].IsEmpty.Should().BeTrue();
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class HappyMomentsViewModelTests
         var diaryServiceMock = new Mock<IDiaryService>();
         diaryServiceMock
             .Setup(s => s.GetHappyMomentsAsync())
-            .ReturnsAsync(() => storedMoments.OrderBy(x => x.SlotNumber).ToList());
+            .ReturnsAsync(() => storedMoments.OrderByDescending(x => x.Date).ToList());
 
         diaryServiceMock
             .Setup(s => s.SaveHappyMomentAsync(It.IsAny<HappyMoment>()))
@@ -57,7 +57,7 @@ public class HappyMomentsViewModelTests
 
         var viewModel = new HappyMomentsViewModel(diaryServiceMock.Object);
         await viewModel.LoadAsync();
-        viewModel.SelectSlotCommand.Execute(viewModel.MomentSlots[0]);
+        viewModel.SelectSlotCommand.Execute(viewModel.MomentSlots[0]); // Select empty slot
         viewModel.NewMomentTitle = "A trip to the mountains";
         viewModel.NewMomentDate = new DateTime(2025, 5, 20);
 
@@ -68,7 +68,7 @@ public class HappyMomentsViewModelTests
         storedMoments.Should().ContainSingle();
         storedMoments[0].SlotNumber.Should().Be(1);
         storedMoments[0].Title.Should().Be("A trip to the mountains");
-        viewModel.MomentSlots[0].MomentTitle.Should().Be("A trip to the mountains");
+        viewModel.MomentSlots[1].MomentTitle.Should().Be("A trip to the mountains");
         viewModel.IsAddMomentFormVisible.Should().BeFalse();
     }
 
