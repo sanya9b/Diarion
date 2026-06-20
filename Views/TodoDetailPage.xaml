@@ -6,7 +6,7 @@
              x:Class="Diarion.Views.TodoDetailPage"
              x:DataType="viewmodels:TodoDetailViewModel"
              Shell.PresentationMode="ModalAnimated"
-             BackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}"
              Title="{Binding Title}">
 
     <Grid RowDefinitions="Auto,*">
@@ -15,13 +15,13 @@
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding CloseCommand}" />
                 </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </Grid>
 
             <VerticalStackLayout Grid.Column="1" Spacing="2">
-                <Label Text="{Binding Title}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                <Label Text="{x:Static localization:AppResources.TaskDateLabel}" FontSize="10" CharacterSpacing="1.6" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                <Label Text="{Binding TargetDateDisplay}" FontSize="14" FontAttributes="Italic" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                <Label Text="{Binding Title}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="{x:Static localization:AppResources.TaskDateLabel}" FontSize="10" CharacterSpacing="1.6" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                <Label Text="{Binding TargetDateDisplay}" FontSize="14" FontAttributes="Italic" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </VerticalStackLayout>
 
             <ActivityIndicator Grid.Column="2"
@@ -29,75 +29,75 @@
                                IsVisible="{Binding IsBusy}"
                                WidthRequest="24"
                                HeightRequest="24"
-                               Color="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                               Color="{DynamicResource Theme_Ocean_Dust}" />
         </Grid>
 
         <Grid Grid.Row="1" Padding="24,10,24,24" RowSpacing="14" RowDefinitions="Auto, Auto">
             <Border Grid.Row="0" StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
-                        Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="18,18">
                     <Border.Shadow>
-                        <Shadow Brush="{StaticResource Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="14">
                         <VerticalStackLayout Spacing="8">
-                            <Label Text="{x:Static localization:AppResources.TaskDescriptionLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                            <Label Text="{x:Static localization:AppResources.TaskDescriptionLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                             <Entry Text="{Binding TaskDescription}"
                                    Placeholder="{x:Static localization:AppResources.AddTodoPlaceholder}"
-                                   PlaceholderColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
-                                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
+                                   PlaceholderColor="{DynamicResource Theme_Ocean_Dust}"
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}"
                                    BackgroundColor="Transparent"
                                    HeightRequest="42" />
                         </VerticalStackLayout>
 
-                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" Opacity="0.5" />
+                        <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <CheckBox IsChecked="{Binding IsCompleted}"
                                       VerticalOptions="Center">
                                 <CheckBox.Triggers>
                                     <DataTrigger TargetType="CheckBox" Binding="{Binding SelectedPriority}" Value="Low">
-                                        <Setter Property="Color" Value="{StaticResource Sage}" />
+                                        <Setter Property="Color" Value="{DynamicResource Theme_Sage}" />
                                     </DataTrigger>
                                     <DataTrigger TargetType="CheckBox" Binding="{Binding SelectedPriority}" Value="Medium">
-                                        <Setter Property="Color" Value="{StaticResource Amber}" />
+                                        <Setter Property="Color" Value="{DynamicResource Theme_Amber}" />
                                     </DataTrigger>
                                     <DataTrigger TargetType="CheckBox" Binding="{Binding SelectedPriority}" Value="High">
-                                        <Setter Property="Color" Value="{StaticResource Coral}" />
+                                        <Setter Property="Color" Value="{DynamicResource Theme_Coral}" />
                                     </DataTrigger>
                                 </CheckBox.Triggers>
                             </CheckBox>
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskCompletedLabel}" VerticalOptions="Center" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskCompletedLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
 
-                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" Opacity="0.5" />
+                        <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
 
                         <!-- Options section -->
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <CheckBox IsChecked="{Binding HasTime}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AddTimeLabel}" VerticalOptions="Center" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AddTimeLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
                         <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="12" IsVisible="{Binding HasTime}">
-                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.TimeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                            <TimePicker Grid.Column="1" Time="{Binding TargetTime}" Format="HH:mm" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.TimeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <TimePicker Grid.Column="1" Time="{Binding TargetTime}" Format="HH:mm" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
                         </Grid>
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <CheckBox IsChecked="{Binding IsDailyRepeat}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.DailyRepeatLabel}" VerticalOptions="Center" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.DailyRepeatLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <CheckBox IsChecked="{Binding HasReminder}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.ReminderLabel}" VerticalOptions="Center" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.ReminderLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
 
-                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" Opacity="0.5" />
+                        <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
 
                         <VerticalStackLayout Spacing="8">
-                            <Label Text="{x:Static localization:AppResources.TaskPriorityLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                            <Label Text="{x:Static localization:AppResources.TaskPriorityLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                             
                             <CollectionView ItemsSource="{Binding PrioritiesList}"
                                             HeightRequest="48"
@@ -117,7 +117,7 @@
                                             <Border.Triggers>
                                                 <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
                                                     <Setter Property="BackgroundColor" Value="Transparent" />
-                                                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
                                                 </DataTrigger>
                                                 
                                                 <MultiTrigger TargetType="Border">
@@ -125,8 +125,8 @@
                                                         <BindingCondition Binding="{Binding IsSelected}" Value="True" />
                                                         <BindingCondition Binding="{Binding Value}" Value="Low" />
                                                     </MultiTrigger.Conditions>
-                                                    <Setter Property="BackgroundColor" Value="{StaticResource Sage}" />
-                                                    <Setter Property="Stroke" Value="{StaticResource Sage}" />
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
                                                 </MultiTrigger>
                                                 
                                                 <MultiTrigger TargetType="Border">
@@ -134,8 +134,8 @@
                                                         <BindingCondition Binding="{Binding IsSelected}" Value="True" />
                                                         <BindingCondition Binding="{Binding Value}" Value="Medium" />
                                                     </MultiTrigger.Conditions>
-                                                    <Setter Property="BackgroundColor" Value="{StaticResource Amber}" />
-                                                    <Setter Property="Stroke" Value="{StaticResource Amber}" />
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
                                                 </MultiTrigger>
                                                 
                                                 <MultiTrigger TargetType="Border">
@@ -143,8 +143,8 @@
                                                         <BindingCondition Binding="{Binding IsSelected}" Value="True" />
                                                         <BindingCondition Binding="{Binding Value}" Value="High" />
                                                     </MultiTrigger.Conditions>
-                                                    <Setter Property="BackgroundColor" Value="{StaticResource Coral}" />
-                                                    <Setter Property="Stroke" Value="{StaticResource Coral}" />
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                                                 </MultiTrigger>
                                             </Border.Triggers>
                                             
@@ -155,10 +155,10 @@
                                             <Label Text="{Binding DisplayName}" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" FontSize="13" FontAttributes="Bold">
                                                 <Label.Triggers>
                                                     <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
-                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
                                                     </DataTrigger>
                                                     <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
-                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
                                                     </DataTrigger>
                                                 </Label.Triggers>
                                             </Label>
@@ -173,9 +173,9 @@
                 <Border Grid.Row="1" StrokeShape="RoundRectangle 14"
                         StrokeThickness="0"
                         HeightRequest="48"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Ocean}}">
+                        BackgroundColor="{DynamicResource Theme_Ocean_Ocean}">
                     <Border.Shadow>
-                        <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="8" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.2" />
                     </Border.Shadow>
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding SaveCommand}" />
@@ -185,7 +185,7 @@
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
                            VerticalOptions="Center"
-                           TextColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
+                           TextColor="{DynamicResource Theme_Snow_Midnight}" />
                 </Border>
         </Grid>
     </Grid>

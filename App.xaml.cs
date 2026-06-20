@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Diarion.Diagnostics;
 using Microsoft.Maui.Storage;
 
@@ -24,14 +24,9 @@ public partial class App : Application
 
 		InitializeComponent();
 
-        // Відновлюємо тему з налаштувань
-        var savedTheme = Preferences.Get("AppTheme", "System");
-        if (savedTheme == "Light")
-            UserAppTheme = AppTheme.Light;
-        else if (savedTheme == "Dark")
-            UserAppTheme = AppTheme.Dark;
-        else
-            UserAppTheme = AppTheme.Unspecified;
+        // Відновлюємо тему з налаштувань за допомогою ThemeManager
+        var currentTheme = Diarion.Services.ThemeManager.GetCurrentTheme();
+        Diarion.Services.ThemeManager.SetTheme(currentTheme);
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)

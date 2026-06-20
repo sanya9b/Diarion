@@ -13,11 +13,11 @@
                     </Grid.GestureRecognizers>
                     <!-- Filled Star -->
                     <Label Text="★" FontSize="18" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center"
-                           TextColor="{StaticResource Coral}"
+                           TextColor="{DynamicResource Theme_Coral}"
                            IsVisible="{Binding IsFilled}" />
                     <!-- Empty Star -->
                     <Label Text="☆" FontSize="18" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center"
-                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
+                           TextColor="{DynamicResource Theme_Ocean_Dust}"
                            IsVisible="{Binding IsEmpty}" />
                 </Grid>
             </DataTemplate>

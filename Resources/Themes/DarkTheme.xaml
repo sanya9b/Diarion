@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    x:Class="Diarion.Resources.Themes.DarkTheme">
+    <Color x:Key="Theme_Earth_Midnight">#22282C</Color>
+    <Color x:Key="Theme_Midnight_Snow">#FFFFFF</Color>
+    <Color x:Key="Theme_Ocean_Dust">#E0E6EA</Color>
+    <Color x:Key="Theme_Dust_Ocean">#929FA7</Color>
+    <Color x:Key="Theme_Snow_Black">#22282C</Color>
+    <Color x:Key="Theme_Ocean_Ocean">#929FA7</Color>
+    <Color x:Key="Theme_Snow_Midnight">#22282C</Color>
+    <Color x:Key="Theme_Midnight_Dust">#E0E6EA</Color>
+    <Color x:Key="Theme_Val_1AC9985A_26C9985A">#26C9985A</Color>
+    <Color x:Key="Theme_Val_14C9985A_1AFFFFFF">#1AFFFFFF</Color>
+    <Color x:Key="Theme_Val_99000000_B3000000">#B3000000</Color>
+    <Color x:Key="Theme_Val_1AC26D53_26FFFFFF">#26FFFFFF</Color>
+    <Color x:Key="Theme_Val_14C9985A_18FFFFFF">#18FFFFFF</Color>
+    <Color x:Key="Theme_Val_148FA083_18FFFFFF">#18FFFFFF</Color>
+    <Color x:Key="Theme_Val_1A000000_33000000">#33000000</Color>
+    <Color x:Key="Theme_Val_1AA87C8E_268FA083">#268FA083</Color>
+    <Color x:Key="Theme_Val_14A87C8E_1AFFFFFF">#1AFFFFFF</Color>
+    <x:Double x:Key="Theme_Val_0_05_0_2">0.2</x:Double>
+    <Color x:Key="Theme_Primary_White">#FFFFFF</Color>
+    <Color x:Key="Theme_Gray200_Gray500">#6E6E6E</Color>
+    <Color x:Key="Theme_Gray950_Gray100">#E1E1E1</Color>
+    <Color x:Key="Theme_Gray950_Gray200">#C8C8C8</Color>
+    <Color x:Key="Theme_White_Black">#22282C</Color>
+    <Color x:Key="Theme_Primary_Primary">#929FA7</Color>
+    <Color x:Key="Theme_Gray200_Gray600">#404040</Color>
+    <Color x:Key="Theme_Gray300_Gray600">#404040</Color>
+    <Color x:Key="Theme_Gray900_White">#FFFFFF</Color>
+    <Color x:Key="Theme_Black_White">#FFFFFF</Color>
+    <Color x:Key="Theme_Gray900_Gray200">#C8C8C8</Color>
+    <Color x:Key="Theme_White_White">#FFFFFF</Color>
+    <Color x:Key="Theme_Secondary_Gray200">#C8C8C8</Color>
+    <Color x:Key="Theme_Gray400_Gray500">#6E6E6E</Color>
+    <Color x:Key="Theme_Gray200_Gray950">#141414</Color>
+    <Color x:Key="Theme_Gray200_Gray200">#C8C8C8</Color>
+    <Color x:Key="Theme_Gray200_White">#FFFFFF</Color>
+    
+    <!-- Semantic Colors -->
+    <Color x:Key="Theme_Coral">#C26D53</Color>
+    <Color x:Key="Theme_Amber">#C9985A</Color>
+    <Color x:Key="Theme_Sage">#8FA083</Color>
+    <Color x:Key="Theme_Berry">#A87C8E</Color>
+    <Color x:Key="Theme_BerryTransparent">#33A87C8E</Color>
+    
+    <!-- Base Colors mapped for Semantic Use -->
+    <Color x:Key="Theme_Snow">#FFFFFF</Color>
+    <Color x:Key="Theme_Midnight">#22282C</Color>
+    
+    <!-- Reading Tracker Book Colors -->
+    <Color x:Key="Theme_BookSpineLeft">#47553F</Color>
+    <Color x:Key="Theme_BookCoverBack">#55684B</Color>
+    <Color x:Key="Theme_BookPagesRight">#F8FAFC</Color>
+    <Color x:Key="Theme_BookPagesBottom">#E2E8F0</Color>
+    <Color x:Key="Theme_BookPageLines">#CBD5E1</Color>
+    <Color x:Key="Theme_BookCoverFront">#8FA083</Color>
+    <Color x:Key="Theme_BookSpineDetail1">#7D9071</Color>
+    <Color x:Key="Theme_BookSpineDetail2">#55684B</Color>
+    <Color x:Key="Theme_BookSpineStroke1">#6A7B5F</Color>
+    <Color x:Key="Theme_BookSpineStroke2">#55684B</Color>
+    <Color x:Key="Theme_BookBookmark">#D97706</Color>
+    <Color x:Key="Theme_BookTextColor">#FFFFFF</Color>
+</ResourceDictionary>

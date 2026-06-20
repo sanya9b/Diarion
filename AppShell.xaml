@@ -8,7 +8,7 @@
     Title="{x:Static localization:AppResources.AppTitle}"
     FlyoutBehavior="Flyout"
     Shell.NavBarIsVisible="False"
-    Shell.FlyoutBackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
+    Shell.FlyoutBackgroundColor="{DynamicResource Theme_Earth_Midnight}">
 
     <Shell.FlyoutHeader>
         <Grid HeightRequest="140" Padding="24,32,24,16" RowDefinitions="Auto,*">
@@ -23,7 +23,7 @@
                    FontAttributes="Bold" 
                    FontSize="28" 
                    VerticalOptions="End" 
-                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
         </Grid>
     </Shell.FlyoutHeader>
 
@@ -35,26 +35,26 @@
                 <!-- Background Pill -->
                 <Border StrokeShape="RoundRectangle 20" 
                         StrokeThickness="1" 
-                        Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}" />
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}" />
                 
                 <!-- Moving Thumb -->
                 <Border x:Name="LangThumb"
                         StrokeShape="RoundRectangle 16"
                         StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
+                        BackgroundColor="{DynamicResource Theme_Dust_Ocean}"
                         WidthRequest="50"
                         HorizontalOptions="Start"
                         Margin="4">
                     <Border.Shadow>
-                        <Shadow Brush="{StaticResource Midnight}" Offset="0,2" Radius="4" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,2" Radius="4" Opacity="0.2" />
                     </Border.Shadow>
                 </Border>
                         
                 <!-- Text -->
                 <Grid ColumnDefinitions="*,*">
-                    <Label Grid.Column="0" Text="🇬🇧 EN" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                    <Label Grid.Column="1" Text="🇺🇦 UA" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                    <Label Grid.Column="0" Text="🇬🇧 EN" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    <Label Grid.Column="1" Text="🇺🇦 UA" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </Grid>
 
                 <!-- ABSOLUTE HITBOX -->
@@ -66,33 +66,35 @@
             </Grid>
 
             <!-- Theme Switch -->
-            <Grid HeightRequest="40" WidthRequest="110" VerticalOptions="Center">
+            <Grid HeightRequest="40" WidthRequest="130" VerticalOptions="Center">
                 
                 <!-- Background Pill -->
                 <Border StrokeShape="RoundRectangle 20" 
                         StrokeThickness="1" 
-                        Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}" />
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}" />
                 
                 <!-- Moving Thumb -->
                 <Border x:Name="ThemeThumb"
                         StrokeShape="RoundRectangle 16"
                         StrokeThickness="0"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
-                        WidthRequest="50"
+                        BackgroundColor="{DynamicResource Theme_Dust_Ocean}"
+                        WidthRequest="40"
                         HorizontalOptions="Start"
                         Margin="4">
                     <Border.Shadow>
-                        <Shadow Brush="{StaticResource Midnight}" Offset="0,2" Radius="4" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,2" Radius="4" Opacity="0.2" />
                     </Border.Shadow>
                 </Border>
                         
                 <!-- Text/Icons -->
-                <Grid ColumnDefinitions="*,*">
+                <Grid ColumnDefinitions="*,*,*">
                     <!-- Light Theme -->
                     <Label Grid.Column="0" Text="☀️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
                     <!-- Dark Theme -->
                     <Label Grid.Column="1" Text="🌙" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <!-- Pink Theme -->
+                    <Label Grid.Column="2" Text="🌸" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
                 </Grid>
 
                 <!-- ABSOLUTE HITBOX -->

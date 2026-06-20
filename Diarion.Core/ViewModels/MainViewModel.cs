@@ -126,6 +126,12 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private string _todayDayNumber = string.Empty;
 
+    [ObservableProperty]
+    private double _todayTaskCompletionPercentage;
+
+    [ObservableProperty]
+    private Microsoft.Maui.Graphics.Color _todayProgressColor = Microsoft.Maui.Graphics.Colors.Transparent;
+
     private DateTime _currentCalendarDate = DateTime.Now;
 
     public MainViewModel(IDiaryService diaryService)
@@ -373,6 +379,12 @@ public partial class MainViewModel : BaseViewModel
                     day.HasTasks = false;
                     day.TaskCompletionPercentage = 0;
                     day.PriorityDotColor = Microsoft.Maui.Graphics.Colors.Transparent;
+                }
+
+                if (day.Date.Date == DateTime.Today)
+                {
+                    TodayTaskCompletionPercentage = day.TaskCompletionPercentage;
+                    TodayProgressColor = day.ProgressColor;
                 }
             }
         });

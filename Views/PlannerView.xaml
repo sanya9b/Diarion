@@ -9,15 +9,15 @@
              
     <Grid RowDefinitions="Auto, *" Padding="20,2,20,20" RowSpacing="10">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalOptions="Center" ColumnSpacing="12">
-            <Label Grid.Column="0" Text="{x:Static localization:AppResources.TodoListLabel}" FontAttributes="Bold" FontSize="16" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+            <Label Grid.Column="0" Text="{x:Static localization:AppResources.TodoListLabel}" FontAttributes="Bold" FontSize="16" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             
             <Grid Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End">
                 <Border StrokeShape="RoundRectangle 8"
                         WidthRequest="36" HeightRequest="28"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Ocean}}"
+                        BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
                         StrokeThickness="0">
                     <Label Text="+"
-                           TextColor="{StaticResource Snow}"
+                           TextColor="{DynamicResource Theme_Snow}"
                            FontSize="20"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
@@ -36,19 +36,19 @@
         <CollectionView Grid.Row="1" ItemsSource="{Binding Todos}" ItemSizingStrategy="MeasureFirstItem">
             <CollectionView.EmptyView>
                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="32" Spacing="12">
-                    <Label Text="{x:Static localization:AppResources.NoTasks}" FontAttributes="Bold" FontSize="18" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                    <Label Text="{x:Static localization:AppResources.NoTasks}" FontAttributes="Bold" FontSize="18" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
 
                         <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:TodoItem">
                     <Border Margin="0,4" StrokeShape="RoundRectangle 24" StrokeThickness="0"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}">
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=GoToTodoDetailsCommand}" CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
                         <Border.Shadow>
-                            <Shadow Brush="{StaticResource Midnight}" Offset="0,4" Radius="8" Opacity="{AppThemeBinding Light=0.05, Dark=0.2}" />
+                            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="{DynamicResource Theme_Val_0_05_0_2}" />
                         </Border.Shadow>
                         <Grid ColumnDefinitions="Auto, *, Auto, Auto" Padding="12,10" ColumnSpacing="10" VerticalOptions="Center">
                             <Border Grid.Column="0" WidthRequest="28" HeightRequest="28" StrokeShape="RoundRectangle 8"
@@ -56,45 +56,45 @@
                                 <Border.Triggers>
                                     <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="False">
                                         <Setter Property="BackgroundColor" Value="Transparent" />
-                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
                                     </DataTrigger>
                                     <MultiTrigger TargetType="Border">
                                         <MultiTrigger.Conditions>
                                             <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
                                             <BindingCondition Binding="{Binding Priority}" Value="Low" />
                                         </MultiTrigger.Conditions>
-                                        <Setter Property="BackgroundColor" Value="{StaticResource Sage}" />
-                                        <Setter Property="Stroke" Value="{StaticResource Sage}" />
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
                                     </MultiTrigger>
                                     <MultiTrigger TargetType="Border">
                                         <MultiTrigger.Conditions>
                                             <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
                                             <BindingCondition Binding="{Binding Priority}" Value="Medium" />
                                         </MultiTrigger.Conditions>
-                                        <Setter Property="BackgroundColor" Value="{StaticResource Amber}" />
-                                        <Setter Property="Stroke" Value="{StaticResource Amber}" />
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
                                     </MultiTrigger>
                                     <MultiTrigger TargetType="Border">
                                         <MultiTrigger.Conditions>
                                             <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
                                             <BindingCondition Binding="{Binding Priority}" Value="High" />
                                         </MultiTrigger.Conditions>
-                                        <Setter Property="BackgroundColor" Value="{StaticResource Coral}" />
-                                        <Setter Property="Stroke" Value="{StaticResource Coral}" />
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                                     </MultiTrigger>
                                 </Border.Triggers>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=ToggleTodoCompletionCommand}" CommandParameter="{Binding .}" />
                                 </Border.GestureRecognizers>
 
-                                <Label Text="✓" InputTransparent="True" TextColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" FontSize="15" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
+                                <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="15" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
                             </Border>
 
-                            <Label Grid.Column="1" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="14" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}">
+                            <Label Grid.Column="1" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
                                 <Label.Triggers>
                                     <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
                                         <Setter Property="TextDecorations" Value="Strikethrough" />
-                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
                                     </DataTrigger>
                                 </Label.Triggers>
                             </Label>
@@ -102,28 +102,28 @@
                             <Border Grid.Column="2" StrokeShape="RoundRectangle 6" Padding="6,2" VerticalOptions="Center">
                                 <Border.Triggers>
                                     <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Low">
-                                        <Setter Property="BackgroundColor" Value="{StaticResource Sage}" />
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
                                     </DataTrigger>
                                     <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Medium">
-                                        <Setter Property="BackgroundColor" Value="{StaticResource Amber}" />
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
                                     </DataTrigger>
                                     <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="High">
-                                        <Setter Property="BackgroundColor" Value="{StaticResource Coral}" />
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
                                     </DataTrigger>
                                 </Border.Triggers>
                                 <Label FontSize="10" FontAttributes="Bold" InputTransparent="True">
                                     <Label.Triggers>
                                         <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Low">
                                             <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityLow}" />
-                                            <Setter Property="TextColor" Value="{StaticResource Snow}" />
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
                                         </DataTrigger>
                                         <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Medium">
                                             <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityMedium}" />
-                                            <Setter Property="TextColor" Value="{StaticResource Snow}" />
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
                                         </DataTrigger>
                                         <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="High">
                                             <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityHigh}" />
-                                            <Setter Property="TextColor" Value="{StaticResource Snow}" />
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
                                         </DataTrigger>
                                     </Label.Triggers>
                                 </Label>
@@ -133,7 +133,7 @@
                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=DeleteTodoCommand}"
                                          CommandParameter="{Binding .}">
                                 <ImageButton.Source>
-                                    <FontImageSource FontFamily="OpenSansRegular" Glyph="✕" Color="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Dust}}" Size="16" />
+                                    <FontImageSource FontFamily="OpenSansRegular" Glyph="✕" Color="{DynamicResource Theme_Midnight_Dust}" Size="16" />
                                 </ImageButton.Source>
                             </ImageButton>
                         </Grid>

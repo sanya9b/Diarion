@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    x:Class="Diarion.Resources.Themes.PinkTheme">
+    <!-- Background is very soft pink -->
+    <Color x:Key="Theme_Earth_Midnight">#FFF0F5</Color>
+    <!-- Text is dark burgundy/rose instead of midnight -->
+    <Color x:Key="Theme_Midnight_Snow">#5A2C3A</Color>
+    <!-- Secondary text is muted medium pink -->
+    <Color x:Key="Theme_Ocean_Dust">#A66B81</Color>
+    <!-- Borders are soft pink from user palette -->
+    <Color x:Key="Theme_Dust_Ocean">#ffd5d5</Color>
+    <!-- Surfaces are white or extremely light pink -->
+    <Color x:Key="Theme_Snow_Black">#FFF7F9</Color>
+    <Color x:Key="Theme_Ocean_Ocean">#ff92b0</Color>
+    <Color x:Key="Theme_Snow_Midnight">#FFF7F9</Color>
+    <Color x:Key="Theme_Midnight_Dust">#A66B81</Color>
+    
+    <!-- Translucent overlays colored with pink tones -->
+    <Color x:Key="Theme_Val_1AC9985A_26C9985A">#1A5A2C3A</Color>
+    <Color x:Key="Theme_Val_14C9985A_1AFFFFFF">#145A2C3A</Color>
+    <Color x:Key="Theme_Val_99000000_B3000000">#335A2C3A</Color>
+    <Color x:Key="Theme_Val_1AC26D53_26FFFFFF">#1A5A2C3A</Color>
+    <Color x:Key="Theme_Val_14C9985A_18FFFFFF">#145A2C3A</Color>
+    <Color x:Key="Theme_Val_148FA083_18FFFFFF">#145A2C3A</Color>
+    <Color x:Key="Theme_Val_1A000000_33000000">#1A5A2C3A</Color>
+    <Color x:Key="Theme_Val_1AA87C8E_268FA083">#1AC76A96</Color>
+    <Color x:Key="Theme_Val_14A87C8E_1AFFFFFF">#14C76A96</Color>
+    <x:Double x:Key="Theme_Val_0_05_0_2">0.05</x:Double>
+    
+    <!-- Primary elements use #ff92b0 -->
+    <Color x:Key="Theme_Primary_White">#ff92b0</Color>
+    <!-- Grays replaced with pink tones -->
+    <Color x:Key="Theme_Gray200_Gray500">#ffbcbc</Color>
+    <Color x:Key="Theme_Gray950_Gray100">#A66B81</Color>
+    <Color x:Key="Theme_Gray950_Gray200">#ffa8a8</Color>
+    <Color x:Key="Theme_White_Black">#FFF7F9</Color>
+    <Color x:Key="Theme_Primary_Primary">#ff92b0</Color>
+    <Color x:Key="Theme_Gray200_Gray600">#ffbcbc</Color>
+    <Color x:Key="Theme_Gray300_Gray600">#ffa8a8</Color>
+    <Color x:Key="Theme_Gray900_White">#5A2C3A</Color>
+    <Color x:Key="Theme_Black_White">#5A2C3A</Color>
+    <Color x:Key="Theme_Gray900_Gray200">#5A2C3A</Color>
+    <Color x:Key="Theme_White_White">#FFFFFF</Color>
+    <Color x:Key="Theme_Secondary_Gray200">#ffd5d5</Color>
+    <Color x:Key="Theme_Gray400_Gray500">#A66B81</Color>
+    <Color x:Key="Theme_Gray200_Gray950">#ffbcbc</Color>
+    <Color x:Key="Theme_Gray200_Gray200">#ffbcbc</Color>
+    <Color x:Key="Theme_Gray200_White">#ffbcbc</Color>
+    
+    <!-- Semantic Colors Mapped to Pink Shades -->
+    <Color x:Key="Theme_Coral">#E05A88</Color>
+    <Color x:Key="Theme_Amber">#F080A8</Color>
+    <Color x:Key="Theme_Sage">#FFB6C1</Color>
+    <Color x:Key="Theme_Berry">#C76A96</Color>
+    <Color x:Key="Theme_BerryTransparent">#33C76A96</Color>
+    
+    <!-- Base Colors mapped for Semantic Use -->
+    <Color x:Key="Theme_Snow">#FFF7F9</Color>
+    <Color x:Key="Theme_Midnight">#5A2C3A</Color>
+    
+    <!-- Reading Tracker Book Colors -->
+    <Color x:Key="Theme_BookSpineLeft">#7A3249</Color>
+    <Color x:Key="Theme_BookCoverBack">#92435E</Color>
+    <Color x:Key="Theme_BookPagesRight">#FFFFFF</Color>
+    <Color x:Key="Theme_BookPagesBottom">#F3E5EB</Color>
+    <Color x:Key="Theme_BookPageLines">#E2C1CE</Color>
+    <Color x:Key="Theme_BookCoverFront">#D589A6</Color>
+    <Color x:Key="Theme_BookSpineDetail1">#C27290</Color>
+    <Color x:Key="Theme_BookSpineDetail2">#92435E</Color>
+    <Color x:Key="Theme_BookSpineStroke1">#A95775</Color>
+    <Color x:Key="Theme_BookSpineStroke2">#92435E</Color>
+    <Color x:Key="Theme_BookBookmark">#E6A822</Color>
+    <Color x:Key="Theme_BookTextColor">#FFFFFF</Color>
+</ResourceDictionary>

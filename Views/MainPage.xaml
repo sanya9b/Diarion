@@ -10,7 +10,7 @@
              x:Name="PageRoot"
              x:DataType="viewmodels:MainViewModel"
              Title="{Binding Title}"
-             BackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
 
     <Grid Padding="0" RowDefinitions="Auto, *">
         
@@ -23,7 +23,7 @@
                 </Grid.GestureRecognizers>
                 <Label Text="☰" FontSize="32" 
                        InputTransparent="True"
-                       TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" 
+                       TextColor="{DynamicResource Theme_Midnight_Snow}" 
                        VerticalOptions="Center" HorizontalOptions="Start" />
             </Grid>
             
@@ -32,55 +32,59 @@
                         HorizontalScrollBarVisibility="Never"
                         VerticalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="8" Padding="6,0,0,0">
-                    <Border StrokeShape="RoundRectangle 16"
-                            StrokeThickness="1"
-                            Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
-                            Padding="0"
-                            WidthRequest="50"
-                            HeightRequest="50"
-                            Margin="0,0,2,0">
-                        <Grid RowDefinitions="Auto,*">
-                            <Border Grid.Row="0"
-                                    StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 16,16,0,0"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
-                                    Padding="0,2">
-                                <Label Text="{Binding TodayMonthShort}"
+                    <Grid Margin="0,0,2,0" WidthRequest="50" HeightRequest="50">
+                        <Border StrokeShape="RoundRectangle 16"
+                                StrokeThickness="1"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                Padding="0">
+                            <Grid RowDefinitions="Auto,*">
+                                <Border Grid.Row="0"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 16,16,0,0"
+                                        BackgroundColor="{DynamicResource Theme_Ocean_Dust}"
+                                        Padding="0,2">
+                                    <Label Text="{Binding TodayMonthShort}"
+                                           InputTransparent="True"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"
+                                           FontSize="9"
+                                           FontAttributes="Bold"
+                                           CharacterSpacing="1.2"
+                                           TextColor="{DynamicResource Theme_Snow_Midnight}" />
+                                </Border>
+                                <Label Grid.Row="1"
+                                       Text="{Binding TodayDayNumber}"
                                        InputTransparent="True"
                                        HorizontalOptions="Center"
                                        VerticalOptions="Center"
-                                       FontSize="9"
+                                       FontSize="18"
                                        FontAttributes="Bold"
-                                       CharacterSpacing="1.2"
-                                       TextColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
-                            </Border>
-                            <Label Grid.Row="1"
-                                   Text="{Binding TodayDayNumber}"
-                                   InputTransparent="True"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"
-                                   FontSize="18"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
-                            <BoxView Grid.RowSpan="2" BackgroundColor="Transparent">
-                                <BoxView.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding GoToTodayCommand}" />
-                                </BoxView.GestureRecognizers>
-                            </BoxView>
-                        </Grid>
-                    </Border>
+                                <BoxView Grid.RowSpan="2" BackgroundColor="Transparent">
+                                    <BoxView.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding GoToTodayCommand}" />
+                                    </BoxView.GestureRecognizers>
+                                </BoxView>
+                            </Grid>
+                        </Border>
+                        
+                        <controls:ProgressBorder Progress="{Binding TodayTaskCompletionPercentage}" 
+                                                 StrokeColor="{Binding TodayProgressColor}"
+                                                 CornerRadius="16"
+                                                 InputTransparent="True" />
+                    </Grid>
 
                     <Border StrokeShape="RoundRectangle 16"
                             StrokeThickness="1"
-                            Stroke="{StaticResource Sage}"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                            Stroke="{DynamicResource Theme_Sage}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
                             Padding="0"
                             WidthRequest="50"
                             HeightRequest="50">
                         <Grid BackgroundColor="Transparent">
-                            <Path Stroke="{StaticResource Sage}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
+                            <Path Stroke="{DynamicResource Theme_Sage}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
                                   Fill="Transparent" WidthRequest="24" HeightRequest="24"
                                   HorizontalOptions="Center" VerticalOptions="Center" 
                                   InputTransparent="True"
@@ -96,13 +100,13 @@
 
                     <Border StrokeShape="RoundRectangle 16"
                             StrokeThickness="1"
-                            Stroke="{StaticResource Berry}"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                            Stroke="{DynamicResource Theme_Berry}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
                             Padding="0"
                             WidthRequest="50"
                             HeightRequest="50">
                         <Grid BackgroundColor="Transparent">
-                            <Path Stroke="{StaticResource Berry}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
+                            <Path Stroke="{DynamicResource Theme_Berry}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
                                   Fill="Transparent" WidthRequest="24" HeightRequest="24"
                                   HorizontalOptions="Center" VerticalOptions="Center" 
                                   InputTransparent="True"
@@ -118,13 +122,13 @@
 
                     <Border StrokeShape="RoundRectangle 16"
                             StrokeThickness="1"
-                            Stroke="{StaticResource Amber}"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                            Stroke="{DynamicResource Theme_Amber}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
                             Padding="0"
                             WidthRequest="50"
                             HeightRequest="50">
                         <Grid BackgroundColor="Transparent">
-                            <Path Fill="{StaticResource Amber}" WidthRequest="24" HeightRequest="24"
+                            <Path Fill="{DynamicResource Theme_Amber}" WidthRequest="24" HeightRequest="24"
                                   HorizontalOptions="Center" VerticalOptions="Center" 
                                   InputTransparent="True"
                                   Data="M 19 14 C 20.49 12.54 22 10.79 22 8.5 A 5.5 5.5 0 0 0 16.5 3 C 14.74 3 13.5 3.5 12 5 C 10.5 3.5 9.26 3 7.5 3 A 5.5 5.5 0 0 0 2 8.5 C 2 10.79 3.51 12.54 5 14 L 12 21.35 Z" />
@@ -139,13 +143,13 @@
 
                     <Border StrokeShape="RoundRectangle 16"
                             StrokeThickness="1"
-                            Stroke="{StaticResource Coral}"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Black}}"
+                            Stroke="{DynamicResource Theme_Coral}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
                             Padding="0"
                             WidthRequest="50"
                             HeightRequest="50">
                         <Grid BackgroundColor="Transparent">
-                            <Path Stroke="{StaticResource Coral}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
+                            <Path Stroke="{DynamicResource Theme_Coral}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
                                   Fill="Transparent" WidthRequest="24" HeightRequest="24"
                                   HorizontalOptions="Center" VerticalOptions="Center" 
                                   InputTransparent="True"
@@ -177,30 +181,30 @@
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding PreviousMonthCommand}" />
                                 </Grid.GestureRecognizers>
-                                <Label Text="&lt;" FontSize="32" InputTransparent="True" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                <Label Text="&lt;" FontSize="32" InputTransparent="True" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                             </Grid>
 
                             <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="-10">
-                                <Label Text="{Binding CurrentMonthName}" FontFamily="MarckScript" FontSize="40" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" HorizontalOptions="Center" />
-                                <Label Text="{Binding CurrentYear}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" HorizontalOptions="Center" />
+                                <Label Text="{Binding CurrentMonthName}" FontFamily="MarckScript" FontSize="40" TextColor="{DynamicResource Theme_Midnight_Snow}" HorizontalOptions="Center" />
+                                <Label Text="{Binding CurrentYear}" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
 
                             <Grid Grid.Column="2" BackgroundColor="Transparent" Padding="20,10" VerticalOptions="Center" HorizontalOptions="End">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding NextMonthCommand}" />
                                 </Grid.GestureRecognizers>
-                                <Label Text="&gt;" FontSize="32" InputTransparent="True" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                <Label Text="&gt;" FontSize="32" InputTransparent="True" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                             </Grid>
                         </Grid>
 
                         <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*,*,*,*" Margin="0,0,0,8">
-                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.WeekdayMonShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.WeekdayTueShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                            <Label Grid.Column="2" Text="{x:Static localization:AppResources.WeekdayWedShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                            <Label Grid.Column="3" Text="{x:Static localization:AppResources.WeekdayThuShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                            <Label Grid.Column="4" Text="{x:Static localization:AppResources.WeekdayFriShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                            <Label Grid.Column="5" Text="{x:Static localization:AppResources.WeekdaySatShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                            <Label Grid.Column="6" Text="{x:Static localization:AppResources.WeekdaySunShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.WeekdayMonShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.WeekdayTueShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Label Grid.Column="2" Text="{x:Static localization:AppResources.WeekdayWedShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Label Grid.Column="3" Text="{x:Static localization:AppResources.WeekdayThuShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Label Grid.Column="4" Text="{x:Static localization:AppResources.WeekdayFriShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Label Grid.Column="5" Text="{x:Static localization:AppResources.WeekdaySatShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Label Grid.Column="6" Text="{x:Static localization:AppResources.WeekdaySunShort}" FontSize="11" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                         </Grid>
                     </Grid>
 
@@ -215,7 +219,7 @@
                                 <Grid>
                                     <Border StrokeShape="RoundRectangle 8"
                                             StrokeThickness="0"
-                                            BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark=#1AFFFFFF}"
+                                            BackgroundColor="{DynamicResource Theme_Snow}"
                                             Padding="6">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference PageRoot}}" CommandParameter="{Binding .}" />
@@ -223,30 +227,30 @@
                                     
                                     <Border.Triggers>
                                         <DataTrigger TargetType="Border" Binding="{Binding IsPredictedCycleDay}" Value="True">
-                                            <Setter Property="BackgroundColor" Value="{StaticResource BerryTransparent}" />
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_BerryTransparent}" />
                                         </DataTrigger>
                                         <DataTrigger TargetType="Border" Binding="{Binding IsCycleDay}" Value="True">
-                                            <Setter Property="BackgroundColor" Value="{StaticResource BerryTransparent}" />
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_BerryTransparent}" />
                                         </DataTrigger>
                                         <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
                                             <Setter Property="StrokeThickness" Value="1.5" />
-                                            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
                                         </DataTrigger>
                                         <DataTrigger TargetType="Border" Binding="{Binding IsToday}" Value="True">
-                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
                                         </DataTrigger>
                                     </Border.Triggers>
 
                                     <Grid>
                                         <!-- Day Number (Top Left) -->
-                                        <Label Text="{Binding Day}" HorizontalOptions="Start" VerticalOptions="Start" FontSize="13" InputTransparent="True" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}">
+                                        <Label Text="{Binding Day}" HorizontalOptions="Start" VerticalOptions="Start" FontSize="13" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}">
                                             <Label.Triggers>
                                                 <DataTrigger TargetType="Label" Binding="{Binding IsCurrentMonth}" Value="False">
                                                     <Setter Property="Opacity" Value="0.25" />
                                                 </DataTrigger>
                                                 <!-- IsCycleDay no longer forces Snow text color because BerryTransparent is lighter -->
                                                 <DataTrigger TargetType="Label" Binding="{Binding IsToday}" Value="True">
-                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}" />
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
                                                     <Setter Property="Opacity" Value="1" />
                                                 </DataTrigger>
                                             </Label.Triggers>
@@ -255,7 +259,7 @@
                                         <!-- Pacifier icon for fertile window (Bottom Left) -->
                                         <Image Source="pacifier.png" WidthRequest="16" HeightRequest="16" HorizontalOptions="Start" VerticalOptions="End" Aspect="AspectFit" InputTransparent="True" IsVisible="{Binding IsFertileWindow}" Margin="-2,0,0,-2">
                                             <Image.Behaviors>
-                                                <toolkit:IconTintColorBehavior TintColor="{StaticResource Berry}" />
+                                                <toolkit:IconTintColorBehavior TintColor="{DynamicResource Theme_Berry}" />
                                             </Image.Behaviors>
                                         </Image>
 
@@ -278,9 +282,9 @@
 
                 <VerticalStackLayout Margin="0,0,0,10" Spacing="0" HorizontalOptions="Fill">
                     <BoxView HeightRequest="4" WidthRequest="32" CornerRadius="2" 
-                             BackgroundColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" 
+                             BackgroundColor="{DynamicResource Theme_Dust_Ocean}" 
                              HorizontalOptions="Center" Margin="0,0,0,4" />
-                    <Label Text="{Binding SelectedDateDayName}" FontFamily="MarckScript" FontSize="32" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                    <Label Text="{Binding SelectedDateDayName}" FontFamily="MarckScript" FontSize="32" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </VerticalStackLayout>
 
                 <Grid ColumnDefinitions="*, *" Margin="0,4,0,6">
@@ -296,10 +300,10 @@
                                FontSize="15">
                             <Label.Triggers>
                                 <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="True">
-                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
                                 </DataTrigger>
                                 <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="False">
-                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
                                 </DataTrigger>
                             </Label.Triggers>
                         </Label>
@@ -316,16 +320,16 @@
                                FontSize="15">
                             <Label.Triggers>
                                 <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="True">
-                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
                                 </DataTrigger>
                                 <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="False">
-                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
                                 </DataTrigger>
                             </Label.Triggers>
                         </Label>
                     </Border>
-                    <BoxView Grid.Column="0" HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" VerticalOptions="End" IsVisible="{Binding IsDiaryMode}" />
-                    <BoxView Grid.Column="1" HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" VerticalOptions="End" IsVisible="{Binding IsPlannerMode}" />
+                    <BoxView Grid.Column="0" HeightRequest="2" BackgroundColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="End" IsVisible="{Binding IsDiaryMode}" />
+                    <BoxView Grid.Column="1" HeightRequest="2" BackgroundColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="End" IsVisible="{Binding IsPlannerMode}" />
                 </Grid>
             </VerticalStackLayout>
 
@@ -334,125 +338,183 @@
                     <VerticalStackLayout Spacing="24" BindingContext="{Binding CurrentEntry}" x:DataType="models:DiaryEntry">
                         
                         <!-- Sleep Block -->
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="{x:Static localization:AppResources.SleepLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                            <Grid ColumnDefinitions="Auto, *, Auto, *" ColumnSpacing="12">
-                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepStartLabel}" VerticalOptions="Center" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                <Grid Grid.Column="1" VerticalOptions="Center">
-                                    <Label Text="{Binding SleepStart, StringFormat='{0:HH\\:mm}'}" 
-                                           IsVisible="{Binding HasSleepStart}"
-                                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" FontSize="14" VerticalOptions="Center" />
-                                    <Label Text="HH:mm" 
-                                           IsVisible="{Binding IsSleepStartEmpty}"
-                                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" FontSize="14" VerticalOptions="Center" />
-                                    <!-- Transparent TimePicker intercepts touches and opens the native dialog -->
-                                    <TimePicker Time="{Binding SleepStart, TargetNullValue='00:00', FallbackValue='00:00'}" Format="HH:mm"
-                                                TextColor="Transparent" BackgroundColor="Transparent" HeightRequest="36" />
-                                </Grid>
+                        <Border StrokeShape="RoundRectangle 16"
+                                StrokeThickness="1"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                Padding="16">
+                            <Border.Shadow>
+                                <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{x:Static localization:AppResources.SleepLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                <Grid ColumnDefinitions="Auto, *, Auto, *" ColumnSpacing="12" Margin="0,4">
+                                    <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepEndLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Border Grid.Column="1" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 8" HeightRequest="36">
+                                        <Grid>
+                                            <Label Text="{Binding SleepEnd, StringFormat='{0:HH\\:mm}'}" 
+                                                   IsVisible="{Binding HasSleepEnd}"
+                                                   TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                            <Label Text="HH:mm" 
+                                                   IsVisible="{Binding IsSleepEndEmpty}"
+                                                   TextColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                            <TimePicker Time="{Binding SleepEnd, TargetNullValue='00:00', FallbackValue='00:00'}" Format="HH:mm"
+                                                        TextColor="Transparent" BackgroundColor="Transparent" />
+                                        </Grid>
+                                    </Border>
 
-                                <Label Grid.Column="2" Text="{x:Static localization:AppResources.SleepEndLabel}" VerticalOptions="Center" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                <Grid Grid.Column="3" VerticalOptions="Center">
-                                    <Label Text="{Binding SleepEnd, StringFormat='{0:HH\\:mm}'}" 
-                                           IsVisible="{Binding HasSleepEnd}"
-                                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" FontSize="14" VerticalOptions="Center" />
-                                    <Label Text="HH:mm" 
-                                           IsVisible="{Binding IsSleepEndEmpty}"
-                                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" FontSize="14" VerticalOptions="Center" />
-                                    <TimePicker Time="{Binding SleepEnd, TargetNullValue='00:00', FallbackValue='00:00'}" Format="HH:mm"
-                                                TextColor="Transparent" BackgroundColor="Transparent" HeightRequest="36" />
+                                    <Label Grid.Column="2" Text="{x:Static localization:AppResources.SleepStartLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" Margin="4,0,0,0" />
+                                    <Border Grid.Column="3" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 8" HeightRequest="36">
+                                        <Grid>
+                                            <Label Text="{Binding SleepStart, StringFormat='{0:HH\\:mm}'}" 
+                                                   IsVisible="{Binding HasSleepStart}"
+                                                   TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                            <Label Text="HH:mm" 
+                                                   IsVisible="{Binding IsSleepStartEmpty}"
+                                                   TextColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                            <!-- Transparent TimePicker intercepts touches and opens the native dialog -->
+                                            <TimePicker Time="{Binding SleepStart, TargetNullValue='00:00', FallbackValue='00:00'}" Format="HH:mm"
+                                                        TextColor="Transparent" BackgroundColor="Transparent" />
+                                        </Grid>
+                                    </Border>
                                 </Grid>
-                            </Grid>
-                            <Grid ColumnDefinitions="110, *" ColumnSpacing="12">
-                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepQualityLabel}" VerticalOptions="Center" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                <controls:RatingView Grid.Column="1" Value="{Binding SleepQuality}" MaxValue="10" VerticalOptions="Center" HorizontalOptions="Start" />
-                            </Grid>
-                        </VerticalStackLayout>
+                                <Grid ColumnDefinitions="110, *" ColumnSpacing="12">
+                                    <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepQualityLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <controls:RatingView Grid.Column="1" Value="{Binding SleepQuality}" MaxValue="5" VerticalOptions="Center" HorizontalOptions="Start" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
 
                         <!-- Health Block -->
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="{x:Static localization:AppResources.HealthLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                            
-                            <Grid ColumnDefinitions="110, *" ColumnSpacing="12" IsVisible="{Binding BindingContext.IsCycleInfoVisible, Source={x:Reference PageRoot}}">
-                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.CycleDayLabel}" VerticalOptions="Center" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                                    <Label Text="{Binding BindingContext.CycleDayText, Source={x:Reference PageRoot}}" FontAttributes="Bold" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                    <HorizontalStackLayout Spacing="4">
-                                        <Label Text="{x:Static localization:AppResources.PregnancyProbabilityLabel}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
-                                        <Label Text="{Binding BindingContext.PregnancyProbabilityText, Source={x:Reference PageRoot}}" FontSize="11" FontAttributes="Bold" TextColor="{Binding BindingContext.PregnancyProbabilityColor, Source={x:Reference PageRoot}}" />
-                                    </HorizontalStackLayout>
-                                </VerticalStackLayout>
-                            </Grid>
+                        <Border StrokeShape="RoundRectangle 16"
+                                StrokeThickness="1"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                Padding="16">
+                            <Border.Shadow>
+                                <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{x:Static localization:AppResources.HealthLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                
+                                <Grid ColumnDefinitions="110, *" ColumnSpacing="12" IsVisible="{Binding BindingContext.IsCycleInfoVisible, Source={x:Reference PageRoot}}">
+                                    <Label Grid.Column="0" Text="{x:Static localization:AppResources.CycleDayLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                        <Label Text="{Binding BindingContext.CycleDayText, Source={x:Reference PageRoot}}" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <HorizontalStackLayout Spacing="4">
+                                            <Label Text="{x:Static localization:AppResources.PregnancyProbabilityLabel}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                            <Label Text="{Binding BindingContext.PregnancyProbabilityText, Source={x:Reference PageRoot}}" FontSize="11" FontAttributes="Bold" TextColor="{Binding BindingContext.PregnancyProbabilityColor, Source={x:Reference PageRoot}}" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Grid>
 
-                            <Grid ColumnDefinitions="110, *" ColumnSpacing="12">
-                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.HealthStatusLabel}" VerticalOptions="Center" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                <controls:RatingView Grid.Column="1" Value="{Binding HealthStatus}" MaxValue="10" VerticalOptions="Center" HorizontalOptions="Start" />
-                            </Grid>
-                            <Grid ColumnDefinitions="110, *" ColumnSpacing="12">
-                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.IntimateLifeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                <Entry Grid.Column="1" Text="{Binding IntimateLife}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
-                            </Grid>
-                        </VerticalStackLayout>
+                                <Grid ColumnDefinitions="110, *" ColumnSpacing="12">
+                                    <Label Grid.Column="0" Text="{x:Static localization:AppResources.HealthStatusLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <controls:RatingView Grid.Column="1" Value="{Binding HealthStatus}" MaxValue="5" VerticalOptions="Center" HorizontalOptions="Start" />
+                                </Grid>
+                                <Grid ColumnDefinitions="110, *" ColumnSpacing="12">
+                                    <Label Grid.Column="0" Text="{x:Static localization:AppResources.IntimateLifeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Entry Grid.Column="1" Text="{Binding IntimateLife}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
 
                         <!-- Habits Block -->
-                        <VerticalStackLayout Spacing="8">
-                            <Grid ColumnDefinitions="*, Auto" Margin="0,0,0,4">
-                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.HabitsLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" VerticalOptions="Center" />
-                                <Grid Grid.Column="1" Padding="10,4" BackgroundColor="Transparent">
-                                    <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding BindingContext.ToggleEditHabitsModeCommand, Source={x:Reference PageRoot}}" />
-                                    </Grid.GestureRecognizers>
-                                    <Label Text="✎" FontSize="16" InputTransparent="True" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                        <Border StrokeShape="RoundRectangle 16"
+                                StrokeThickness="1"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                Padding="16">
+                            <Border.Shadow>
+                                <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*, Auto" Margin="0,0,0,4">
+                                    <Label Grid.Column="0" Text="{x:Static localization:AppResources.HabitsLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                                    <Grid Grid.Column="1" Padding="10,4" BackgroundColor="Transparent">
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding BindingContext.ToggleEditHabitsModeCommand, Source={x:Reference PageRoot}}" />
+                                        </Grid.GestureRecognizers>
+                                        <Label Text="✎" FontSize="16" InputTransparent="True" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                            
-                            <FlexLayout BindableLayout.ItemsSource="{Binding Habits}" Wrap="Wrap" Direction="Row" JustifyContent="SpaceBetween">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:HabitItem">
-                                        <ContentView FlexLayout.Basis="48%">
-                                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="6" HeightRequest="36">
-                                                <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
-                                                <Label Grid.Column="1" Text="{Binding Name}" VerticalOptions="Center" FontSize="12" LineBreakMode="TailTruncation" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                                                
-                                                <Grid Grid.Column="2" 
-                                                      WidthRequest="20" HeightRequest="20" 
-                                                      VerticalOptions="Center" 
-                                                      BackgroundColor="Transparent"
-                                                      IsVisible="{Binding BindingContext.IsEditHabitsMode, Source={x:Reference PageRoot}}">
-                                                    <Grid.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding BindingContext.DeleteHabitCommand, Source={x:Reference PageRoot}}" CommandParameter="{Binding .}" />
-                                                    </Grid.GestureRecognizers>
-                                                    <Label Text="✖" FontSize="12" InputTransparent="True" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{StaticResource Coral}" />
+                                
+                                <FlexLayout BindableLayout.ItemsSource="{Binding Habits}" Wrap="Wrap" Direction="Row" JustifyContent="SpaceBetween">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="models:HabitItem">
+                                            <ContentView FlexLayout.Basis="48%">
+                                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="6" HeightRequest="36">
+                                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
+                                                    <Label Grid.Column="1" Text="{Binding Name}" VerticalOptions="Center" FontSize="12" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                                    
+                                                    <Grid Grid.Column="2" 
+                                                          WidthRequest="20" HeightRequest="20" 
+                                                          VerticalOptions="Center" 
+                                                          BackgroundColor="Transparent"
+                                                          IsVisible="{Binding BindingContext.IsEditHabitsMode, Source={x:Reference PageRoot}}">
+                                                        <Grid.GestureRecognizers>
+                                                            <TapGestureRecognizer Command="{Binding BindingContext.DeleteHabitCommand, Source={x:Reference PageRoot}}" CommandParameter="{Binding .}" />
+                                                        </Grid.GestureRecognizers>
+                                                        <Label Text="✖" FontSize="12" InputTransparent="True" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
+                                                    </Grid>
                                                 </Grid>
-                                            </Grid>
-                                        </ContentView>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </FlexLayout>
-                            
-                            <Button Text="{x:Static localization:AppResources.AddHabitLabel}"
-                                    Command="{Binding BindingContext.AddHabitCommand, Source={x:Reference PageRoot}}"
-                                    BackgroundColor="Transparent"
-                                    TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"
-                                    FontAttributes="Bold"
-                                    HorizontalOptions="Start"
-                                    Padding="0,8" />
-                        </VerticalStackLayout>
+                                            </ContentView>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </FlexLayout>
+                                
+                                <Button Text="{x:Static localization:AppResources.AddHabitLabel}"
+                                        Command="{Binding BindingContext.AddHabitCommand, Source={x:Reference PageRoot}}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{DynamicResource Theme_Ocean_Dust}"
+                                        FontAttributes="Bold"
+                                        HorizontalOptions="Start"
+                                        Padding="0,8" />
+                            </VerticalStackLayout>
+                        </Border>
 
                         <!-- Reflection / Text blocks -->
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="{x:Static localization:AppResources.TriggersLabel}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                            <Editor Text="{Binding Triggers}" BackgroundColor="Transparent" FontSize="14" HeightRequest="60" AutoSize="Disabled" />
-                        </VerticalStackLayout>
+                        <Border StrokeShape="RoundRectangle 16"
+                                StrokeThickness="1"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                Padding="16">
+                            <Border.Shadow>
+                                <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{x:Static localization:AppResources.TriggersLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                <Editor Text="{Binding Triggers}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" MinimumHeightRequest="60" AutoSize="TextChanges" />
+                            </VerticalStackLayout>
+                        </Border>
                         
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="{x:Static localization:AppResources.GratitudeLabel}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                            <Editor Text="{Binding Gratitude}" BackgroundColor="Transparent" FontSize="14" HeightRequest="60" AutoSize="Disabled" />
-                        </VerticalStackLayout>
+                        <Border StrokeShape="RoundRectangle 16"
+                                StrokeThickness="1"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                Padding="16">
+                            <Border.Shadow>
+                                <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{x:Static localization:AppResources.GratitudeLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                <Editor Text="{Binding Gratitude}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" MinimumHeightRequest="60" AutoSize="TextChanges" />
+                            </VerticalStackLayout>
+                        </Border>
 
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="{x:Static localization:AppResources.SoulFoodLabel}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                            <Editor Text="{Binding SoulFood}" BackgroundColor="Transparent" FontSize="14" HeightRequest="60" AutoSize="Disabled" />
-                        </VerticalStackLayout>
+                        <Border StrokeShape="RoundRectangle 16"
+                                StrokeThickness="1"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                Padding="16">
+                            <Border.Shadow>
+                                <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{x:Static localization:AppResources.SoulFoodLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                <Editor Text="{Binding SoulFood}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" MinimumHeightRequest="60" AutoSize="TextChanges" />
+                            </VerticalStackLayout>
+                        </Border>
                     </VerticalStackLayout>
                 </ScrollView>
 
@@ -464,7 +526,7 @@
         <ActivityIndicator IsRunning="{Binding IsBusy}" 
                            IsVisible="{Binding IsBusy}"
                            HorizontalOptions="Center" VerticalOptions="Center" 
-                           Color="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}"/>
+                           Color="{DynamicResource Theme_Ocean_Dust}"/>
     </Grid>
 
 </ContentPage>

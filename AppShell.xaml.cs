@@ -23,23 +23,38 @@ public partial class AppShell : Shell
         LangThumb.HorizontalOptions = currentLanguage == "uk" ? LayoutOptions.End : LayoutOptions.Start;
 
         // Налаштовуємо позицію бігунка (switch) для теми при старті
-        var currentTheme = Preferences.Get("AppTheme", "Light");
-        ThemeThumb.HorizontalOptions = currentTheme == "Dark" ? LayoutOptions.End : LayoutOptions.Start;
+        var currentTheme = Diarion.Services.ThemeManager.GetCurrentTheme();
+        if (currentTheme == Diarion.Services.ThemeManager.ThemePink)
+            ThemeThumb.HorizontalOptions = LayoutOptions.End;
+        else if (currentTheme == Diarion.Services.ThemeManager.ThemeDark)
+            ThemeThumb.HorizontalOptions = LayoutOptions.Center;
+        else
+            ThemeThumb.HorizontalOptions = LayoutOptions.Start;
         }
 
     private async void OnToggleThemeClicked(object? sender, TappedEventArgs e)
     {
         if (Application.Current == null) return;
 
-        var currentTheme = Application.Current.UserAppTheme == AppTheme.Unspecified 
-            ? Application.Current.PlatformAppTheme 
-            : Application.Current.UserAppTheme;
-            
-        var newTheme = currentTheme == AppTheme.Dark ? AppTheme.Light : AppTheme.Dark;
-        Application.Current.UserAppTheme = newTheme;
+        var currentTheme = Diarion.Services.ThemeManager.GetCurrentTheme();
+        string newTheme;
+        
+        if (currentTheme == Diarion.Services.ThemeManager.ThemeLight)
+            newTheme = Diarion.Services.ThemeManager.ThemeDark;
+        else if (currentTheme == Diarion.Services.ThemeManager.ThemeDark)
+            newTheme = Diarion.Services.ThemeManager.ThemePink;
+        else
+            newTheme = Diarion.Services.ThemeManager.ThemeLight;
 
-        // Зберігаємо вибір користувача
-        Preferences.Set("AppTheme", newTheme == AppTheme.Dark ? "Dark" : "Light");
+        Diarion.Services.ThemeManager.SetTheme(newTheme);
+
+        // Оновлюємо UI Thumb
+        if (newTheme == Diarion.Services.ThemeManager.ThemePink)
+            ThemeThumb.HorizontalOptions = LayoutOptions.End;
+        else if (newTheme == Diarion.Services.ThemeManager.ThemeDark)
+            ThemeThumb.HorizontalOptions = LayoutOptions.Center;
+        else
+            ThemeThumb.HorizontalOptions = LayoutOptions.Start;
 
         // Закриваємо меню перед перестворенням сторінки
         Current.FlyoutIsPresented = false;

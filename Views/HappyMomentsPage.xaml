@@ -8,7 +8,7 @@
              x:DataType="viewModels:HappyMomentsViewModel"
              Shell.PresentationMode="ModalAnimated"
              Title="{localization:Translate Key=HappyMomentsTitle}"
-             BackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
@@ -16,12 +16,12 @@
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCloseTapped" />
                 </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </Grid>
 
             <VerticalStackLayout Grid.Column="1" Spacing="4">
-                <Label Text="{localization:Translate Key=HappyMomentsTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                <Label Text="{localization:Translate Key=HappyMomentsSubtitle}" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                <Label Text="{localization:Translate Key=HappyMomentsTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="{localization:Translate Key=HappyMomentsSubtitle}" FontSize="12" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
             </VerticalStackLayout>
 
             <ActivityIndicator Grid.Column="2"
@@ -29,7 +29,7 @@
                                HeightRequest="28"
                                IsRunning="{Binding IsBusy}"
                                IsVisible="{Binding IsBusy}"
-                               Color="{StaticResource Berry}"
+                               Color="{DynamicResource Theme_Berry}"
                                VerticalOptions="Center" />
         </Grid>
 
@@ -40,8 +40,8 @@
                         <DataTemplate x:DataType="viewModels:HappyMomentSlotItemViewModel">
                             <Border Padding="12,10"
                                     StrokeThickness="1"
-                                    Stroke="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}"
+                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
                                     StrokeShape="RoundRectangle 14">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectSlotCommand}"
@@ -49,7 +49,7 @@
                                 </Border.GestureRecognizers>
                                 <Border.Triggers>
                                     <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                        <Setter Property="Stroke" Value="{StaticResource Berry}" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Berry}" />
                                         <Setter Property="StrokeThickness" Value="2" />
                                     </DataTrigger>
                                 </Border.Triggers>
@@ -60,10 +60,10 @@
                                             HeightRequest="36"
                                             StrokeThickness="0"
                                             StrokeShape="RoundRectangle 8"
-                                            BackgroundColor="{AppThemeBinding Light=#1AA87C8E, Dark=#268FA083}">
+                                            BackgroundColor="{DynamicResource Theme_Val_1AA87C8E_268FA083}">
                                         <Border.Triggers>
                                             <DataTrigger TargetType="Border" Binding="{Binding IsEmpty}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#14A87C8E, Dark=#1AFFFFFF}" />
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Val_14A87C8E_1AFFFFFF}" />
                                             </DataTrigger>
                                         </Border.Triggers>
                                         <Grid>
@@ -74,7 +74,7 @@
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"
                                                    InputTransparent="True"
-                                                   TextColor="{StaticResource Berry}" />
+                                                   TextColor="{DynamicResource Theme_Berry}" />
                                             <Label Text="✦"
                                                    IsVisible="{Binding IsFilled}"
                                                    FontSize="18"
@@ -82,7 +82,7 @@
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"
                                                    InputTransparent="True"
-                                                   TextColor="{StaticResource Berry}" />
+                                                   TextColor="{DynamicResource Theme_Berry}" />
                                         </Grid>
                                     </Border>
 
@@ -93,7 +93,7 @@
                                                FontAttributes="Bold"
                                                VerticalOptions="Center"
                                                InputTransparent="True"
-                                               TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
                                         
                                         <Label Text="{Binding MomentTitle}"
                                                IsVisible="{Binding IsFilled}"
@@ -102,13 +102,13 @@
                                                LineBreakMode="WordWrap"
                                                MaxLines="2"
                                                InputTransparent="True"
-                                               TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
                                         
                                         <Label Text="{Binding SlotCaption}"
                                                IsVisible="{Binding IsFilled}"
                                                FontSize="10"
                                                InputTransparent="True"
-                                               TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
                                     </VerticalStackLayout>
 
                                     <Label Grid.Column="2"
@@ -118,7 +118,7 @@
                                            FontAttributes="Bold"
                                            VerticalOptions="Center"
                                            InputTransparent="True"
-                                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                           TextColor="{DynamicResource Theme_Ocean_Dust}" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -129,7 +129,7 @@
 
         <!-- Popup Overlay -->
         <Grid Grid.RowSpan="2"
-              BackgroundColor="{AppThemeBinding Light=#99000000, Dark=#B3000000}"
+              BackgroundColor="{DynamicResource Theme_Val_99000000_B3000000}"
               IsVisible="{Binding IsAddMomentFormVisible}"
               InputTransparent="False">
             <Grid.GestureRecognizers>
@@ -138,12 +138,14 @@
 
             <Border StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
-                    Stroke="{StaticResource Berry}"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}"
+                    Stroke="{DynamicResource Theme_Berry}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
                     Padding="24"
                     Margin="24"
-                    VerticalOptions="Center"
-                    Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.2}">
+                    VerticalOptions="Center">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer />
                 </Border.GestureRecognizers>
@@ -154,23 +156,23 @@
                                 HeightRequest="42"
                                 StrokeThickness="0"
                                 StrokeShape="RoundRectangle 8"
-                                BackgroundColor="{StaticResource Berry}">
+                                BackgroundColor="{DynamicResource Theme_Berry}">
                             <Label Text="✦"
                                    FontSize="20"
                                    FontAttributes="Bold"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"
-                                   TextColor="{StaticResource Snow}" />
+                                   TextColor="{DynamicResource Theme_Snow}" />
                         </Border>
 
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                             <Label Text="{localization:Translate Key=HappyMomentsFormTitle}"
                                    FontSize="18"
                                    FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
                             <Label Text="{Binding SelectedEmptySlot.SlotCaption}"
                                    FontSize="12"
-                                   TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
                         </VerticalStackLayout>
 
                         <!-- Close Button -->
@@ -178,32 +180,32 @@
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SelectSlotCommand}" CommandParameter="{Binding SelectedEmptySlot}" />
                             </Grid.GestureRecognizers>
-                            <Label Text="✕" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                            <Label Text="✕" FontSize="20" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                         </Grid>
                     </Grid>
 
                     <Label Text="{localization:Translate Key=HappyMomentsTitleLabel}"
                            FontSize="12"
                            FontAttributes="Bold"
-                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                           TextColor="{DynamicResource Theme_Midnight_Snow}" />
                     <Editor Text="{Binding NewMomentTitle}"
                             Placeholder="{localization:Translate Key=HappyMomentsTitlePlaceholder}"
                             AutoSize="TextChanges"
-                            TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
-                            PlaceholderColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                            TextColor="{DynamicResource Theme_Midnight_Snow}"
+                            PlaceholderColor="{DynamicResource Theme_Dust_Ocean}" />
 
                     <Label Text="{localization:Translate Key=HappyMomentsDateLabel}"
                            FontSize="12"
                            FontAttributes="Bold"
-                           TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                           TextColor="{DynamicResource Theme_Midnight_Snow}" />
                     <DatePicker Date="{Binding NewMomentDate}"
                                 MaximumDate="{Binding MaxMomentDate}"
-                                TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
                     <Label Text="{Binding ValidationMessage}"
                            IsVisible="{Binding HasValidationMessage}"
                            FontSize="12"
-                           TextColor="{StaticResource Coral}" />
+                           TextColor="{DynamicResource Theme_Coral}" />
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
                         <Button Grid.Column="0"
@@ -213,9 +215,9 @@
                                 CornerRadius="18"
                                 Padding="18,12"
                                 BackgroundColor="Transparent"
-                                BorderColor="{StaticResource Coral}"
+                                BorderColor="{DynamicResource Theme_Coral}"
                                 BorderWidth="1"
-                                TextColor="{StaticResource Coral}"
+                                TextColor="{DynamicResource Theme_Coral}"
                                 FontAttributes="Bold" />
                                 
                         <Button Grid.Column="1"
@@ -224,8 +226,8 @@
                                 IsVisible="{Binding SelectedEmptySlot.IsFilled}"
                                 CornerRadius="18"
                                 Padding="18,12"
-                                BackgroundColor="{StaticResource Berry}"
-                                TextColor="{StaticResource Snow}"
+                                BackgroundColor="{DynamicResource Theme_Berry}"
+                                TextColor="{DynamicResource Theme_Snow}"
                                 FontAttributes="Bold" />
 
                         <Button Grid.Column="0" Grid.ColumnSpan="2"
@@ -234,8 +236,8 @@
                                 IsVisible="{Binding SelectedEmptySlot.IsEmpty}"
                                 CornerRadius="18"
                                 Padding="18,12"
-                                BackgroundColor="{StaticResource Berry}"
-                                TextColor="{StaticResource Snow}"
+                                BackgroundColor="{DynamicResource Theme_Berry}"
+                                TextColor="{DynamicResource Theme_Snow}"
                                 FontAttributes="Bold" />
                     </Grid>
                 </VerticalStackLayout>

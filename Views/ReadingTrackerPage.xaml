@@ -8,7 +8,7 @@
              x:DataType="viewModels:ReadingTrackerViewModel"
              Shell.PresentationMode="ModalAnimated"
              Title="{localization:Translate Key=ReadingTrackerTitle}"
-             BackgroundColor="{AppThemeBinding Light={StaticResource Earth}, Dark={StaticResource Midnight}}">
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
@@ -16,12 +16,12 @@
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCloseTapped" />
                 </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </Grid>
 
             <VerticalStackLayout Grid.Column="1" Spacing="4">
-                <Label Text="{localization:Translate Key=ReadingTrackerTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
-                <Label Text="{localization:Translate Key=ReadingTrackerSubtitle}" FontSize="12" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                <Label Text="{localization:Translate Key=ReadingTrackerTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="{localization:Translate Key=ReadingTrackerSubtitle}" FontSize="12" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
             </VerticalStackLayout>
 
             <ActivityIndicator Grid.Column="2"
@@ -29,7 +29,7 @@
                                HeightRequest="28"
                                IsRunning="{Binding IsBusy}"
                                IsVisible="{Binding IsBusy}"
-                               Color="{StaticResource Sage}"
+                               Color="{DynamicResource Theme_Sage}"
                                VerticalOptions="Center" />
         </Grid>
 
@@ -60,40 +60,40 @@
 
                                 <!-- === 3D Вектор Обкладинки === -->
                                 <!-- Спинка (ліва грань) -->
-                                <Path Fill="#47553F" Data="M 10,10 L 25,22 L 25,152 L 10,140 Z" />
+                                <Path Fill="{DynamicResource Theme_BookSpineLeft}" Data="M 10,10 L 25,22 L 25,152 L 10,140 Z" />
                                 
                                 <!-- Задня обкладинка -->
-                                <Path Fill="#55684B" Data="M 25,22 L 112,22 L 112,152 L 25,152 Z" />
+                                <Path Fill="{DynamicResource Theme_BookCoverBack}" Data="M 25,22 L 112,22 L 112,152 L 25,152 Z" />
                                 
                                 <!-- Сторінки (права грань та нижня) -->
-                                <Path Fill="#F8FAFC" Data="M 95,13 L 109,24 L 109,149 L 95,138 Z" />
-                                <Path Fill="#E2E8F0" Data="M 13,140 L 95,140 L 109,149 L 27,149 Z" />
+                                <Path Fill="{DynamicResource Theme_BookPagesRight}" Data="M 95,13 L 109,24 L 109,149 L 95,138 Z" />
+                                <Path Fill="{DynamicResource Theme_BookPagesBottom}" Data="M 13,140 L 95,140 L 109,149 L 27,149 Z" />
                                 
                                 <!-- Лінії сторінок -->
-                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 95,30 L 109,41" />
-                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 95,60 L 109,71" />
-                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 95,90 L 109,101" />
-                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 95,120 L 109,131" />
-                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 30,140 L 44,149" />
-                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 50,140 L 64,149" />
-                                <Path Stroke="#CBD5E1" StrokeThickness="1" Data="M 70,140 L 84,149" />
+                                <Path Stroke="{DynamicResource Theme_BookPageLines}" StrokeThickness="1" Data="M 95,30 L 109,41" />
+                                <Path Stroke="{DynamicResource Theme_BookPageLines}" StrokeThickness="1" Data="M 95,60 L 109,71" />
+                                <Path Stroke="{DynamicResource Theme_BookPageLines}" StrokeThickness="1" Data="M 95,90 L 109,101" />
+                                <Path Stroke="{DynamicResource Theme_BookPageLines}" StrokeThickness="1" Data="M 95,120 L 109,131" />
+                                <Path Stroke="{DynamicResource Theme_BookPageLines}" StrokeThickness="1" Data="M 30,140 L 44,149" />
+                                <Path Stroke="{DynamicResource Theme_BookPageLines}" StrokeThickness="1" Data="M 50,140 L 64,149" />
+                                <Path Stroke="{DynamicResource Theme_BookPageLines}" StrokeThickness="1" Data="M 70,140 L 84,149" />
 
                                 <!-- Передня обкладинка -->
-                                <Path Fill="#8FA083" Data="M 10,10 L 95,10 L 95,140 L 10,140 Z" />
+                                <Path Fill="{DynamicResource Theme_BookCoverFront}" Data="M 10,10 L 95,10 L 95,140 L 10,140 Z" />
                                 
                                 <!-- Деталі корінця -->
-                                <Path Fill="#7D9071" Data="M 10,10 L 25,10 L 25,140 L 10,140 Z" />
-                                <Path Fill="#55684B" Data="M 10,25 L 25,25 L 25,28 L 10,28 Z" />
-                                <Path Fill="#55684B" Data="M 10,122 L 25,122 L 25,125 L 10,125 Z" />
-                                <Path Stroke="#6A7B5F" StrokeThickness="1.5" Data="M 30,10 L 30,140" />
-                                <Path Stroke="#55684B" StrokeThickness="1" Data="M 25,10 L 25,140" />
+                                <Path Fill="{DynamicResource Theme_BookSpineDetail1}" Data="M 10,10 L 25,10 L 25,140 L 10,140 Z" />
+                                <Path Fill="{DynamicResource Theme_BookSpineDetail2}" Data="M 10,25 L 25,25 L 25,28 L 10,28 Z" />
+                                <Path Fill="{DynamicResource Theme_BookSpineDetail2}" Data="M 10,122 L 25,122 L 25,125 L 10,125 Z" />
+                                <Path Stroke="{DynamicResource Theme_BookSpineStroke1}" StrokeThickness="1.5" Data="M 30,10 L 30,140" />
+                                <Path Stroke="{DynamicResource Theme_BookSpineStroke2}" StrokeThickness="1" Data="M 25,10 L 25,140" />
 
                                 <!-- Закладка -->
-                                <Path Fill="#D97706" Data="M 60,140 L 68,140 L 68,157 L 64,153 L 60,157 Z" />
+                                <Path Fill="{DynamicResource Theme_BookBookmark}" Data="M 60,140 L 68,140 L 68,157 L 64,153 L 60,157 Z" />
 
                                 <!-- Номер слоту -->
                                 <Label Text="{Binding SlotNumberText}"
-                                       TextColor="White" Opacity="0.7"
+                                       TextColor="{DynamicResource Theme_Snow}" Opacity="0.7"
                                        FontSize="10" FontAttributes="Bold"
                                        HorizontalOptions="End" VerticalOptions="Start"
                                        Margin="0,14,30,0" InputTransparent="True" />
@@ -101,8 +101,8 @@
                                 <!-- === Динамічний Текст (Filled) === -->
                                 <Label Text="{Binding BookTitle}"
                                        IsVisible="{Binding IsFilled}"
-                                       TextColor="White"
-                                       FontSize="12"
+                                       TextColor="{DynamicResource Theme_BookTextColor}"
+                                       FontSize="11"
                                        FontAttributes="Bold"
                                        HorizontalTextAlignment="Center"
                                        VerticalTextAlignment="Center"
@@ -113,7 +113,7 @@
                                 <!-- === Значок плюса (Empty) === -->
                                 <Label Text="+"
                                        IsVisible="{Binding IsEmpty}"
-                                       TextColor="White"
+                                       TextColor="{DynamicResource Theme_Snow}"
                                        FontSize="36"
                                        FontAttributes="Bold"
                                        HorizontalTextAlignment="Center"
@@ -129,7 +129,7 @@
 
         <!-- Popup Overlay -->
         <Grid Grid.RowSpan="2"
-              BackgroundColor="{AppThemeBinding Light=#99000000, Dark=#B3000000}"
+              BackgroundColor="{DynamicResource Theme_Val_99000000_B3000000}"
               IsVisible="{Binding IsAddBookFormVisible}"
               InputTransparent="False">
             <Grid.GestureRecognizers>
@@ -138,12 +138,14 @@
 
             <Border StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
-                    Stroke="{StaticResource Sage}"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource Snow}, Dark={StaticResource Midnight}}"
+                    Stroke="{DynamicResource Theme_Sage}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
                     Padding="24"
                     Margin="24"
-                    VerticalOptions="Center"
-                    Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.2}">
+                    VerticalOptions="Center">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer />
                 </Border.GestureRecognizers>
@@ -154,14 +156,14 @@
                                FontSize="18"
                                FontAttributes="Bold"
                                VerticalOptions="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
                         <!-- Close Button -->
                         <Grid Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SelectSlotCommand}" CommandParameter="{Binding SelectedSlot}" />
                             </Grid.GestureRecognizers>
-                            <Label Text="✕" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                            <Label Text="✕" FontSize="20" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                         </Grid>
                     </Grid>
 
@@ -169,26 +171,26 @@
                            FontSize="12"
                            FontAttributes="Bold"
                            CharacterSpacing="1.2"
-                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                           TextColor="{DynamicResource Theme_Ocean_Dust}" />
                     <Editor Text="{Binding NewBookTitle}"
                             Placeholder="{localization:Translate Key=ReadingTrackerBookTitlePlaceholder}"
                             AutoSize="TextChanges"
-                            TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}"
-                            PlaceholderColor="{AppThemeBinding Light={StaticResource Dust}, Dark={StaticResource Ocean}}" />
+                            TextColor="{DynamicResource Theme_Midnight_Snow}"
+                            PlaceholderColor="{DynamicResource Theme_Dust_Ocean}" />
 
                     <Label Text="{localization:Translate Key=ReadingTrackerCompletionDateLabel}"
                            FontSize="12"
                            FontAttributes="Bold"
                            CharacterSpacing="1.2"
-                           TextColor="{AppThemeBinding Light={StaticResource Ocean}, Dark={StaticResource Dust}}" />
+                           TextColor="{DynamicResource Theme_Ocean_Dust}" />
                     <DatePicker Date="{Binding NewCompletionDate}"
                                 MaximumDate="{Binding MaxCompletionDate}"
-                                TextColor="{AppThemeBinding Light={StaticResource Midnight}, Dark={StaticResource Snow}}" />
+                                TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
                     <Label Text="{Binding ValidationMessage}"
                            IsVisible="{Binding HasValidationMessage}"
                            FontSize="12"
-                           TextColor="{StaticResource Coral}" />
+                           TextColor="{DynamicResource Theme_Coral}" />
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
                         <Button Grid.Column="0"
@@ -198,9 +200,9 @@
                                 CornerRadius="18"
                                 Padding="18,12"
                                 BackgroundColor="Transparent"
-                                BorderColor="{StaticResource Coral}"
+                                BorderColor="{DynamicResource Theme_Coral}"
                                 BorderWidth="1"
-                                TextColor="{StaticResource Coral}"
+                                TextColor="{DynamicResource Theme_Coral}"
                                 FontAttributes="Bold" />
                                 
                         <Button Grid.Column="1"
@@ -209,8 +211,8 @@
                                 IsVisible="{Binding SelectedSlot.IsFilled}"
                                 CornerRadius="18"
                                 Padding="18,12"
-                                BackgroundColor="{StaticResource Sage}"
-                                TextColor="{StaticResource Snow}"
+                                BackgroundColor="{DynamicResource Theme_Sage}"
+                                TextColor="{DynamicResource Theme_Snow}"
                                 FontAttributes="Bold" />
 
                         <Button Grid.Column="0" Grid.ColumnSpan="2"
@@ -219,8 +221,8 @@
                                 IsVisible="{Binding SelectedSlot.IsEmpty}"
                                 CornerRadius="18"
                                 Padding="18,12"
-                                BackgroundColor="{StaticResource Sage}"
-                                TextColor="{StaticResource Snow}"
+                                BackgroundColor="{DynamicResource Theme_Sage}"
+                                TextColor="{DynamicResource Theme_Snow}"
                                 FontAttributes="Bold" />
                     </Grid>
                 </VerticalStackLayout>
