@@ -11,7 +11,7 @@ namespace Diarion.ViewModels;
 
 public partial class FinanceViewModel : BaseViewModel
 {
-    private readonly IDiaryService _diaryService;
+    private readonly IFinanceService _financeService;
 
     public ObservableCollection<FinanceTransaction> Transactions { get; } = new();
 
@@ -45,9 +45,9 @@ public partial class FinanceViewModel : BaseViewModel
     public bool IsExpenseTypeSelected => NewTransactionType == TransactionType.Expense;
     public bool IsIncomeTypeSelected => NewTransactionType == TransactionType.Income;
 
-    public FinanceViewModel(IDiaryService diaryService)
+    public FinanceViewModel(IFinanceService financeService)
     {
-        _diaryService = diaryService;
+        _financeService = financeService;
         Title = Diarion.Resources.Localization.AppResources.FinanceTitle ?? "Дохід/Витрати";
     }
 
@@ -56,7 +56,7 @@ public partial class FinanceViewModel : BaseViewModel
         IsBusy = true;
         try
         {
-            var transactions = await _diaryService.GetFinanceTransactionsAsync();
+            var transactions = await _financeService.GetFinanceTransactionsAsync();
             Transactions.Clear();
             foreach (var t in transactions)
             {
@@ -118,7 +118,7 @@ public partial class FinanceViewModel : BaseViewModel
             Date = NewDate.Date
         };
 
-        await _diaryService.SaveFinanceTransactionAsync(transaction);
+        await _financeService.SaveFinanceTransactionAsync(transaction);
         
         NewAmountText = string.Empty;
         NewCategory = string.Empty;
@@ -142,7 +142,7 @@ public partial class FinanceViewModel : BaseViewModel
 
         if (confirm)
         {
-            await _diaryService.DeleteFinanceTransactionAsync(transaction.Id);
+            await _financeService.DeleteFinanceTransactionAsync(transaction.Id);
             await LoadAsync();
         }
     }

@@ -11,7 +11,7 @@ namespace Diarion.ViewModels;
 
 public partial class WishlistViewModel : BaseViewModel
 {
-    private readonly IDiaryService _diaryService;
+    private readonly IWishlistService _wishlistService;
 
     public ObservableCollection<WishlistEntry> Entries { get; } = new();
 
@@ -27,9 +27,9 @@ public partial class WishlistViewModel : BaseViewModel
     [ObservableProperty]
     private WishlistEntry? _selectedEntry;
 
-    public WishlistViewModel(IDiaryService diaryService)
+    public WishlistViewModel(IWishlistService wishlistService)
     {
-        _diaryService = diaryService;
+        _wishlistService = wishlistService;
         Title = Diarion.Resources.Localization.AppResources.WishlistTitle ?? "Хочу, бажаю, отримаю";
     }
 
@@ -38,7 +38,7 @@ public partial class WishlistViewModel : BaseViewModel
         IsBusy = true;
         try
         {
-            var entries = await _diaryService.GetWishlistEntriesAsync();
+            var entries = await _wishlistService.GetWishlistEntriesAsync();
             Entries.Clear();
             foreach (var entry in entries)
             {
@@ -87,7 +87,7 @@ public partial class WishlistViewModel : BaseViewModel
         entry.WantText = NewWantText.Trim();
         entry.Date = NewDate.Date;
 
-        await _diaryService.SaveWishlistEntryAsync(entry);
+        await _wishlistService.SaveWishlistEntryAsync(entry);
         
         CloseForm();
         await LoadAsync();
@@ -99,7 +99,7 @@ public partial class WishlistViewModel : BaseViewModel
         if (entry == null) return;
 
         entry.IsCompleted = !entry.IsCompleted;
-        await _diaryService.SaveWishlistEntryAsync(entry);
+        await _wishlistService.SaveWishlistEntryAsync(entry);
         await LoadAsync();
     }
 
@@ -116,7 +116,7 @@ public partial class WishlistViewModel : BaseViewModel
 
         if (confirm)
         {
-            await _diaryService.DeleteWishlistEntryAsync(entry.Id);
+            await _wishlistService.DeleteWishlistEntryAsync(entry.Id);
             Entries.Remove(entry);
         }
     }

@@ -17,7 +17,7 @@ public class GoodDeedsViewModelTests
     public async Task LoadAsync_WithSavedDeeds_PopulatesSlots()
     {
         // Arrange
-        var diaryServiceMock = new Mock<IDiaryService>();
+        var diaryServiceMock = new Mock<IAuxiliaryService>();
         diaryServiceMock
             .Setup(s => s.GetGoodDeedsAsync())
             .ReturnsAsync(new List<GoodDeed>
@@ -41,7 +41,7 @@ public class GoodDeedsViewModelTests
     {
         // Arrange
         var storedDeeds = new List<GoodDeed>();
-        var diaryServiceMock = new Mock<IDiaryService>();
+        var diaryServiceMock = new Mock<IAuxiliaryService>();
         diaryServiceMock
             .Setup(s => s.GetGoodDeedsAsync())
             .ReturnsAsync(() => storedDeeds.OrderByDescending(x => x.Date).ToList());
@@ -76,7 +76,7 @@ public class GoodDeedsViewModelTests
     public async Task SaveSelectedDeedAsync_WithEmptyTitle_SetsValidationMessage()
     {
         // Arrange
-        var diaryServiceMock = new Mock<IDiaryService>();
+        var diaryServiceMock = new Mock<IAuxiliaryService>();
         diaryServiceMock
             .Setup(s => s.GetGoodDeedsAsync())
             .ReturnsAsync(new List<GoodDeed>());

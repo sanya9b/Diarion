@@ -13,7 +13,7 @@ namespace Diarion.ViewModels;
 
 public partial class HappyMomentsViewModel : BaseViewModel
 {
-    private readonly IDiaryService _diaryService;
+    private readonly IAuxiliaryService _auxiliaryService;
 
     public ObservableCollection<HappyMomentSlotItemViewModel> MomentSlots { get; } = new();
 
@@ -32,9 +32,9 @@ public partial class HappyMomentsViewModel : BaseViewModel
     [NotifyPropertyChangedFor(nameof(HasValidationMessage))]
     private string _validationMessage = string.Empty;
 
-    public HappyMomentsViewModel(IDiaryService diaryService)
+    public HappyMomentsViewModel(IAuxiliaryService auxiliaryService)
     {
-        _diaryService = diaryService;
+        _auxiliaryService = auxiliaryService;
         Title = AppResources.HappyMomentsTitle;
     }
 
@@ -50,7 +50,7 @@ public partial class HappyMomentsViewModel : BaseViewModel
 
         try
         {
-            var moments = await _diaryService.GetHappyMomentsAsync();
+            var moments = await _auxiliaryService.GetHappyMomentsAsync();
 
             MomentSlots.Clear();
             
@@ -108,7 +108,7 @@ public partial class HappyMomentsViewModel : BaseViewModel
         }
 
         ValidationMessage = string.Empty;
-        await _diaryService.SaveHappyMomentAsync(new HappyMoment
+        await _auxiliaryService.SaveHappyMomentAsync(new HappyMoment
         {
             SlotNumber = SelectedEmptySlot.SlotNumber,
             Title = normalizedTitle,
@@ -127,7 +127,7 @@ public partial class HappyMomentsViewModel : BaseViewModel
         if (SelectedEmptySlot == null || SelectedEmptySlot.IsEmpty)
             return;
 
-        await _diaryService.DeleteHappyMomentAsync(SelectedEmptySlot.SlotNumber);
+        await _auxiliaryService.DeleteHappyMomentAsync(SelectedEmptySlot.SlotNumber);
         
         SelectedEmptySlot = null;
         await LoadAsync();

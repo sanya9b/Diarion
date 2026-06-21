@@ -20,7 +20,7 @@ public class FinanceViewModelTests
         var currentMonth = DateTime.Today.Month;
         var currentYear = DateTime.Today.Year;
         
-        var diaryServiceMock = new Mock<IDiaryService>();
+        var diaryServiceMock = new Mock<IFinanceService>();
         diaryServiceMock
             .Setup(s => s.GetFinanceTransactionsAsync())
             .ReturnsAsync(new List<FinanceTransaction>
@@ -58,7 +58,7 @@ public class FinanceViewModelTests
     {
         // Arrange
         var storedTransactions = new List<FinanceTransaction>();
-        var diaryServiceMock = new Mock<IDiaryService>();
+        var diaryServiceMock = new Mock<IFinanceService>();
         diaryServiceMock
             .Setup(s => s.GetFinanceTransactionsAsync())
             .ReturnsAsync(() => storedTransactions.OrderByDescending(x => x.Date).ToList());
@@ -98,7 +98,7 @@ public class FinanceViewModelTests
     public async Task SaveTransactionAsync_WithInvalidAmount_DoesNotSave()
     {
         // Arrange
-        var diaryServiceMock = new Mock<IDiaryService>();
+        var diaryServiceMock = new Mock<IFinanceService>();
         var viewModel = new FinanceViewModel(diaryServiceMock.Object);
         
         viewModel.NewAmountText = "invalid_number";
@@ -114,7 +114,7 @@ public class FinanceViewModelTests
     public async Task SaveTransactionAsync_WithNegativeAmount_DoesNotSave()
     {
         // Arrange
-        var diaryServiceMock = new Mock<IDiaryService>();
+        var diaryServiceMock = new Mock<IFinanceService>();
         var viewModel = new FinanceViewModel(diaryServiceMock.Object);
         
         viewModel.NewAmountText = "-50";

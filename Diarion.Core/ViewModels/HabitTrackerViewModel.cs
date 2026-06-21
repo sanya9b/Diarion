@@ -14,7 +14,7 @@ namespace Diarion.ViewModels;
 
 public partial class HabitTrackerViewModel : BaseViewModel
 {
-    private readonly IDiaryService _diaryService;
+    private readonly IHabitService _habitService;
 
     public ObservableCollection<HarmfulHabitTrackerItemViewModel> Trackers { get; } = new();
     public ObservableCollection<HarmfulHabitDayViewModel> TrackerDays { get; } = new();
@@ -36,9 +36,9 @@ public partial class HabitTrackerViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isAddTrackerFormVisible;
 
-    public HabitTrackerViewModel(IDiaryService diaryService)
+    public HabitTrackerViewModel(IHabitService habitService)
     {
-        _diaryService = diaryService;
+        _habitService = habitService;
         Title = AppResources.HabitTrackerTitle;
     }
 
@@ -92,7 +92,7 @@ public partial class HabitTrackerViewModel : BaseViewModel
             StartDate = NewTrackerStartDate.Date
         };
 
-        await _diaryService.SaveHarmfulHabitTrackerAsync(tracker);
+        await _habitService.SaveHarmfulHabitTrackerAsync(tracker);
 
         HideAddTrackerForm();
         await LoadAsync(tracker.Id);
@@ -116,7 +116,7 @@ public partial class HabitTrackerViewModel : BaseViewModel
         }
 
         var isMarked = !day.IsMarked;
-        await _diaryService.SetHarmfulHabitDayMarkedAsync(SelectedTracker.Id, day.Date, isMarked);
+        await _habitService.SetHarmfulHabitDayMarkedAsync(SelectedTracker.Id, day.Date, isMarked);
 
         day.IsMarked = isMarked;
         if (isMarked)
@@ -158,7 +158,7 @@ public partial class HabitTrackerViewModel : BaseViewModel
 
         try
         {
-            var trackers = await _diaryService.GetHarmfulHabitTrackersAsync();
+            var trackers = await _habitService.GetHarmfulHabitTrackersAsync();
             var orderedTrackers = trackers
                 .OrderByDescending(x => x.CreatedAt)
                 .ThenByDescending(x => x.StartDate)

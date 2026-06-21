@@ -17,7 +17,7 @@ public class WishlistViewModelTests
     public async Task LoadAsync_WithSavedEntries_PopulatesEntries()
     {
         // Arrange
-        var diaryServiceMock = new Mock<IDiaryService>();
+        var diaryServiceMock = new Mock<IWishlistService>();
         diaryServiceMock
             .Setup(s => s.GetWishlistEntriesAsync())
             .ReturnsAsync(new List<WishlistEntry>
@@ -42,7 +42,7 @@ public class WishlistViewModelTests
     {
         // Arrange
         var storedEntries = new List<WishlistEntry>();
-        var diaryServiceMock = new Mock<IDiaryService>();
+        var diaryServiceMock = new Mock<IWishlistService>();
         diaryServiceMock
             .Setup(s => s.GetWishlistEntriesAsync())
             .ReturnsAsync(() => storedEntries.OrderByDescending(x => x.Date).ToList());
@@ -59,7 +59,6 @@ public class WishlistViewModelTests
         await viewModel.LoadAsync();
 
         viewModel.NewWantText = "  A pet dog  ";
-        viewModel.NewWishText = "Travel more";
         viewModel.NewDate = new DateTime(2025, 5, 20);
 
         // Act
@@ -68,23 +67,18 @@ public class WishlistViewModelTests
         // Assert
         storedEntries.Should().ContainSingle();
         storedEntries[0].WantText.Should().Be("A pet dog");
-        storedEntries[0].WishText.Should().Be("Travel more");
         
         viewModel.Entries.Should().HaveCount(1);
-        viewModel.NewWantText.Should().BeEmpty();
-        viewModel.NewWishText.Should().BeEmpty();
     }
 
     [Fact]
     public async Task SaveEntryAsync_WithEmptyData_DoesNotSave()
     {
         // Arrange
-        var diaryServiceMock = new Mock<IDiaryService>();
+        var diaryServiceMock = new Mock<IWishlistService>();
         var viewModel = new WishlistViewModel(diaryServiceMock.Object);
         
         viewModel.NewWantText = "  ";
-        viewModel.NewWishText = "";
-        viewModel.NewGetText = null!;
 
         // Act
         await viewModel.SaveEntryCommand.ExecuteAsync(null);

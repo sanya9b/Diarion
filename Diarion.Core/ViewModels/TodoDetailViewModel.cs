@@ -11,13 +11,13 @@ namespace Diarion.ViewModels;
 [QueryProperty(nameof(TodoId), "Id")]
 public partial class TodoDetailViewModel : BaseViewModel
 {
-    private readonly IDiaryService _diaryService;
+    private readonly ITodoService _todoService;
     private DateTime _targetDate = DateTime.Today;
     private TodoItem? _currentTodo;
 
-    public TodoDetailViewModel(IDiaryService diaryService)
+    public TodoDetailViewModel(ITodoService todoService)
     {
-        _diaryService = diaryService;
+        _todoService = todoService;
         Title = Diarion.Resources.Localization.AppResources.NewTaskTitle;
         PrioritiesList[1].IsSelected = true; // Medium is default
         UpdateTargetDateDisplay();
@@ -99,7 +99,7 @@ public partial class TodoDetailViewModel : BaseViewModel
 
     private async Task LoadTodoAsync(Guid id)
     {
-        _currentTodo = await _diaryService.GetTodoByIdAsync(id);
+        _currentTodo = await _todoService.GetTodoByIdAsync(id);
         if (_currentTodo != null)
         {
             TaskDescription = _currentTodo.TaskDescription;
@@ -142,7 +142,7 @@ public partial class TodoDetailViewModel : BaseViewModel
             // Перевірка ліміту 3-х завдань із високим пріоритетом на день
             if (SelectedPriority == TodoPriority.High)
             {
-                var existingTodos = await _diaryService.GetTodosForDateAsync(_targetDate);
+                var existingTodos = await _todoService.GetTodosForDateAsync(_targetDate);
                 
                 // Рахуємо скільки ВЖЕ є високих пріоритетів (виключаючи поточне завдання, якщо ми його редагуємо)
                 var currentId = _currentTodo?.Id ?? Guid.Empty;
@@ -176,7 +176,7 @@ public partial class TodoDetailViewModel : BaseViewModel
             _currentTodo.IsDailyRepeat = IsDailyRepeat;
             _currentTodo.HasReminder = HasReminder;
 
-            await _diaryService.SaveTodoAsync(_currentTodo);
+            await _todoService.SaveTodoAsync(_currentTodo);
             await Shell.Current.GoToAsync("..");
         }
         finally

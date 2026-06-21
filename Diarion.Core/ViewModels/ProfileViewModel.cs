@@ -14,7 +14,7 @@ public record GenderItem(GenderType Value, string DisplayName);
 
 public partial class ProfileViewModel : BaseViewModel
 {
-    private readonly IDiaryService _diaryService;
+    private readonly IProfileService _profileService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
@@ -30,16 +30,16 @@ public partial class ProfileViewModel : BaseViewModel
         new(GenderType.Other, Diarion.Resources.Localization.AppResources.GenderOther)
     };
 
-    public ProfileViewModel(IDiaryService diaryService)
+    public ProfileViewModel(IProfileService profileService)
     {
-        _diaryService = diaryService;
+        _profileService = profileService;
         Title = Diarion.Resources.Localization.AppResources.ProfileMenuTitle;
     }
 
     public async Task LoadProfileAsync()
     {
         IsBusy = true;
-        Profile = await _diaryService.GetUserProfileAsync();
+        Profile = await _profileService.GetUserProfileAsync();
         SelectedGenderItem = GenderList.FirstOrDefault(g => g.Value == Profile.Gender) ?? GenderList[0];
         IsBusy = false;
     }
@@ -67,7 +67,7 @@ public partial class ProfileViewModel : BaseViewModel
     public async Task SaveProfileAsync()
     {
         IsBusy = true;
-        await _diaryService.SaveUserProfileAsync(Profile);
+        await _profileService.SaveUserProfileAsync(Profile);
         IsBusy = false;
         
         await Shell.Current.DisplayAlertAsync(

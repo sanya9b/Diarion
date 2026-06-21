@@ -10,6 +10,9 @@ namespace Diarion.ViewModels;
 public partial class MainViewModel : BaseViewModel
 {
     private readonly IDiaryService _diaryService;
+    private readonly IProfileService _profileService;
+    private readonly ITodoService _todoService;
+    private readonly IHabitService _habitService;
 
     [ObservableProperty]
     private DiaryEntry? _currentEntry;
@@ -135,10 +138,13 @@ public partial class MainViewModel : BaseViewModel
 
     private DateTime _currentCalendarDate = DateTime.Now;
 
-    public MainViewModel(IDiaryService diaryService)
+    public MainViewModel(IDiaryService diaryService, IProfileService profileService, ITodoService todoService, IHabitService habitService)
     {
         using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
+        _profileService = profileService;
+        _todoService = todoService;
+        _habitService = habitService;
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
         
         var culture = Diarion.Resources.Localization.AppResources.Culture ?? CultureInfo.CurrentCulture;
@@ -211,7 +217,7 @@ public partial class MainViewModel : BaseViewModel
 
     private async Task LoadQuickMenuAsync()
     {
-        var profile = await _diaryService.GetUserProfileAsync();
+        var profile = await _profileService.GetUserProfileAsync();
         
         if (profile.QuickMenuOrder != null && profile.QuickMenuOrder.Count > 0)
         {
@@ -270,9 +276,9 @@ public partial class MainViewModel : BaseViewModel
 
         QuickMenuItems.Move(oldIndex, newIndex);
 
-        var profile = await _diaryService.GetUserProfileAsync();
+        var profile = await _profileService.GetUserProfileAsync();
         profile.QuickMenuOrder = QuickMenuItems.Select(x => x.Id).ToList();
-        await _diaryService.SaveUserProfileAsync(profile);
+        await _profileService.SaveUserProfileAsync(profile);
     }
 
     private void GenerateCalendar(DateTime date)
@@ -431,14 +437,14 @@ public partial class MainViewModel : BaseViewModel
 
         while (currentMonth <= lastMonth)
         {
-            var monthTodos = await _diaryService.GetTodosForMonthAsync(currentMonth.Year, currentMonth.Month);
+            var monthTodos = await _todoService.GetTodosForMonthAsync(currentMonth.Year, currentMonth.Month);
             allTodos.AddRange(monthTodos);
             currentMonth = currentMonth.AddMonths(1);
         }
 
         var grouped = allTodos.GroupBy(t => t.TargetDate.Date).ToDictionary(g => g.Key, g => g.ToList());
 
-        var profile = await _diaryService.GetUserProfileAsync();
+        var profile = await _profileService.GetUserProfileAsync();
         bool trackingEnabled = profile.IsMenstrualTrackingEnabled && profile.LastPeriodStartDate.HasValue;
         DateTime lastPeriod = trackingEnabled ? profile.LastPeriodStartDate!.Value.Date : DateTime.MinValue;
         int cycleLength = profile.GetNormalizedCycleLength();
@@ -522,7 +528,7 @@ public partial class MainViewModel : BaseViewModel
         using var _ = StartupTrace.Measure("MainViewModel.LoadDayContentAsync");
         await LoadEntriesForDateAsync(date);
 
-        var profile = await _diaryService.GetUserProfileAsync();
+        var profile = await _profileService.GetUserProfileAsync();
         if (profile.IsMenstrualTrackingEnabled && profile.LastPeriodStartDate.HasValue)
         {
             IsCycleInfoVisible = true;
@@ -585,7 +591,7 @@ public partial class MainViewModel : BaseViewModel
     private async Task LoadTodosForDateAsync(DateTime date)
     {
         using var _ = StartupTrace.Measure("MainViewModel.LoadTodosForDateAsync");
-        var items = await _diaryService.GetTodosForDateAsync(date.Date);
+        var items = await _todoService.GetTodosForDateAsync(date.Date);
         Todos.Clear();
         foreach (var item in items)
         {
@@ -629,7 +635,7 @@ public partial class MainViewModel : BaseViewModel
         CurrentEntry.Habits.Move(oldIndex, newIndex);
 
         var orderedIds = CurrentEntry.Habits.Select(h => h.HabitId).ToList();
-        await _diaryService.UpdateHabitDefinitionsOrderAsync(orderedIds);
+        await _habitService.UpdateHabitDefinitionsOrderAsync(orderedIds);
     }
 
     [RelayCommand]
@@ -641,7 +647,7 @@ public partial class MainViewModel : BaseViewModel
         if (!string.IsNullOrWhiteSpace(result))
         {
             var def = new HabitDefinition { Name = result.Trim(), CreatedAt = GetSelectedDate() };
-            await _diaryService.AddHabitDefinitionAsync(def);
+            await _habitService.AddHabitDefinitionAsync(def);
             
             if (CurrentEntry != null)
             {
@@ -662,7 +668,7 @@ public partial class MainViewModel : BaseViewModel
             Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
         if (!confirm) return;
 
-        await _diaryService.DeleteHabitDefinitionAsync(item.HabitId, GetSelectedDate());
+        await _habitService.DeleteHabitDefinitionAsync(item.HabitId, GetSelectedDate());
         CurrentEntry.Habits.Remove(item);
     }
 
@@ -676,7 +682,7 @@ public partial class MainViewModel : BaseViewModel
 
         try
         {
-            await _diaryService.DeleteTodoAsync(todo.Id);
+            await _todoService.DeleteTodoAsync(todo.Id);
             await LoadTodosForDateAsync(GetSelectedDate());
             await UpdateCalendarTasksCompletion();
         }
@@ -693,7 +699,7 @@ public partial class MainViewModel : BaseViewModel
         try
         {
             todo.IsCompleted = !todo.IsCompleted;
-            await _diaryService.SaveTodoAsync(todo);
+            await _todoService.SaveTodoAsync(todo);
 
             await LoadTodosForDateAsync(GetSelectedDate());
             await UpdateCalendarTasksCompletion();

@@ -610,4 +610,7 @@
   <data name="AddTransactionButton" xml:space="preserve">
     <value>Add Transaction</value>
   </data>
+  <data name="EmptyDataMessage" xml:space="preserve">
+    <value>Not enough data for this period.</value>
+  </data>
 </root>

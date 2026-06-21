@@ -14,7 +14,7 @@ namespace Diarion.ViewModels;
 public partial class ReadingTrackerViewModel : BaseViewModel
 {
     private const int TotalSlots = 12;
-    private readonly IDiaryService _diaryService;
+    private readonly IAuxiliaryService _auxiliaryService;
 
     public ObservableCollection<ReadingTrackerSlotItemViewModel> Slots { get; } = new();
 
@@ -33,9 +33,9 @@ public partial class ReadingTrackerViewModel : BaseViewModel
     [NotifyPropertyChangedFor(nameof(SelectedSlotTitle))]
     private ReadingTrackerSlotItemViewModel? _selectedSlot;
 
-    public ReadingTrackerViewModel(IDiaryService diaryService)
+    public ReadingTrackerViewModel(IAuxiliaryService auxiliaryService)
     {
-        _diaryService = diaryService;
+        _auxiliaryService = auxiliaryService;
         Title = AppResources.ReadingTrackerTitle;
     }
 
@@ -51,7 +51,7 @@ public partial class ReadingTrackerViewModel : BaseViewModel
 
         try
         {
-            var booksBySlot = (await _diaryService.GetReadingTrackerBooksAsync())
+            var booksBySlot = (await _auxiliaryService.GetReadingTrackerBooksAsync())
                 .ToDictionary(x => x.SlotNumber, x => x);
 
             Slots.Clear();
@@ -105,7 +105,7 @@ public partial class ReadingTrackerViewModel : BaseViewModel
 
         ValidationMessage = string.Empty;
 
-        await _diaryService.SaveReadingTrackerBookAsync(new ReadingTrackerBook
+        await _auxiliaryService.SaveReadingTrackerBookAsync(new ReadingTrackerBook
         {
             SlotNumber = SelectedSlot.SlotNumber,
             BookTitle = normalizedTitle,
@@ -124,7 +124,7 @@ public partial class ReadingTrackerViewModel : BaseViewModel
         if (SelectedSlot == null || SelectedSlot.IsEmpty)
             return;
 
-        await _diaryService.DeleteReadingTrackerBookAsync(SelectedSlot.SlotNumber);
+        await _auxiliaryService.DeleteReadingTrackerBookAsync(SelectedSlot.SlotNumber);
         
         SelectedSlot = null;
         await LoadAsync();

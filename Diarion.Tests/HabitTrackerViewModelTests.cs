@@ -18,13 +18,13 @@ public class HabitTrackerViewModelTests
     {
         // Arrange
         var storedTrackers = new List<HarmfulHabitTracker>();
-        var diaryServiceMock = new Mock<IDiaryService>();
+        var habitServiceMock = new Mock<IHabitService>();
 
-        diaryServiceMock
+        habitServiceMock
             .Setup(s => s.GetHarmfulHabitTrackersAsync())
             .ReturnsAsync(() => storedTrackers.ToList());
 
-        diaryServiceMock
+        habitServiceMock
             .Setup(s => s.SaveHarmfulHabitTrackerAsync(It.IsAny<HarmfulHabitTracker>()))
             .Returns<HarmfulHabitTracker>(tracker =>
             {
@@ -33,7 +33,7 @@ public class HabitTrackerViewModelTests
                 return Task.CompletedTask;
             });
 
-        var viewModel = new HabitTrackerViewModel(diaryServiceMock.Object)
+        var viewModel = new HabitTrackerViewModel(habitServiceMock.Object)
         {
             NewTrackerName = "Smoking",
             NewTrackerStartDate = DateTime.Today.AddDays(-3)
@@ -61,16 +61,16 @@ public class HabitTrackerViewModelTests
             StartDate = DateTime.Today.AddDays(-2)
         };
 
-        var diaryServiceMock = new Mock<IDiaryService>();
-        diaryServiceMock
+        var habitServiceMock = new Mock<IHabitService>();
+        habitServiceMock
             .Setup(s => s.GetHarmfulHabitTrackersAsync())
             .ReturnsAsync(new List<HarmfulHabitTracker> { tracker });
 
-        diaryServiceMock
+        habitServiceMock
             .Setup(s => s.SetHarmfulHabitDayMarkedAsync(tracker.Id, It.IsAny<DateTime>(), true))
             .Returns(Task.CompletedTask);
 
-        var viewModel = new HabitTrackerViewModel(diaryServiceMock.Object);
+        var viewModel = new HabitTrackerViewModel(habitServiceMock.Object);
         await viewModel.LoadAsync();
         var day = viewModel.TrackerDays[0];
 

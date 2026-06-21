@@ -13,7 +13,7 @@ namespace Diarion.ViewModels;
 
 public partial class GoodDeedsViewModel : BaseViewModel
 {
-    private readonly IDiaryService _diaryService;
+    private readonly IAuxiliaryService _auxiliaryService;
 
     public ObservableCollection<GoodDeedSlotItemViewModel> DeedSlots { get; } = new();
 
@@ -32,9 +32,9 @@ public partial class GoodDeedsViewModel : BaseViewModel
     [NotifyPropertyChangedFor(nameof(HasValidationMessage))]
     private string _validationMessage = string.Empty;
 
-    public GoodDeedsViewModel(IDiaryService diaryService)
+    public GoodDeedsViewModel(IAuxiliaryService auxiliaryService)
     {
-        _diaryService = diaryService;
+        _auxiliaryService = auxiliaryService;
         Title = AppResources.GoodDeedsTitle;
     }
 
@@ -50,7 +50,7 @@ public partial class GoodDeedsViewModel : BaseViewModel
 
         try
         {
-            var deeds = await _diaryService.GetGoodDeedsAsync();
+            var deeds = await _auxiliaryService.GetGoodDeedsAsync();
 
             DeedSlots.Clear();
 
@@ -108,7 +108,7 @@ public partial class GoodDeedsViewModel : BaseViewModel
         }
 
         ValidationMessage = string.Empty;
-        await _diaryService.SaveGoodDeedAsync(new GoodDeed
+        await _auxiliaryService.SaveGoodDeedAsync(new GoodDeed
         {
             SlotNumber = SelectedSlot.SlotNumber,
             Title = normalizedTitle,
@@ -127,7 +127,7 @@ public partial class GoodDeedsViewModel : BaseViewModel
         if (SelectedSlot == null || SelectedSlot.IsEmpty)
             return;
 
-        await _diaryService.DeleteGoodDeedAsync(SelectedSlot.SlotNumber);
+        await _auxiliaryService.DeleteGoodDeedAsync(SelectedSlot.SlotNumber);
         
         SelectedSlot = null;
         await LoadAsync();

@@ -25,46 +25,96 @@ public partial class TimeRangeItem : ObservableObject
     private bool _isSelected;
 }
 
+public enum StatisticsTabOption
+{
+    General,
+    Sleep,
+    Productivity
+}
+
+public partial class StatisticsTabItem : ObservableObject
+{
+    public StatisticsTabOption Option { get; set; }
+    public string DisplayName { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    private bool _isSelected;
+}
+
 public partial class StatisticsViewModel : BaseViewModel
 {
-    private readonly Diarion.Services.IDiaryService _diaryService;
+    private readonly Diarion.Services.IStatisticsService _statisticsService;
 
     [ObservableProperty]
     private System.Collections.ObjectModel.ObservableCollection<TimeRangeItem> _timeRanges = new();
 
     [ObservableProperty]
+    private System.Collections.ObjectModel.ObservableCollection<StatisticsTabItem> _tabs = new();
+
+    [ObservableProperty]
+    private StatisticsTabItem? _selectedTab;
+
+    [ObservableProperty]
+    private bool _isGeneralTabVisible;
+
+    [ObservableProperty]
+    private bool _isSleepTabVisible;
+
+    [ObservableProperty]
+    private bool _isProductivityTabVisible;
+
+    [ObservableProperty]
     private TimeRangeItem? _selectedTimeRange;
 
+    public ViewModels.Statistics.MoodStatsViewModel MoodStats { get; }
+    public ViewModels.Statistics.SleepStatsViewModel SleepStats { get; }
+    public ViewModels.Statistics.ProductivityStatsViewModel ProductivityStats { get; }
 
-    [ObservableProperty]
-    private string _averageSleepDurationText = string.Empty;
-
-    [ObservableProperty]
-    private string _averageSleepQualityText = string.Empty;
-
-    [ObservableProperty]
-    private string _topEmotionText = string.Empty;
-
-    [ObservableProperty]
-    private System.Collections.ObjectModel.ObservableCollection<Diarion.Models.EmotionChartItem> _emotionChartData = new();
-
-    [ObservableProperty]
-    private System.Collections.ObjectModel.ObservableCollection<Diarion.Models.SleepBarChartItem> _sleepChartData = new();
-
-    [ObservableProperty]
-    private double _taskCompletionPercentage;
-
-    [ObservableProperty]
-    private string _taskCompletionText = string.Empty;
-
-    [ObservableProperty]
-    private string _taskStatsText = string.Empty;
-
-    public StatisticsViewModel(Diarion.Services.IDiaryService diaryService)
+    public StatisticsViewModel(
+        Diarion.Services.IStatisticsService statisticsService,
+        ViewModels.Statistics.MoodStatsViewModel moodStats,
+        ViewModels.Statistics.SleepStatsViewModel sleepStats,
+        ViewModels.Statistics.ProductivityStatsViewModel productivityStats)
     {
-        _diaryService = diaryService;
+        _statisticsService = statisticsService;
+        MoodStats = moodStats;
+        SleepStats = sleepStats;
+        ProductivityStats = productivityStats;
+        
         Title = AppResources.StatisticsTitle;
+        InitializeTabs();
         InitializeTimeRanges();
+    }
+
+    private void InitializeTabs()
+    {
+        Tabs = new System.Collections.ObjectModel.ObservableCollection<StatisticsTabItem>
+        {
+            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = "Огляд", IsSelected = true },
+            new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = "Сон" },
+            new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = "Продуктивність" }
+        };
+        SelectTab(Tabs[0]);
+    }
+
+    [CommunityToolkit.Mvvm.Input.RelayCommand]
+    public void SelectTab(StatisticsTabItem item)
+    {
+        if (item == null) return;
+
+        foreach (var t in Tabs)
+        {
+            t.IsSelected = false;
+        }
+        item.IsSelected = true;
+        SelectedTab = item;
+
+        IsGeneralTabVisible = item.Option == StatisticsTabOption.General;
+        IsSleepTabVisible = item.Option == StatisticsTabOption.Sleep;
+        IsProductivityTabVisible = item.Option == StatisticsTabOption.Productivity;
+        
+        // Load data for the selected tab when switched
+        _ = LoadStatisticsAsync();
     }
 
     private void InitializeTimeRanges()
@@ -104,106 +154,19 @@ public partial class StatisticsViewModel : BaseViewModel
         try
         {
             int days = (int)(SelectedTimeRange?.Option ?? TimeRangeOption.Week);
-            var sleepStats = await _diaryService.GetSleepStatisticsAsync(days);
-            AverageSleepDurationText = $"{sleepStats.AverageSleepDuration.Hours}h {sleepStats.AverageSleepDuration.Minutes}m";
-            AverageSleepQualityText = $"{sleepStats.AverageSleepQuality:F1} / 10";
-
-            var sleepData = new System.Collections.ObjectModel.ObservableCollection<Diarion.Models.SleepBarChartItem>();
             
-            // If less than 30 days, show daily. Else, group by week or month.
-            if (days <= 14)
+            if (IsGeneralTabVisible)
             {
-                foreach (var pt in sleepStats.DailyData)
-                {
-                    sleepData.Add(new Diarion.Models.SleepBarChartItem 
-                    { 
-                        Label = pt.Date.ToString("ddd", System.Globalization.CultureInfo.CurrentCulture), 
-                        Value = pt.Duration.TotalHours 
-                    });
-                }
+                await MoodStats.LoadDataAsync(days);
             }
-            else
+            else if (IsSleepTabVisible)
             {
-                // Group by Week or Month
-                int groupSize = days <= 90 ? 7 : 30;
-                for (int i = 0; i < sleepStats.DailyData.Count; i += groupSize)
-                {
-                    var group = sleepStats.DailyData.Skip(i).Take(groupSize).ToList();
-                    var avg = group.Any(x => x.Duration.TotalHours > 0) 
-                        ? group.Where(x => x.Duration.TotalHours > 0).Average(x => x.Duration.TotalHours) 
-                        : 0;
-                    
-                    string label = groupSize == 7 
-                        ? $"W{i/7 + 1}" 
-                        : group.First().Date.ToString("MMM", System.Globalization.CultureInfo.CurrentCulture);
-                        
-                    sleepData.Add(new Diarion.Models.SleepBarChartItem 
-                    { 
-                        Label = label, 
-                        Value = avg 
-                    });
-                }
+                await SleepStats.LoadDataAsync(days);
             }
-            SleepChartData = sleepData;
-
-            var moodStats = await _diaryService.GetMoodStatisticsAsync(days);
-            
-            var totalEmotions = moodStats.EmotionCounts.Values.Sum();
-            if (totalEmotions == 0) totalEmotions = 1; // Prevent div by 0
-
-            TopEmotionText = moodStats.TopEmotion switch
+            else if (IsProductivityTabVisible)
             {
-                Models.Emotion.Happy => AppResources.EmotionHappy,
-                Models.Emotion.Calm => AppResources.EmotionCalm,
-                Models.Emotion.Anxious => AppResources.EmotionAnxious,
-                Models.Emotion.Sad => AppResources.EmotionSad,
-                Models.Emotion.Angry => AppResources.EmotionAngry,
-                _ => AppResources.EmotionNone
-            };
-
-            var topPercentage = moodStats.TopEmotion != Models.Emotion.None 
-                ? (double)moodStats.EmotionCounts[moodStats.TopEmotion] / totalEmotions 
-                : 0;
-
-            var newEmotionData = new System.Collections.ObjectModel.ObservableCollection<Diarion.Models.EmotionChartItem>();
-            foreach (var kvp in moodStats.EmotionCounts.OrderByDescending(x => x.Value))
-            {
-                if (kvp.Value > 0)
-                {
-                    var colorHex = kvp.Key switch
-                    {
-                        Models.Emotion.Happy => "#C26D53", // Coral
-                        Models.Emotion.Calm => "#8FA083",  // Sage
-                        Models.Emotion.Anxious => "#C9985A", // Amber
-                        Models.Emotion.Sad => "#929FA7",   // Ocean
-                        Models.Emotion.Angry => "#A87C8E", // Berry
-                        _ => "#D0D3D4" // Dust
-                    };
-                    
-                    var name = kvp.Key switch
-                    {
-                        Models.Emotion.Happy => AppResources.EmotionHappy,
-                        Models.Emotion.Calm => AppResources.EmotionCalm,
-                        Models.Emotion.Anxious => AppResources.EmotionAnxious,
-                        Models.Emotion.Sad => AppResources.EmotionSad,
-                        Models.Emotion.Angry => AppResources.EmotionAngry,
-                        _ => AppResources.EmotionNone
-                    };
-
-                    newEmotionData.Add(new Diarion.Models.EmotionChartItem
-                    {
-                        Name = name,
-                        Percentage = (double)kvp.Value / totalEmotions,
-                        Color = Microsoft.Maui.Graphics.Color.FromArgb(colorHex)
-                    });
-                }
+                await ProductivityStats.LoadDataAsync(days);
             }
-            EmotionChartData = newEmotionData;
-
-            var todoStats = await _diaryService.GetTodoStatisticsAsync(days);
-            TaskCompletionPercentage = todoStats.CompletionPercentage;
-            TaskCompletionText = $"{todoStats.CompletionPercentage:P0}";
-            TaskStatsText = $"{todoStats.CompletedCount} / {todoStats.TotalCount}";
         }
         finally
         {

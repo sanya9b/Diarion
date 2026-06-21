@@ -7,21 +7,31 @@ using Xunit;
 
 namespace Diarion.Tests;
 
+using Diarion.Services.Database;
+
 public class DiaryServiceTests : IDisposable
 {
+    private readonly DatabaseContext _dbContext;
     private readonly DiaryService _diaryService;
+    private readonly TodoService _todoService;
+    private readonly ProfileService _profileService;
+    private readonly HabitService _habitService;
 
     public DiaryServiceTests()
     {
-        _diaryService = new DiaryService(useInMemory: true);
+        _dbContext = new DatabaseContext(useInMemory: true);
+        _profileService = new ProfileService(_dbContext);
+        _todoService = new TodoService(_dbContext, null);
+        _habitService = new HabitService(_dbContext);
+        _diaryService = new DiaryService(_dbContext, _habitService, _todoService);
     }
 
     private async Task ClearDatabaseAsync()
     {
-        var todos = await _diaryService.GetAllTodosAsync();
+        var todos = await _todoService.GetAllTodosAsync();
         foreach (var t in todos)
         {
-            await _diaryService.DeleteTodoAsync(t.Id);
+            await _todoService.DeleteTodoAsync(t.Id);
         }
         var entries = await _diaryService.GetAllEntriesAsync();
         foreach (var e in entries)
@@ -67,8 +77,8 @@ public class DiaryServiceTests : IDisposable
         };
 
         // Act
-        await _diaryService.SaveTodoAsync(todo);
-        var todos = await _diaryService.GetTodosForDateAsync(targetDate);
+        await _todoService.SaveTodoAsync(todo);
+        var todos = await _todoService.GetTodosForDateAsync(targetDate);
 
         // Assert
         todos.Should().NotBeEmpty();
@@ -89,8 +99,8 @@ public class DiaryServiceTests : IDisposable
         };
 
         // Act
-        await _diaryService.SaveUserProfileAsync(profile);
-        var savedProfile = await _diaryService.GetUserProfileAsync();
+        await _profileService.SaveUserProfileAsync(profile);
+        var savedProfile = await _profileService.GetUserProfileAsync();
 
         // Assert
         savedProfile.CycleLength.Should().Be(UserProfile.DefaultCycleLength);
@@ -108,8 +118,8 @@ public class DiaryServiceTests : IDisposable
         };
 
         // Act
-        await _diaryService.SaveUserProfileAsync(profile);
-        var savedProfile = await _diaryService.GetUserProfileAsync();
+        await _profileService.SaveUserProfileAsync(profile);
+        var savedProfile = await _profileService.GetUserProfileAsync();
 
         // Assert
         savedProfile.CycleLength.Should().Be(21);
@@ -130,15 +140,15 @@ public class DiaryServiceTests : IDisposable
             TargetDate = yesterday,
             IsCompleted = false
         };
-        await _diaryService.SaveTodoAsync(todo);
+        await _todoService.SaveTodoAsync(todo);
 
         // Ensure setting is true (it is by default, but let's be explicit)
-        var profile = await _diaryService.GetUserProfileAsync();
+        var profile = await _profileService.GetUserProfileAsync();
         profile.AutoMigrateUncompletedTasksEnabled = true;
-        await _diaryService.SaveUserProfileAsync(profile);
+        await _profileService.SaveUserProfileAsync(profile);
 
         // Act
-        var todos = await _diaryService.GetTodosForDateAsync(today);
+        var todos = await _todoService.GetTodosForDateAsync(today);
 
         // Assert
         todos.Should().ContainSingle(t => t.TaskDescription == "Yesterday Task");
@@ -159,14 +169,14 @@ public class DiaryServiceTests : IDisposable
             TargetDate = yesterday,
             IsCompleted = false
         };
-        await _diaryService.SaveTodoAsync(todo);
+        await _todoService.SaveTodoAsync(todo);
 
-        var profile = await _diaryService.GetUserProfileAsync();
+        var profile = await _profileService.GetUserProfileAsync();
         profile.AutoMigrateUncompletedTasksEnabled = false;
-        await _diaryService.SaveUserProfileAsync(profile);
+        await _profileService.SaveUserProfileAsync(profile);
 
         // Act
-        var todos = await _diaryService.GetTodosForDateAsync(today);
+        var todos = await _todoService.GetTodosForDateAsync(today);
 
         // Assert
         todos.Should().BeEmpty();
@@ -184,7 +194,7 @@ public class DiaryServiceTests : IDisposable
         // Create 3 High-priority tasks for Today
         for (int i = 0; i < 3; i++)
         {
-            await _diaryService.SaveTodoAsync(new TodoItem
+            await _todoService.SaveTodoAsync(new TodoItem
             {
                 TaskDescription = $"Today Task {i}",
                 TargetDate = today,
@@ -200,14 +210,14 @@ public class DiaryServiceTests : IDisposable
             IsCompleted = false,
             Priority = TodoPriority.High
         };
-        await _diaryService.SaveTodoAsync(pastTodo);
+        await _todoService.SaveTodoAsync(pastTodo);
 
-        var profile = await _diaryService.GetUserProfileAsync();
+        var profile = await _profileService.GetUserProfileAsync();
         profile.AutoMigrateUncompletedTasksEnabled = true;
-        await _diaryService.SaveUserProfileAsync(profile);
+        await _profileService.SaveUserProfileAsync(profile);
 
         // Act
-        var todos = await _diaryService.GetTodosForDateAsync(today);
+        var todos = await _todoService.GetTodosForDateAsync(today);
 
         // Assert
         todos.Should().HaveCount(4);
@@ -228,7 +238,7 @@ public class DiaryServiceTests : IDisposable
         // Create 2 High-priority tasks for Today
         for (int i = 0; i < 2; i++)
         {
-            await _diaryService.SaveTodoAsync(new TodoItem
+            await _todoService.SaveTodoAsync(new TodoItem
             {
                 TaskDescription = $"Today Task {i}",
                 TargetDate = today,
@@ -244,14 +254,14 @@ public class DiaryServiceTests : IDisposable
             IsCompleted = false,
             Priority = TodoPriority.High
         };
-        await _diaryService.SaveTodoAsync(pastTodo);
+        await _todoService.SaveTodoAsync(pastTodo);
 
-        var profile = await _diaryService.GetUserProfileAsync();
+        var profile = await _profileService.GetUserProfileAsync();
         profile.AutoMigrateUncompletedTasksEnabled = true;
-        await _diaryService.SaveUserProfileAsync(profile);
+        await _profileService.SaveUserProfileAsync(profile);
 
         // Act
-        var todos = await _diaryService.GetTodosForDateAsync(today);
+        var todos = await _todoService.GetTodosForDateAsync(today);
 
         // Assert
         todos.Should().HaveCount(3);
@@ -272,7 +282,7 @@ public class DiaryServiceTests : IDisposable
         // Create 3 High-priority tasks for Today
         for (int i = 0; i < 3; i++)
         {
-            await _diaryService.SaveTodoAsync(new TodoItem
+            await _todoService.SaveTodoAsync(new TodoItem
             {
                 TaskDescription = $"Today Task {i}",
                 TargetDate = today,
@@ -289,10 +299,10 @@ public class DiaryServiceTests : IDisposable
             RepeatGroupId = Guid.NewGuid().ToString(),
             Priority = TodoPriority.High
         };
-        await _diaryService.SaveTodoAsync(repeatingTodo);
+        await _todoService.SaveTodoAsync(repeatingTodo);
 
         // Act
-        var todos = await _diaryService.GetTodosForDateAsync(today);
+        var todos = await _todoService.GetTodosForDateAsync(today);
 
         // Assert
         var clonedTask = todos.Find(t => t.TaskDescription == "Repeating High Priority Task" && t.TargetDate == today);
@@ -302,6 +312,6 @@ public class DiaryServiceTests : IDisposable
 
     public void Dispose()
     {
-        _diaryService.Dispose();
+        _dbContext.Dispose();
     }
 }

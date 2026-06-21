@@ -28,8 +28,16 @@ public static class MauiProgram
 
 		// -- DEPENDENCY INJECTION --
 		// Services (Infrastructure & Core Logic)
+		builder.Services.AddSingleton<Diarion.Services.Database.IDatabaseContext, Diarion.Services.Database.DatabaseContext>();
 		builder.Services.AddSingleton<Diarion.Services.INotificationService, Diarion.Services.LocalNotificationService>();
+		builder.Services.AddSingleton<Diarion.Services.ITodoService, Diarion.Services.TodoService>();
+		builder.Services.AddSingleton<Diarion.Services.IHabitService, Diarion.Services.HabitService>();
+		builder.Services.AddSingleton<Diarion.Services.IFinanceService, Diarion.Services.FinanceService>();
+		builder.Services.AddSingleton<Diarion.Services.IWishlistService, Diarion.Services.WishlistService>();
+		builder.Services.AddSingleton<Diarion.Services.IProfileService, Diarion.Services.ProfileService>();
+		builder.Services.AddSingleton<Diarion.Services.IAuxiliaryService, Diarion.Services.AuxiliaryService>();
 		builder.Services.AddSingleton<Diarion.Services.IDiaryService, Diarion.Services.DiaryService>();
+		builder.Services.AddSingleton<Diarion.Services.IStatisticsService, Diarion.Services.StatisticsService>();
 
 		// ViewModels
 		builder.Services.AddTransient<Diarion.ViewModels.MainViewModel>();
@@ -40,7 +48,12 @@ public static class MauiProgram
                 builder.Services.AddTransient<Diarion.ViewModels.GoodDeedsViewModel>();
                 builder.Services.AddTransient<Diarion.ViewModels.ReadingTrackerViewModel>();
                 builder.Services.AddTransient<Diarion.ViewModels.HappyMomentsViewModel>();
+                
+                builder.Services.AddTransient<Diarion.ViewModels.Statistics.MoodStatsViewModel>();
+                builder.Services.AddTransient<Diarion.ViewModels.Statistics.SleepStatsViewModel>();
+                builder.Services.AddTransient<Diarion.ViewModels.Statistics.ProductivityStatsViewModel>();
                 builder.Services.AddTransient<Diarion.ViewModels.StatisticsViewModel>();
+                
                 builder.Services.AddTransient<Diarion.ViewModels.WishlistViewModel>();
                 builder.Services.AddTransient<Diarion.ViewModels.FinanceViewModel>();
 

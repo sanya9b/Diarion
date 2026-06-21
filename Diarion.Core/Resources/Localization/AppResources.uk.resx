@@ -610,4 +610,7 @@
   <data name="AddTransactionButton" xml:space="preserve">
     <value>Додати транзакцію</value>
   </data>
+  <data name="EmptyDataMessage" xml:space="preserve">
+    <value>Недостатньо даних за цей період.</value>
+  </data>
 </root>

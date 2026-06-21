@@ -11,6 +11,7 @@ namespace Diarion.ViewModels;
 public partial class DiaryDetailViewModel : BaseViewModel
 {
     private readonly IDiaryService _diaryService;
+    private readonly ITodoService _todoService;
     private DiaryEntry _currentEntry = new();
 
     private static Page? GetActivePage()
@@ -65,9 +66,10 @@ public partial class DiaryDetailViewModel : BaseViewModel
         await NavigateBackAsync();
     }
 
-    public DiaryDetailViewModel(IDiaryService diaryService)
+    public DiaryDetailViewModel(IDiaryService diaryService, ITodoService todoService)
     {
         _diaryService = diaryService;
+        _todoService = todoService;
         Title = Diarion.Resources.Localization.AppResources.NewEntryTitle;
         SelectedEmotionItem = EmotionsList[0];
         SelectedPriorityItem = PrioritiesList[1]; // За замовчуванням Medium
@@ -160,7 +162,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
 
         try
         {
-            await _diaryService.SaveTodoAsync(todo);
+            await _todoService.SaveTodoAsync(todo);
             NewTodoDescription = string.Empty;
             await ReloadTodosAsync();
         }
@@ -178,7 +180,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
         try
         {
             todo.IsCompleted = !todo.IsCompleted;
-            await _diaryService.SaveTodoAsync(todo);
+            await _todoService.SaveTodoAsync(todo);
             await ReloadTodosAsync();
         }
         catch (Exception ex)
@@ -194,7 +196,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
         
         try
         {
-            await _diaryService.DeleteTodoAsync(todo.Id);
+            await _todoService.DeleteTodoAsync(todo.Id);
             await ReloadTodosAsync();
         }
         catch (Exception ex)
@@ -205,7 +207,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
 
     private async Task ReloadTodosAsync()
     {
-        var todos = await _diaryService.GetTodosForDateAsync(_currentEntry.CreatedAt);
+        var todos = await _todoService.GetTodosForDateAsync(_currentEntry.CreatedAt);
         Todos.Clear();
         foreach (var t in todos)
         {

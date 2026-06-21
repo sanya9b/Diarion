@@ -844,6 +844,12 @@ namespace Diarion.Resources.Localization {
                 return ResourceManager.GetString("AddTransactionButton", resourceCulture) ?? "Add Transaction";
             }
         }
+
+        public static string EmptyDataMessage {
+            get {
+                return ResourceManager.GetString("EmptyDataMessage", resourceCulture) ?? "Not enough data for this period.";
+            }
+        }
     }
 }
 
