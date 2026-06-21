@@ -189,7 +189,7 @@ public partial class MainViewModel : BaseViewModel
                 Id = "Wishlist", 
                 StrokeColorKey = "Theme_Berry", 
                 UsesUniformAspect = true,
-                PathData = "M 22 28 H 42 V 46 C 42 47 41 48 40 48 H 24 C 23 48 22 47 22 46 V 28 Z M 20 22 H 44 V 28 H 20 Z M 32 22 V 48 M 32 22 C 32 16 24 12 20 17 C 16 22 24 22 32 22 Z M 32 22 C 32 16 40 12 44 17 C 48 22 40 22 32 22 Z",
+                PathData = "M 32,18 A 14,14 0 0 1 32,46 A 14,14 0 0 1 32,18 M 32,26 A 6,6 0 0 1 32,38 A 6,6 0 0 1 32,26 M 32,10 V 15 M 32,49 V 54 M 10,32 H 15 M 49,32 H 54",
                 Command = OpenWishlistCommand
             },
             new QuickMenuItem 

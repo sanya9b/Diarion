@@ -91,9 +91,14 @@
                                         <TapGestureRecognizer Command="{Binding Command}" />
                                         <DragGestureRecognizer DragStartingCommand="{Binding BindingContext.DragMenuStartingCommand, Source={x:Reference PageRoot}}"
                                                                DragStartingCommandParameter="{Binding .}"
-                                                               DropCompletedCommand="{Binding BindingContext.DropMenuCompletedCommand, Source={x:Reference PageRoot}}" />
+                                                               DropCompletedCommand="{Binding BindingContext.DropMenuCompletedCommand, Source={x:Reference PageRoot}}"
+                                                               DragStarting="OnMenuItemDragStarting"
+                                                               DropCompleted="OnMenuItemDropCompleted" />
                                         <DropGestureRecognizer DropCommand="{Binding BindingContext.ReorderMenuCommand, Source={x:Reference PageRoot}}"
-                                                               DropCommandParameter="{Binding .}" />
+                                                               DropCommandParameter="{Binding .}"
+                                                               DragOver="OnMenuItemDragOver"
+                                                               DragLeave="OnMenuItemDragLeave"
+                                                               Drop="OnMenuItemDrop" />
                                     </ContentView.GestureRecognizers>
                                     
                                     <Border StrokeShape="RoundRectangle 16"
@@ -350,7 +355,7 @@
                                     <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepEndLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                                     <Border Grid.Column="1" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 8" HeightRequest="36">
                                         <Grid>
-                                            <Label Text="{Binding SleepEnd, StringFormat='{0:HH\\:mm}'}" 
+                                            <Label Text="{Binding SleepEnd, StringFormat='{0:hh\\:mm}'}" 
                                                    IsVisible="{Binding HasSleepEnd}"
                                                    TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
                                             <Label Text="HH:mm" 
@@ -364,7 +369,7 @@
                                     <Label Grid.Column="2" Text="{x:Static localization:AppResources.SleepStartLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" Margin="4,0,0,0" />
                                     <Border Grid.Column="3" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 8" HeightRequest="36">
                                         <Grid>
-                                            <Label Text="{Binding SleepStart, StringFormat='{0:HH\\:mm}'}" 
+                                            <Label Text="{Binding SleepStart, StringFormat='{0:hh\\:mm}'}" 
                                                    IsVisible="{Binding HasSleepStart}"
                                                    TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
                                             <Label Text="HH:mm" 

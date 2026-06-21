@@ -19,13 +19,13 @@ public partial class WishlistViewModel : BaseViewModel
     private string _newWantText = string.Empty;
 
     [ObservableProperty]
-    private string _newWishText = string.Empty;
-
-    [ObservableProperty]
-    private string _newGetText = string.Empty;
-
-    [ObservableProperty]
     private DateTime _newDate = DateTime.Today;
+
+    [ObservableProperty]
+    private bool _isAddFormVisible;
+
+    [ObservableProperty]
+    private WishlistEntry? _selectedEntry;
 
     public WishlistViewModel(IDiaryService diaryService)
     {
@@ -52,30 +52,54 @@ public partial class WishlistViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    private void OpenAddForm(WishlistEntry? entry = null)
+    {
+        SelectedEntry = entry;
+        if (entry != null)
+        {
+            NewWantText = entry.WantText;
+            NewDate = entry.Date;
+        }
+        else
+        {
+            NewWantText = string.Empty;
+            NewDate = DateTime.Today;
+        }
+        IsAddFormVisible = true;
+    }
+
+    [RelayCommand]
+    private void CloseForm()
+    {
+        IsAddFormVisible = false;
+        SelectedEntry = null;
+    }
+
+    [RelayCommand]
     private async Task SaveEntryAsync()
     {
-        if (string.IsNullOrWhiteSpace(NewWantText) && 
-            string.IsNullOrWhiteSpace(NewWishText) && 
-            string.IsNullOrWhiteSpace(NewGetText))
+        if (string.IsNullOrWhiteSpace(NewWantText))
         {
             return;
         }
 
-        var entry = new WishlistEntry
-        {
-            WantText = NewWantText.Trim(),
-            WishText = NewWishText.Trim(),
-            GetText = NewGetText.Trim(),
-            Date = NewDate.Date
-        };
+        var entry = SelectedEntry ?? new WishlistEntry();
+        entry.WantText = NewWantText.Trim();
+        entry.Date = NewDate.Date;
 
         await _diaryService.SaveWishlistEntryAsync(entry);
         
-        NewWantText = string.Empty;
-        NewWishText = string.Empty;
-        NewGetText = string.Empty;
-        NewDate = DateTime.Today;
+        CloseForm();
+        await LoadAsync();
+    }
 
+    [RelayCommand]
+    private async Task ToggleCompletedAsync(WishlistEntry entry)
+    {
+        if (entry == null) return;
+
+        entry.IsCompleted = !entry.IsCompleted;
+        await _diaryService.SaveWishlistEntryAsync(entry);
         await LoadAsync();
     }
 

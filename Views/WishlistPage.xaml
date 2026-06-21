@@ -37,37 +37,24 @@
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="24,10,24,32" Spacing="18">
                 
-                <!-- Форма додавання -->
+                <!-- Кнопка додавання -->
                 <Border Padding="16"
                         StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Berry}"
                         BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
-                        StrokeShape="RoundRectangle 16">
+                        StrokeShape="RoundRectangle 16"
+                        HorizontalOptions="Fill">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenAddFormCommand}" />
+                    </Border.GestureRecognizers>
                     <Border.Shadow>
                         <Shadow Brush="{DynamicResource Theme_Berry}" Offset="0,4" Radius="8" Opacity="0.15" />
                     </Border.Shadow>
                     
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="{localization:Translate Key=WantLabel}" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                        <Editor Text="{Binding NewWantText}" AutoSize="TextChanges" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" MinimumHeightRequest="40" />
-                        <BoxView HeightRequest="1" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" Margin="0,4" />
-
-                        <Label Text="{localization:Translate Key=WishLabel}" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                        <Editor Text="{Binding NewWishText}" AutoSize="TextChanges" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" MinimumHeightRequest="40" />
-                        <BoxView HeightRequest="1" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" Margin="0,4" />
-
-                        <Label Text="{localization:Translate Key=GetLabel}" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                        <Editor Text="{Binding NewGetText}" AutoSize="TextChanges" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" MinimumHeightRequest="40" />
-
-                        <Button Text="{localization:Translate Key=SaveButton}"
-                                Command="{Binding SaveEntryCommand}"
-                                CornerRadius="12"
-                                Padding="16,12"
-                                Margin="0,8,0,0"
-                                BackgroundColor="{DynamicResource Theme_Berry}"
-                                TextColor="{DynamicResource Theme_Snow}"
-                                FontAttributes="Bold" />
-                    </VerticalStackLayout>
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Label Grid.Column="0" Text="+" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource Theme_Berry}" VerticalOptions="Center" Margin="0,0,12,0"/>
+                        <Label Grid.Column="1" Text="{localization:Translate Key=AddTodoButton}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center"/>
+                    </Grid>
                 </Border>
 
                 <!-- Список записів -->
@@ -79,10 +66,29 @@
                                     Stroke="{DynamicResource Theme_Dust_Ocean}"
                                     BackgroundColor="{DynamicResource Theme_Snow_Black}"
                                     StrokeShape="RoundRectangle 16">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenAddFormCommand}" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="True">
+                                        <Setter Property="Opacity" Value="0.6" />
+                                    </DataTrigger>
+                                </Border.Triggers>
                                 <VerticalStackLayout Spacing="8">
-                                    <Grid ColumnDefinitions="*, Auto" Margin="0,0,0,4">
-                                        <Label Grid.Column="0" Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                                        <Grid Grid.Column="1" BackgroundColor="Transparent" Padding="4">
+                                    <Grid ColumnDefinitions="Auto, *, Auto" Margin="0,0,0,4">
+                                        
+                                        <!-- Checkbox for completion -->
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0">
+                                            <CheckBox.GestureRecognizers>
+                                                <!-- Overriding behavior so the checkbox tap doesn't open the edit form, and triggers the command -->
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleCompletedCommand}" CommandParameter="{Binding .}" />
+                                            </CheckBox.GestureRecognizers>
+                                        </CheckBox>
+                                        
+                                        <Label Grid.Column="1" Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                                        
+                                        <!-- Delete Button -->
+                                        <Grid Grid.Column="2" BackgroundColor="Transparent" Padding="4">
                                             <Grid.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteEntryCommand}" CommandParameter="{Binding .}" />
                                             </Grid.GestureRecognizers>
@@ -90,14 +96,13 @@
                                         </Grid>
                                     </Grid>
 
-                                    <Label Text="{localization:Translate Key=WantLabel}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding WantText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
-                                    <Label Text="{Binding WantText}" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" IsVisible="{Binding WantText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
-
-                                    <Label Text="{localization:Translate Key=WishLabel}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding WishText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" Margin="0,4,0,0" />
-                                    <Label Text="{Binding WishText}" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" IsVisible="{Binding WishText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
-
-                                    <Label Text="{localization:Translate Key=GetLabel}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding GetText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" Margin="0,4,0,0" />
-                                    <Label Text="{Binding GetText}" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" IsVisible="{Binding GetText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
+                                    <Label Text="{Binding WantText}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" IsVisible="{Binding WantText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
                                 </VerticalStackLayout>
                             </Border>
                         </DataTemplate>
@@ -105,5 +110,55 @@
                 </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>
+
+        <!-- Popup Overlay для додавання/редагування -->
+        <Grid Grid.RowSpan="2"
+              BackgroundColor="{DynamicResource Theme_Val_99000000_B3000000}"
+              IsVisible="{Binding IsAddFormVisible}"
+              InputTransparent="False">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CloseFormCommand}" />
+            </Grid.GestureRecognizers>
+
+            <Border StrokeShape="RoundRectangle 24"
+                    StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Berry}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    Padding="24"
+                    Margin="24"
+                    VerticalOptions="Center">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                </Border.Shadow>
+                <Border.GestureRecognizers>
+                    <!-- Перехоплюємо тап, щоб не закривати попап при кліку на нього -->
+                    <TapGestureRecognizer />
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                        <Label Grid.Column="0" Text="{localization:Translate Key=WishlistTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center"/>
+                        <!-- Close Button -->
+                        <Grid Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding CloseFormCommand}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✕" FontSize="20" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </Grid>
+                    </Grid>
+
+                    <Editor Text="{Binding NewWantText}" AutoSize="TextChanges" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" MinimumHeightRequest="40" Placeholder="{localization:Translate Key=WantLabel}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                    <Button Text="{localization:Translate Key=SaveButton}"
+                            Command="{Binding SaveEntryCommand}"
+                            CornerRadius="12"
+                            Padding="16,12"
+                            Margin="0,8,0,0"
+                            BackgroundColor="{DynamicResource Theme_Berry}"
+                            TextColor="{DynamicResource Theme_Snow}"
+                            FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
     </Grid>
 </ContentPage>
