@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             x:Class="Diarion.Controls.HealthSection"
+             x:DataType="models:DiaryEntry">
+    
+    <Border StrokeShape="RoundRectangle 16"
+            StrokeThickness="1"
+            Stroke="{DynamicResource Theme_Dust_Ocean}"
+            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+            Padding="16">
+        <Border.Shadow>
+            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
+        </Border.Shadow>
+        <VerticalStackLayout Spacing="8">
+            <Label Text="{x:Static localization:AppResources.HealthLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            
+            <Grid ColumnDefinitions="110, *" ColumnSpacing="12" IsVisible="{Binding BindingContext.IsCycleInfoVisible, Source={RelativeSource AncestorType={x:Type ContentPage}}}">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.CycleDayLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                    <Label Text="{Binding BindingContext.CycleDayText, Source={RelativeSource AncestorType={x:Type ContentPage}}}" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    <HorizontalStackLayout Spacing="4">
+                        <Label Text="{x:Static localization:AppResources.PregnancyProbabilityLabel}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{Binding BindingContext.PregnancyProbabilityText, Source={RelativeSource AncestorType={x:Type ContentPage}}}" FontSize="11" FontAttributes="Bold" TextColor="{Binding BindingContext.PregnancyProbabilityColor, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid ColumnDefinitions="110, *" ColumnSpacing="12">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.HealthStatusLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <controls:RatingView Grid.Column="1" Value="{Binding HealthStatus}" MaxValue="5" VerticalOptions="Center" HorizontalOptions="Start" />
+            </Grid>
+            <Grid ColumnDefinitions="110, *" ColumnSpacing="12">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.IntimateLifeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Entry Grid.Column="1" Text="{Binding IntimateLife}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
+            </Grid>
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

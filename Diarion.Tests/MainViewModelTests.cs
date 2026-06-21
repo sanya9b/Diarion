@@ -37,6 +37,10 @@ public class MainViewModelTests
         _todoServiceMock
             .Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>()))
             .ReturnsAsync(new List<TodoItem>());
+
+        _todoServiceMock
+            .Setup(s => s.GetTodosForDateRangeAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(new List<TodoItem>());
             
         _diaryServiceMock
             .Setup(s => s.GetEntryForDateAsync(It.IsAny<DateTime>()))
@@ -47,7 +51,15 @@ public class MainViewModelTests
     public void SwitchModes_ChangesPropertiesCorrectly()
     {
         // Arrange
-        var viewModel = new MainViewModel(_diaryServiceMock.Object, _profileServiceMock.Object, _todoServiceMock.Object, _habitServiceMock.Object);
+        var menstrualCycleServiceMock = new Mock<IMenstrualCycleService>();
+        menstrualCycleServiceMock
+            .Setup(s => s.GetCycleInfoForDate(It.IsAny<DateTime>(), It.IsAny<UserProfile>()))
+            .Returns(new CycleDayInfo());
+        var calendarServiceMock = new Mock<ICalendarService>();
+        calendarServiceMock.Setup(s => s.GenerateCalendarDays(It.IsAny<DateTime>())).Returns(new List<CalendarDay>());
+        var menuConfigServiceMock = new Mock<IMenuConfigurationService>();
+        menuConfigServiceMock.Setup(s => s.GetDefaultMenuItems()).Returns(new List<QuickMenuItem>());
+        var viewModel = new MainViewModel(_diaryServiceMock.Object, _profileServiceMock.Object, _todoServiceMock.Object, _habitServiceMock.Object, menstrualCycleServiceMock.Object, calendarServiceMock.Object, menuConfigServiceMock.Object);
 
         // Act - Switch to Planner
         viewModel.SwitchToPlannerModeCommand.Execute(null);
@@ -68,13 +80,24 @@ public class MainViewModelTests
     public async Task SelectDate_UpdatesSelection()
     {
         // Arrange
-        var viewModel = new MainViewModel(_diaryServiceMock.Object, _profileServiceMock.Object, _todoServiceMock.Object, _habitServiceMock.Object);
+        var menstrualCycleServiceMock = new Mock<IMenstrualCycleService>();
+        menstrualCycleServiceMock
+            .Setup(s => s.GetCycleInfoForDate(It.IsAny<DateTime>(), It.IsAny<UserProfile>()))
+            .Returns(new CycleDayInfo());
+        
         var today = DateTime.Today;
         var tomorrow = today.AddDays(1);
+        var todayDay = new CalendarDay { Date = today, IsSelected = true };
+        var tomorrowDay = new CalendarDay { Date = tomorrow, IsSelected = false };
+        var days = new List<CalendarDay> { todayDay, tomorrowDay };
         
-        // We need the calendar generated first (happens in ctor)
-        var todayDay = viewModel.CalendarDays.First(d => d.Date.Date == today);
-        var tomorrowDay = viewModel.CalendarDays.First(d => d.Date.Date == tomorrow);
+        var calendarServiceMock = new Mock<ICalendarService>();
+        calendarServiceMock.Setup(s => s.GenerateCalendarDays(It.IsAny<DateTime>())).Returns(days);
+        
+        var menuConfigServiceMock = new Mock<IMenuConfigurationService>();
+        menuConfigServiceMock.Setup(s => s.GetDefaultMenuItems()).Returns(new List<QuickMenuItem>());
+
+        var viewModel = new MainViewModel(_diaryServiceMock.Object, _profileServiceMock.Object, _todoServiceMock.Object, _habitServiceMock.Object, menstrualCycleServiceMock.Object, calendarServiceMock.Object, menuConfigServiceMock.Object);
 
         // Act
         await viewModel.SelectDateCommand.ExecuteAsync(tomorrowDay);

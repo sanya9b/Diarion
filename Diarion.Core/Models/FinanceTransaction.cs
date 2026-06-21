@@ -15,6 +15,11 @@ public class FinanceTransaction
     public decimal Amount { get; set; }
     public string Category { get; set; } = string.Empty;
     public string Note { get; set; } = string.Empty;
-    public DateTime Date { get; set; } = DateTime.Today;
+    private DateTime _date = DateTime.Today;
+    public DateTime Date 
+    { 
+        get => _date; 
+        set => _date = value.Date; 
+    }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

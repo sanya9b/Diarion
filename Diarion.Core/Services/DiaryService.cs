@@ -100,10 +100,7 @@ public class DiaryService : IDiaryService
     public async Task DeleteEntryAsync(Guid id)
     {
         await Task.Run(() => EntriesCollection.Delete(id));
-        // Need to delete related todos. Since we split services, DiaryService should call TodoService or db directly.
-        // Doing it via dbContext is easier for cascade delete, but ITodoService could have DeleteTodosForEntryAsync.
-        // I will use dbContext here to avoid circular dependencies if any, but let's just use GetCollection.
-        await Task.Run(() => _dbContext.GetCollection<TodoItem>("todos").DeleteMany(x => x.DiaryEntryId == id));
+        await _todoService.DeleteTodosByDiaryEntryAsync(id);
     }
 
     public Task<IEnumerable<DiaryEntryStatsDto>> GetDiaryEntriesForStatsAsync(DateTime startDate, DateTime endDate)

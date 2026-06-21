@@ -14,7 +14,12 @@ public class TodoItem
     public Guid Id { get; set; } = Guid.NewGuid();
     
     // Now tasks are primarily bound to a specific Day. 
-    public DateTime TargetDate { get; set; } = DateTime.Now.Date;
+    private DateTime _targetDate = DateTime.Today;
+    public DateTime TargetDate 
+    { 
+        get => _targetDate; 
+        set => _targetDate = value.Date; 
+    }
     public bool HasTime { get; set; }
     public TimeSpan TargetTime { get; set; } = DateTime.Now.TimeOfDay;
     

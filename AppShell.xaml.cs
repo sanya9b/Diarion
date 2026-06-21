@@ -62,22 +62,6 @@ public partial class AppShell : Shell
         Current.FlyoutIsPresented = false;
         await Task.Delay(250); // Чекаємо завершення анімації закриття меню
 
-        // Іноді AppThemeBinding може не оновити всі глибокі елементи (наприклад в CollectionView), 
-        // тому перезавантаження сторінки гарантує ідеальне застосування нової теми.
-        if (Application.Current?.Windows.Count > 0)
-        {
-            Dispatcher.Dispatch(async () =>
-            {
-                var window = Application.Current.Windows[0];
-#if IOS || MACCATALYST
-                // На iOS заміна AppShell на новий AppShell може викликати краш. 
-                // Спочатку ставимо порожню сторінку, щоб коректно вивантажити старий Shell.
-                window.Page = new ContentPage { BackgroundColor = Application.Current.UserAppTheme == AppTheme.Dark ? Colors.Black : Colors.White };
-                await Task.Delay(50);
-#endif
-                window.Page = new AppShell();
-            });
-        }
     }
 
     private async void OnToggleLanguageClicked(object? sender, TappedEventArgs e)

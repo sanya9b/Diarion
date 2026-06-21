@@ -97,6 +97,12 @@ public partial class MainPage : ContentPage
         }
     }
 
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        _ = _viewModel.FlushAutoSaveAsync();
+    }
+
     protected override async void OnAppearing()
     {
         using var _ = StartupTrace.Measure("MainPage.OnAppearing");
@@ -126,143 +132,4 @@ public partial class MainPage : ContentPage
         _viewModel.LoadEntriesCommand.Execute(null);
     }
 
-    private VisualElement? _draggedView;
-    private int _draggedIndex = -1;
-    private HorizontalStackLayout? _menuContainer;
-    private readonly Dictionary<VisualElement, double> _targetTranslations = new();
-
-    private void OnMenuItemDragStarting(object? sender, DragStartingEventArgs e)
-    {
-        VisualElement? element = sender as VisualElement ?? (sender as Element)?.Parent as VisualElement;
-        
-        if (element != null)
-        {
-            _draggedView = element;
-            _menuContainer = element.Parent as HorizontalStackLayout;
-            _targetTranslations.Clear();
-            
-            if (_menuContainer != null)
-            {
-                _draggedIndex = _menuContainer.Children.IndexOf(_draggedView);
-            }
-
-            // Зробити невидимою саму іконку (її "тінь"), залишаючи місце для перетягування.
-            // Затримка у 50мс потрібна, щоб операційна система встигла "сфотографувати" іконку 
-            // для створення напівпрозорого привида (drag shadow), який тягнеться за пальцем.
-            var visualContent = (_draggedView as ContentView)?.Content;
-            if (visualContent != null)
-            {
-                Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(50), () =>
-                {
-                    // Перевіряємо, чи перетягування ще триває
-                    if (_draggedView != null)
-                    {
-                        visualContent.Opacity = 0.01;
-                    }
-                });
-            }
-        }
-    }
-
-    private void OnMenuItemDropCompleted(object? sender, DropCompletedEventArgs e)
-    {
-        ResetDragState();
-    }
-
-    private void OnMenuItemDragOver(object? sender, DragEventArgs e)
-    {
-        VisualElement? hoveredView = sender as VisualElement ?? (sender as Element)?.Parent as VisualElement;
-        
-        if (hoveredView != null && _menuContainer != null && _draggedView != null)
-        {
-            int hoveredIndex = _menuContainer.Children.IndexOf(hoveredView);
-            if (hoveredIndex == -1 || _draggedIndex == -1) return;
-
-            // Distance is Width (50) + MarginRight (8) + Spacing (8) = 66
-            double shiftDistance = 66;
-
-            for (int i = 0; i < _menuContainer.Children.Count; i++)
-            {
-                var child = _menuContainer.Children[i] as VisualElement;
-                if (child == null || child == _draggedView) continue;
-
-                double targetTranslationX = 0;
-
-                if (hoveredIndex > _draggedIndex)
-                {
-                    // Dragged left-to-right
-                    if (i > _draggedIndex && i <= hoveredIndex)
-                    {
-                        targetTranslationX = -shiftDistance;
-                    }
-                }
-                else if (hoveredIndex < _draggedIndex)
-                {
-                    // Dragged right-to-left
-                    if (i >= hoveredIndex && i < _draggedIndex)
-                    {
-                        targetTranslationX = shiftDistance;
-                    }
-                }
-
-                var visualContent = (child as ContentView)?.Content ?? child;
-
-                if (!_targetTranslations.TryGetValue(child, out double currentTarget) || currentTarget != targetTranslationX)
-                {
-                    _targetTranslations[child] = targetTranslationX;
-                    _ = visualContent.TranslateToAsync(targetTranslationX, 0, 250, Easing.CubicOut);
-                }
-            }
-        }
-    }
-
-    private void OnMenuItemDragLeave(object? sender, DragEventArgs e)
-    {
-        // Translations reset handled gracefully
-    }
-
-    private void OnMenuItemDrop(object? sender, DropEventArgs e)
-    {
-        if (_menuContainer != null)
-        {
-            foreach (var child in _menuContainer.Children)
-            {
-                if (child is ContentView cv && cv.Content != null)
-                {
-                    cv.Content.CancelAnimations();
-                    cv.Content.TranslationX = 0;
-                }
-            }
-        }
-        ResetDragState();
-    }
-
-    private void ResetDragState()
-    {
-        if (_draggedView != null)
-        {
-            var visualContent = (_draggedView as ContentView)?.Content ?? _draggedView;
-            visualContent.CancelAnimations();
-            visualContent.Opacity = 1.0;
-            visualContent.Scale = 1.0;
-            visualContent.TranslationX = 0;
-        }
-
-        if (_menuContainer != null)
-        {
-            foreach (var child in _menuContainer.Children)
-            {
-                if (child is ContentView cv && cv.Content != null)
-                {
-                    cv.Content.CancelAnimations();
-                    cv.Content.TranslationX = 0;
-                }
-            }
-        }
-
-        _draggedView = null;
-        _draggedIndex = -1;
-        _menuContainer = null;
-        _targetTranslations.Clear();
-    }
 }

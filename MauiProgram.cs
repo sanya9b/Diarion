@@ -28,6 +28,7 @@ public static class MauiProgram
 
 		// -- DEPENDENCY INJECTION --
 		// Services (Infrastructure & Core Logic)
+		builder.Services.AddSingleton<Diarion.Services.Database.IDatabaseSeeder, Diarion.Services.Database.DatabaseSeeder>();
 		builder.Services.AddSingleton<Diarion.Services.Database.IDatabaseContext, Diarion.Services.Database.DatabaseContext>();
 		builder.Services.AddSingleton<Diarion.Services.INotificationService, Diarion.Services.LocalNotificationService>();
 		builder.Services.AddSingleton<Diarion.Services.ITodoService, Diarion.Services.TodoService>();
@@ -37,7 +38,10 @@ public static class MauiProgram
 		builder.Services.AddSingleton<Diarion.Services.IProfileService, Diarion.Services.ProfileService>();
 		builder.Services.AddSingleton<Diarion.Services.IAuxiliaryService, Diarion.Services.AuxiliaryService>();
 		builder.Services.AddSingleton<Diarion.Services.IDiaryService, Diarion.Services.DiaryService>();
+		builder.Services.AddSingleton<Diarion.Services.IMenstrualCycleService, Diarion.Services.MenstrualCycleService>();
+		builder.Services.AddSingleton<Diarion.Services.ICalendarService, Diarion.Services.CalendarService>();
 		builder.Services.AddSingleton<Diarion.Services.IStatisticsService, Diarion.Services.StatisticsService>();
+		builder.Services.AddSingleton<Diarion.Services.IMenuConfigurationService, Diarion.Services.MenuConfigurationService>();
 
 		// ViewModels
 		builder.Services.AddTransient<Diarion.ViewModels.MainViewModel>();

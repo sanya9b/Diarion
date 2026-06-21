@@ -79,71 +79,10 @@ public class TodoService : ITodoService
 
             if (autoMigrate && dateOnly == DateTime.Today)
             {
-                var pastUncompletedTasks = TodosCollection.Query()
-                    .Where(x => x.TargetDate < dateOnly && !x.IsCompleted && !x.IsDailyRepeat)
-                    .ToList();
-
-                foreach (var task in pastUncompletedTasks)
-                {
-                    if (task.Priority == TodoPriority.High)
-                    {
-                        int currentHighCount = items.Count(t => t.Priority == TodoPriority.High && !t.IsCompleted);
-                        if (currentHighCount >= 3)
-                        {
-                            task.Priority = TodoPriority.Medium;
-                        }
-                    }
-
-                    task.TargetDate = dateOnly;
-                    TodosCollection.Update(task);
-                    items.Add(task);
-                }
+                AutoMigratePastTasks(dateOnly, items);
             }
 
-            var repeatingPastTasks = TodosCollection.Query()
-                .Where(x => x.IsDailyRepeat && x.TargetDate < dateOnly)
-                .ToList() 
-                .Where(x => x.RepeatEndDate == null || x.RepeatEndDate.Value.Date >= dateOnly)
-                .GroupBy(x => string.IsNullOrEmpty(x.RepeatGroupId) ? x.TaskDescription : x.RepeatGroupId)
-                .Select(g => g.OrderByDescending(x => x.TargetDate).First())
-                .ToList();
-
-            foreach (var task in repeatingPastTasks)
-            {
-                var alreadyExists = items.Any(x => 
-                    (x.RepeatGroupId == task.RepeatGroupId && !string.IsNullOrEmpty(task.RepeatGroupId)) ||
-                    (x.TaskDescription == task.TaskDescription && x.IsDailyRepeat));
-
-                if (!alreadyExists)
-                {
-                    var clonePriority = task.Priority;
-                    if (clonePriority == TodoPriority.High)
-                    {
-                        int currentHighCount = items.Count(t => t.Priority == TodoPriority.High && !t.IsCompleted);
-                        if (currentHighCount >= 3)
-                        {
-                            clonePriority = TodoPriority.Medium;
-                        }
-                    }
-
-                    var clone = new TodoItem
-                    {
-                        Id = Guid.NewGuid(),
-                        TargetDate = dateOnly,
-                        TargetTime = task.TargetTime,
-                        HasTime = task.HasTime,
-                        TaskDescription = task.TaskDescription,
-                        IsCompleted = false, 
-                        Priority = clonePriority,
-                        CreatedAt = DateTime.Now,
-                        IsDailyRepeat = true,
-                        RepeatGroupId = task.RepeatGroupId,
-                        HasReminder = task.HasReminder
-                    };
-                    TodosCollection.Insert(clone);
-                    items.Add(clone);
-                }
-            }
+            GenerateRepeatingTasks(dateOnly, items);
 
             var todos = items
                 .OrderBy(x => x.IsCompleted)
@@ -157,6 +96,77 @@ public class TodoService : ITodoService
         });
     }
 
+    private void AutoMigratePastTasks(DateTime dateOnly, List<TodoItem> items)
+    {
+        var pastUncompletedTasks = TodosCollection.Query()
+            .Where(x => x.TargetDate < dateOnly && !x.IsCompleted && !x.IsDailyRepeat)
+            .ToList();
+
+        foreach (var task in pastUncompletedTasks)
+        {
+            if (task.Priority == TodoPriority.High)
+            {
+                int currentHighCount = items.Count(t => t.Priority == TodoPriority.High && !t.IsCompleted);
+                if (currentHighCount >= 3)
+                {
+                    task.Priority = TodoPriority.Medium;
+                }
+            }
+
+            task.TargetDate = dateOnly;
+            TodosCollection.Update(task);
+            items.Add(task);
+        }
+    }
+
+    private void GenerateRepeatingTasks(DateTime dateOnly, List<TodoItem> items)
+    {
+        var repeatingPastTasks = TodosCollection.Query()
+            .Where(x => x.IsDailyRepeat && x.TargetDate < dateOnly)
+            .ToList() 
+            .Where(x => x.RepeatEndDate == null || x.RepeatEndDate.Value.Date >= dateOnly)
+            .GroupBy(x => string.IsNullOrEmpty(x.RepeatGroupId) ? x.TaskDescription : x.RepeatGroupId)
+            .Select(g => g.OrderByDescending(x => x.TargetDate).First())
+            .ToList();
+
+        foreach (var task in repeatingPastTasks)
+        {
+            var alreadyExists = items.Any(x => 
+                (x.RepeatGroupId == task.RepeatGroupId && !string.IsNullOrEmpty(task.RepeatGroupId)) ||
+                (x.TaskDescription == task.TaskDescription && x.IsDailyRepeat));
+
+            if (!alreadyExists)
+            {
+                var clonePriority = task.Priority;
+                if (clonePriority == TodoPriority.High)
+                {
+                    int currentHighCount = items.Count(t => t.Priority == TodoPriority.High && !t.IsCompleted);
+                    if (currentHighCount >= 3)
+                    {
+                        clonePriority = TodoPriority.Medium;
+                    }
+                }
+
+                var clone = new TodoItem
+                {
+                    Id = Guid.NewGuid(),
+                    TargetDate = dateOnly,
+                    TargetTime = task.TargetTime,
+                    HasTime = task.HasTime,
+                    TaskDescription = task.TaskDescription,
+                    IsCompleted = false, 
+                    Priority = clonePriority,
+                    CreatedAt = DateTime.Now,
+                    IsDailyRepeat = true,
+                    RepeatGroupId = task.RepeatGroupId,
+                    HasReminder = task.HasReminder
+                };
+                TodosCollection.Insert(clone);
+                items.Add(clone);
+            }
+        }
+    }
+
     public Task<List<TodoItem>> GetTodosForMonthAsync(int year, int month)
     {
         return Task.Run(() =>
@@ -166,6 +176,16 @@ public class TodoService : ITodoService
             
             return TodosCollection.Query()
                 .Where(x => x.TargetDate >= startDate && x.TargetDate < endDate)
+                .ToList();
+        });
+    }
+
+    public Task<List<TodoItem>> GetTodosForDateRangeAsync(DateTime startDate, DateTime endDate)
+    {
+        return Task.Run(() =>
+        {
+            return TodosCollection.Query()
+                .Where(x => x.TargetDate >= startDate && x.TargetDate <= endDate)
                 .ToList();
         });
     }
@@ -215,6 +235,23 @@ public class TodoService : ITodoService
         {
             TodosCollection.Delete(todoId);
             _notificationService?.CancelTodoReminder(todoId);
+        });
+    }
+
+    public Task DeleteTodosByDiaryEntryAsync(Guid diaryEntryId)
+    {
+        return Task.Run(() =>
+        {
+            var todos = TodosCollection.Find(x => x.DiaryEntryId == diaryEntryId).ToList();
+            TodosCollection.DeleteMany(x => x.DiaryEntryId == diaryEntryId);
+            
+            if (_notificationService != null)
+            {
+                foreach (var todo in todos)
+                {
+                    _notificationService.CancelTodoReminder(todo.Id);
+                }
+            }
         });
     }
 

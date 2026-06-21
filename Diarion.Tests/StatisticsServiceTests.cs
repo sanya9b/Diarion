@@ -88,8 +88,8 @@ public class StatisticsServiceTests
         };
 
         var mockTodoService = new Mock<ITodoService>();
-        mockTodoService.Setup(s => s.GetTodosForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .ReturnsAsync(mockData);
+        mockTodoService.Setup(s => s.GetTodoStatsSummaryAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(new TodoStatistics { TotalCount = 3, CompletedCount = 2 });
 
         var statsService = new StatisticsService(mockDiaryService.Object, mockTodoService.Object);
 

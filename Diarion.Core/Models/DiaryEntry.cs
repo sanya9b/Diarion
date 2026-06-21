@@ -9,8 +9,13 @@ public partial class DiaryEntry : ObservableObject
     [ObservableProperty]
     private Guid _id = Guid.NewGuid();
     
-    [ObservableProperty]
     private DateTime _date = DateTime.Today;
+
+    public DateTime Date
+    {
+        get => _date;
+        set => SetProperty(ref _date, value.Date);
+    }
     
     // Сон (Sleep)
     [ObservableProperty]
@@ -75,12 +80,6 @@ public partial class DiaryEntry : ObservableObject
     
     [ObservableProperty]
     private string _gratitude = string.Empty;
-    
-    [ObservableProperty]
-    private string _expenses = string.Empty;
-    
-    [ObservableProperty]
-    private string _income = string.Empty;
     
     [ObservableProperty]
     private string _soulFood = string.Empty;
