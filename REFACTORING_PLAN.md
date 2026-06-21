@@ -16,3 +16,9 @@
 ## Пріоритет 4: Очищення UI та Presentation шару
 - [x] 4.1 Перенести конфігурацію швидкого меню з `MainViewModel` в `IMenuConfigurationService` або окрему конфігурацію.
 - [x] 4.2 Створити Behavior для Drag&Drop в `MainPage.xaml.cs` для очищення code-behind від магічних чисел та логіки анімацій.
+- [x] 4.3 Винести логічні блоки UI (Food, Habits, Reflection, Calendar, Menu) в окремі Custom Controls.
+
+## Пріоритет 5: Unit Тестування
+- [x] 5.1 Написати Unit-тести для `DiaryDetailViewModel`.
+- [x] 5.2 Написати Unit-тести для `TodoDetailViewModel`.
+- [x] 5.3 Перевірити покриття всіх нових сервісів та зберегти зелений білд (0 failed tests).

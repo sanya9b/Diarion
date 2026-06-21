@@ -850,6 +850,34 @@ namespace Diarion.Resources.Localization {
                 return ResourceManager.GetString("EmptyDataMessage", resourceCulture) ?? "Not enough data for this period.";
             }
         }
+
+        public static string BackupTitle {
+            get { return ResourceManager.GetString("BackupTitle", resourceCulture) ?? "Backup & Restore"; }
+        }
+
+        public static string BackupDescription {
+            get { return ResourceManager.GetString("BackupDescription", resourceCulture) ?? "Export your data or restore from a backup file."; }
+        }
+
+        public static string BackupExportButton {
+            get { return ResourceManager.GetString("BackupExportButton", resourceCulture) ?? "Export Backup"; }
+        }
+
+        public static string BackupImportButton {
+            get { return ResourceManager.GetString("BackupImportButton", resourceCulture) ?? "Import Backup"; }
+        }
+
+        public static string BackupExportSuccess {
+            get { return ResourceManager.GetString("BackupExportSuccess", resourceCulture) ?? "Backup created successfully."; }
+        }
+
+        public static string BackupImportWarning {
+            get { return ResourceManager.GetString("BackupImportWarning", resourceCulture) ?? "This will overwrite your current data. Are you sure?"; }
+        }
+
+        public static string BackupImportSuccess {
+            get { return ResourceManager.GetString("BackupImportSuccess", resourceCulture) ?? "Backup restored. Please restart the app."; }
+        }
     }
 }
 

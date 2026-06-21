@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             x:Class="Diarion.Controls.QuickMenuView"
+             x:Name="QuickMenuViewRoot">
+
+    <ScrollView Orientation="Horizontal"
+                HorizontalScrollBarVisibility="Never"
+                VerticalScrollBarVisibility="Never">
+        <HorizontalStackLayout Spacing="8" Padding="6,0,0,0">
+            <Grid Margin="0,0,2,0" WidthRequest="50" HeightRequest="50">
+                <Border StrokeShape="RoundRectangle 16"
+                        StrokeThickness="1"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="0">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding IsCalendarExpanded}" Value="True">
+                            <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Border" Binding="{Binding IsCalendarExpanded}" Value="False">
+                            <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Grid RowDefinitions="Auto,*">
+                        <Border Grid.Row="0"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 16,16,0,0"
+                                BackgroundColor="{DynamicResource Theme_Ocean_Dust}"
+                                Padding="0,2">
+                            <Label Text="{Binding TodayMonthShort}"
+                                   InputTransparent="True"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   FontSize="9"
+                                   FontAttributes="Bold"
+                                   CharacterSpacing="1.2"
+                                   TextColor="{DynamicResource Theme_Snow_Midnight}" />
+                        </Border>
+                        <Label Grid.Row="1"
+                               Text="{Binding TodayDayNumber}"
+                               InputTransparent="True"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                        <BoxView Grid.RowSpan="2" BackgroundColor="Transparent">
+                            <BoxView.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleCalendarCommand}" />
+                            </BoxView.GestureRecognizers>
+                        </BoxView>
+                    </Grid>
+                </Border>
+                
+                <controls:ProgressBorder Progress="{Binding TodayTaskCompletionPercentage}" 
+                                         StrokeColor="{Binding TodayProgressColor}"
+                                         CornerRadius="16"
+                                         InputTransparent="True" />
+            </Grid>
+
+            <HorizontalStackLayout BindableLayout.ItemsSource="{Binding QuickMenuItems}" Spacing="8">
+                <HorizontalStackLayout.Behaviors>
+                    <behaviors:DragAndDropReorderBehavior ShiftDistance="66" />
+                </HorizontalStackLayout.Behaviors>
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:QuickMenuItem">
+                        <ContentView>
+                            <ContentView.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Command}" />
+                                <DragGestureRecognizer DragStartingCommand="{Binding BindingContext.DragMenuStartingCommand, Source={x:Reference QuickMenuViewRoot}}"
+                                                       DragStartingCommandParameter="{Binding .}"
+                                                       DropCompletedCommand="{Binding BindingContext.DropMenuCompletedCommand, Source={x:Reference QuickMenuViewRoot}}" />
+                                <DropGestureRecognizer DropCommand="{Binding BindingContext.ReorderMenuCommand, Source={x:Reference QuickMenuViewRoot}}"
+                                                       DropCommandParameter="{Binding .}" />
+                            </ContentView.GestureRecognizers>
+                            
+                            <Border StrokeShape="RoundRectangle 16"
+                                    StrokeThickness="1"
+                                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                    Padding="0"
+                                    Margin="0,0,8,0"
+                                    WidthRequest="50"
+                                    HeightRequest="50">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Sage">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Berry">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Berry}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Amber">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Coral">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <Grid BackgroundColor="Transparent">
+                                    <Path StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
+                                          WidthRequest="24" HeightRequest="24"
+                                          HorizontalOptions="Center" VerticalOptions="Center" 
+                                          InputTransparent="True"
+                                          Data="{Binding IconGeometry}">
+                                        <Path.Triggers>
+                                            <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Sage">
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Berry">
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Berry}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Amber">
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Coral">
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                                            </DataTrigger>
+
+                                            <DataTrigger TargetType="Path" Binding="{Binding FillColorKey}" Value="Theme_Amber">
+                                                <Setter Property="Fill" Value="{DynamicResource Theme_Amber}" />
+                                                <Setter Property="StrokeThickness" Value="0" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Path" Binding="{Binding FillColorKey}" Value="">
+                                                <Setter Property="Fill" Value="Transparent" />
+                                            </DataTrigger>
+
+                                            <DataTrigger TargetType="Path" Binding="{Binding UsesUniformAspect}" Value="True">
+                                                <Setter Property="Aspect" Value="Uniform" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Path" Binding="{Binding UsesUniformAspect}" Value="False">
+                                                <Setter Property="Aspect" Value="None" />
+                                            </DataTrigger>
+                                        </Path.Triggers>
+                                    </Path>
+                                </Grid>
+                            </Border>
+                        </ContentView>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </HorizontalStackLayout>
+        </HorizontalStackLayout>
+    </ScrollView>
+</ContentView>

@@ -15,6 +15,7 @@ public record GenderItem(GenderType Value, string DisplayName);
 public partial class ProfileViewModel : BaseViewModel
 {
     private readonly IProfileService _profileService;
+    private readonly IBackupService _backupService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
@@ -30,9 +31,10 @@ public partial class ProfileViewModel : BaseViewModel
         new(GenderType.Other, Diarion.Resources.Localization.AppResources.GenderOther)
     };
 
-    public ProfileViewModel(IProfileService profileService)
+    public ProfileViewModel(IProfileService profileService, IBackupService backupService)
     {
         _profileService = profileService;
+        _backupService = backupService;
         Title = Diarion.Resources.Localization.AppResources.ProfileMenuTitle;
     }
 
@@ -74,5 +76,39 @@ public partial class ProfileViewModel : BaseViewModel
             Title, 
             Diarion.Resources.Localization.AppResources.ProfileSavedMessage, 
             Diarion.Resources.Localization.AppResources.OkButtonLabel);
+    }
+
+    [RelayCommand]
+    public async Task ExportBackupAsync()
+    {
+        bool success = await _backupService.ExportBackupAsync();
+        if (success)
+        {
+            await Shell.Current.DisplayAlertAsync(
+                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup", 
+                Diarion.Resources.Localization.AppResources.BackupExportSuccess ?? "Backup created successfully.", 
+                Diarion.Resources.Localization.AppResources.OkButtonLabel);
+        }
+    }
+
+    [RelayCommand]
+    public async Task ImportBackupAsync()
+    {
+        bool confirm = await Shell.Current.DisplayAlertAsync(
+            Diarion.Resources.Localization.AppResources.BackupTitle ?? "Restore Backup", 
+            Diarion.Resources.Localization.AppResources.BackupImportWarning ?? "This will overwrite your current data. Are you sure?", 
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes, 
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
+            
+        if (!confirm) return;
+
+        bool success = await _backupService.ImportBackupAsync();
+        if (success)
+        {
+            await Shell.Current.DisplayAlertAsync(
+                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup", 
+                Diarion.Resources.Localization.AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.", 
+                Diarion.Resources.Localization.AppResources.OkButtonLabel);
+        }
     }
 }

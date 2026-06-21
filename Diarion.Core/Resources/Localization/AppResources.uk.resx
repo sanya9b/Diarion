@@ -613,4 +613,25 @@
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Недостатньо даних за цей період.</value>
   </data>
+  <data name="BackupTitle" xml:space="preserve">
+    <value>Резервне копіювання</value>
+  </data>
+  <data name="BackupDescription" xml:space="preserve">
+    <value>Збережіть свої дані або відновіть їх із резервної копії.</value>
+  </data>
+  <data name="BackupExportButton" xml:space="preserve">
+    <value>Експорт</value>
+  </data>
+  <data name="BackupImportButton" xml:space="preserve">
+    <value>Відновити</value>
+  </data>
+  <data name="BackupExportSuccess" xml:space="preserve">
+    <value>Резервну копію успішно створено.</value>
+  </data>
+  <data name="BackupImportWarning" xml:space="preserve">
+    <value>Ця дія перезапише ваші поточні дані. Продовжити?</value>
+  </data>
+  <data name="BackupImportSuccess" xml:space="preserve">
+    <value>Дані відновлено. Будь ласка, перезапустіть додаток.</value>
+  </data>
 </root>

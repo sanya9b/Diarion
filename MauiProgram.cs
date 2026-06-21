@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui;
+using Diarion.Extensions;
 using Microsoft.Extensions.Logging;
 using Plugin.LocalNotification;
 
@@ -27,52 +28,10 @@ public static class MauiProgram
 #endif
 
 		// -- DEPENDENCY INJECTION --
-		// Services (Infrastructure & Core Logic)
-		builder.Services.AddSingleton<Diarion.Services.Database.IDatabaseSeeder, Diarion.Services.Database.DatabaseSeeder>();
-		builder.Services.AddSingleton<Diarion.Services.Database.IDatabaseContext, Diarion.Services.Database.DatabaseContext>();
-		builder.Services.AddSingleton<Diarion.Services.INotificationService, Diarion.Services.LocalNotificationService>();
-		builder.Services.AddSingleton<Diarion.Services.ITodoService, Diarion.Services.TodoService>();
-		builder.Services.AddSingleton<Diarion.Services.IHabitService, Diarion.Services.HabitService>();
-		builder.Services.AddSingleton<Diarion.Services.IFinanceService, Diarion.Services.FinanceService>();
-		builder.Services.AddSingleton<Diarion.Services.IWishlistService, Diarion.Services.WishlistService>();
-		builder.Services.AddSingleton<Diarion.Services.IProfileService, Diarion.Services.ProfileService>();
-		builder.Services.AddSingleton<Diarion.Services.IAuxiliaryService, Diarion.Services.AuxiliaryService>();
-		builder.Services.AddSingleton<Diarion.Services.IDiaryService, Diarion.Services.DiaryService>();
-		builder.Services.AddSingleton<Diarion.Services.IMenstrualCycleService, Diarion.Services.MenstrualCycleService>();
-		builder.Services.AddSingleton<Diarion.Services.ICalendarService, Diarion.Services.CalendarService>();
-		builder.Services.AddSingleton<Diarion.Services.IStatisticsService, Diarion.Services.StatisticsService>();
-		builder.Services.AddSingleton<Diarion.Services.IMenuConfigurationService, Diarion.Services.MenuConfigurationService>();
-
-		// ViewModels
-		builder.Services.AddTransient<Diarion.ViewModels.MainViewModel>();
-		builder.Services.AddTransient<Diarion.ViewModels.DiaryDetailViewModel>();
-		builder.Services.AddTransient<Diarion.ViewModels.TodoDetailViewModel>();
-		builder.Services.AddTransient<Diarion.ViewModels.ProfileViewModel>();
-                builder.Services.AddTransient<Diarion.ViewModels.HabitTrackerViewModel>();
-                builder.Services.AddTransient<Diarion.ViewModels.GoodDeedsViewModel>();
-                builder.Services.AddTransient<Diarion.ViewModels.ReadingTrackerViewModel>();
-                builder.Services.AddTransient<Diarion.ViewModels.HappyMomentsViewModel>();
-                
-                builder.Services.AddTransient<Diarion.ViewModels.Statistics.MoodStatsViewModel>();
-                builder.Services.AddTransient<Diarion.ViewModels.Statistics.SleepStatsViewModel>();
-                builder.Services.AddTransient<Diarion.ViewModels.Statistics.ProductivityStatsViewModel>();
-                builder.Services.AddTransient<Diarion.ViewModels.StatisticsViewModel>();
-                
-                builder.Services.AddTransient<Diarion.ViewModels.WishlistViewModel>();
-                builder.Services.AddTransient<Diarion.ViewModels.FinanceViewModel>();
-
-		// Views
-		builder.Services.AddTransient<Diarion.Views.MainPage>();
-		builder.Services.AddTransient<Diarion.Views.DiaryDetailPage>();
-		builder.Services.AddTransient<Diarion.Views.TodoDetailPage>();
-		builder.Services.AddTransient<Diarion.Views.ProfilePage>();
-                builder.Services.AddTransient<Diarion.Views.HabitTrackerPage>();
-                builder.Services.AddTransient<Diarion.Views.GoodDeedsPage>();
-                builder.Services.AddTransient<Diarion.Views.ReadingTrackerPage>();
-                builder.Services.AddTransient<Diarion.Views.HappyMomentsPage>();
-                builder.Services.AddTransient<Diarion.Views.StatisticsPage>();
-                builder.Services.AddTransient<Diarion.Views.WishlistPage>();
-                builder.Services.AddTransient<Diarion.Views.FinancePage>();
+		builder.Services
+			.AddCoreServices()
+			.AddAppViewModels()
+			.AddAppViews();
 
 		return builder.Build();
 	}

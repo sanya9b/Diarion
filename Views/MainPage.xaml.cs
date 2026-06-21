@@ -35,38 +35,7 @@ public partial class MainPage : ContentPage
 
     private async void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(MainViewModel.IsCalendarExpanded))
-        {
-            if (_viewModel.IsCalendarExpanded)
-            {
-                // Розгортаємо весь календар (включаючи шапку)
-                CalendarHeader.IsVisible = true;
-                CalendarGrid.IsVisible = true;
-
-                int rows = _viewModel.CalendarDays.Count / 7;
-                if (rows < 5) rows = 5;
-                int targetHeight = (rows * 60) + 70; // Зменшив висоту шапки/відступів ще на 20px
-
-                await Task.WhenAll(
-                    CalendarHeader.FadeToAsync(1, 200, Easing.CubicOut),
-                    CalendarGrid.FadeToAsync(1, 200, Easing.CubicOut),
-                    CalendarSection.HeightRequestTo(targetHeight, 250, Easing.CubicOut)
-                );
-                CalendarSection.HeightRequest = -1; // Auto size
-            }
-            else
-            {
-                // Згортаємо ВЕСЬ блок календаря до 0
-                await Task.WhenAll(
-                    CalendarHeader.FadeToAsync(0, 150, Easing.CubicIn),
-                    CalendarGrid.FadeToAsync(0, 150, Easing.CubicIn),
-                    CalendarSection.HeightRequestTo(0, 200, Easing.CubicIn) 
-                );
-                CalendarHeader.IsVisible = false;
-                CalendarGrid.IsVisible = false;
-            }
-        }
-        else if (e.PropertyName == nameof(MainViewModel.IsPlannerMode))
+        if (e.PropertyName == nameof(MainViewModel.IsPlannerMode))
         {
             if (_viewModel.IsPlannerMode)
             {

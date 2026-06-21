@@ -130,6 +130,42 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Backup & Restore -->
+            <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    Padding="16">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                </Border.Shadow>
+                
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{x:Static localization:AppResources.BackupTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    
+                    <Label Text="{x:Static localization:AppResources.BackupDescription}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,0,0,8" />
+                    
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                        <Button Grid.Column="0" Text="{x:Static localization:AppResources.BackupExportButton}"
+                                Command="{Binding ExportBackupCommand}"
+                                BackgroundColor="Transparent"
+                                BorderColor="{DynamicResource Theme_Ocean_Ocean}"
+                                BorderWidth="1"
+                                TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                CornerRadius="12"
+                                HeightRequest="44" />
+                        
+                        <Button Grid.Column="1" Text="{x:Static localization:AppResources.BackupImportButton}"
+                                Command="{Binding ImportBackupCommand}"
+                                BackgroundColor="Transparent"
+                                BorderColor="{DynamicResource Theme_Amber}"
+                                BorderWidth="1"
+                                TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                CornerRadius="12"
+                                HeightRequest="44" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Save Button -->
             <Button Text="{x:Static localization:AppResources.SaveProfileButton}"
                     Command="{Binding SaveProfileCommand}"

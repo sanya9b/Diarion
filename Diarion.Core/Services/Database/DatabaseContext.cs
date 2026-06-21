@@ -14,6 +14,9 @@ public class DatabaseContext : IDatabaseContext, IDisposable
     private LiteDatabase? _db;
     private readonly bool _useInMemory;
     private readonly IDatabaseSeeder? _seeder;
+    private string _dbPath = string.Empty;
+
+    public string DatabasePath => _dbPath;
 
     public DatabaseContext(IDatabaseSeeder? seeder = null, bool useInMemory = false)
     {
@@ -50,8 +53,8 @@ public class DatabaseContext : IDatabaseContext, IDisposable
             }
             else
             {
-                string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DbFileName);
-                database = new LiteDatabase(dbPath);
+                _dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DbFileName);
+                database = new LiteDatabase(_dbPath);
             }
             
             var entriesCollection = database.GetCollection<DiaryEntry>("entries");
@@ -83,8 +86,17 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         }
     }
 
+    public void Close()
+    {
+        lock (_initializationLock)
+        {
+            _db?.Dispose();
+            _db = null;
+        }
+    }
+
     public void Dispose()
     {
-        _db?.Dispose();
+        Close();
     }
 }

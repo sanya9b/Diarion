@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Controls.FoodTrackerSection">
+    
+    <Border StrokeShape="RoundRectangle 16"
+            StrokeThickness="1"
+            Stroke="{DynamicResource Theme_Dust_Ocean}"
+            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+            Padding="16">
+        <Border.Shadow>
+            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
+        </Border.Shadow>
+        <VerticalStackLayout Spacing="8">
+            <Label Text="{x:Static localization:AppResources.FoodLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            
+            <Grid ColumnDefinitions="Auto, 70, *" ColumnSpacing="8" Margin="0,-4">
+                <CheckBox Grid.Column="0" IsChecked="{Binding IsBreakfastDone}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
+                <Label Grid.Column="1" Text="{x:Static localization:AppResources.BreakfastLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Entry Grid.Column="2" Text="{Binding BreakfastFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HeightRequest="32" />
+            </Grid>
+            
+            <Grid ColumnDefinitions="Auto, 70, *" ColumnSpacing="8" Margin="0,-4">
+                <CheckBox Grid.Column="0" IsChecked="{Binding IsLunchDone}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
+                <Label Grid.Column="1" Text="{x:Static localization:AppResources.LunchLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Entry Grid.Column="2" Text="{Binding LunchFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HeightRequest="32" />
+            </Grid>
+            
+            <Grid ColumnDefinitions="Auto, 70, *" ColumnSpacing="8" Margin="0,-4">
+                <CheckBox Grid.Column="0" IsChecked="{Binding IsDinnerDone}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
+                <Label Grid.Column="1" Text="{x:Static localization:AppResources.DinnerLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Entry Grid.Column="2" Text="{Binding DinnerFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HeightRequest="32" />
+            </Grid>
+        </VerticalStackLayout>
+    </Border>
+
+</ContentView>
