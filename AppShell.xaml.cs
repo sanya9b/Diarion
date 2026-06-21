@@ -58,10 +58,7 @@ public partial class AppShell : Shell
         else
             ThemeThumb.HorizontalOptions = LayoutOptions.Start;
 
-        // Закриваємо меню перед перестворенням сторінки
         Current.FlyoutIsPresented = false;
-        await Task.Delay(250); // Чекаємо завершення анімації закриття меню
-
     }
 
     private async void OnToggleLanguageClicked(object? sender, TappedEventArgs e)

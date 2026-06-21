@@ -17,10 +17,10 @@
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="0">
                     <Border.Triggers>
-                        <DataTrigger TargetType="Border" Binding="{Binding IsCalendarExpanded}" Value="True">
+                        <DataTrigger TargetType="Border" Binding="{Binding CalendarSection.IsCalendarExpanded}" Value="True">
                             <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
                         </DataTrigger>
-                        <DataTrigger TargetType="Border" Binding="{Binding IsCalendarExpanded}" Value="False">
+                        <DataTrigger TargetType="Border" Binding="{Binding CalendarSection.IsCalendarExpanded}" Value="False">
                             <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
                         </DataTrigger>
                     </Border.Triggers>
@@ -30,7 +30,7 @@
                                 StrokeShape="RoundRectangle 16,16,0,0"
                                 BackgroundColor="{DynamicResource Theme_Ocean_Dust}"
                                 Padding="0,2">
-                            <Label Text="{Binding TodayMonthShort}"
+                            <Label Text="{Binding CalendarSection.TodayMonthShort}"
                                    InputTransparent="True"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"
@@ -40,8 +40,8 @@
                                    TextColor="{DynamicResource Theme_Snow_Midnight}" />
                         </Border>
                         <Label Grid.Row="1"
-                               Text="{Binding TodayDayNumber}"
-                               InputTransparent="True"
+                                Text="{Binding CalendarSection.TodayDayNumber}"
+                                InputTransparent="True"
                                HorizontalOptions="Center"
                                VerticalOptions="Center"
                                FontSize="18"
@@ -50,19 +50,19 @@
 
                         <BoxView Grid.RowSpan="2" BackgroundColor="Transparent">
                             <BoxView.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ToggleCalendarCommand}" />
+                                <TapGestureRecognizer Command="{Binding CalendarSection.ToggleCalendarCommand}" />
                             </BoxView.GestureRecognizers>
                         </BoxView>
                     </Grid>
                 </Border>
                 
-                <controls:ProgressBorder Progress="{Binding TodayTaskCompletionPercentage}" 
-                                         StrokeColor="{Binding TodayProgressColor}"
+                <controls:ProgressBorder Progress="{Binding CalendarSection.TodayTaskCompletionPercentage}" 
+                                         StrokeColor="{Binding CalendarSection.TodayProgressColor}"
                                          CornerRadius="16"
                                          InputTransparent="True" />
             </Grid>
 
-            <HorizontalStackLayout BindableLayout.ItemsSource="{Binding QuickMenuItems}" Spacing="8">
+            <HorizontalStackLayout BindableLayout.ItemsSource="{Binding QuickMenuSection.QuickMenuItems}" Spacing="8">
                 <HorizontalStackLayout.Behaviors>
                     <behaviors:DragAndDropReorderBehavior ShiftDistance="66" />
                 </HorizontalStackLayout.Behaviors>
@@ -71,10 +71,10 @@
                         <ContentView>
                             <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Command}" />
-                                <DragGestureRecognizer DragStartingCommand="{Binding BindingContext.DragMenuStartingCommand, Source={x:Reference QuickMenuViewRoot}}"
+                                <DragGestureRecognizer DragStartingCommand="{Binding BindingContext.QuickMenuSection.DragMenuStartingCommand, Source={x:Reference QuickMenuViewRoot}}"
                                                        DragStartingCommandParameter="{Binding .}"
-                                                       DropCompletedCommand="{Binding BindingContext.DropMenuCompletedCommand, Source={x:Reference QuickMenuViewRoot}}" />
-                                <DropGestureRecognizer DropCommand="{Binding BindingContext.ReorderMenuCommand, Source={x:Reference QuickMenuViewRoot}}"
+                                                       DropCompletedCommand="{Binding BindingContext.QuickMenuSection.DropMenuCompletedCommand, Source={x:Reference QuickMenuViewRoot}}" />
+                                <DropGestureRecognizer DropCommand="{Binding BindingContext.QuickMenuSection.ReorderMenuCommand, Source={x:Reference QuickMenuViewRoot}}"
                                                        DropCommandParameter="{Binding .}" />
                             </ContentView.GestureRecognizers>
                             

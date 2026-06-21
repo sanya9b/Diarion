@@ -12,64 +12,26 @@ public partial class DiaryDetailViewModel : BaseViewModel
 {
     private readonly IDiaryService _diaryService;
     private readonly ITodoService _todoService;
+    private readonly INavigationService _navigationService;
+    private readonly IDialogService _dialogService;
     private DiaryEntry _currentEntry = new();
-
-    private static Page? GetActivePage()
-    {
-        if (Shell.Current?.CurrentPage is Page currentPage)
-        {
-            return currentPage;
-        }
-
-        if (Application.Current?.Windows.Count > 0)
-        {
-            return Application.Current.Windows[0].Page;
-        }
-
-        return null;
-    }
-
-    private static Task ShowAlertAsync(string title, string message)
-    {
-        var page = GetActivePage();
-        return page is null
-            ? Task.CompletedTask
-            : page.DisplayAlertAsync(title, message, Diarion.Resources.Localization.AppResources.OkButtonLabel);
-    }
-
-    private static Task<bool> ShowConfirmationAsync(string title, string message, string accept, string cancel)
-    {
-        var page = GetActivePage();
-        return page is null
-            ? Task.FromResult(false)
-            : page.DisplayAlertAsync(title, message, accept, cancel);
-    }
-
-    private static async Task NavigateBackAsync()
-    {
-        if (Shell.Current != null)
-        {
-            await Shell.Current.GoToAsync("..");
-            return;
-        }
-
-        var page = GetActivePage();
-        if (page?.Navigation?.NavigationStack.Count > 1)
-        {
-            await page.Navigation.PopAsync();
-        }
-    }
 
     [RelayCommand]
     public async Task CloseAsync()
     {
-        await NavigateBackAsync();
+        await _navigationService.NavigateBackAsync();
     }
 
-    public DiaryDetailViewModel(IDiaryService diaryService, ITodoService todoService)
+    public DiaryDetailViewModel(
+        IDiaryService diaryService, 
+        ITodoService todoService,
+        INavigationService navigationService,
+        IDialogService dialogService)
     {
         _diaryService = diaryService;
         _todoService = todoService;
+        _navigationService = navigationService;
+        _dialogService = dialogService;
         Title = Diarion.Resources.Localization.AppResources.NewEntryTitle;
         SelectedEmotionItem = EmotionsList[0];
         SelectedPriorityItem = PrioritiesList[1]; // За замовчуванням Medium
@@ -146,9 +108,10 @@ public partial class DiaryDetailViewModel : BaseViewModel
 
         if (!IsExistingEntry)
         {
-            await ShowAlertAsync(
+            await _dialogService.ShowAlertAsync(
                 Diarion.Resources.Localization.AppResources.AlertWarning,
-                Diarion.Resources.Localization.AppResources.SaveEntryFirstWarning);
+                Diarion.Resources.Localization.AppResources.SaveEntryFirstWarning,
+                Diarion.Resources.Localization.AppResources.OkButtonLabel);
             return;
         }
 
@@ -260,9 +223,10 @@ public partial class DiaryDetailViewModel : BaseViewModel
     {
         if (string.IsNullOrWhiteSpace(EntryContent))
         {
-            await ShowAlertAsync(
+            await _dialogService.ShowAlertAsync(
                 Diarion.Resources.Localization.AppResources.AlertWarning,
-                Diarion.Resources.Localization.AppResources.AlertEmptyContent);
+                Diarion.Resources.Localization.AppResources.AlertEmptyContent,
+                Diarion.Resources.Localization.AppResources.OkButtonLabel);
             return;
         }
 
@@ -284,13 +248,14 @@ public partial class DiaryDetailViewModel : BaseViewModel
                 EntryId = _currentEntry.Id.ToString();
             }
 
-            await NavigateBackAsync();
+            await _navigationService.NavigateBackAsync();
         }
         catch (Exception ex)
         {
-            await ShowAlertAsync(
+            await _dialogService.ShowAlertAsync(
                 Diarion.Resources.Localization.AppResources.AlertError,
-                Diarion.Resources.Localization.AppResources.AlertSaveError);
+                Diarion.Resources.Localization.AppResources.AlertSaveError,
+                Diarion.Resources.Localization.AppResources.OkButtonLabel);
             System.Diagnostics.Debug.WriteLine($"Помилка збереження: {ex.Message}");
         }
         finally
@@ -305,7 +270,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
         if (_currentEntry == null || _currentEntry.Id == Guid.Empty)
             return;
 
-        bool confirm = await ShowConfirmationAsync(
+        bool confirm = await _dialogService.ShowConfirmationAsync(
             Diarion.Resources.Localization.AppResources.DeleteConfirmTitle,
             Diarion.Resources.Localization.AppResources.DeleteConfirmMsg,
             Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
@@ -317,13 +282,14 @@ public partial class DiaryDetailViewModel : BaseViewModel
             {
                 IsBusy = true;
                 await _diaryService.DeleteEntryAsync(_currentEntry.Id);
-                await NavigateBackAsync();
+                await _navigationService.NavigateBackAsync();
             }
             catch (Exception ex)
             {
-                await ShowAlertAsync(
+                await _dialogService.ShowAlertAsync(
                     Diarion.Resources.Localization.AppResources.AlertError,
-                    Diarion.Resources.Localization.AppResources.AlertDeleteError);
+                    Diarion.Resources.Localization.AppResources.AlertDeleteError,
+                    Diarion.Resources.Localization.AppResources.OkButtonLabel);
                 System.Diagnostics.Debug.WriteLine($"Помилка видалення: {ex.Message}");
             }
             finally

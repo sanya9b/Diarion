@@ -5,6 +5,7 @@
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:views="clr-namespace:Diarion.Views"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Diarion.Views.MainPage"
@@ -33,19 +34,19 @@
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
             <Grid.GestureRecognizers>
-                <SwipeGestureRecognizer Direction="Up" Command="{Binding ToggleCalendarCommand}" />
-                <SwipeGestureRecognizer Direction="Down" Command="{Binding ToggleCalendarCommand}" />
+                <SwipeGestureRecognizer Direction="Up" Command="{Binding CalendarSection.ToggleCalendarCommand}" />
+                <SwipeGestureRecognizer Direction="Down" Command="{Binding CalendarSection.ToggleCalendarCommand}" />
             </Grid.GestureRecognizers>
 
             <VerticalStackLayout Grid.Row="0" Padding="24,4,24,10" Spacing="2">
                 
-                <controls:CalendarView IsExpanded="{Binding IsCalendarExpanded}" />
+                <controls:CalendarView IsExpanded="{Binding BindingContext.CalendarSection.IsCalendarExpanded, Source={x:Reference PageRoot}}" BindingContext="{Binding CalendarSection}" x:DataType="viewmodels:CalendarSectionViewModel" />
 
                 <VerticalStackLayout Margin="0,0,0,10" Spacing="0" HorizontalOptions="Fill">
                     <BoxView HeightRequest="4" WidthRequest="32" CornerRadius="2" 
                              BackgroundColor="{DynamicResource Theme_Dust_Ocean}" 
                              HorizontalOptions="Center" Margin="0,0,0,4" />
-                    <Label Text="{Binding SelectedDateDayName}" FontFamily="MarckScript" FontSize="32" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    <Label Text="{Binding CalendarSection.SelectedDateDayName}" FontFamily="MarckScript" FontSize="32" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </VerticalStackLayout>
 
                 <Grid ColumnDefinitions="*, *" Margin="0,4,0,6">
@@ -95,8 +96,8 @@
             </VerticalStackLayout>
 
             <Grid Grid.Row="1">
-                <ScrollView x:Name="DiaryContainer" IsVisible="True" Padding="24,10,24,40">
-                    <VerticalStackLayout Spacing="24" BindingContext="{Binding CurrentEntry}" x:DataType="models:DiaryEntry">
+                <ScrollView x:Name="DiaryContainer" IsVisible="{Binding IsDiaryMode}" Padding="24,10,24,40">
+                    <VerticalStackLayout Spacing="24" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel">
                         
                         <!-- Sleep Block -->
                         <controls:SleepSection BindingContext="{Binding}" />
@@ -115,7 +116,7 @@
                     </VerticalStackLayout>
                 </ScrollView>
 
-                <ContentView x:Name="PlannerContainer" IsVisible="False" />
+                <views:PlannerView x:Name="PlannerContainer" IsVisible="{Binding BindingContext.IsPlannerMode, Source={x:Reference PageRoot}}" BindingContext="{Binding PlannerSection}" />
             </Grid>
         </Grid>
 

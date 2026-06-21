@@ -9,7 +9,7 @@
              x:Name="CalendarViewRoot">
 
     <Grid x:Name="CalendarSection" RowDefinitions="Auto, Auto" IsClippedToBounds="True">
-        <Grid x:Name="CalendarHeader" Grid.Row="0" RowDefinitions="Auto, Auto">
+        <Grid x:Name="CalendarHeader" Grid.Row="0" RowDefinitions="Auto, Auto" IsVisible="False">
             <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Margin="0,4,0,12">
                 <Grid Grid.Column="0" BackgroundColor="Transparent" Padding="20,10" VerticalOptions="Center" HorizontalOptions="Start">
                     <Grid.GestureRecognizers>
@@ -46,7 +46,8 @@
                 Wrap="Wrap"
                 Direction="Row"
                 JustifyContent="SpaceBetween"
-                AlignContent="Start">
+                AlignContent="Start"
+                IsVisible="False">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="models:CalendarDay">
                     <ContentView FlexLayout.Basis="13.5%" HeightRequest="52" Margin="0,0,0,8">

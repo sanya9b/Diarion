@@ -54,7 +54,7 @@ public class DiaryService : IDiaryService
         var validIds = new HashSet<Guid>(activeDefs.Select(d => d.Id));
         
         // Залишаємо тільки ті звички, які були актуальні на цей день
-        var filteredHabits = entry.Habits.Where(h => validIds.Contains(h.HabitId)).ToList();
+        var filteredHabits = entry.HabitsList.Where(h => validIds.Contains(h.HabitId)).ToList();
         
         // Додаємо нові звички, яких ще немає в цьому записі
         var existingIds = new HashSet<Guid>(filteredHabits.Select(h => h.HabitId));
@@ -73,7 +73,7 @@ public class DiaryService : IDiaryService
         }
 
         // Відновлюємо колекцію у правильному порядку
-        entry.Habits = new System.Collections.ObjectModel.ObservableCollection<HabitItem>(filteredHabits.OrderBy(h => 
+        entry.HabitsList = filteredHabits.OrderBy(h => 
         {
             var def = activeDefs.FirstOrDefault(d => d.Id == h.HabitId);
             return def?.Order ?? int.MaxValue;
@@ -81,7 +81,7 @@ public class DiaryService : IDiaryService
         {
             var def = activeDefs.FirstOrDefault(d => d.Id == h.HabitId);
             return def?.CreatedAt ?? DateTime.MaxValue;
-        }));
+        }).ToList();
 
         StartupTrace.Mark($"DiaryService.GetEntryForDateAsync duration={Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds:F1}ms");
         return entry;

@@ -26,12 +26,17 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IStatisticsService, StatisticsService>();
         services.AddSingleton<IMenuConfigurationService, MenuConfigurationService>();
         services.AddSingleton<IBackupService, BackupService>();
+        services.AddSingleton<INavigationService, MauiNavigationService>();
+        services.AddSingleton<IDialogService, MauiDialogService>();
         
         return services;
     }
 
     public static IServiceCollection AddAppViewModels(this IServiceCollection services)
     {
+        services.AddTransient<CalendarSectionViewModel>();
+        services.AddTransient<PlannerSectionViewModel>();
+        services.AddTransient<QuickMenuViewModel>();
         services.AddTransient<MainViewModel>();
         services.AddTransient<DiaryDetailViewModel>();
         services.AddTransient<TodoDetailViewModel>();

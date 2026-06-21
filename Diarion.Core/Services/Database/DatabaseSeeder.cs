@@ -70,7 +70,7 @@ public class DatabaseSeeder : IDatabaseSeeder
 
             foreach (var h in habits)
             {
-                entry.Habits.Add(new HabitItem 
+                entry.HabitsList.Add(new HabitItem 
                 { 
                     HabitId = h.Id, 
                     Name = h.Name, 

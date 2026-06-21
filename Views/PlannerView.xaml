@@ -5,7 +5,8 @@
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.PlannerView"
-             x:DataType="viewmodels:MainViewModel">
+             x:Name="PlannerViewRoot"
+             x:DataType="viewmodels:PlannerSectionViewModel">
              
     <Grid RowDefinitions="Auto, *" Padding="20,2,20,20" RowSpacing="10">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalOptions="Center" ColumnSpacing="12">
@@ -27,7 +28,7 @@
                 <!-- ABSOLUTE HITBOX -->
                 <BoxView BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill">
                     <BoxView.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding GoToNewTodoCommand}" />
+                        <TapGestureRecognizer Command="{Binding BindingContext.GoToNewTodoCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />
                     </BoxView.GestureRecognizers>
                 </BoxView>
             </Grid>
@@ -45,7 +46,7 @@
                     <Border Margin="0,4" StrokeShape="RoundRectangle 24" StrokeThickness="0"
                             BackgroundColor="{DynamicResource Theme_Snow_Black}">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=GoToTodoDetailsCommand}" CommandParameter="{Binding .}" />
+                            <TapGestureRecognizer Command="{Binding BindingContext.GoToTodoDetailsCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
                         <Border.Shadow>
                             <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="{AppThemeBinding Light=0.05, Dark=0.2}" />
@@ -84,7 +85,7 @@
                                     </MultiTrigger>
                                 </Border.Triggers>
                                 <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=ToggleTodoCompletionCommand}" CommandParameter="{Binding .}" />
+                                    <TapGestureRecognizer Command="{Binding BindingContext.ToggleTodoCompletionCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
                                 </Border.GestureRecognizers>
 
                                 <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="15" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
@@ -130,7 +131,7 @@
                             </Border>
 
                             <ImageButton Grid.Column="3" WidthRequest="20" HeightRequest="20" VerticalOptions="Center" BackgroundColor="Transparent"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=DeleteTodoCommand}"
+                                         Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}"
                                          CommandParameter="{Binding .}">
                                 <ImageButton.Source>
                                     <FontImageSource FontFamily="OpenSansRegular" Glyph="✕" Color="{DynamicResource Theme_Midnight_Dust}" Size="16" />
