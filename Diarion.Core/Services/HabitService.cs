@@ -17,8 +17,8 @@ public class HabitService : IHabitService
         _dbContext = dbContext;
     }
 
-    private ILiteCollection<HabitDefinition> HabitsCollection => _dbContext.GetCollection<HabitDefinition>("habit_definitions");
-    private ILiteCollection<HarmfulHabitTracker> HarmfulHabitTrackersCollection => _dbContext.GetCollection<HarmfulHabitTracker>("harmful_habit_trackers");
+    private ILiteCollection<HabitDefinition> HabitsCollection => _dbContext.GetCollection<HabitDefinition>(DatabaseConstants.HabitDefinitionsCollection);
+    private ILiteCollection<HarmfulHabitTracker> HarmfulHabitTrackersCollection => _dbContext.GetCollection<HarmfulHabitTracker>(DatabaseConstants.HarmfulHabitTrackersCollection);
 
     public Task<List<HabitDefinition>> GetActiveHabitsForDateAsync(DateTime date)
     {

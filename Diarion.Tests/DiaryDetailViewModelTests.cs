@@ -15,18 +15,26 @@ public class DiaryDetailViewModelTests
 {
     private readonly Mock<IDiaryService> _diaryServiceMock;
     private readonly Mock<ITodoService> _todoServiceMock;
+    private readonly Mock<INavigationService> _navigationServiceMock;
+    private readonly Mock<IDialogService> _dialogServiceMock;
     private readonly DiaryDetailViewModel _viewModel;
 
     public DiaryDetailViewModelTests()
     {
         _diaryServiceMock = new Mock<IDiaryService>();
         _todoServiceMock = new Mock<ITodoService>();
-        
+        _navigationServiceMock = new Mock<INavigationService>();
+        _dialogServiceMock = new Mock<IDialogService>();
+
         _todoServiceMock
             .Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>()))
             .ReturnsAsync(new List<TodoItem>());
 
-        _viewModel = new DiaryDetailViewModel(_diaryServiceMock.Object, _todoServiceMock.Object);
+        _viewModel = new DiaryDetailViewModel(
+            _diaryServiceMock.Object,
+            _todoServiceMock.Object,
+            _navigationServiceMock.Object,
+            _dialogServiceMock.Object);
     }
 
     [Fact]

@@ -21,8 +21,8 @@ public class TodoService : ITodoService
         _notificationService = notificationService;
     }
 
-    private ILiteCollection<TodoItem> TodosCollection => _dbContext.GetCollection<TodoItem>("todos");
-    private ILiteCollection<UserProfile> ProfileCollection => _dbContext.GetCollection<UserProfile>("profile");
+    private ILiteCollection<TodoItem> TodosCollection => _dbContext.GetCollection<TodoItem>(DatabaseConstants.TodosCollection);
+    private ILiteCollection<UserProfile> ProfileCollection => _dbContext.GetCollection<UserProfile>(DatabaseConstants.ProfileCollection);
 
     public Task<IEnumerable<TodoStatsDto>> GetTodosForStatsAsync(DateTime startDate, DateTime endDate)
     {

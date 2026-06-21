@@ -37,6 +37,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<CalendarSectionViewModel>();
         services.AddTransient<PlannerSectionViewModel>();
         services.AddTransient<QuickMenuViewModel>();
+        services.AddTransient<HabitsSectionViewModel>();
         services.AddTransient<MainViewModel>();
         services.AddTransient<DiaryDetailViewModel>();
         services.AddTransient<TodoDetailViewModel>();

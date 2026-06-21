@@ -17,9 +17,9 @@ public class AuxiliaryService : IAuxiliaryService
         _dbContext = dbContext;
     }
 
-    private ILiteCollection<ReadingTrackerBook> ReadingTrackerBooksCollection => _dbContext.GetCollection<ReadingTrackerBook>("reading_tracker_books");
-    private ILiteCollection<HappyMoment> HappyMomentsCollection => _dbContext.GetCollection<HappyMoment>("happy_moments");
-    private ILiteCollection<GoodDeed> GoodDeedsCollection => _dbContext.GetCollection<GoodDeed>("good_deeds");
+    private ILiteCollection<ReadingTrackerBook> ReadingTrackerBooksCollection => _dbContext.GetCollection<ReadingTrackerBook>(DatabaseConstants.ReadingTrackerBooksCollection);
+    private ILiteCollection<HappyMoment> HappyMomentsCollection => _dbContext.GetCollection<HappyMoment>(DatabaseConstants.HappyMomentsCollection);
+    private ILiteCollection<GoodDeed> GoodDeedsCollection => _dbContext.GetCollection<GoodDeed>(DatabaseConstants.GoodDeedsCollection);
 
     public Task<List<ReadingTrackerBook>> GetReadingTrackerBooksAsync()
     {

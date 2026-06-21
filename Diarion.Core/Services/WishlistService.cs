@@ -17,7 +17,7 @@ public class WishlistService : IWishlistService
         _dbContext = dbContext;
     }
 
-    private ILiteCollection<WishlistEntry> WishlistCollection => _dbContext.GetCollection<WishlistEntry>("wishlist_entries");
+    private ILiteCollection<WishlistEntry> WishlistCollection => _dbContext.GetCollection<WishlistEntry>(DatabaseConstants.WishlistCollection);
 
     public Task<List<WishlistEntry>> GetWishlistEntriesAsync()
     {

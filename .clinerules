@@ -53,3 +53,38 @@ When asked to implement a feature, strictly follow this sequence:
 2. Before reading a large file, run `grep` or `search` to locate the exact lines of code you need, and then read only that specific range of the file if possible.
 3. If a file is larger than 1000 lines, recommend refactoring it into smaller modules first.
 4. Keep terminal commands specific. Do not run heavy global watch/build tasks if you only need to run a single test.
+
+## 💻 Terminal and Command Execution Rules (Windows / PowerShell)
+
+Ти працюєш у середовищі Windows, а термінал за замовчуванням — **PowerShell**. Ніколи не використовуй синтаксис Bash (Linux) та уникай застарілих команд з `cmd.exe` (таких як `findstr`, `dir`, `type`). 
+
+Завжди дотримуйся наступних правил при генерації та виконанні команд у терміналі:
+
+1. **Використовуй нативні командлети PowerShell:**
+   - Замість `grep` або `findstr` використовуй `Select-String`.
+   - Замість `ls`, `dir` або `find` використовуй `Get-ChildItem`.
+   - Замість `cat` або `type` використовуй `Get-Content`.
+   - Замість `rm` або `del` використовуй `Remove-Item`.
+
+2. **Правила роботи з лапками (Quotes & Escaping):**
+   - За замовчуванням використовуй **одинарні лапки (`' '`)** для текстових рядків, регулярних виразів та шляхів. Це запобігає небажаній інтерполяції змінних та конфліктам екранування.
+   - Якщо тобі потрібно шукати текст, який містить подвійні лапки, обгортай його в одинарні. 
+     - ❌ ПОГАНО: `findstr /C:"Text=\"" *.xaml`
+     - ✅ ДОБРЕ: `Select-String -Pattern 'Text="' -Path *.xaml`
+   - Використовуй подвійні лапки (`" "`) ТІЛЬКИ тоді, коли тобі потрібна інтерполяція змінних (наприклад, `"$variable"`).
+
+3. **Пошук файлів та тексту:**
+   - Якщо потрібно знайти текст у файлах рекурсивно, використовуй пайплайни.
+     - ✅ ДОБРЕ: `Get-ChildItem -Path '.\Views\' -Filter '*.xaml' -Recurse | Select-String -Pattern 'Text="'`
+   - Якщо потрібно знайти файли за розширенням рекурсивно:
+     - ✅ ДОБРЕ: `Get-ChildItem -Path '.' -Filter '*.cs' -Recurse`
+
+4. **Шляхи до файлів та папок:**
+   - Завжди бери шляхи в одинарні лапки, якщо вони можуть містити пробіли: `'D:\My Project\Folder'`.
+   - PowerShell розуміє як зворотні (`\`), так і прямі (`/`) слеші у шляхах, але намагайся дотримуватись стандарту Windows (`\`).
+
+5. **Кодування (Encoding):**
+   - Працюючи з файлами через термінал (читання або запис), завжди враховуй кодування. Використовуй прапорець `-Encoding UTF8` для `Get-Content` або `Set-Content`, щоб не зламати кирилицю (український текст).
+
+6. **Утиліти, яких слід уникати:**
+   - Не використовуй `curl` або `wget` у PowerShell, оскільки це аліаси, які працюють некоректно. Використовуй `Invoke-RestMethod` або `Invoke-WebRequest`.

@@ -8,13 +8,13 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Diagnostics;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Helpers;
 
 namespace Diarion.ViewModels;
 
 public partial class MainViewModel : BaseViewModel
 {
     private readonly IDiaryService _diaryService;
-    private readonly IHabitService _habitService;
     private readonly IMenstrualCycleService _menstrualCycleService;
     private readonly IProfileService _profileService;
     private readonly INavigationService _navigationService;
@@ -23,12 +23,10 @@ public partial class MainViewModel : BaseViewModel
     public CalendarSectionViewModel CalendarSection { get; }
     public PlannerSectionViewModel PlannerSection { get; }
     public QuickMenuViewModel QuickMenuSection { get; }
+    public HabitsSectionViewModel HabitsSection { get; }
 
     [ObservableProperty]
     private DiaryEntryViewModel? _currentEntry;
-
-    [ObservableProperty]
-    private bool _isEditHabitsMode;
 
     [ObservableProperty]
     private string _cycleDayText = string.Empty;
@@ -48,22 +46,21 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isDiaryMode = true;
 
-    private CancellationTokenSource? _autoSaveCts;
+    private readonly AsyncDebouncer _autoSaveDebouncer = new AsyncDebouncer(TimeSpan.FromSeconds(1));
 
     public MainViewModel(
         IDiaryService diaryService, 
-        IHabitService habitService, 
         IMenstrualCycleService menstrualCycleService, 
         IProfileService profileService,
         INavigationService navigationService,
         IDialogService dialogService,
         CalendarSectionViewModel calendarSection,
         PlannerSectionViewModel plannerSection,
-        QuickMenuViewModel quickMenuSection)
+        QuickMenuViewModel quickMenuSection,
+        HabitsSectionViewModel habitsSection)
     {
         using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
-        _habitService = habitService;
         _menstrualCycleService = menstrualCycleService;
         _profileService = profileService;
         _navigationService = navigationService;
@@ -72,6 +69,7 @@ public partial class MainViewModel : BaseViewModel
         CalendarSection = calendarSection;
         PlannerSection = plannerSection;
         QuickMenuSection = quickMenuSection;
+        HabitsSection = habitsSection;
 
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
 
@@ -90,12 +88,6 @@ public partial class MainViewModel : BaseViewModel
     private void OnTodoChanged(DateTime date)
     {
         _ = CalendarSection.UpdateCalendarTasksForDayAsync(date);
-    }
-
-    [RelayCommand]
-    public void ToggleEditHabitsMode()
-    {
-        IsEditHabitsMode = !IsEditHabitsMode;
     }
 
     [RelayCommand]
@@ -137,6 +129,8 @@ public partial class MainViewModel : BaseViewModel
                 h.PropertyChanged += OnEntryPropertyChanged;
             }
         }
+
+        HabitsSection.Entry = newValue;
     }
 
     private void OnHabitsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -160,37 +154,27 @@ public partial class MainViewModel : BaseViewModel
 
     private void ScheduleAutoSave()
     {
-        _autoSaveCts?.Cancel();
-        _autoSaveCts = new CancellationTokenSource();
-        var token = _autoSaveCts.Token;
-
-        Task.Run(async () =>
+        _autoSaveDebouncer.Debounce(async () =>
         {
-            try
+            if (CurrentEntry != null)
             {
-                await Task.Delay(1000, token);
-                if (!token.IsCancellationRequested && CurrentEntry != null)
-                {
-                    CurrentEntry.SyncToModel();
-                    await _diaryService.SaveEntryAsync(CurrentEntry.Model);
-                    System.Diagnostics.Debug.WriteLine($"Auto-saved entry for {CurrentEntry.Date:dd.MM.yyyy}");
-                }
+                CurrentEntry.SyncToModel();
+                await _diaryService.SaveEntryAsync(CurrentEntry.Model);
+                System.Diagnostics.Debug.WriteLine($"Auto-saved entry for {CurrentEntry.Date:dd.MM.yyyy}");
             }
-            catch (TaskCanceledException) { }
-        }, token);
+        });
     }
 
-    public async Task FlushAutoSaveAsync()
+    public Task FlushAutoSaveAsync()
     {
-        if (_autoSaveCts != null && !_autoSaveCts.IsCancellationRequested)
+        return _autoSaveDebouncer.FlushAsync(async () =>
         {
-            _autoSaveCts.Cancel();
             if (CurrentEntry != null)
             {
                 CurrentEntry.SyncToModel();
                 await _diaryService.SaveEntryAsync(CurrentEntry.Model);
             }
-        }
+        });
     }
 
     private async Task LoadDayContentAsync(DateTime date)
@@ -331,74 +315,5 @@ public partial class MainViewModel : BaseViewModel
     {
         if (entry == null) return;
         await _navigationService.NavigateToAsync($"DiaryDetail?Id={entry.Id}");
-    }
-
-    // HABITS SECTION
-    private HabitItem? _draggedHabit;
-
-    [RelayCommand]
-    public void DragHabitStarting(HabitItem item)
-    {
-        _draggedHabit = item;
-    }
-
-    [RelayCommand]
-    public void DropHabitCompleted()
-    {
-        _draggedHabit = null;
-    }
-
-    [RelayCommand]
-    public async Task ReorderHabitsAsync(HabitItem targetItem)
-    {
-        if (_draggedHabit == null || targetItem == null || _draggedHabit == targetItem)
-            return;
-
-        if (CurrentEntry == null) return;
-
-        int oldIndex = CurrentEntry.Habits.IndexOf(_draggedHabit);
-        int newIndex = CurrentEntry.Habits.IndexOf(targetItem);
-
-        if (oldIndex < 0 || newIndex < 0)
-            return;
-
-        CurrentEntry.Habits.Move(oldIndex, newIndex);
-
-        var orderedIds = CurrentEntry.Habits.Select(h => h.HabitId).ToList();
-        await _habitService.UpdateHabitDefinitionsOrderAsync(orderedIds);
-    }
-
-    [RelayCommand]
-    public async Task AddHabitAsync()
-    {
-        string result = await _dialogService.ShowPromptAsync(
-            Diarion.Resources.Localization.AppResources.AddHabitPromptTitle,
-            Diarion.Resources.Localization.AppResources.AddHabitPromptMessage);
-        if (!string.IsNullOrWhiteSpace(result))
-        {
-            var def = new HabitDefinition { Name = result.Trim(), CreatedAt = CalendarSection.GetSelectedDate() };
-            await _habitService.AddHabitDefinitionAsync(def);
-            
-            if (CurrentEntry != null)
-            {
-                CurrentEntry.Habits.Add(new HabitItem { HabitId = def.Id, Name = def.Name });
-            }
-        }
-    }
-
-    [RelayCommand]
-    public async Task DeleteHabitAsync(HabitItem item)
-    {
-        if (item == null || CurrentEntry == null) return;
-        
-        bool confirm = await _dialogService.ShowConfirmationAsync(
-            Diarion.Resources.Localization.AppResources.DeleteHabitConfirmTitle,
-            string.Format(Diarion.Resources.Localization.AppResources.DeleteHabitConfirmMessage, item.Name),
-            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
-            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
-        if (!confirm) return;
-
-        await _habitService.DeleteHabitDefinitionAsync(item.HabitId, CalendarSection.GetSelectedDate());
-        CurrentEntry.Habits.Remove(item);
     }
 }

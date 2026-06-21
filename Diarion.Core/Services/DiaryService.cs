@@ -24,7 +24,7 @@ public class DiaryService : IDiaryService
         _todoService = todoService;
     }
 
-    private ILiteCollection<DiaryEntry> EntriesCollection => _dbContext.GetCollection<DiaryEntry>("entries");
+    private ILiteCollection<DiaryEntry> EntriesCollection => _dbContext.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
 
     public Task<List<DiaryEntry>> GetAllEntriesAsync()
     {

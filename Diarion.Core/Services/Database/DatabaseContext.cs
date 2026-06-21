@@ -57,16 +57,16 @@ public class DatabaseContext : IDatabaseContext, IDisposable
                 database = new LiteDatabase(_dbPath);
             }
             
-            var entriesCollection = database.GetCollection<DiaryEntry>("entries");
-            var todosCollection = database.GetCollection<TodoItem>("todos");
-            var habitsCollection = database.GetCollection<HabitDefinition>("habit_definitions");
-            var harmfulHabitTrackersCollection = database.GetCollection<HarmfulHabitTracker>("harmful_habit_trackers");
-            var readingTrackerBooksCollection = database.GetCollection<ReadingTrackerBook>("reading_tracker_books");
-            var happyMomentsCollection = database.GetCollection<HappyMoment>("happy_moments");
-            var goodDeedsCollection = database.GetCollection<GoodDeed>("good_deeds");
-            var profileCollection = database.GetCollection<UserProfile>("profile");
-            var wishlistCollection = database.GetCollection<WishlistEntry>("wishlist_entries");
-            var financeCollection = database.GetCollection<FinanceTransaction>("finance_transactions");
+            var entriesCollection = database.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
+            var todosCollection = database.GetCollection<TodoItem>(DatabaseConstants.TodosCollection);
+            var habitsCollection = database.GetCollection<HabitDefinition>(DatabaseConstants.HabitDefinitionsCollection);
+            var harmfulHabitTrackersCollection = database.GetCollection<HarmfulHabitTracker>(DatabaseConstants.HarmfulHabitTrackersCollection);
+            var readingTrackerBooksCollection = database.GetCollection<ReadingTrackerBook>(DatabaseConstants.ReadingTrackerBooksCollection);
+            var happyMomentsCollection = database.GetCollection<HappyMoment>(DatabaseConstants.HappyMomentsCollection);
+            var goodDeedsCollection = database.GetCollection<GoodDeed>(DatabaseConstants.GoodDeedsCollection);
+            var profileCollection = database.GetCollection<UserProfile>(DatabaseConstants.ProfileCollection);
+            var wishlistCollection = database.GetCollection<WishlistEntry>(DatabaseConstants.WishlistCollection);
+            var financeCollection = database.GetCollection<FinanceTransaction>(DatabaseConstants.FinanceCollection);
 
             entriesCollection.EnsureIndex(x => x.Date);
             wishlistCollection.EnsureIndex(x => x.Date);

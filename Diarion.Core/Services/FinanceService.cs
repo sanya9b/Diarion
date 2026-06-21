@@ -17,7 +17,7 @@ public class FinanceService : IFinanceService
         _dbContext = dbContext;
     }
 
-    private ILiteCollection<FinanceTransaction> FinanceCollection => _dbContext.GetCollection<FinanceTransaction>("finance_transactions");
+    private ILiteCollection<FinanceTransaction> FinanceCollection => _dbContext.GetCollection<FinanceTransaction>(DatabaseConstants.FinanceCollection);
 
     public Task<List<FinanceTransaction>> GetFinanceTransactionsAsync()
     {

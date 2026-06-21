@@ -15,7 +15,7 @@ public class ProfileService : IProfileService
         _dbContext = dbContext;
     }
 
-    private ILiteCollection<UserProfile> ProfileCollection => _dbContext.GetCollection<UserProfile>("profile");
+    private ILiteCollection<UserProfile> ProfileCollection => _dbContext.GetCollection<UserProfile>(DatabaseConstants.ProfileCollection);
 
     public Task<UserProfile> GetUserProfileAsync()
     {

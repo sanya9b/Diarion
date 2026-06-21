@@ -9,9 +9,9 @@ public class DatabaseSeeder : IDatabaseSeeder
 {
     public void Seed(LiteDatabase database)
     {
-        var entriesCollection = database.GetCollection<DiaryEntry>("entries");
-        var todosCollection = database.GetCollection<TodoItem>("todos");
-        var habitsCollection = database.GetCollection<HabitDefinition>("habit_definitions");
+        var entriesCollection = database.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
+        var todosCollection = database.GetCollection<TodoItem>(DatabaseConstants.TodosCollection);
+        var habitsCollection = database.GetCollection<HabitDefinition>(DatabaseConstants.HabitDefinitionsCollection);
 
         // Pre-seed defaults if empty
         if (habitsCollection.Count() == 0)
