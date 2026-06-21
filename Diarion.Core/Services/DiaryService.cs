@@ -13,14 +13,11 @@ namespace Diarion.Services;
 public class DiaryService : IDiaryService
 {
     private readonly IDatabaseContext _dbContext;
-    // We still need IHabitService to sync habits when creating a new DiaryEntry
-    private readonly IHabitService _habitService;
     private readonly ITodoService _todoService;
 
-    public DiaryService(IDatabaseContext dbContext, IHabitService habitService, ITodoService todoService)
+    public DiaryService(IDatabaseContext dbContext, ITodoService todoService)
     {
         _dbContext = dbContext;
-        _habitService = habitService;
         _todoService = todoService;
     }
 
@@ -48,40 +45,6 @@ public class DiaryService : IDiaryService
                 CreatedAt = DateTime.Now
             };
         }
-
-        // Синхронізація звичок для цього дня
-        var activeDefs = await _habitService.GetActiveHabitsForDateAsync(dateOnly);
-        var validIds = new HashSet<Guid>(activeDefs.Select(d => d.Id));
-        
-        // Залишаємо тільки ті звички, які були актуальні на цей день
-        var filteredHabits = entry.HabitsList.Where(h => validIds.Contains(h.HabitId)).ToList();
-        
-        // Додаємо нові звички, яких ще немає в цьому записі
-        var existingIds = new HashSet<Guid>(filteredHabits.Select(h => h.HabitId));
-        foreach (var def in activeDefs)
-        {
-            if (!existingIds.Contains(def.Id))
-            {
-                filteredHabits.Add(new HabitItem { HabitId = def.Id, Name = def.Name });
-            }
-            else
-            {
-                // Оновлюємо ім'я, якщо воно змінилося
-                var h = filteredHabits.First(x => x.HabitId == def.Id);
-                if (h.Name != def.Name) h.Name = def.Name;
-            }
-        }
-
-        // Відновлюємо колекцію у правильному порядку
-        entry.HabitsList = filteredHabits.OrderBy(h => 
-        {
-            var def = activeDefs.FirstOrDefault(d => d.Id == h.HabitId);
-            return def?.Order ?? int.MaxValue;
-        }).ThenBy(h => 
-        {
-            var def = activeDefs.FirstOrDefault(d => d.Id == h.HabitId);
-            return def?.CreatedAt ?? DateTime.MaxValue;
-        }).ToList();
 
         StartupTrace.Mark($"DiaryService.GetEntryForDateAsync duration={Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds:F1}ms");
         return entry;

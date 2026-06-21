@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<INotificationService, LocalNotificationService>();
         services.AddSingleton<ITodoService, TodoService>();
         services.AddSingleton<IHabitService, HabitService>();
+        services.AddSingleton<IDiaryHabitSyncService, DiaryHabitSyncService>();
         services.AddSingleton<IFinanceService, FinanceService>();
         services.AddSingleton<IWishlistService, WishlistService>();
         services.AddSingleton<IProfileService, ProfileService>();
@@ -38,6 +39,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<PlannerSectionViewModel>();
         services.AddTransient<QuickMenuViewModel>();
         services.AddTransient<HabitsSectionViewModel>();
+        services.AddTransient<CycleStatusViewModel>();
         services.AddTransient<MainViewModel>();
         services.AddTransient<DiaryDetailViewModel>();
         services.AddTransient<TodoDetailViewModel>();

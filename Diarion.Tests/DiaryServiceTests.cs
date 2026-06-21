@@ -23,7 +23,7 @@ public class DiaryServiceTests : IDisposable
         _profileService = new ProfileService(_dbContext);
         _todoService = new TodoService(_dbContext, null);
         _habitService = new HabitService(_dbContext);
-        _diaryService = new DiaryService(_dbContext, _habitService, _todoService);
+        _diaryService = new DiaryService(_dbContext, _todoService);
     }
 
     private async Task ClearDatabaseAsync()

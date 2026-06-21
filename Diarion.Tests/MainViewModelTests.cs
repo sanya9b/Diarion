@@ -92,14 +92,14 @@ public class MainViewModelTests
         // Arrange
         var viewModel = new MainViewModel(
             _diaryServiceMock.Object,
-            _menstrualCycleServiceMock.Object,
-            _profileServiceMock.Object,
+            new Mock<IDiaryHabitSyncService>().Object,
             _navigationServiceMock.Object,
             _dialogServiceMock.Object,
             _calendarSection,
             _plannerSection,
             _quickMenuSection,
-            _habitsSection);
+            _habitsSection,
+            new Mock<CycleStatusViewModel>(_menstrualCycleServiceMock.Object, _profileServiceMock.Object).Object);
 
         // Act - Switch to Planner
         viewModel.SwitchToPlannerModeCommand.Execute(null);

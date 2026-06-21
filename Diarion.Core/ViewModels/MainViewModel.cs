@@ -15,8 +15,7 @@ namespace Diarion.ViewModels;
 public partial class MainViewModel : BaseViewModel
 {
     private readonly IDiaryService _diaryService;
-    private readonly IMenstrualCycleService _menstrualCycleService;
-    private readonly IProfileService _profileService;
+    private readonly IDiaryHabitSyncService _diaryHabitSyncService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
 
@@ -24,21 +23,10 @@ public partial class MainViewModel : BaseViewModel
     public PlannerSectionViewModel PlannerSection { get; }
     public QuickMenuViewModel QuickMenuSection { get; }
     public HabitsSectionViewModel HabitsSection { get; }
+    public CycleStatusViewModel CycleStatusSection { get; }
 
     [ObservableProperty]
     private DiaryEntryViewModel? _currentEntry;
-
-    [ObservableProperty]
-    private string _cycleDayText = string.Empty;
-
-    [ObservableProperty]
-    private string _pregnancyProbabilityText = string.Empty;
-
-    [ObservableProperty]
-    private bool _isCycleInfoVisible;
-
-    [ObservableProperty]
-    private Microsoft.Maui.Graphics.Color _pregnancyProbabilityColor = Microsoft.Maui.Graphics.Colors.Transparent;
 
     [ObservableProperty]
     private bool _isPlannerMode;
@@ -50,19 +38,18 @@ public partial class MainViewModel : BaseViewModel
 
     public MainViewModel(
         IDiaryService diaryService, 
-        IMenstrualCycleService menstrualCycleService, 
-        IProfileService profileService,
+        IDiaryHabitSyncService diaryHabitSyncService,
         INavigationService navigationService,
         IDialogService dialogService,
         CalendarSectionViewModel calendarSection,
         PlannerSectionViewModel plannerSection,
         QuickMenuViewModel quickMenuSection,
-        HabitsSectionViewModel habitsSection)
+        HabitsSectionViewModel habitsSection,
+        CycleStatusViewModel cycleStatusSection)
     {
         using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
-        _menstrualCycleService = menstrualCycleService;
-        _profileService = profileService;
+        _diaryHabitSyncService = diaryHabitSyncService;
         _navigationService = navigationService;
         _dialogService = dialogService;
         
@@ -70,6 +57,7 @@ public partial class MainViewModel : BaseViewModel
         PlannerSection = plannerSection;
         QuickMenuSection = quickMenuSection;
         HabitsSection = habitsSection;
+        CycleStatusSection = cycleStatusSection;
 
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
 
@@ -181,39 +169,10 @@ public partial class MainViewModel : BaseViewModel
     {
         using var _ = StartupTrace.Measure("MainViewModel.LoadDayContentAsync");
         await LoadEntriesForDateAsync(date);
+        await CycleStatusSection.UpdateForDateAsync(date);
 
-        var profile = await _profileService.GetUserProfileAsync();
-        var cycleInfo = _menstrualCycleService.GetCycleInfoForDate(date, profile);
-
-        if (cycleInfo.IsTrackingEnabled)
-        {
-            IsCycleInfoVisible = true;
-            CycleDayText = string.Format(Diarion.Resources.Localization.AppResources.CycleDayFormat, cycleInfo.DayOfCycle);
-
-            switch (cycleInfo.Probability)
-            {
-                case PregnancyProbability.High:
-                    PregnancyProbabilityText = Diarion.Resources.Localization.AppResources.ProbHigh;
-                    PregnancyProbabilityColor = Microsoft.Maui.Graphics.Color.FromArgb("#C26D53");
-                    break;
-                case PregnancyProbability.Medium:
-                    PregnancyProbabilityText = Diarion.Resources.Localization.AppResources.ProbMedium;
-                    PregnancyProbabilityColor = Microsoft.Maui.Graphics.Color.FromArgb("#C9985A");
-                    break;
-                case PregnancyProbability.Low:
-                default:
-                    PregnancyProbabilityText = Diarion.Resources.Localization.AppResources.ProbLow;
-                    PregnancyProbabilityColor = Microsoft.Maui.Graphics.Color.FromArgb("#8FA083");
-                    break;
-            }
-            
-            if (CurrentEntry != null) {
-                CurrentEntry.CycleDay = cycleInfo.DayOfCycle.ToString();
-            }
-        }
-        else
-        {
-            IsCycleInfoVisible = false;
+        if (CurrentEntry != null && CycleStatusSection.IsVisible) {
+            CurrentEntry.CycleDay = CycleStatusSection.CycleDay;
         }
 
         if (IsPlannerMode)
@@ -230,6 +189,7 @@ public partial class MainViewModel : BaseViewModel
         using var _ = StartupTrace.Measure("MainViewModel.LoadEntriesForDateAsync");
         IsBusy = true;
         var entry = await _diaryService.GetEntryForDateAsync(date.Date);
+        await _diaryHabitSyncService.SyncHabitsForEntryAsync(entry);
         CurrentEntry = new DiaryEntryViewModel(entry);
         IsBusy = false;
     }
