@@ -94,4 +94,73 @@ public class MainViewModelTests
         viewModel.CurrentEntry!.Title.Should().Be("Test Entry");
         viewModel.IsBusy.Should().BeFalse();
     }
+
+    [Fact]
+    public void Constructor_ShouldInitializeDefaultQuickMenu()
+    {
+        // Act
+        var viewModel = new MainViewModel(_diaryServiceMock.Object);
+
+        // Assert
+        viewModel.QuickMenuItems.Should().HaveCount(6);
+        viewModel.QuickMenuItems[0].Id.Should().Be("Reading");
+        viewModel.QuickMenuItems[1].Id.Should().Be("Moments");
+        viewModel.QuickMenuItems[2].Id.Should().Be("Deeds");
+        viewModel.QuickMenuItems[3].Id.Should().Be("Habits");
+        viewModel.QuickMenuItems[4].Id.Should().Be("Wishlist");
+        viewModel.QuickMenuItems[5].Id.Should().Be("Finance");
+    }
+
+    [Fact]
+    public async Task LoadQuickMenuAsync_WithCustomOrder_ShouldReorderMenu()
+    {
+        // Arrange
+        var customOrder = new List<string> { "Finance", "Wishlist", "Reading", "Moments", "Deeds", "Habits" };
+        var profile = new UserProfile { QuickMenuOrder = customOrder };
+        
+        _diaryServiceMock
+            .Setup(s => s.GetUserProfileAsync())
+            .ReturnsAsync(profile);
+
+        var viewModel = new MainViewModel(_diaryServiceMock.Object);
+
+        // Act
+        // LoadQuickMenuAsync is called asynchronously in constructor, we just need to give it a moment to run
+        await Task.Delay(100);
+
+        // Assert
+        viewModel.QuickMenuItems.Should().HaveCount(6);
+        viewModel.QuickMenuItems[0].Id.Should().Be("Finance");
+        viewModel.QuickMenuItems[1].Id.Should().Be("Wishlist");
+        viewModel.QuickMenuItems[2].Id.Should().Be("Reading");
+    }
+
+    [Fact]
+    public async Task ReorderMenuAsync_ShouldSwapItemsAndSaveToProfile()
+    {
+        // Arrange
+        var profile = new UserProfile();
+        _diaryServiceMock
+            .Setup(s => s.GetUserProfileAsync())
+            .ReturnsAsync(profile);
+
+        var viewModel = new MainViewModel(_diaryServiceMock.Object);
+        await Task.Delay(50); // let init finish
+
+        var itemToDrag = viewModel.QuickMenuItems[0]; // Reading
+        var targetItem = viewModel.QuickMenuItems[2]; // Deeds
+
+        viewModel.DragMenuStartingCommand.Execute(itemToDrag);
+
+        // Act
+        await viewModel.ReorderMenuCommand.ExecuteAsync(targetItem);
+
+        // Assert
+        viewModel.QuickMenuItems[2].Id.Should().Be("Reading");
+        
+        _diaryServiceMock.Verify(s => s.SaveUserProfileAsync(It.Is<UserProfile>(p => 
+            p.QuickMenuOrder != null && 
+            p.QuickMenuOrder.Count == 6 &&
+            p.QuickMenuOrder[2] == "Reading")), Times.Once);
+    }
 }

@@ -17,6 +17,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("ReadingTracker", typeof(Views.ReadingTrackerPage));
         Routing.RegisterRoute("HappyMoments", typeof(Views.HappyMomentsPage));
         Routing.RegisterRoute("GoodDeeds", typeof(Views.GoodDeedsPage));
+        Routing.RegisterRoute("Wishlist", typeof(Views.WishlistPage));
+        Routing.RegisterRoute("Finance", typeof(Views.FinancePage));
 
         // Налаштовуємо позицію бігунка (switch) для мови при старті
         var currentLanguage = Preferences.Get("AppLanguage", "en");

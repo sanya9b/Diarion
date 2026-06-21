@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="Diarion.Views.FinancePage"
+             x:Name="RootPage"
+             x:DataType="viewModels:FinanceViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{localization:Translate Key=FinanceTitle}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCloseTapped" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <Label Text="{localization:Translate Key=FinanceTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator Grid.Column="2"
+                               WidthRequest="28"
+                               HeightRequest="28"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{DynamicResource Theme_Sage}"
+                               VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="24,10,24,32" Spacing="18">
+                
+                <!-- Картка балансу -->
+                <Border Padding="20"
+                        StrokeThickness="0"
+                        BackgroundColor="{DynamicResource Theme_Sage}"
+                        StrokeShape="RoundRectangle 20">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Sage}" Offset="0,6" Radius="12" Opacity="0.3" />
+                    </Border.Shadow>
+                    
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{localization:Translate Key=TotalBalanceLabel}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
+                        <Label Text="{Binding TotalBalance, StringFormat='{0:N2}'}" FontSize="36" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" Margin="0,0,0,12" />
+
+                        <Grid ColumnDefinitions="*, Auto, *" ColumnSpacing="16">
+                            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                                <Label Text="{localization:Translate Key=MonthIncomeLabel}" FontSize="10" TextColor="{DynamicResource Theme_Snow}" Opacity="0.8" HorizontalOptions="Center" />
+                                <Label Text="{Binding MonthIncome, StringFormat='+{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+
+                            <BoxView Grid.Column="1" WidthRequest="1" BackgroundColor="{DynamicResource Theme_Snow}" Opacity="0.3" VerticalOptions="Fill" />
+
+                            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                                <Label Text="{localization:Translate Key=MonthExpenseLabel}" FontSize="10" TextColor="{DynamicResource Theme_Snow}" Opacity="0.8" HorizontalOptions="Center" />
+                                <Label Text="{Binding MonthExpense, StringFormat='-{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Кнопка додавання -->
+                <Button Text="{localization:Translate Key=AddTransactionButton}"
+                        Command="{Binding ToggleAddTransactionCommand}"
+                        CornerRadius="12"
+                        Padding="16,12"
+                        BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
+                        TextColor="{DynamicResource Theme_Snow_Midnight}"
+                        FontAttributes="Bold" />
+
+                <!-- Форма додавання -->
+                <Border Padding="16"
+                        IsVisible="{Binding IsAddTransactionVisible}"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Sage}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                        StrokeShape="RoundRectangle 16">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                            <Border Grid.Column="0" StrokeThickness="1" Padding="8" StrokeShape="RoundRectangle 8" BackgroundColor="Transparent">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsIncomeTypeSelected}" Value="True">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsIncomeTypeSelected}" Value="False">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SetTransactionTypeCommand}" CommandParameter="Income" />
+                                </Border.GestureRecognizers>
+                                <Label Text="{localization:Translate Key=IncomeLabel}" HorizontalOptions="Center" FontAttributes="Bold">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsIncomeTypeSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsIncomeTypeSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+
+                            <Border Grid.Column="1" StrokeThickness="1" Padding="8" StrokeShape="RoundRectangle 8" BackgroundColor="Transparent">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsExpenseTypeSelected}" Value="True">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsExpenseTypeSelected}" Value="False">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SetTransactionTypeCommand}" CommandParameter="Expense" />
+                                </Border.GestureRecognizers>
+                                <Label Text="{localization:Translate Key=ExpenseLabel}" HorizontalOptions="Center" FontAttributes="Bold">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsExpenseTypeSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsExpenseTypeSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+                        </Grid>
+
+                        <Entry Text="{Binding NewAmountText}" Keyboard="Numeric" Placeholder="{localization:Translate Key=AmountPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                        <BoxView HeightRequest="1" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" Margin="0,0,0,4" />
+
+                        <Entry Text="{Binding NewCategory}" Placeholder="{localization:Translate Key=CategoryPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" />
+                        <BoxView HeightRequest="1" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" Margin="0,0,0,4" />
+
+                        <Editor Text="{Binding NewNote}" Placeholder="{localization:Translate Key=NotePlaceholder}" AutoSize="TextChanges" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" MinimumHeightRequest="40" />
+
+                        <Button Text="{localization:Translate Key=SaveButton}"
+                                Command="{Binding SaveTransactionCommand}"
+                                CornerRadius="12"
+                                Padding="16,12"
+                                Margin="0,8,0,0"
+                                BackgroundColor="{DynamicResource Theme_Sage}"
+                                TextColor="{DynamicResource Theme_Snow}"
+                                FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Список транзакцій -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Transactions}" Spacing="12" Margin="0,4,0,0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:FinanceTransaction">
+                            <Border Padding="16"
+                                    StrokeThickness="1"
+                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                    StrokeShape="RoundRectangle 16">
+                                <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="12" VerticalOptions="Center">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                        <Label Text="{Binding Category}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Text="{Binding Note}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
+                                        <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Column="1" FontSize="16" FontAttributes="Bold" VerticalOptions="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Income">
+                                                <Setter Property="Text" Value="{Binding Amount, StringFormat='+{0:N2}'}" />
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Expense">
+                                                <Setter Property="Text" Value="{Binding Amount, StringFormat='-{0:N2}'}" />
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+
+                                    <Grid Grid.Column="2" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteTransactionCommand}" CommandParameter="{Binding .}" />
+                                        </Grid.GestureRecognizers>
+                                        <Label Text="✕" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" InputTransparent="True" />
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

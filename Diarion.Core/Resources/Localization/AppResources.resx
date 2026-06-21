@@ -568,4 +568,46 @@
   <data name="AutoMigrateTasksLabel" xml:space="preserve">
     <value>Auto-migrate uncompleted tasks to next day</value>
   </data>
+  <data name="WishlistTitle" xml:space="preserve">
+    <value>Want, Wish, Get</value>
+  </data>
+  <data name="WantLabel" xml:space="preserve">
+    <value>I Want...</value>
+  </data>
+  <data name="WishLabel" xml:space="preserve">
+    <value>I Wish...</value>
+  </data>
+  <data name="GetLabel" xml:space="preserve">
+    <value>I Will Get...</value>
+  </data>
+  <data name="FinanceTitle" xml:space="preserve">
+    <value>Income / Expenses</value>
+  </data>
+  <data name="TotalBalanceLabel" xml:space="preserve">
+    <value>Total Balance</value>
+  </data>
+  <data name="MonthIncomeLabel" xml:space="preserve">
+    <value>Income this month</value>
+  </data>
+  <data name="MonthExpenseLabel" xml:space="preserve">
+    <value>Expenses this month</value>
+  </data>
+  <data name="IncomeLabel" xml:space="preserve">
+    <value>Income</value>
+  </data>
+  <data name="ExpenseLabel" xml:space="preserve">
+    <value>Expense</value>
+  </data>
+  <data name="AmountPlaceholder" xml:space="preserve">
+    <value>0.00</value>
+  </data>
+  <data name="CategoryPlaceholder" xml:space="preserve">
+    <value>Category (e.g. Salary, Groceries)</value>
+  </data>
+  <data name="NotePlaceholder" xml:space="preserve">
+    <value>Note (optional)</value>
+  </data>
+  <data name="AddTransactionButton" xml:space="preserve">
+    <value>Add Transaction</value>
+  </data>
 </root>

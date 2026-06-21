@@ -568,4 +568,46 @@
   <data name="AutoMigrateTasksLabel" xml:space="preserve">
     <value>Автоматично переносити невиконані завдання на наступний день</value>
   </data>
+  <data name="WishlistTitle" xml:space="preserve">
+    <value>Хочу, бажаю, отримаю</value>
+  </data>
+  <data name="WantLabel" xml:space="preserve">
+    <value>Хочу...</value>
+  </data>
+  <data name="WishLabel" xml:space="preserve">
+    <value>Бажаю...</value>
+  </data>
+  <data name="GetLabel" xml:space="preserve">
+    <value>Отримаю...</value>
+  </data>
+  <data name="FinanceTitle" xml:space="preserve">
+    <value>Дохід / Витрати</value>
+  </data>
+  <data name="TotalBalanceLabel" xml:space="preserve">
+    <value>Загальний баланс</value>
+  </data>
+  <data name="MonthIncomeLabel" xml:space="preserve">
+    <value>Дохід за місяць</value>
+  </data>
+  <data name="MonthExpenseLabel" xml:space="preserve">
+    <value>Витрати за місяць</value>
+  </data>
+  <data name="IncomeLabel" xml:space="preserve">
+    <value>Дохід</value>
+  </data>
+  <data name="ExpenseLabel" xml:space="preserve">
+    <value>Витрата</value>
+  </data>
+  <data name="AmountPlaceholder" xml:space="preserve">
+    <value>0.00</value>
+  </data>
+  <data name="CategoryPlaceholder" xml:space="preserve">
+    <value>Категорія (напр. Зарплата, Продукти)</value>
+  </data>
+  <data name="NotePlaceholder" xml:space="preserve">
+    <value>Нотатка (необов'язково)</value>
+  </data>
+  <data name="AddTransactionButton" xml:space="preserve">
+    <value>Додати транзакцію</value>
+  </data>
 </root>

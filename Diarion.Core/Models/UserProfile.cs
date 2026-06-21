@@ -27,6 +27,9 @@ public partial class UserProfile : ObservableObject
     [ObservableProperty] private int _periodLength = DefaultPeriodLength;
     [ObservableProperty] private DateTime? _lastPeriodStartDate;
 
+    // Сортування меню
+    [ObservableProperty] private System.Collections.Generic.List<string>? _quickMenuOrder;
+
     public int GetNormalizedCycleLength()
     {
         return CycleLength > 0 ? CycleLength : DefaultCycleLength;

@@ -23,6 +23,8 @@ public class DiaryService : IDiaryService, IDisposable
     private ILiteCollection<HappyMoment>? _happyMomentsCollection;
     private ILiteCollection<GoodDeed>? _goodDeedsCollection;
     private ILiteCollection<UserProfile>? _profileCollection;
+    private ILiteCollection<WishlistEntry>? _wishlistCollection;
+    private ILiteCollection<FinanceTransaction>? _financeCollection;
     private readonly bool _useInMemory;
     private readonly INotificationService? _notificationService;
 
@@ -67,8 +69,12 @@ public class DiaryService : IDiaryService, IDisposable
             var happyMomentsCollection = database.GetCollection<HappyMoment>("happy_moments");
             var goodDeedsCollection = database.GetCollection<GoodDeed>("good_deeds");
             var profileCollection = database.GetCollection<UserProfile>("profile");
+            var wishlistCollection = database.GetCollection<WishlistEntry>("wishlist_entries");
+            var financeCollection = database.GetCollection<FinanceTransaction>("finance_transactions");
 
             entriesCollection.EnsureIndex(x => x.Date);
+            wishlistCollection.EnsureIndex(x => x.Date);
+            financeCollection.EnsureIndex(x => x.Date);
             todosCollection.EnsureIndex(x => x.TargetDate);
             harmfulHabitTrackersCollection.EnsureIndex(x => x.StartDate);
             readingTrackerBooksCollection.EnsureIndex(x => x.SlotNumber, true);
@@ -101,6 +107,8 @@ public class DiaryService : IDiaryService, IDisposable
             _happyMomentsCollection = happyMomentsCollection;
             _goodDeedsCollection = goodDeedsCollection;
             _profileCollection = profileCollection;
+            _wishlistCollection = wishlistCollection;
+            _financeCollection = financeCollection;
 
             // One-time cleanup for old default food habits from the database
             var foodHabits = new[] { "Breakfast", "Сніданок", "Lunch", "Обід", "Dinner", "Вечеря" };
@@ -268,6 +276,24 @@ public class DiaryService : IDiaryService, IDisposable
         {
             EnsureInitialized();
             return _todosCollection!;
+        }
+    }
+
+    private ILiteCollection<WishlistEntry> WishlistCollection
+    {
+        get
+        {
+            EnsureInitialized();
+            return _wishlistCollection!;
+        }
+    }
+
+    private ILiteCollection<FinanceTransaction> FinanceCollection
+    {
+        get
+        {
+            EnsureInitialized();
+            return _financeCollection!;
         }
     }
 
@@ -537,6 +563,58 @@ public class DiaryService : IDiaryService, IDisposable
             {
                 GoodDeedsCollection.Delete(existingSlot.Id);
             }
+        });
+    }
+
+    // --- Wishlist ---
+    public Task<List<WishlistEntry>> GetWishlistEntriesAsync()
+    {
+        return Task.Run(() => WishlistCollection.Query().OrderByDescending(x => x.Date).ToList());
+    }
+
+    public Task SaveWishlistEntryAsync(WishlistEntry entry)
+    {
+        return Task.Run(() =>
+        {
+            if (entry.CreatedAt == default)
+            {
+                entry.CreatedAt = DateTime.UtcNow;
+            }
+            WishlistCollection.Upsert(entry);
+        });
+    }
+
+    public Task DeleteWishlistEntryAsync(Guid id)
+    {
+        return Task.Run(() =>
+        {
+            WishlistCollection.Delete(id);
+        });
+    }
+
+    // --- Finance ---
+    public Task<List<FinanceTransaction>> GetFinanceTransactionsAsync()
+    {
+        return Task.Run(() => FinanceCollection.Query().OrderByDescending(x => x.Date).ToList());
+    }
+
+    public Task SaveFinanceTransactionAsync(FinanceTransaction transaction)
+    {
+        return Task.Run(() =>
+        {
+            if (transaction.CreatedAt == default)
+            {
+                transaction.CreatedAt = DateTime.UtcNow;
+            }
+            FinanceCollection.Upsert(transaction);
+        });
+    }
+
+    public Task DeleteFinanceTransactionAsync(Guid id)
+    {
+        return Task.Run(() =>
+        {
+            FinanceCollection.Delete(id);
         });
     }
 

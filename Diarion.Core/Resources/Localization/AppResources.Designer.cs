@@ -760,6 +760,90 @@ namespace Diarion.Resources.Localization {
                 return ResourceManager.GetString("AutoMigrateTasksLabel", resourceCulture) ?? "Auto-migrate uncompleted tasks to next day";
             }
         }
+
+        public static string WishlistTitle {
+            get {
+                return ResourceManager.GetString("WishlistTitle", resourceCulture) ?? "Want, Wish, Get";
+            }
+        }
+
+        public static string WantLabel {
+            get {
+                return ResourceManager.GetString("WantLabel", resourceCulture) ?? "I Want...";
+            }
+        }
+
+        public static string WishLabel {
+            get {
+                return ResourceManager.GetString("WishLabel", resourceCulture) ?? "I Wish...";
+            }
+        }
+
+        public static string GetLabel {
+            get {
+                return ResourceManager.GetString("GetLabel", resourceCulture) ?? "I Will Get...";
+            }
+        }
+
+        public static string FinanceTitle {
+            get {
+                return ResourceManager.GetString("FinanceTitle", resourceCulture) ?? "Income / Expenses";
+            }
+        }
+
+        public static string TotalBalanceLabel {
+            get {
+                return ResourceManager.GetString("TotalBalanceLabel", resourceCulture) ?? "Total Balance";
+            }
+        }
+
+        public static string MonthIncomeLabel {
+            get {
+                return ResourceManager.GetString("MonthIncomeLabel", resourceCulture) ?? "Income this month";
+            }
+        }
+
+        public static string MonthExpenseLabel {
+            get {
+                return ResourceManager.GetString("MonthExpenseLabel", resourceCulture) ?? "Expenses this month";
+            }
+        }
+
+        public static string IncomeLabel {
+            get {
+                return ResourceManager.GetString("IncomeLabel", resourceCulture) ?? "Income";
+            }
+        }
+
+        public static string ExpenseLabel {
+            get {
+                return ResourceManager.GetString("ExpenseLabel", resourceCulture) ?? "Expense";
+            }
+        }
+
+        public static string AmountPlaceholder {
+            get {
+                return ResourceManager.GetString("AmountPlaceholder", resourceCulture) ?? "0.00";
+            }
+        }
+
+        public static string CategoryPlaceholder {
+            get {
+                return ResourceManager.GetString("CategoryPlaceholder", resourceCulture) ?? "Category (e.g. Salary, Groceries)";
+            }
+        }
+
+        public static string NotePlaceholder {
+            get {
+                return ResourceManager.GetString("NotePlaceholder", resourceCulture) ?? "Note (optional)";
+            }
+        }
+
+        public static string AddTransactionButton {
+            get {
+                return ResourceManager.GetString("AddTransactionButton", resourceCulture) ?? "Add Transaction";
+            }
+        }
     }
 }
 

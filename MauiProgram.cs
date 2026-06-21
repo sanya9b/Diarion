@@ -41,6 +41,8 @@ public static class MauiProgram
                 builder.Services.AddTransient<Diarion.ViewModels.ReadingTrackerViewModel>();
                 builder.Services.AddTransient<Diarion.ViewModels.HappyMomentsViewModel>();
                 builder.Services.AddTransient<Diarion.ViewModels.StatisticsViewModel>();
+                builder.Services.AddTransient<Diarion.ViewModels.WishlistViewModel>();
+                builder.Services.AddTransient<Diarion.ViewModels.FinanceViewModel>();
 
 		// Views
 		builder.Services.AddTransient<Diarion.Views.MainPage>();
@@ -52,6 +54,8 @@ public static class MauiProgram
                 builder.Services.AddTransient<Diarion.Views.ReadingTrackerPage>();
                 builder.Services.AddTransient<Diarion.Views.HappyMomentsPage>();
                 builder.Services.AddTransient<Diarion.Views.StatisticsPage>();
+                builder.Services.AddTransient<Diarion.Views.WishlistPage>();
+                builder.Services.AddTransient<Diarion.Views.FinancePage>();
 
 		return builder.Build();
 	}

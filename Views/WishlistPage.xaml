@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="Diarion.Views.WishlistPage"
+             x:Name="RootPage"
+             x:DataType="viewModels:WishlistViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{localization:Translate Key=WishlistTitle}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCloseTapped" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <Label Text="{localization:Translate Key=WishlistTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator Grid.Column="2"
+                               WidthRequest="28"
+                               HeightRequest="28"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{DynamicResource Theme_Berry}"
+                               VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="24,10,24,32" Spacing="18">
+                
+                <!-- Форма додавання -->
+                <Border Padding="16"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Berry}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                        StrokeShape="RoundRectangle 16">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Berry}" Offset="0,4" Radius="8" Opacity="0.15" />
+                    </Border.Shadow>
+                    
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{localization:Translate Key=WantLabel}" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Editor Text="{Binding NewWantText}" AutoSize="TextChanges" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" MinimumHeightRequest="40" />
+                        <BoxView HeightRequest="1" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" Margin="0,4" />
+
+                        <Label Text="{localization:Translate Key=WishLabel}" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Editor Text="{Binding NewWishText}" AutoSize="TextChanges" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" MinimumHeightRequest="40" />
+                        <BoxView HeightRequest="1" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" Margin="0,4" />
+
+                        <Label Text="{localization:Translate Key=GetLabel}" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Editor Text="{Binding NewGetText}" AutoSize="TextChanges" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" MinimumHeightRequest="40" />
+
+                        <Button Text="{localization:Translate Key=SaveButton}"
+                                Command="{Binding SaveEntryCommand}"
+                                CornerRadius="12"
+                                Padding="16,12"
+                                Margin="0,8,0,0"
+                                BackgroundColor="{DynamicResource Theme_Berry}"
+                                TextColor="{DynamicResource Theme_Snow}"
+                                FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Список записів -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Entries}" Spacing="12" Margin="0,12,0,0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:WishlistEntry">
+                            <Border Padding="16"
+                                    StrokeThickness="1"
+                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                    StrokeShape="RoundRectangle 16">
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="*, Auto" Margin="0,0,0,4">
+                                        <Label Grid.Column="0" Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                                        <Grid Grid.Column="1" BackgroundColor="Transparent" Padding="4">
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteEntryCommand}" CommandParameter="{Binding .}" />
+                                            </Grid.GestureRecognizers>
+                                            <Label Text="✕" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" InputTransparent="True" />
+                                        </Grid>
+                                    </Grid>
+
+                                    <Label Text="{localization:Translate Key=WantLabel}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding WantText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
+                                    <Label Text="{Binding WantText}" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" IsVisible="{Binding WantText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
+
+                                    <Label Text="{localization:Translate Key=WishLabel}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding WishText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" Margin="0,4,0,0" />
+                                    <Label Text="{Binding WishText}" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" IsVisible="{Binding WishText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
+
+                                    <Label Text="{localization:Translate Key=GetLabel}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding GetText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" Margin="0,4,0,0" />
+                                    <Label Text="{Binding GetText}" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" IsVisible="{Binding GetText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

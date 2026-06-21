@@ -29,6 +29,16 @@ public interface IDiaryService
     Task SaveGoodDeedAsync(GoodDeed deed);
     Task DeleteGoodDeedAsync(int slotNumber);
 
+    // Wishlist
+    Task<List<WishlistEntry>> GetWishlistEntriesAsync();
+    Task SaveWishlistEntryAsync(WishlistEntry entry);
+    Task DeleteWishlistEntryAsync(Guid id);
+
+    // Finance
+    Task<List<FinanceTransaction>> GetFinanceTransactionsAsync();
+    Task SaveFinanceTransactionAsync(FinanceTransaction transaction);
+    Task DeleteFinanceTransactionAsync(Guid id);
+
     Task<List<DiaryEntry>> GetAllEntriesAsync();
     Task<DiaryEntry> GetEntryForDateAsync(DateTime date);
     Task<DiaryEntry> GetEntryByIdAsync(Guid id);
