@@ -69,10 +69,6 @@
                                 <DataTrigger TargetType="Border" Binding="{Binding IsCycleDay}" Value="True">
                                     <Setter Property="BackgroundColor" Value="{DynamicResource Theme_BerryTransparent}" />
                                 </DataTrigger>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                    <Setter Property="StrokeThickness" Value="1.5" />
-                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                </DataTrigger>
                                 <DataTrigger TargetType="Border" Binding="{Binding IsToday}" Value="True">
                                     <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
                                 </DataTrigger>
@@ -118,6 +114,14 @@
                                 </Ellipse>
                             </Grid>
                         </Border>
+                        
+                        <!-- Selection Overlay (Theme-aware transparent tone) -->
+                        <Border BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
+                                Opacity="0.15"
+                                IsVisible="{Binding IsSelected}"
+                                InputTransparent="True"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 8" />
                         
                         <!-- Progress Border Overlay OUTSIDE the clipping mask -->
                         <controls:ProgressBorder Progress="{Binding TaskCompletionPercentage}" 
