@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -49,12 +50,13 @@
                 AlignContent="Start"
                 IsVisible="False">
             <BindableLayout.ItemTemplate>
-                <DataTemplate x:DataType="models:CalendarDay">
+                <DataTemplate x:DataType="viewmodels:CalendarDay">
                     <ContentView FlexLayout.Basis="13.5%" HeightRequest="52" Margin="0,0,0,8">
                         <Grid>
                             <Border StrokeShape="RoundRectangle 8"
-                                    StrokeThickness="0"
-                                    BackgroundColor="{DynamicResource Theme_Snow}"
+                                    StrokeThickness="1"
+                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                                     Padding="6">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference CalendarViewRoot}}" CommandParameter="{Binding .}" />
@@ -98,13 +100,28 @@
                                 </Image>
 
                                 <!-- Priority Task Dot (Bottom Right) -->
-                                <Ellipse Fill="{Binding PriorityDotColor}" WidthRequest="6" HeightRequest="6" HorizontalOptions="End" VerticalOptions="End" IsVisible="{Binding HasTasks}" InputTransparent="True" />
+                                <Ellipse WidthRequest="6" HeightRequest="6" HorizontalOptions="End" VerticalOptions="End" IsVisible="{Binding HasTasks}" InputTransparent="True">
+                                    <Ellipse.Triggers>
+                                        <DataTrigger TargetType="Ellipse" Binding="{Binding HighestPriority}" Value="{x:Null}">
+                                            <Setter Property="Fill" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Ellipse" Binding="{Binding HighestPriority}" Value="High">
+                                            <Setter Property="Fill" Value="{DynamicResource Theme_Coral}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Ellipse" Binding="{Binding HighestPriority}" Value="Medium">
+                                            <Setter Property="Fill" Value="{DynamicResource Theme_Amber}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Ellipse" Binding="{Binding HighestPriority}" Value="Low">
+                                            <Setter Property="Fill" Value="{DynamicResource Theme_Sage}" />
+                                        </DataTrigger>
+                                    </Ellipse.Triggers>
+                                </Ellipse>
                             </Grid>
                         </Border>
                         
                         <!-- Progress Border Overlay OUTSIDE the clipping mask -->
                         <controls:ProgressBorder Progress="{Binding TaskCompletionPercentage}" 
-                                                 StrokeColor="{Binding ProgressColor}"
+                                                 StrokeColor="{DynamicResource Theme_Coral}"
                                                  CornerRadius="8"
                                                  InputTransparent="True" />
                         </Grid>

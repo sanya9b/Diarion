@@ -1,16 +1,12 @@
 using System;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Diarion.Models;
 
-public partial class HabitItem : ObservableObject
+public class HabitItem
 {
-    [ObservableProperty]
-    private Guid _habitId;
+    public Guid HabitId { get; set; }
 
-    [ObservableProperty]
-    private string _name = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    private bool _isCompleted;
+    public bool IsCompleted { get; set; }
 }

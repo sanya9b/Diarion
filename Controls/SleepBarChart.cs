@@ -9,12 +9,12 @@ namespace Diarion.Controls;
 public class SleepBarChart : GraphicsView, IDrawable
 {
     public static readonly BindableProperty ItemsProperty =
-        BindableProperty.Create(nameof(Items), typeof(IEnumerable<Diarion.Models.SleepBarChartItem>), typeof(SleepBarChart), null,
+        BindableProperty.Create(nameof(Items), typeof(IEnumerable<Diarion.ViewModels.SleepBarChartItem>), typeof(SleepBarChart), null,
             propertyChanged: (bindable, oldValue, newValue) => ((SleepBarChart)bindable).Invalidate());
 
-    public IEnumerable<Diarion.Models.SleepBarChartItem>? Items
+    public IEnumerable<Diarion.ViewModels.SleepBarChartItem>? Items
     {
-        get => (IEnumerable<Diarion.Models.SleepBarChartItem>?)GetValue(ItemsProperty);
+        get => (IEnumerable<Diarion.ViewModels.SleepBarChartItem>?)GetValue(ItemsProperty);
         set => SetValue(ItemsProperty, value);
     }
 

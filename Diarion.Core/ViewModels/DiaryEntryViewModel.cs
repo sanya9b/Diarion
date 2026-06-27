@@ -41,7 +41,7 @@ public partial class DiaryEntryViewModel : ObservableObject
         {
             foreach (var h in model.HabitsList)
             {
-                Habits.Add(h);
+                Habits.Add(new HabitItemViewModel(h));
             }
         }
 
@@ -53,7 +53,8 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.HabitsList.Clear();
         foreach (var h in Habits)
         {
-            Model.HabitsList.Add(h);
+            h.SyncToModel();
+            Model.HabitsList.Add(h.Model);
         }
     }
 
@@ -183,7 +184,7 @@ public partial class DiaryEntryViewModel : ObservableObject
     partial void OnAiSummaryChanged(string value) => Model.AiSummary = value;
 
     [ObservableProperty]
-    private ObservableCollection<HabitItem> _habits = new();
+    private ObservableCollection<HabitItemViewModel> _habits = new();
 
     public void SyncToModel()
     {

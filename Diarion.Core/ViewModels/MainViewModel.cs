@@ -5,7 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Diagnostics;
+using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Services;
 using Diarion.Helpers;
@@ -61,21 +63,18 @@ public partial class MainViewModel : BaseViewModel
 
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
 
-        CalendarSection.OnDateSelected += OnDateSelected;
-        PlannerSection.OnTodoChanged += OnTodoChanged;
+        WeakReferenceMessenger.Default.Register<DateSelectedMessage>(this, (r, m) =>
+        {
+            _ = LoadDayContentAsync(m.SelectedDate);
+        });
+
+        WeakReferenceMessenger.Default.Register<TodoChangedMessage>(this, (r, m) =>
+        {
+            _ = CalendarSection.UpdateCalendarTasksForDayAsync(m.Date);
+        });
 
         CalendarSection.Initialize();
         QuickMenuSection.Initialize();
-    }
-
-    private void OnDateSelected(DateTime date)
-    {
-        _ = LoadDayContentAsync(date);
-    }
-
-    private void OnTodoChanged(DateTime date)
-    {
-        _ = CalendarSection.UpdateCalendarTasksForDayAsync(date);
     }
 
     [RelayCommand]
@@ -125,11 +124,11 @@ public partial class MainViewModel : BaseViewModel
     {
         if (e.OldItems != null)
         {
-            foreach (HabitItem item in e.OldItems) item.PropertyChanged -= OnEntryPropertyChanged;
+            foreach (HabitItemViewModel item in e.OldItems) item.PropertyChanged -= OnEntryPropertyChanged;
         }
         if (e.NewItems != null)
         {
-            foreach (HabitItem item in e.NewItems) item.PropertyChanged += OnEntryPropertyChanged;
+            foreach (HabitItemViewModel item in e.NewItems) item.PropertyChanged += OnEntryPropertyChanged;
         }
         ScheduleAutoSave();
     }

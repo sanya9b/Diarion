@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Graphics;
+using Diarion.Models;
 
-namespace Diarion.Models;
+namespace Diarion.ViewModels;
 
 public partial class CalendarDay : ObservableObject
 {
@@ -32,21 +31,10 @@ public partial class CalendarDay : ObservableObject
     private bool _isFertileWindow;
 
     [ObservableProperty]
-    private Color _priorityDotColor = Colors.Transparent;
+    private TodoPriority? _highestPriority;
 
     [ObservableProperty]
     private double _taskCompletionPercentage;
 
-    [ObservableProperty]
-    private Color _progressColor = Colors.Transparent;
-
     public DateTime Date { get; set; }
-
-    partial void OnTaskCompletionPercentageChanged(double value)
-    {
-        if (value > 0.0)
-            ProgressColor = Color.FromArgb("#C26D53"); // Coral
-        else
-            ProgressColor = Colors.Transparent;
-    }
 }

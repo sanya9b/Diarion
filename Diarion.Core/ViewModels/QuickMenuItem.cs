@@ -2,7 +2,7 @@ using System;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Diarion.Models;
+namespace Diarion.ViewModels;
 
 public partial class QuickMenuItem : ObservableObject
 {

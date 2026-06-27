@@ -1,5 +1,4 @@
 using System;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Diarion.Models;
 
@@ -10,54 +9,36 @@ public enum TodoPriority
     High
 }
 
-public partial class TodoItem : ObservableObject
+public class TodoItem
 {
-    [ObservableProperty]
-    private Guid _id = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
     
-    // Now tasks are primarily bound to a specific Day. 
     private DateTime _targetDate = DateTime.Today;
     public DateTime TargetDate 
     { 
         get => _targetDate; 
-        set
-        {
-            _targetDate = value.Date;
-            OnPropertyChanged(nameof(TargetDate));
-        }
+        set => _targetDate = value.Date;
     }
 
-    [ObservableProperty]
-    private bool _hasTime;
+    public bool HasTime { get; set; }
 
-    [ObservableProperty]
-    private TimeSpan _targetTime = DateTime.Now.TimeOfDay;
+    public TimeSpan TargetTime { get; set; } = DateTime.Now.TimeOfDay;
     
-    // Legacy mapping (optional, can be empty)
-    [ObservableProperty]
-    private Guid _diaryEntryId;
+    public Guid DiaryEntryId { get; set; }
     
-    [ObservableProperty]
-    private string _taskDescription = string.Empty;
+    public string TaskDescription { get; set; } = string.Empty;
     
-    [ObservableProperty]
-    private bool _isCompleted;
+    public bool IsCompleted { get; set; }
     
-    [ObservableProperty]
-    private bool _isDailyRepeat;
+    public bool IsDailyRepeat { get; set; }
 
-    [ObservableProperty]
-    private DateTime? _repeatEndDate;
+    public DateTime? RepeatEndDate { get; set; }
 
-    [ObservableProperty]
-    private string? _repeatGroupId;
+    public string? RepeatGroupId { get; set; }
 
-    [ObservableProperty]
-    private bool _hasReminder;
+    public bool HasReminder { get; set; }
     
-    [ObservableProperty]
-    private TodoPriority _priority = TodoPriority.Medium;
+    public TodoPriority Priority { get; set; } = TodoPriority.Medium;
     
-    [ObservableProperty]
-    private DateTime _createdAt = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 }

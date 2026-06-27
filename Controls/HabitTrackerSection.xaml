@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              x:Class="Diarion.Controls.HabitTrackerSection"
              x:Name="HabitTrackerSectionRoot">
 
@@ -27,7 +28,7 @@
             
             <FlexLayout BindableLayout.ItemsSource="{Binding Habits}" Wrap="Wrap" Direction="Row" JustifyContent="SpaceBetween">
                 <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:HabitItem">
+                    <DataTemplate x:DataType="viewmodels:HabitItemViewModel">
                         <ContentView FlexLayout.Basis="48%">
                             <ContentView.GestureRecognizers>
                                 <DragGestureRecognizer CanDrag="{Binding BindingContext.HabitsSection.IsEditHabitsMode, Source={RelativeSource AncestorType={x:Type ContentPage}}}"

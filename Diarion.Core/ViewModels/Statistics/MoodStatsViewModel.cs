@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.ViewModels;
 
 namespace Diarion.ViewModels.Statistics;
 

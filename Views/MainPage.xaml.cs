@@ -5,17 +5,6 @@ using Diarion.ViewModels;
 
 namespace Diarion.Views;
 
-public static class ViewExtensions
-{
-    public static Task<bool> HeightRequestTo(this VisualElement view, double height, uint length = 250, Easing? easing = null)
-    {
-        var tcs = new TaskCompletionSource<bool>();
-        var animation = new Animation(v => view.HeightRequest = v, view.Height, height, easing);
-        animation.Commit(view, "HeightRequestTo", 16, length, finished: (v, c) => tcs.SetResult(c));
-        return tcs.Task;
-    }
-}
-
 public partial class MainPage : ContentPage
 {
     private static readonly TimeSpan InitialLoadDelay = TimeSpan.FromMilliseconds(450);

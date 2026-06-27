@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.ViewModels;
 
 namespace Diarion.ViewModels.Statistics;
 

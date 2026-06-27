@@ -3,7 +3,9 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Diagnostics;
+using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Services;
 
@@ -14,9 +16,7 @@ public partial class PlannerSectionViewModel : ObservableObject
     private readonly ITodoService _todoService;
     private readonly INavigationService _navigationService;
 
-    public ObservableCollection<TodoItem> Todos { get; } = new();
-
-    public event Action<DateTime>? OnTodoChanged;
+    public ObservableCollection<TodoItemViewModel> Todos { get; } = new();
 
     public PlannerSectionViewModel(ITodoService todoService, INavigationService navigationService)
     {
@@ -31,7 +31,7 @@ public partial class PlannerSectionViewModel : ObservableObject
         Todos.Clear();
         foreach (var item in items)
         {
-            Todos.Add(item);
+            Todos.Add(new TodoItemViewModel(item));
         }
     }
 
@@ -41,7 +41,7 @@ public partial class PlannerSectionViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task DeleteTodoAsync(TodoItem todo)
+    public async Task DeleteTodoAsync(TodoItemViewModel todo)
     {
         if (todo == null)
             return;
@@ -50,7 +50,7 @@ public partial class PlannerSectionViewModel : ObservableObject
         {
             await _todoService.DeleteTodoAsync(todo.Id);
             Todos.Remove(todo);
-            OnTodoChanged?.Invoke(todo.TargetDate);
+            WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
         }
         catch (Exception ex)
         {
@@ -59,15 +59,16 @@ public partial class PlannerSectionViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task ToggleTodoCompletionAsync(TodoItem todo)
+    public async Task ToggleTodoCompletionAsync(TodoItemViewModel todo)
     {
         if (todo == null) return;
         try
         {
             todo.IsCompleted = !todo.IsCompleted;
-            await _todoService.SaveTodoAsync(todo);
+            todo.SyncToModel();
+            await _todoService.SaveTodoAsync(todo.Model);
             await LoadTodosForDateAsync(todo.TargetDate);
-            OnTodoChanged?.Invoke(todo.TargetDate);
+            WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
         }
         catch (Exception ex)
         {
@@ -76,7 +77,7 @@ public partial class PlannerSectionViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task GoToTodoDetailsAsync(TodoItem todo)
+    public async Task GoToTodoDetailsAsync(TodoItemViewModel todo)
     {
         if (todo == null)
             return;

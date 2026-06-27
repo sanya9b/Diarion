@@ -9,12 +9,12 @@ namespace Diarion.Controls;
 public class EmotionDonutChart : GraphicsView, IDrawable
 {
     public static readonly BindableProperty ItemsProperty =
-        BindableProperty.Create(nameof(Items), typeof(IEnumerable<Diarion.Models.EmotionChartItem>), typeof(EmotionDonutChart), null,
+        BindableProperty.Create(nameof(Items), typeof(IEnumerable<Diarion.ViewModels.EmotionChartItem>), typeof(EmotionDonutChart), null,
             propertyChanged: (bindable, oldValue, newValue) => ((EmotionDonutChart)bindable).Invalidate());
 
-    public IEnumerable<Diarion.Models.EmotionChartItem>? Items
+    public IEnumerable<Diarion.ViewModels.EmotionChartItem>? Items
     {
-        get => (IEnumerable<Diarion.Models.EmotionChartItem>?)GetValue(ItemsProperty);
+        get => (IEnumerable<Diarion.ViewModels.EmotionChartItem>?)GetValue(ItemsProperty);
         set => SetValue(ItemsProperty, value);
     }
 

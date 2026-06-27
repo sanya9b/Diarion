@@ -122,7 +122,7 @@
                             
                             <VerticalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center" BindableLayout.ItemsSource="{Binding MoodStats.EmotionChartData}">
                                 <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:EmotionChartItem">
+                                    <DataTemplate x:DataType="viewmodels:EmotionChartItem">
                                         <Grid ColumnDefinitions="16, *, Auto" ColumnSpacing="8">
                                             <BoxView Grid.Column="0" Color="{Binding Color}" CornerRadius="8" WidthRequest="12" HeightRequest="12" VerticalOptions="Center" />
                                             <Label Grid.Column="1" Text="{Binding Name}" FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />

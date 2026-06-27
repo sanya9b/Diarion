@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:controls="clr-namespace:Diarion.Controls"
              x:Class="Diarion.Controls.QuickMenuView"
@@ -57,7 +58,7 @@
                 </Border>
                 
                 <controls:ProgressBorder Progress="{Binding CalendarSection.TodayTaskCompletionPercentage}" 
-                                         StrokeColor="{Binding CalendarSection.TodayProgressColor}"
+                                         StrokeColor="{DynamicResource Theme_Coral}"
                                          CornerRadius="16"
                                          InputTransparent="True" />
             </Grid>
@@ -67,7 +68,7 @@
                     <behaviors:DragAndDropReorderBehavior ShiftDistance="66" />
                 </HorizontalStackLayout.Behaviors>
                 <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:QuickMenuItem">
+                    <DataTemplate x:DataType="viewmodels:QuickMenuItem">
                         <ContentView>
                             <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Command}" />

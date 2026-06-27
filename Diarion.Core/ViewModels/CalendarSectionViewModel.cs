@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Diagnostics;
+using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Services;
 
@@ -17,8 +19,6 @@ public partial class CalendarSectionViewModel : ObservableObject
     private readonly IMenstrualCycleService _menstrualCycleService;
     private readonly IProfileService _profileService;
     private readonly ITodoService _todoService;
-
-    public event Action<DateTime>? OnDateSelected;
 
     [ObservableProperty]
     private bool _isCalendarExpanded = false;
@@ -43,9 +43,6 @@ public partial class CalendarSectionViewModel : ObservableObject
 
     [ObservableProperty]
     private double _todayTaskCompletionPercentage;
-
-    [ObservableProperty]
-    private Microsoft.Maui.Graphics.Color _todayProgressColor = Microsoft.Maui.Graphics.Colors.Transparent;
 
     public DateTime CurrentCalendarDate { get; private set; } = DateTime.Now;
 
@@ -136,7 +133,7 @@ public partial class CalendarSectionViewModel : ObservableObject
             SelectedDateDayName = date.ToString("dddd", culture);
         }
 
-        OnDateSelected?.Invoke(CurrentCalendarDate);
+        WeakReferenceMessenger.Default.Send(new DateSelectedMessage(CurrentCalendarDate));
     }
 
     public async Task UpdateCalendarTasksCompletionAsync()
@@ -192,28 +189,23 @@ public partial class CalendarSectionViewModel : ObservableObject
             if (incompleteTodos.Any())
             {
                 var highest = incompleteTodos.OrderByDescending(t => t.Priority).First();
-                day.PriorityDotColor = highest.Priority switch {
-                    TodoPriority.High => Microsoft.Maui.Graphics.Color.FromArgb("#C26D53"),
-                    TodoPriority.Medium => Microsoft.Maui.Graphics.Color.FromArgb("#C9985A"),
-                    _ => Microsoft.Maui.Graphics.Color.FromArgb("#8FA083")
-                };
+                day.HighestPriority = highest.Priority;
             }
             else
             {
-                day.PriorityDotColor = Microsoft.Maui.Graphics.Color.FromArgb("#929FA7");
+                day.HighestPriority = null; // Completed state or no priority
             }
         }
         else
         {
             day.HasTasks = false;
             day.TaskCompletionPercentage = 0;
-            day.PriorityDotColor = Microsoft.Maui.Graphics.Colors.Transparent;
+            day.HighestPriority = null;
         }
 
         if (day.Date.Date == DateTime.Today)
         {
             TodayTaskCompletionPercentage = day.TaskCompletionPercentage;
-            TodayProgressColor = day.ProgressColor;
         }
     }
 

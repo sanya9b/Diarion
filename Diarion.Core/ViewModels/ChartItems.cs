@@ -1,6 +1,6 @@
 using Microsoft.Maui.Graphics;
 
-namespace Diarion.Models;
+namespace Diarion.ViewModels;
 
 public class EmotionChartItem
 {

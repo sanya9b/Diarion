@@ -20,7 +20,7 @@ public partial class HabitsSectionViewModel : ObservableObject
     [ObservableProperty]
     private bool _isEditHabitsMode;
 
-    private HabitItem? _draggedHabit;
+    private HabitItemViewModel? _draggedHabit;
 
     public HabitsSectionViewModel(
         IHabitService habitService,
@@ -39,7 +39,7 @@ public partial class HabitsSectionViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void DragHabitStarting(HabitItem item)
+    public void DragHabitStarting(HabitItemViewModel item)
     {
         _draggedHabit = item;
     }
@@ -51,7 +51,7 @@ public partial class HabitsSectionViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task ReorderHabitsAsync(HabitItem targetItem)
+    public async Task ReorderHabitsAsync(HabitItemViewModel targetItem)
     {
         if (_draggedHabit == null || targetItem == null || _draggedHabit == targetItem)
             return;
@@ -84,13 +84,13 @@ public partial class HabitsSectionViewModel : ObservableObject
             
             if (Entry != null)
             {
-                Entry.Habits.Add(new HabitItem { HabitId = def.Id, Name = def.Name });
+                Entry.Habits.Add(new HabitItemViewModel(new HabitItem { HabitId = def.Id, Name = def.Name }));
             }
         }
     }
 
     [RelayCommand]
-    public async Task DeleteHabitAsync(HabitItem item)
+    public async Task DeleteHabitAsync(HabitItemViewModel item)
     {
         if (item == null || Entry == null) return;
         
