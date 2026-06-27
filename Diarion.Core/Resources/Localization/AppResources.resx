@@ -553,8 +553,14 @@
   <data name="BreakfastLabel" xml:space="preserve">
     <value>Breakfast</value>
   </data>
+  <data name="SecondBreakfastLabel" xml:space="preserve">
+    <value>Second breakfast</value>
+  </data>
   <data name="LunchLabel" xml:space="preserve">
     <value>Lunch</value>
+  </data>
+  <data name="SnackLabel" xml:space="preserve">
+    <value>Snack</value>
   </data>
   <data name="DinnerLabel" xml:space="preserve">
     <value>Dinner</value>

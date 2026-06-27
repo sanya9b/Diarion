@@ -23,8 +23,12 @@ public partial class DiaryEntryViewModel : ObservableObject
         _intimateLife = model.IntimateLife;
         _isBreakfastDone = model.IsBreakfastDone;
         _breakfastFood = model.BreakfastFood;
+        _isSecondBreakfastDone = model.IsSecondBreakfastDone;
+        _secondBreakfastFood = model.SecondBreakfastFood;
         _isLunchDone = model.IsLunchDone;
         _lunchFood = model.LunchFood;
+        _isSnackDone = model.IsSnackDone;
+        _snackFood = model.SnackFood;
         _isDinnerDone = model.IsDinnerDone;
         _dinnerFood = model.DinnerFood;
         _triggers = model.Triggers;
@@ -71,6 +75,7 @@ public partial class DiaryEntryViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSleepStart))]
     [NotifyPropertyChangedFor(nameof(IsSleepStartEmpty))]
+    [NotifyPropertyChangedFor(nameof(SleepDurationText))]
     private TimeSpan? _sleepStart;
 
     partial void OnSleepStartChanged(TimeSpan? value) => Model.SleepStart = value;
@@ -81,12 +86,30 @@ public partial class DiaryEntryViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSleepEnd))]
     [NotifyPropertyChangedFor(nameof(IsSleepEndEmpty))]
+    [NotifyPropertyChangedFor(nameof(SleepDurationText))]
     private TimeSpan? _sleepEnd;
 
     partial void OnSleepEndChanged(TimeSpan? value) => Model.SleepEnd = value;
 
     public bool HasSleepEnd => SleepEnd.HasValue;
     public bool IsSleepEndEmpty => !SleepEnd.HasValue;
+
+    public string SleepDurationText
+    {
+        get
+        {
+            if (SleepStart.HasValue && SleepEnd.HasValue)
+            {
+                var duration = SleepEnd.Value - SleepStart.Value;
+                if (duration.TotalHours < 0)
+                {
+                    duration = duration.Add(TimeSpan.FromHours(24));
+                }
+                return $"{duration.Hours:00} год {duration.Minutes:00} хв";
+            }
+            return string.Empty;
+        }
+    }
 
     [ObservableProperty]
     private int _sleepQuality;
@@ -119,6 +142,16 @@ public partial class DiaryEntryViewModel : ObservableObject
     partial void OnBreakfastFoodChanged(string value) => Model.BreakfastFood = value;
 
     [ObservableProperty]
+    private bool _isSecondBreakfastDone;
+
+    partial void OnIsSecondBreakfastDoneChanged(bool value) => Model.IsSecondBreakfastDone = value;
+
+    [ObservableProperty]
+    private string _secondBreakfastFood = string.Empty;
+
+    partial void OnSecondBreakfastFoodChanged(string value) => Model.SecondBreakfastFood = value;
+
+    [ObservableProperty]
     private bool _isLunchDone;
 
     partial void OnIsLunchDoneChanged(bool value) => Model.IsLunchDone = value;
@@ -127,6 +160,16 @@ public partial class DiaryEntryViewModel : ObservableObject
     private string _lunchFood = string.Empty;
 
     partial void OnLunchFoodChanged(string value) => Model.LunchFood = value;
+
+    [ObservableProperty]
+    private bool _isSnackDone;
+
+    partial void OnIsSnackDoneChanged(bool value) => Model.IsSnackDone = value;
+
+    [ObservableProperty]
+    private string _snackFood = string.Empty;
+
+    partial void OnSnackFoodChanged(string value) => Model.SnackFood = value;
 
     [ObservableProperty]
     private bool _isDinnerDone;
@@ -198,8 +241,12 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.IntimateLife = IntimateLife;
         Model.IsBreakfastDone = IsBreakfastDone;
         Model.BreakfastFood = BreakfastFood;
+        Model.IsSecondBreakfastDone = IsSecondBreakfastDone;
+        Model.SecondBreakfastFood = SecondBreakfastFood;
         Model.IsLunchDone = IsLunchDone;
         Model.LunchFood = LunchFood;
+        Model.IsSnackDone = IsSnackDone;
+        Model.SnackFood = SnackFood;
         Model.IsDinnerDone = IsDinnerDone;
         Model.DinnerFood = DinnerFood;
         Model.Triggers = Triggers;

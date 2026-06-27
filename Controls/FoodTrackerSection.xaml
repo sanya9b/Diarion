@@ -14,20 +14,32 @@
         </Border.Shadow>
         <VerticalStackLayout Spacing="8">
             <Label Text="{x:Static localization:AppResources.FoodLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-            
-            <Grid ColumnDefinitions="Auto, 70, *" ColumnSpacing="8" Margin="0,-4">
+
+            <Grid ColumnDefinitions="Auto, 110, *" ColumnSpacing="8" Margin="0,-4">
                 <CheckBox Grid.Column="0" IsChecked="{Binding IsBreakfastDone}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
                 <Label Grid.Column="1" Text="{x:Static localization:AppResources.BreakfastLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 <Entry Grid.Column="2" Text="{Binding BreakfastFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HeightRequest="32" />
             </Grid>
-            
-            <Grid ColumnDefinitions="Auto, 70, *" ColumnSpacing="8" Margin="0,-4">
+
+            <Grid ColumnDefinitions="Auto, 110, *" ColumnSpacing="8" Margin="0,-4">
+                <CheckBox Grid.Column="0" IsChecked="{Binding IsSecondBreakfastDone}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
+                <Label Grid.Column="1" Text="{x:Static localization:AppResources.SecondBreakfastLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Entry Grid.Column="2" Text="{Binding SecondBreakfastFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HeightRequest="32" />
+            </Grid>
+
+            <Grid ColumnDefinitions="Auto, 110, *" ColumnSpacing="8" Margin="0,-4">
                 <CheckBox Grid.Column="0" IsChecked="{Binding IsLunchDone}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
                 <Label Grid.Column="1" Text="{x:Static localization:AppResources.LunchLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 <Entry Grid.Column="2" Text="{Binding LunchFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HeightRequest="32" />
             </Grid>
-            
-            <Grid ColumnDefinitions="Auto, 70, *" ColumnSpacing="8" Margin="0,-4">
+
+            <Grid ColumnDefinitions="Auto, 110, *" ColumnSpacing="8" Margin="0,-4">
+                <CheckBox Grid.Column="0" IsChecked="{Binding IsSnackDone}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
+                <Label Grid.Column="1" Text="{x:Static localization:AppResources.SnackLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Entry Grid.Column="2" Text="{Binding SnackFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HeightRequest="32" />
+            </Grid>
+
+            <Grid ColumnDefinitions="Auto, 110, *" ColumnSpacing="8" Margin="0,-4">
                 <CheckBox Grid.Column="0" IsChecked="{Binding IsDinnerDone}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
                 <Label Grid.Column="1" Text="{x:Static localization:AppResources.DinnerLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 <Entry Grid.Column="2" Text="{Binding DinnerFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HeightRequest="32" />

@@ -553,8 +553,14 @@
   <data name="BreakfastLabel" xml:space="preserve">
     <value>Сніданок</value>
   </data>
+  <data name="SecondBreakfastLabel" xml:space="preserve">
+    <value>Другий сніданок</value>
+  </data>
   <data name="LunchLabel" xml:space="preserve">
     <value>Обід</value>
+  </data>
+  <data name="SnackLabel" xml:space="preserve">
+    <value>Полудник</value>
   </data>
   <data name="DinnerLabel" xml:space="preserve">
     <value>Вечеря</value>

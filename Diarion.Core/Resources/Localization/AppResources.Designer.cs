@@ -731,9 +731,21 @@ namespace Diarion.Resources.Localization {
             }
         }
         
+        public static string SecondBreakfastLabel {
+            get {
+                return ResourceManager.GetString("SecondBreakfastLabel", resourceCulture) ?? "Second breakfast";
+            }
+        }
+        
         public static string LunchLabel {
             get {
                 return ResourceManager.GetString("LunchLabel", resourceCulture) ?? "Lunch";
+            }
+        }
+        
+        public static string SnackLabel {
+            get {
+                return ResourceManager.GetString("SnackLabel", resourceCulture) ?? "Snack";
             }
         }
         

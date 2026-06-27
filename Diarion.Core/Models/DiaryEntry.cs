@@ -28,9 +28,17 @@ public class DiaryEntry
     
     public string BreakfastFood { get; set; } = string.Empty;
     
+    public bool IsSecondBreakfastDone { get; set; }
+    
+    public string SecondBreakfastFood { get; set; } = string.Empty;
+    
     public bool IsLunchDone { get; set; }
     
     public string LunchFood { get; set; } = string.Empty;
+    
+    public bool IsSnackDone { get; set; }
+    
+    public string SnackFood { get; set; } = string.Empty;
     
     public bool IsDinnerDone { get; set; }
     

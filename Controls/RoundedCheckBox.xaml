@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Diarion.Controls.RoundedCheckBox"
+             x:Name="RootView"
+             MinimumWidthRequest="44"
+             MinimumHeightRequest="44"
+             BackgroundColor="Transparent">
+    
+    <Grid BackgroundColor="Transparent">
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding ToggleCommand, Source={x:Reference RootView}}" />
+        </Grid.GestureRecognizers>
+
+        <Border x:Name="CheckBorder"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="2"
+                Stroke="{Binding Color, Source={x:Reference RootView}, FallbackValue={DynamicResource Theme_Coral}, TargetNullValue={DynamicResource Theme_Coral}}"
+                BackgroundColor="{Binding ComputedBackgroundColor, Source={x:Reference RootView}}"
+                WidthRequest="24"
+                HeightRequest="24"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Padding="2">
+
+            <Path Data="M 4 11 L 9 16 L 19 6"
+                  Stroke="{DynamicResource Theme_Snow}"
+                  StrokeThickness="2.5"
+                  StrokeLineCap="Round"
+                  StrokeLineJoin="Round"
+                  Aspect="Uniform"
+                  HorizontalOptions="Fill"
+                  VerticalOptions="Fill"
+                  IsVisible="{Binding IsChecked, Source={x:Reference RootView}}" />
+        </Border>
+    </Grid>
+</ContentView>
