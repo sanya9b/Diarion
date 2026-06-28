@@ -5,10 +5,108 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:Diarion.Views"
     xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+    xmlns:local="clr-namespace:Diarion"
     Title="{x:Static localization:AppResources.AppTitle}"
     FlyoutBehavior="Flyout"
     Shell.NavBarIsVisible="False"
     Shell.FlyoutBackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <Shell.FlyoutHeader>
+        <Grid HeightRequest="140" Padding="24,32,24,16" RowDefinitions="Auto,*">
+            <Image Grid.Row="0"
+                   Source="app_logo.png"
+                   HeightRequest="48"
+                   WidthRequest="48"
+                   HorizontalOptions="Start"
+                   VerticalOptions="Start" />
+            <Label Grid.Row="1"
+                   Text="{x:Static localization:AppResources.AppTitle}"
+                   FontAttributes="Bold"
+                   FontSize="28"
+                   VerticalOptions="End"
+                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <Shell.FlyoutFooter>
+        <HorizontalStackLayout Padding="24" Spacing="16" Margin="0,0,0,32" HorizontalOptions="Center">
+            <!-- Language Switch -->
+            <Grid HeightRequest="40" WidthRequest="110" VerticalOptions="Center">
+
+                <!-- Background Pill -->
+                <Border StrokeShape="RoundRectangle 20"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}" />
+
+                <!-- Moving Thumb -->
+                <Border x:Name="LangThumb"
+                        StrokeShape="RoundRectangle 16"
+                        StrokeThickness="0"
+                        BackgroundColor="{DynamicResource Theme_Dust_Ocean}"
+                        WidthRequest="50"
+                        HorizontalOptions="{Binding LangThumbAlignment, Source={RelativeSource AncestorType={x:Type local:AppShell}}}"
+                        Margin="4">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,2" Radius="4" Opacity="0.2" />
+                    </Border.Shadow>
+                </Border>
+
+                <!-- Text -->
+                <Grid ColumnDefinitions="*,*">
+                    <Label Grid.Column="0" Text="🇬🇧 EN" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    <Label Grid.Column="1" Text="🇺🇦 UA" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                </Grid>
+
+                <!-- ABSOLUTE HITBOX -->
+                <BoxView BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill">        
+                    <BoxView.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnToggleLanguageClicked" />
+                    </BoxView.GestureRecognizers>
+                </BoxView>
+            </Grid>
+
+            <!-- Theme Switch -->
+            <Grid HeightRequest="40" WidthRequest="130" VerticalOptions="Center">
+
+                <!-- Background Pill -->
+                <Border StrokeShape="RoundRectangle 20"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}" />
+
+                <!-- Moving Thumb -->
+                <Border x:Name="ThemeThumb"
+                        StrokeShape="RoundRectangle 16"
+                        StrokeThickness="0"
+                        BackgroundColor="{DynamicResource Theme_Dust_Ocean}"
+                        WidthRequest="40"
+                        HorizontalOptions="{Binding ThemeThumbAlignment, Source={RelativeSource AncestorType={x:Type local:AppShell}}}"
+                        Margin="4">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,2" Radius="4" Opacity="0.2" />
+                    </Border.Shadow>
+                </Border>
+
+                <!-- Text/Icons -->
+                <Grid ColumnDefinitions="*,*,*">
+                    <!-- Light Theme -->
+                    <Label Grid.Column="0" Text="☀️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <!-- Dark Theme -->
+                    <Label Grid.Column="1" Text="🌙" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <!-- Pink Theme -->
+                    <Label Grid.Column="2" Text="🌸" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Grid>
+
+                <!-- ABSOLUTE HITBOX -->
+                <BoxView BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill">        
+                    <BoxView.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnToggleThemeClicked" />
+                    </BoxView.GestureRecognizers>
+                </BoxView>
+            </Grid>
+        </HorizontalStackLayout>
+    </Shell.FlyoutFooter>
 
     <FlyoutItem Title="{x:Static localization:AppResources.MyEntriesTitle}">
         <ShellContent Route="MainPage" ContentTemplate="{DataTemplate views:MainPage}" />

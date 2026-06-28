@@ -70,10 +70,10 @@ public class DiaryService : IDiaryService
     {
         return Task.Run(() =>
         {
-            var dates = EntriesCollection.Query()
-                .Select(x => x.Date)
-                .ToEnumerable()
-                .Select(d => d.Date)
+            // Note: LiteDB's Query().Select() can sometimes fail to map simple properties correctly in all scenarios.
+            // Using FindAll() to project in memory. For a user's local diary, the number of entries is small enough.
+            var dates = EntriesCollection.FindAll()
+                .Select(d => d.Date.Date)
                 .Distinct()
                 .OrderByDescending(d => d)
                 .ToList();
@@ -86,13 +86,15 @@ public class DiaryService : IDiaryService
             int streak = 0;
             DateTime currentDateToCheck;
 
-            if (dates[0] == today)
+            bool IsSameDay(DateTime d1, DateTime d2) => d1.Year == d2.Year && d1.DayOfYear == d2.DayOfYear;
+
+            if (IsSameDay(dates[0], today))
             {
-                currentDateToCheck = today;
+                currentDateToCheck = dates[0];
             }
-            else if (dates[0] == yesterday)
+            else if (IsSameDay(dates[0], yesterday))
             {
-                currentDateToCheck = yesterday;
+                currentDateToCheck = dates[0];
             }
             else
             {
@@ -102,7 +104,7 @@ public class DiaryService : IDiaryService
 
             foreach (var date in dates)
             {
-                if (date == currentDateToCheck)
+                if (IsSameDay(date, currentDateToCheck))
                 {
                     streak++;
                     currentDateToCheck = currentDateToCheck.AddDays(-1);

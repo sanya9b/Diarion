@@ -310,6 +310,59 @@ public class DiaryServiceTests : IDisposable
         clonedTask!.Priority.Should().Be(TodoPriority.Medium); // Downgraded because limit reached
     }
 
+    [Fact]
+    public async Task GetCurrentStreak_WithConsecutiveDays_ReturnsCorrectStreak()
+    {
+        await ClearDatabaseAsync();
+        var today = DateTime.Today;
+        
+        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today });
+        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-1) });
+        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-2) });
+
+        var streak = await _diaryService.GetCurrentStreakAsync();
+        streak.Should().Be(3);
+    }
+
+    [Fact]
+    public async Task GetCurrentStreak_WithGap_ReturnsCorrectStreakBeforeGap()
+    {
+        await ClearDatabaseAsync();
+        var today = DateTime.Today;
+        
+        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today });
+        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-2) });
+
+        var streak = await _diaryService.GetCurrentStreakAsync();
+        streak.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task GetCurrentStreak_WhenLastEntryWasYesterday_ReturnsCorrectStreak()
+    {
+        await ClearDatabaseAsync();
+        var today = DateTime.Today;
+        
+        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-1) });
+        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-2) });
+
+        var allEntries = await _diaryService.GetAllEntriesAsync();
+        var streak = await _diaryService.GetCurrentStreakAsync();
+        streak.Should().Be(2, $"Entries in DB: {allEntries.Count}. First Date: {(allEntries.Count > 0 ? allEntries[0].Date.ToString() : "none")}");
+    }
+
+    [Fact]
+    public async Task GetCurrentStreak_WhenLastEntryWasOlderThanYesterday_ReturnsZero()
+    {
+        await ClearDatabaseAsync();
+        var today = DateTime.Today;
+        
+        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-2) });
+
+        var streak = await _diaryService.GetCurrentStreakAsync();
+        streak.Should().Be(0);
+    }
+
     public void Dispose()
     {
         _dbContext.Dispose();

@@ -18,12 +18,15 @@
         <VerticalStackLayout Spacing="8">
             <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
                 <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                <ImageButton Grid.Column="1" 
-                             Source="icon_sync.png" 
-                             HeightRequest="16" 
-                             WidthRequest="16" 
-                             VerticalOptions="Center" 
-                             Command="{Binding Source={RelativeSource AncestorType={x:Type vms:MainViewModel}}, Path=ImportSleepDataCommand}" 
+                <Button Grid.Column="1"
+                             Text="🔄"
+                             BackgroundColor="Transparent"
+                             TextColor="{DynamicResource Theme_Ocean_Dust}"
+                             HeightRequest="32"
+                             WidthRequest="32"
+                             Padding="0"
+                             VerticalOptions="Center"
+                             Command="{Binding Source={RelativeSource AncestorType={x:Type vms:MainViewModel}}, Path=ImportSleepDataCommand}"
                              ToolTipProperties.Text="Sync from Health" />
                 <Label Grid.Column="2" Text="{Binding SleepDurationText}" FontAttributes="Bold" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="End" VerticalOptions="Center" />
             </Grid>

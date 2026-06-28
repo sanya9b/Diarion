@@ -17,7 +17,7 @@
     <Grid Padding="0" RowDefinitions="Auto, *">
         
         <!-- Custom Top Bar -->
-        <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="Auto, *" ColumnSpacing="12">
+        <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
             <!-- Hamburger Menu Button -->
             <Grid Grid.Column="0" Padding="10,0">
                 <Grid.GestureRecognizers>
@@ -30,6 +30,22 @@
             </Grid>
             
             <controls:QuickMenuView Grid.Column="1" />
+
+            <!-- Streak Badge -->
+            <Border Grid.Column="2" 
+                    IsVisible="{Binding IsStreakVisible}"
+                    StrokeThickness="1" 
+                    Stroke="{DynamicResource Theme_Coral}" 
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}" 
+                    StrokeShape="RoundRectangle 16"
+                    Padding="12,0" 
+                    VerticalOptions="Center" 
+                    HeightRequest="36">
+                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                    <Label Text="🔥" FontSize="16" VerticalOptions="Center" />
+                    <Label Text="{Binding CurrentStreak}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
         </Grid>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
