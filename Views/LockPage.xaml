@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Views.LockPage"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}"
+             NavigationPage.HasNavigationBar="False">
+    <Grid>
+        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="24">
+            <Label Text="🔒" FontSize="64" HorizontalOptions="Center" />
+            <Label Text="{x:Static localization:AppResources.AppTitle}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            
+            <Button Text="Unlock"
+                    Clicked="OnUnlockClicked"
+                    BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
+                    TextColor="{DynamicResource Theme_Snow}"
+                    CornerRadius="12"
+                    HeightRequest="48"
+                    WidthRequest="200"
+                    Margin="0,32,0,0" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,3 @@
+NSFaceIDUsageDescription = "Дозволяє безпечно розблокувати ваш щоденник.";
+NSPhotoLibraryUsageDescription = "Використовується для додавання фотографій до ваших записів.";
+NSCameraUsageDescription = "Використовується для створення фотографій для ваших записів.";

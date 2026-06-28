@@ -90,9 +90,9 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         Tabs = new System.Collections.ObjectModel.ObservableCollection<StatisticsTabItem>
         {
-            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = "Огляд", IsSelected = true },
-            new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = "Сон" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = "Продуктивність" }
+            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, IsSelected = true },
+            new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = AppResources.TabSleep },
+            new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = AppResources.TabProductivity }
         };
         SelectTab(Tabs[0]);
     }

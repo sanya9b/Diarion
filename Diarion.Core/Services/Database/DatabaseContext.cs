@@ -66,6 +66,19 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         return _db.GetCollection<T>(name);
     }
 
+    public void DropAllData()
+    {
+        lock (_lock)
+        {
+            if (_db == null) return;
+            var collections = _db.GetCollectionNames().ToList();
+            foreach (var colName in collections)
+            {
+                _db.DropCollection(colName);
+            }
+        }
+    }
+
     public void Close()
     {
         lock (_lock)

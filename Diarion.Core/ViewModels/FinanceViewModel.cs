@@ -48,7 +48,7 @@ public partial class FinanceViewModel : BaseViewModel
     public FinanceViewModel(IFinanceService financeService)
     {
         _financeService = financeService;
-        Title = Diarion.Resources.Localization.AppResources.FinanceTitle ?? "Дохід/Витрати";
+        Title = Diarion.Resources.Localization.AppResources.FinanceTitle ?? "Income/Expenses";
     }
 
     public async Task LoadAsync()
@@ -135,10 +135,10 @@ public partial class FinanceViewModel : BaseViewModel
         if (transaction == null) return;
 
         bool confirm = await Microsoft.Maui.Controls.Shell.Current.DisplayAlertAsync(
-            Diarion.Resources.Localization.AppResources.DeleteConfirmTitle ?? "Видалити",
-            Diarion.Resources.Localization.AppResources.DeleteConfirmMsg ?? "Ви впевнені, що хочете видалити цей запис?",
-            Diarion.Resources.Localization.AppResources.DeleteConfirmYes ?? "Так",
-            Diarion.Resources.Localization.AppResources.DeleteConfirmNo ?? "Ні");
+            Diarion.Resources.Localization.AppResources.DeleteConfirmTitle ?? "Delete",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmMsg ?? "Are you sure you want to delete this record?",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes ?? "Yes",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo ?? "No");
 
         if (confirm)
         {

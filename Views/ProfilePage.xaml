@@ -130,6 +130,25 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Безпека (Security) -->
+            <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    Padding="16">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                </Border.Shadow>
+                
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{x:Static localization:AppResources.SecurityLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
+                    
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                        <Switch Grid.Column="0" IsToggled="{Binding IsBiometricAuthEnabled}" OnColor="{DynamicResource Theme_Ocean_Ocean}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="{x:Static localization:AppResources.EnableBiometricsLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Backup & Restore -->
             <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
@@ -173,7 +192,18 @@
                     TextColor="{DynamicResource Theme_Snow}"
                     CornerRadius="12"
                     HeightRequest="48"
-                    Margin="0,10,0,20" />
+                    Margin="0,10,0,10" />
+
+            <!-- Delete All Data Button -->
+            <Button Text="{x:Static localization:AppResources.ClearAllDataButton}"
+                    Command="{Binding ClearAllDataCommand}"
+                    BackgroundColor="Transparent"
+                    BorderColor="{DynamicResource Theme_Coral}"
+                    BorderWidth="1"
+                    TextColor="{DynamicResource Theme_Coral}"
+                    CornerRadius="12"
+                    HeightRequest="48"
+                    Margin="0,0,0,20" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

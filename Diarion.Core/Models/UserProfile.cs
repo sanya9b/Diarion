@@ -27,6 +27,9 @@ public partial class UserProfile : ObservableObject
     [ObservableProperty] private int _periodLength = DefaultPeriodLength;
     [ObservableProperty] private DateTime? _lastPeriodStartDate;
 
+    // Безпека
+    [ObservableProperty] private bool _isBiometricAuthEnabled;
+
     // Сортування меню
     [ObservableProperty] private System.Collections.Generic.List<string>? _quickMenuOrder;
 

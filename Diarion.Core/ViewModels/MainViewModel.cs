@@ -206,7 +206,7 @@ public partial class MainViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Помилка збереження запису: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error saving entry: {ex.Message}");
         }
         finally
         {
@@ -230,7 +230,7 @@ public partial class MainViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Помилка завантаження записів: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error loading entries: {ex.Message}");
         }
         finally
         {

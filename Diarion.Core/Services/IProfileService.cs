@@ -7,4 +7,5 @@ public interface IProfileService
 {
     Task<UserProfile> GetUserProfileAsync();
     Task SaveUserProfileAsync(UserProfile profile);
+    Task ClearAllDataAsync();
 }

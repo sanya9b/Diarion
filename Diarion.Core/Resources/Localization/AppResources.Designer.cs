@@ -200,6 +200,24 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string TabGeneral {
+            get {
+                return ResourceManager.GetString("TabGeneral", resourceCulture);
+            }
+        }
+
+        public static string TabSleep {
+            get {
+                return ResourceManager.GetString("TabSleep", resourceCulture);
+            }
+        }
+
+        public static string TabProductivity {
+            get {
+                return ResourceManager.GetString("TabProductivity", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to No tasks for this day.
         /// </summary>
@@ -886,9 +904,51 @@ namespace Diarion.Resources.Localization {
         public static string BackupImportWarning {
             get { return ResourceManager.GetString("BackupImportWarning", resourceCulture) ?? "This will overwrite your current data. Are you sure?"; }
         }
+public static string BackupImportSuccess {
+    get { return ResourceManager.GetString("BackupImportSuccess", resourceCulture) ?? "Backup restored. Please restart the app."; }
+}
 
-        public static string BackupImportSuccess {
-            get { return ResourceManager.GetString("BackupImportSuccess", resourceCulture) ?? "Backup restored. Please restart the app."; }
+public static string ClearAllDataButton {
+    get { return ResourceManager.GetString("ClearAllDataButton", resourceCulture) ?? "Delete all my data"; }
+}
+
+public static string ClearAllDataConfirmTitle {
+    get { return ResourceManager.GetString("ClearAllDataConfirmTitle", resourceCulture) ?? "Warning"; }
+}
+
+public static string ClearAllDataConfirmMsg {
+    get { return ResourceManager.GetString("ClearAllDataConfirmMsg", resourceCulture) ?? "Are you absolutely sure you want to delete all your data? This action cannot be undone."; }
+}
+
+public static string ClearAllDataSuccessMsg {
+    get { return ResourceManager.GetString("ClearAllDataSuccessMsg", resourceCulture) ?? "All your data has been successfully deleted."; }
+}
+        public static string HoursShort {
+            get { return ResourceManager.GetString("HoursShort", resourceCulture) ?? "h"; }
+        }
+
+        public static string MinutesShort {
+            get { return ResourceManager.GetString("MinutesShort", resourceCulture) ?? "m"; }
+        }
+
+        public static string SecurityLabel {
+            get { return ResourceManager.GetString("SecurityLabel", resourceCulture) ?? "SECURITY"; }
+        }
+
+        public static string EnableBiometricsLabel {
+            get { return ResourceManager.GetString("EnableBiometricsLabel", resourceCulture) ?? "Require Face ID / Passcode"; }
+        }
+
+        public static string BiometricPromptReason {
+            get { return ResourceManager.GetString("BiometricPromptReason", resourceCulture) ?? "Please authenticate to unlock Diarion"; }
+        }
+
+        public static string BiometricErrorTitle {
+            get { return ResourceManager.GetString("BiometricErrorTitle", resourceCulture) ?? "Authentication Failed"; }
+        }
+
+        public static string BiometricErrorMessage {
+            get { return ResourceManager.GetString("BiometricErrorMessage", resourceCulture) ?? "Biometric authentication is not set up or not available on this device."; }
         }
     }
 }

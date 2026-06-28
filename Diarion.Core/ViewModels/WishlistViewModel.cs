@@ -30,7 +30,7 @@ public partial class WishlistViewModel : BaseViewModel
     public WishlistViewModel(IWishlistService wishlistService)
     {
         _wishlistService = wishlistService;
-        Title = Diarion.Resources.Localization.AppResources.WishlistTitle ?? "Хочу, бажаю, отримаю";
+        Title = Diarion.Resources.Localization.AppResources.WishlistTitle ?? "Wishlist";
     }
 
     public async Task LoadAsync()
@@ -109,10 +109,10 @@ public partial class WishlistViewModel : BaseViewModel
         if (entry == null) return;
 
         bool confirm = await Microsoft.Maui.Controls.Shell.Current.DisplayAlertAsync(
-            Diarion.Resources.Localization.AppResources.DeleteConfirmTitle ?? "Видалити",
-            Diarion.Resources.Localization.AppResources.DeleteConfirmMsg ?? "Ви впевнені, що хочете видалити цей запис?",
-            Diarion.Resources.Localization.AppResources.DeleteConfirmYes ?? "Так",
-            Diarion.Resources.Localization.AppResources.DeleteConfirmNo ?? "Ні");
+            Diarion.Resources.Localization.AppResources.DeleteConfirmTitle ?? "Delete",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmMsg ?? "Are you sure you want to delete this record?",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes ?? "Yes",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo ?? "No");
 
         if (confirm)
         {

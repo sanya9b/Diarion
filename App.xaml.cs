@@ -32,6 +32,33 @@ public partial class App : Application
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
 		using var _ = StartupTrace.Measure("App.CreateWindow");
-		return new Window(new AppShell());
+		var window = new Window(new AppShell());
+        
+        window.Created += async (s, e) => await CheckSecurityAsync(window);
+        window.Resumed += async (s, e) => await CheckSecurityAsync(window);
+
+		return window;
 	}
+
+    private async System.Threading.Tasks.Task CheckSecurityAsync(Window window)
+    {
+        if (window.Handler?.MauiContext?.Services == null) return;
+        
+        var profileService = window.Handler.MauiContext.Services.GetService<Diarion.Services.IProfileService>();
+        if (profileService == null) return;
+
+        var profile = await profileService.GetUserProfileAsync();
+        
+        if (profile.IsBiometricAuthEnabled)
+        {
+            // Set the lock page as the current modal if not already showing
+            if (window.Page?.Navigation.ModalStack.Count == 0 || !(window.Page?.Navigation.ModalStack.LastOrDefault() is Diarion.Views.LockPage))
+            {
+                await window.Page!.Navigation.PushModalAsync(new Diarion.Views.LockPage(() =>
+                {
+                    window.Page.Navigation.PopModalAsync();
+                }));
+            }
+        }
+    }
 }

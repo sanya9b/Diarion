@@ -27,6 +27,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
+    <PackageReference Include="Plugin.Fingerprint" Version="2.1.5" />
     <PackageReference Include="System.Resources.Extensions" Version="10.0.8" />
   </ItemGroup>
 

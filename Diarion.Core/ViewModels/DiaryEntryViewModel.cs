@@ -105,7 +105,7 @@ public partial class DiaryEntryViewModel : ObservableObject
                 {
                     duration = duration.Add(TimeSpan.FromHours(24));
                 }
-                return $"{duration.Hours:00} год {duration.Minutes:00} хв";
+                return $"{duration.Hours:00} {Diarion.Resources.Localization.AppResources.HoursShort} {duration.Minutes:00} {Diarion.Resources.Localization.AppResources.MinutesShort}";
             }
             return string.Empty;
         }

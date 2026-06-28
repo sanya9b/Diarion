@@ -131,7 +131,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Помилка додавання завдання: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error adding task: {ex.Message}");
         }
     }
 
@@ -148,7 +148,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Помилка оновлення завдання: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error updating task: {ex.Message}");
         }
     }
 
@@ -164,7 +164,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Помилка видалення завдання: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error deleting task: {ex.Message}");
         }
     }
 
@@ -210,7 +210,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Помилка завантаження запису: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error loading entry: {ex.Message}");
         }
         finally
         {
@@ -256,7 +256,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
                 Diarion.Resources.Localization.AppResources.AlertError,
                 Diarion.Resources.Localization.AppResources.AlertSaveError,
                 Diarion.Resources.Localization.AppResources.OkButtonLabel);
-            System.Diagnostics.Debug.WriteLine($"Помилка збереження: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error saving: {ex.Message}");
         }
         finally
         {
@@ -290,7 +290,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
                     Diarion.Resources.Localization.AppResources.AlertError,
                     Diarion.Resources.Localization.AppResources.AlertDeleteError,
                     Diarion.Resources.Localization.AppResources.OkButtonLabel);
-                System.Diagnostics.Debug.WriteLine($"Помилка видалення: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error deleting: {ex.Message}");
             }
             finally
             {

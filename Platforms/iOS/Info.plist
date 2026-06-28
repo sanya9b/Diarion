@@ -28,5 +28,11 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Allows you to securely unlock your diary.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Used to attach photos to your diary entries.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Used to take photos for your diary entries.</string>
 </dict>
 </plist>

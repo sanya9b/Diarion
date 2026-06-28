@@ -175,6 +175,15 @@
   <data name="TabDiary" xml:space="preserve">
     <value>Нотатки</value>
   </data>
+  <data name="TabGeneral" xml:space="preserve">
+    <value>Огляд</value>
+  </data>
+  <data name="TabSleep" xml:space="preserve">
+    <value>Сон</value>
+  </data>
+  <data name="TabProductivity" xml:space="preserve">
+    <value>Продуктивність</value>
+  </data>
   <data name="NoTasks" xml:space="preserve">
     <value>Немає завдань на цей день</value>
   </data>
@@ -639,5 +648,38 @@
   </data>
   <data name="BackupImportSuccess" xml:space="preserve">
     <value>Дані відновлено. Будь ласка, перезапустіть додаток.</value>
+  </data>
+  <data name="ClearAllDataButton" xml:space="preserve">
+    <value>Видалити всі мої дані</value>
+  </data>
+  <data name="ClearAllDataConfirmTitle" xml:space="preserve">
+    <value>Увага</value>
+  </data>
+  <data name="ClearAllDataConfirmMsg" xml:space="preserve">
+    <value>Ви абсолютно впевнені, що хочете видалити всі свої дані? Цю дію неможливо скасувати.</value>
+  </data>
+  <data name="ClearAllDataSuccessMsg" xml:space="preserve">
+    <value>Всі ваші дані успішно видалено.</value>
+  </data>
+  <data name="HoursShort" xml:space="preserve">
+    <value>год</value>
+  </data>
+  <data name="MinutesShort" xml:space="preserve">
+    <value>хв</value>
+  </data>
+  <data name="SecurityLabel" xml:space="preserve">
+    <value>БЕЗПЕКА</value>
+  </data>
+  <data name="EnableBiometricsLabel" xml:space="preserve">
+    <value>Вхід за Face ID / Паролем</value>
+  </data>
+  <data name="BiometricPromptReason" xml:space="preserve">
+    <value>Будь ласка, пройдіть автентифікацію, щоб розблокувати Diarion</value>
+  </data>
+  <data name="BiometricErrorTitle" xml:space="preserve">
+    <value>Помилка автентифікації</value>
+  </data>
+  <data name="BiometricErrorMessage" xml:space="preserve">
+    <value>Біометрична автентифікація не налаштована або недоступна на цьому пристрої.</value>
   </data>
 </root>

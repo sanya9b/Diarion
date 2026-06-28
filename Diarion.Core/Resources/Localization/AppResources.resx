@@ -175,6 +175,15 @@
   <data name="TabDiary" xml:space="preserve">
     <value>Notes</value>
   </data>
+  <data name="TabGeneral" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="TabSleep" xml:space="preserve">
+    <value>Sleep</value>
+  </data>
+  <data name="TabProductivity" xml:space="preserve">
+    <value>Productivity</value>
+  </data>
   <data name="NoTasks" xml:space="preserve">
     <value>No tasks for this day</value>
   </data>
@@ -639,5 +648,26 @@
   </data>
   <data name="BackupImportSuccess" xml:space="preserve">
     <value>Backup restored. Please restart the app.</value>
+  </data>
+  <data name="HoursShort" xml:space="preserve">
+    <value>h</value>
+  </data>
+  <data name="MinutesShort" xml:space="preserve">
+    <value>m</value>
+  </data>
+  <data name="SecurityLabel" xml:space="preserve">
+    <value>SECURITY</value>
+  </data>
+  <data name="EnableBiometricsLabel" xml:space="preserve">
+    <value>Require Face ID / Passcode</value>
+  </data>
+  <data name="BiometricPromptReason" xml:space="preserve">
+    <value>Please authenticate to unlock Diarion</value>
+  </data>
+  <data name="BiometricErrorTitle" xml:space="preserve">
+    <value>Authentication Failed</value>
+  </data>
+  <data name="BiometricErrorMessage" xml:space="preserve">
+    <value>Biometric authentication is not set up or not available on this device.</value>
   </data>
 </root>

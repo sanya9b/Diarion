@@ -45,4 +45,12 @@ public class ProfileService : IProfileService
             ProfileCollection.Upsert(profile);
         });
     }
+
+    public Task ClearAllDataAsync()
+    {
+        return Task.Run(() =>
+        {
+            _dbContext.DropAllData();
+        });
+    }
 }

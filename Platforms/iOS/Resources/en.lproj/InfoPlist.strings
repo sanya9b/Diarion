@@ -1,0 +1,3 @@
+NSFaceIDUsageDescription = "Allows you to securely unlock your diary.";
+NSPhotoLibraryUsageDescription = "Used to attach photos to your diary entries.";
+NSCameraUsageDescription = "Used to take photos for your diary entries.";

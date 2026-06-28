@@ -62,10 +62,10 @@ public class DatabaseSeeder : IDatabaseSeeder
                 SleepQuality = random.Next(4, 11),
                 HealthStatus = random.Next(5, 11),
                 CycleDay = random.Next(1, 28).ToString(),
-                IntimateLife = random.NextDouble() > 0.7 ? "Так" : "Ні",
-                Triggers = "Стрес на роботі, затори на дорогах...",
-                Gratitude = "Смачна кава зранку, гарна погода, подзвонив друг",
-                SoulFood = "Читав книгу 'Clean Architecture', слухав джаз",
+                IntimateLife = random.NextDouble() > 0.7 ? "Yes" : "No",
+                Triggers = "Work stress, traffic jams...",
+                Gratitude = "Tasty morning coffee, good weather, friend called",
+                SoulFood = "Read 'Clean Architecture' book, listened to jazz",
             };
 
             foreach (var h in habits)
@@ -87,7 +87,7 @@ public class DatabaseSeeder : IDatabaseSeeder
                 {
                     Id = Guid.NewGuid(),
                     TargetDate = date,
-                    TaskDescription = $"Тестове завдання {t + 1}",
+                    TaskDescription = $"Test task {t + 1}",
                     IsCompleted = random.NextDouble() > 0.5,
                     Priority = (TodoPriority)random.Next(0, 3),
                     HasTime = random.NextDouble() > 0.5,
