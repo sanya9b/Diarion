@@ -15,11 +15,15 @@ public class DiaryEntry
     public TimeSpan? SleepEnd { get; set; }
     
     public int SleepQuality { get; set; } = 0;
+    
+    public string SleepNotes { get; set; } = string.Empty;
 
     // Здоров'я / Фізіологія (Health & Physiology)
     public string CycleDay { get; set; } = string.Empty;
     
     public int HealthStatus { get; set; } = 0;
+    
+    public bool IsIntimateLifeDone { get; set; }
     
     public string IntimateLife { get; set; } = string.Empty;
 

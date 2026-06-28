@@ -33,6 +33,70 @@ public static class MauiProgram
 			.AddAppViewModels()
 			.AddAppViews();
 
+		// Remove native borders and underlines for all Entries and Editors globally
+		Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("Borderless", (handler, view) =>
+		{
+#if ANDROID
+			if (handler?.PlatformView != null)
+			{
+				handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+				handler.PlatformView.SetPadding(0, 0, 0, 0);
+			}
+#elif IOS || MACCATALYST
+			handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+			handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+#elif WINDOWS
+			handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+#endif
+		});
+
+		Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("Borderless", (handler, view) =>
+		{
+#if ANDROID
+			if (handler?.PlatformView != null)
+			{
+				handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+				handler.PlatformView.SetPadding(0, 0, 0, 0);
+			}
+#elif IOS || MACCATALYST
+			handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+#elif WINDOWS
+			handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+#endif
+		});
+
+		Microsoft.Maui.Handlers.TimePickerHandler.Mapper.AppendToMapping("Borderless", (handler, view) =>
+		{
+#if ANDROID
+			if (handler?.PlatformView != null)
+			{
+				handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+				handler.PlatformView.SetPadding(0, 0, 0, 0);
+			}
+#elif IOS || MACCATALYST
+			handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+			handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+#elif WINDOWS
+			handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+#endif
+		});
+
+		Microsoft.Maui.Handlers.DatePickerHandler.Mapper.AppendToMapping("Borderless", (handler, view) =>
+		{
+#if ANDROID
+			if (handler?.PlatformView != null)
+			{
+				handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+				handler.PlatformView.SetPadding(0, 0, 0, 0);
+			}
+#elif IOS || MACCATALYST
+			handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+			handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+#elif WINDOWS
+			handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+#endif
+		});
+
 		return builder.Build();
 	}
 }

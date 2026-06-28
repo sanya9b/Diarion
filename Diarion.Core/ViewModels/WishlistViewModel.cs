@@ -27,6 +27,8 @@ public partial class WishlistViewModel : BaseViewModel
     [ObservableProperty]
     private WishlistEntry? _selectedEntry;
 
+    public bool IsEditing => SelectedEntry != null;
+
     public WishlistViewModel(IWishlistService wishlistService)
     {
         _wishlistService = wishlistService;
@@ -65,6 +67,7 @@ public partial class WishlistViewModel : BaseViewModel
             NewWantText = string.Empty;
             NewDate = DateTime.Today;
         }
+        OnPropertyChanged(nameof(IsEditing));
         IsAddFormVisible = true;
     }
 
@@ -73,6 +76,7 @@ public partial class WishlistViewModel : BaseViewModel
     {
         IsAddFormVisible = false;
         SelectedEntry = null;
+        OnPropertyChanged(nameof(IsEditing));
     }
 
     [RelayCommand]
@@ -118,6 +122,16 @@ public partial class WishlistViewModel : BaseViewModel
         {
             await _wishlistService.DeleteWishlistEntryAsync(entry.Id);
             Entries.Remove(entry);
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteCurrentEntryAsync()
+    {
+        if (SelectedEntry != null)
+        {
+            await DeleteEntryAsync(SelectedEntry);
+            CloseForm();
         }
     }
 }

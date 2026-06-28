@@ -4,6 +4,7 @@
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:controls="clr-namespace:Diarion.Controls"
              x:Class="Diarion.Controls.HabitTrackerSection"
              x:Name="HabitTrackerSectionRoot">
 
@@ -12,17 +13,14 @@
             Stroke="{DynamicResource Theme_Dust_Ocean}"
             BackgroundColor="{DynamicResource Theme_Snow_Black}"
             Padding="16">
-        <Border.Shadow>
-            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
-        </Border.Shadow>
         <VerticalStackLayout Spacing="8">
             <Grid ColumnDefinitions="*, Auto" Margin="0,0,0,4">
-                <Label Grid.Column="0" Text="{x:Static localization:AppResources.HabitsLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                <Grid Grid.Column="1" Padding="10,4" BackgroundColor="Transparent">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.HabitsLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                <Grid Grid.Column="1" Padding="8,4" BackgroundColor="Transparent">
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding BindingContext.HabitsSection.ToggleEditHabitsModeCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />
                     </Grid.GestureRecognizers>
-                    <Label Text="✎" FontSize="16" InputTransparent="True" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    <Label Text="✎" FontSize="14" InputTransparent="True" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 </Grid>
             </Grid>
             
@@ -39,8 +37,8 @@
                                                        DropCommand="{Binding BindingContext.HabitsSection.ReorderHabitsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                        DropCommandParameter="{Binding .}" />
                             </ContentView.GestureRecognizers>
-                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="6" HeightRequest="36">
-                                <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0" />
+                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8" HeightRequest="32">
+                                <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                                 <Label Grid.Column="1" Text="{Binding Name}" VerticalOptions="Center" FontSize="12" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                                 
                                 <Grid Grid.Column="2"
@@ -59,13 +57,17 @@
                 </BindableLayout.ItemTemplate>
             </FlexLayout>
             
-            <Button Text="{x:Static localization:AppResources.AddHabitLabel}"
-                    Command="{Binding BindingContext.HabitsSection.AddHabitCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                    BackgroundColor="Transparent"
-                    TextColor="{DynamicResource Theme_Ocean_Dust}"
-                    FontAttributes="Bold"
-                    HorizontalOptions="Start"
-                    Padding="0,8" />
+            <Label Text="{x:Static localization:AppResources.AddHabitLabel}"
+                   FontSize="11"
+                   FontAttributes="Bold"
+                   TextTransform="Uppercase"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}"
+                   HorizontalOptions="Start"
+                   Padding="0,4">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding BindingContext.HabitsSection.AddHabitCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />
+                </Label.GestureRecognizers>
+            </Label>
         </VerticalStackLayout>
     </Border>
 

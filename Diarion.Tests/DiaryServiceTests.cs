@@ -352,7 +352,7 @@ public class DiaryServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task GetCurrentStreak_WhenLastEntryWasOlderThanYesterday_ReturnsZero()
+    public async Task GetCurrentStreak_WhenLastEntryWasOlderThanYesterday_ReturnsOne()
     {
         await ClearDatabaseAsync();
         var today = DateTime.Today;
@@ -360,7 +360,7 @@ public class DiaryServiceTests : IDisposable
         await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-2) });
 
         var streak = await _diaryService.GetCurrentStreakAsync();
-        streak.Should().Be(0);
+        streak.Should().Be(1);
     }
 
     public void Dispose()

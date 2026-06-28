@@ -78,7 +78,7 @@ public class DiaryService : IDiaryService
                 .OrderByDescending(d => d)
                 .ToList();
 
-            if (!dates.Any()) return 0;
+            if (!dates.Any()) return 1;
 
             var today = DateTime.Today;
             var yesterday = today.AddDays(-1);
@@ -98,8 +98,8 @@ public class DiaryService : IDiaryService
             }
             else
             {
-                // Last entry was before yesterday, streak is broken
-                return 0;
+                // Last entry was before yesterday, streak is broken. But opening the app means day 1.
+                return 1;
             }
 
             foreach (var date in dates)
@@ -115,7 +115,7 @@ public class DiaryService : IDiaryService
                 }
             }
 
-            return streak;
+            return Math.Max(1, streak);
         });
     }
 

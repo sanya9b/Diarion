@@ -80,24 +80,51 @@ public partial class ProfileViewModel : BaseViewModel
 
     private async void VerifyAndEnableBiometricsAsync()
     {
-        var result = await Plugin.Fingerprint.CrossFingerprint.Current.AuthenticateAsync(new Plugin.Fingerprint.Abstractions.AuthenticationRequestConfiguration(
-            Diarion.Resources.Localization.AppResources.SecurityLabel,
-            Diarion.Resources.Localization.AppResources.BiometricPromptReason)
+        try
         {
-            AllowAlternativeAuthentication = true
-        });
+            var isAvailable = await Plugin.Fingerprint.CrossFingerprint.Current.IsAvailableAsync();
+            if (!isAvailable)
+            {
+                _isBiometricAuthEnabled = false;
+                OnPropertyChanged(nameof(IsBiometricAuthEnabled));
 
-        if (result.Authenticated)
-        {
-            Profile.IsBiometricAuthEnabled = true;
-            await SaveProfileAsync();
+                await Shell.Current.DisplayAlertAsync(
+                    Diarion.Resources.Localization.AppResources.BiometricErrorTitle,
+                    Diarion.Resources.Localization.AppResources.BiometricErrorMessage,
+                    Diarion.Resources.Localization.AppResources.OkButtonLabel);
+                return;
+            }
+
+            var result = await Plugin.Fingerprint.CrossFingerprint.Current.AuthenticateAsync(new Plugin.Fingerprint.Abstractions.AuthenticationRequestConfiguration(
+                Diarion.Resources.Localization.AppResources.SecurityLabel,
+                Diarion.Resources.Localization.AppResources.BiometricPromptReason)
+            {
+                AllowAlternativeAuthentication = true
+            });
+
+            if (result.Authenticated)
+            {
+                Profile.IsBiometricAuthEnabled = true;
+                await SaveProfileAsync();
+            }
+            else
+            {
+                // Revert UI toggle if failed
+                _isBiometricAuthEnabled = false;
+                OnPropertyChanged(nameof(IsBiometricAuthEnabled));
+                
+                await Shell.Current.DisplayAlertAsync(
+                    Diarion.Resources.Localization.AppResources.BiometricErrorTitle,
+                    Diarion.Resources.Localization.AppResources.BiometricErrorMessage,
+                    Diarion.Resources.Localization.AppResources.OkButtonLabel);
+            }
         }
-        else
+        catch (System.Exception)
         {
-            // Revert UI toggle if failed
+            // Revert UI toggle on exception to prevent application crash
             _isBiometricAuthEnabled = false;
             OnPropertyChanged(nameof(IsBiometricAuthEnabled));
-            
+
             await Shell.Current.DisplayAlertAsync(
                 Diarion.Resources.Localization.AppResources.BiometricErrorTitle,
                 Diarion.Resources.Localization.AppResources.BiometricErrorMessage,

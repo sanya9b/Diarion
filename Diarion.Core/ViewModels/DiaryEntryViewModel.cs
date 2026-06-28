@@ -18,8 +18,10 @@ public partial class DiaryEntryViewModel : ObservableObject
         _sleepStart = model.SleepStart;
         _sleepEnd = model.SleepEnd;
         _sleepQuality = model.SleepQuality;
+        _sleepNotes = model.SleepNotes;
         _cycleDay = model.CycleDay;
         _healthStatus = model.HealthStatus;
+        _isIntimateLifeDone = model.IsIntimateLifeDone;
         _intimateLife = model.IntimateLife;
         _isBreakfastDone = model.IsBreakfastDone;
         _breakfastFood = model.BreakfastFood;
@@ -117,6 +119,11 @@ public partial class DiaryEntryViewModel : ObservableObject
     partial void OnSleepQualityChanged(int value) => Model.SleepQuality = value;
 
     [ObservableProperty]
+    private string _sleepNotes = string.Empty;
+
+    partial void OnSleepNotesChanged(string value) => Model.SleepNotes = value;
+
+    [ObservableProperty]
     private string _cycleDay = string.Empty;
 
     partial void OnCycleDayChanged(string value) => Model.CycleDay = value;
@@ -125,6 +132,11 @@ public partial class DiaryEntryViewModel : ObservableObject
     private int _healthStatus;
 
     partial void OnHealthStatusChanged(int value) => Model.HealthStatus = value;
+
+    [ObservableProperty]
+    private bool _isIntimateLifeDone;
+
+    partial void OnIsIntimateLifeDoneChanged(bool value) => Model.IsIntimateLifeDone = value;
 
     [ObservableProperty]
     private string _intimateLife = string.Empty;
@@ -236,8 +248,10 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.SleepStart = SleepStart;
         Model.SleepEnd = SleepEnd;
         Model.SleepQuality = SleepQuality;
+        Model.SleepNotes = SleepNotes;
         Model.CycleDay = CycleDay;
         Model.HealthStatus = HealthStatus;
+        Model.IsIntimateLifeDone = IsIntimateLifeDone;
         Model.IntimateLife = IntimateLife;
         Model.IsBreakfastDone = IsBreakfastDone;
         Model.BreakfastFood = BreakfastFood;

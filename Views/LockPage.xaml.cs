@@ -28,15 +28,32 @@ public partial class LockPage : ContentPage
 
     private async System.Threading.Tasks.Task AuthenticateAsync()
     {
-        var result = await CrossFingerprint.Current.AuthenticateAsync(new AuthenticationRequestConfiguration(
-            Diarion.Resources.Localization.AppResources.SecurityLabel,
-            Diarion.Resources.Localization.AppResources.BiometricPromptReason)
+        try
         {
-            AllowAlternativeAuthentication = true
-        });
+            var isAvailable = await CrossFingerprint.Current.IsAvailableAsync();
+            if (!isAvailable)
+            {
+                // If biometrics not available, bypass or show alert to prevent lock screen lock
+                _onUnlocked?.Invoke();
+                return;
+            }
 
-        if (result.Authenticated)
+            var result = await CrossFingerprint.Current.AuthenticateAsync(new AuthenticationRequestConfiguration(
+                Diarion.Resources.Localization.AppResources.SecurityLabel,
+                Diarion.Resources.Localization.AppResources.BiometricPromptReason)
+            {
+                AllowAlternativeAuthentication = true
+            });
+
+            if (result.Authenticated)
+            {
+                _onUnlocked?.Invoke();
+            }
+        }
+        catch (System.Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Biometric auth exception: {ex.Message}");
+            // Safety fallback: allow bypass in case of persistent exception to prevent permanent lockout
             _onUnlocked?.Invoke();
         }
     }

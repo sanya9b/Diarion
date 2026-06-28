@@ -3,29 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Diarion.Controls.RoundedCheckBox"
              x:Name="RootView"
-             MinimumWidthRequest="44"
-             MinimumHeightRequest="44"
+             MinimumWidthRequest="32"
+             MinimumHeightRequest="32"
              BackgroundColor="Transparent">
     
-    <Grid BackgroundColor="Transparent">
-        <Grid.GestureRecognizers>
-            <TapGestureRecognizer Command="{Binding ToggleCommand, Source={x:Reference RootView}}" />
-        </Grid.GestureRecognizers>
-
+    <Grid>
         <Border x:Name="CheckBorder"
-                StrokeShape="RoundRectangle 8"
+                StrokeShape="RoundRectangle 6"
                 StrokeThickness="2"
                 Stroke="{Binding Color, Source={x:Reference RootView}, FallbackValue={DynamicResource Theme_Coral}, TargetNullValue={DynamicResource Theme_Coral}}"
                 BackgroundColor="{Binding ComputedBackgroundColor, Source={x:Reference RootView}}"
-                WidthRequest="24"
-                HeightRequest="24"
+                WidthRequest="18"
+                HeightRequest="18"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
                 Padding="2">
 
             <Path Data="M 4 11 L 9 16 L 19 6"
                   Stroke="{DynamicResource Theme_Snow}"
-                  StrokeThickness="2.5"
+                  StrokeThickness="2"
                   StrokeLineCap="Round"
                   StrokeLineJoin="Round"
                   Aspect="Uniform"
@@ -33,5 +29,14 @@
                   VerticalOptions="Fill"
                   IsVisible="{Binding IsChecked, Source={x:Reference RootView}}" />
         </Border>
+
+        <!-- Invisible Button to natively capture clicks across all platforms without GestureRecognizers -->
+        <Button BackgroundColor="Transparent"
+                BorderColor="Transparent"
+                BorderWidth="0"
+                Clicked="OnButtonClicked"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+                ZIndex="10" />
     </Grid>
 </ContentView>

@@ -4,51 +4,38 @@
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Controls.ReflectionSection">
              
-    <VerticalStackLayout Spacing="24">
-        <!-- Triggers -->
-        <Border StrokeShape="RoundRectangle 16"
-                StrokeThickness="1"
-                Stroke="{DynamicResource Theme_Dust_Ocean}"
-                BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                Padding="16">
-            <Border.Shadow>
-                <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
-            </Border.Shadow>
-            <VerticalStackLayout Spacing="8">
-                <Label Text="{x:Static localization:AppResources.TriggersLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Editor Text="{Binding Triggers}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" MinimumHeightRequest="60" AutoSize="TextChanges" />
+    <Border StrokeShape="RoundRectangle 16"
+            StrokeThickness="1"
+            Stroke="{DynamicResource Theme_Dust_Ocean}"
+            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+            Padding="16">
+        <VerticalStackLayout Spacing="16">
+            
+            <!-- Triggers -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="{x:Static localization:AppResources.TriggersLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" Padding="12,8">
+                    <Editor Text="{Binding Triggers}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" MinimumHeightRequest="40" AutoSize="TextChanges" />
+                </Border>
             </VerticalStackLayout>
-        </Border>
-        
-        <!-- Gratitude -->
-        <Border StrokeShape="RoundRectangle 16"
-                StrokeThickness="1"
-                Stroke="{DynamicResource Theme_Dust_Ocean}"
-                BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                Padding="16">
-            <Border.Shadow>
-                <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
-            </Border.Shadow>
-            <VerticalStackLayout Spacing="8">
-                <Label Text="{x:Static localization:AppResources.GratitudeLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Editor Text="{Binding Gratitude}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" MinimumHeightRequest="60" AutoSize="TextChanges" />
+            
+            <!-- Gratitude -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="{x:Static localization:AppResources.GratitudeLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" Padding="12,8">
+                    <Editor Text="{Binding Gratitude}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" MinimumHeightRequest="40" AutoSize="TextChanges" />
+                </Border>
             </VerticalStackLayout>
-        </Border>
 
-        <!-- Soul Food -->
-        <Border StrokeShape="RoundRectangle 16"
-                StrokeThickness="1"
-                Stroke="{DynamicResource Theme_Dust_Ocean}"
-                BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                Padding="16">
-            <Border.Shadow>
-                <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
-            </Border.Shadow>
-            <VerticalStackLayout Spacing="8">
-                <Label Text="{x:Static localization:AppResources.SoulFoodLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Editor Text="{Binding SoulFood}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" MinimumHeightRequest="60" AutoSize="TextChanges" />
+            <!-- Soul Food -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="{x:Static localization:AppResources.SoulFoodLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" Padding="12,8">
+                    <Editor Text="{Binding SoulFood}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" MinimumHeightRequest="40" AutoSize="TextChanges" />
+                </Border>
             </VerticalStackLayout>
-        </Border>
-    </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </Border>
 
 </ContentView>

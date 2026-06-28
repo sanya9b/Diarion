@@ -14,20 +14,45 @@
     <ScrollView>
         <VerticalStackLayout Padding="24,18,24,32" Spacing="20">
             
-            <Grid ColumnDefinitions="Auto, *" Margin="0,0,0,8">
-                <!-- Hamburger Menu Button -->
-                <Grid Grid.Column="0" Padding="10,0">
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding OpenMenuCommand}" />
-                    </Grid.GestureRecognizers>
-                    <Label Text="≡" FontSize="32" 
-                           InputTransparent="True"
-                           TextColor="{DynamicResource Theme_Midnight_Snow}" 
-                           VerticalOptions="Center" HorizontalOptions="Start" />
-                </Grid>
-                
+            <Grid Margin="0,0,0,8">
                 <!-- Заголовок -->
-                <Label Grid.Column="1" Text="{Binding Title}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" Margin="-40,0,0,0" />
+                <Label Text="{Binding Title}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                
+                <!-- Streak Badge -->
+                <Grid WidthRequest="64" HeightRequest="64" HorizontalOptions="End" VerticalOptions="Center" IsVisible="{Binding IsStreakVisible}">
+                    <!-- Зовнішня рамка -->
+                    <Border Stroke="{DynamicResource Theme_Coral}" 
+                            StrokeThickness="1.5" 
+                            WidthRequest="56" 
+                            HeightRequest="56"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            BackgroundColor="Transparent">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                    </Border>
+
+                    <!-- Вміст: вогник та текст -->
+                    <VerticalStackLayout HorizontalOptions="Center" 
+                                         VerticalOptions="Center" 
+                                         Spacing="-2"
+                                         Margin="0,4,0,0">
+                        
+                        <Label Text="🔥" 
+                               FontSize="22" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center" />
+                        
+                        <Label Text="{Binding CurrentStreak}" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center" />
+                               
+                    </VerticalStackLayout>
+                </Grid>
             </Grid>
             
             <!-- Tab Selector -->

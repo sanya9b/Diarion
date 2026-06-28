@@ -12,23 +12,47 @@
     <ScrollView>
         <VerticalStackLayout Padding="24,18,24,32" Spacing="20">
             
-            <Grid ColumnDefinitions="Auto, *" Margin="0,0,0,8">
-                <!-- Hamburger Menu Button -->
-                <Grid Grid.Column="0" Padding="10,0">
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding OpenMenuCommand}" />
-                    </Grid.GestureRecognizers>
-                    <Label Text="≡" FontSize="32" 
-                           InputTransparent="True"
-                           TextColor="{DynamicResource Theme_Midnight_Snow}" 
-                           VerticalOptions="Center" HorizontalOptions="Start" />
-                </Grid>
-                
+            <Grid Margin="0,0,0,8">
                 <!-- Заголовок -->
-                <Label Grid.Column="1" Text="{Binding Title}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" Margin="-40,0,0,0" />
+                <Label Text="{Binding Title}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </Grid>
             
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{DynamicResource Theme_Ocean_Dust}" />
+
+            <!-- App Customization (Moved from Flyout) -->
+            <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    Padding="16">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="APPEARANCE &amp; LANGUAGE" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    
+                    <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
+                        <!-- Language Switch -->
+                        <Grid HeightRequest="40" WidthRequest="110" VerticalOptions="Center">
+                            <Border StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" />
+                            <Border x:Name="LangThumb" StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" WidthRequest="50" HorizontalOptions="{Binding LangThumbAlignment, Source={RelativeSource AncestorType={x:Type ContentPage}}}" Margin="4" />
+                            <Grid ColumnDefinitions="*,*">
+                                <Label Grid.Column="0" Text="🇬🇧 EN" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Label Grid.Column="1" Text="🇺🇦 UA" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </Grid>
+                            <Button BackgroundColor="Transparent" BorderWidth="0" Clicked="OnToggleLanguageClicked" HorizontalOptions="Fill" VerticalOptions="Fill" ZIndex="10" />
+                        </Grid>
+
+                        <!-- Theme Switch -->
+                        <Grid HeightRequest="40" WidthRequest="130" VerticalOptions="Center">
+                            <Border StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" />
+                            <Border x:Name="ThemeThumb" StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" WidthRequest="40" HorizontalOptions="{Binding ThemeThumbAlignment, Source={RelativeSource AncestorType={x:Type ContentPage}}}" Margin="4" />
+                            <Grid ColumnDefinitions="*,*,*">
+                                <Label Grid.Column="0" Text="☀️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="🌙" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Grid.Column="2" Text="🌸" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Grid>
+                            <Button BackgroundColor="Transparent" BorderWidth="0" Clicked="OnToggleThemeClicked" HorizontalOptions="Fill" VerticalOptions="Fill" ZIndex="10" />
+                        </Grid>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
 
             <!-- Особиста інформація -->
             <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"

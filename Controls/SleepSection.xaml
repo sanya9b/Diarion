@@ -12,57 +12,52 @@
             Stroke="{DynamicResource Theme_Dust_Ocean}"
             BackgroundColor="{DynamicResource Theme_Snow_Black}"
             Padding="16">
-        <Border.Shadow>
-            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.1" />
-        </Border.Shadow>
-        <VerticalStackLayout Spacing="8">
-            <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
-                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                <Button Grid.Column="1"
-                             Text="🔄"
-                             BackgroundColor="Transparent"
-                             TextColor="{DynamicResource Theme_Ocean_Dust}"
-                             HeightRequest="32"
-                             WidthRequest="32"
-                             Padding="0"
-                             VerticalOptions="Center"
-                             Command="{Binding Source={RelativeSource AncestorType={x:Type vms:MainViewModel}}, Path=ImportSleepDataCommand}"
-                             ToolTipProperties.Text="Sync from Health" />
-                <Label Grid.Column="2" Text="{Binding SleepDurationText}" FontAttributes="Bold" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="End" VerticalOptions="Center" />
+        <VerticalStackLayout Spacing="10">
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                
+                <HorizontalStackLayout Grid.Column="1" Spacing="12">
+                    <Label Text="{Binding SleepDurationText}" FontAttributes="Bold" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
             </Grid>
-            <Grid ColumnDefinitions="Auto, *, Auto, *" ColumnSpacing="12" Margin="0,4">
-                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepStartLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                <Border Grid.Column="1" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 8" HeightRequest="36">
+            
+            <Grid ColumnDefinitions="Auto, Auto, *, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepStartLabel}" FontSize="9" TextColor="{DynamicResource Theme_Ocean_Dust}" TextTransform="Uppercase" VerticalOptions="Center" />
+                <Border Grid.Column="1" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 8" HeightRequest="28" Padding="8,0" VerticalOptions="Center">
                     <Grid>
                         <Label Text="{Binding SleepStart, StringFormat='{0:hh\\:mm}'}" 
                                IsVisible="{Binding HasSleepStart}"
-                               TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                        <Label Text="HH:mm" 
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="00:00" 
                                IsVisible="{Binding IsSleepStartEmpty}"
-                               TextColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                        <TimePicker Time="{Binding SleepStart, TargetNullValue='00:00', FallbackValue='00:00'}" Format="HH:mm"
-                                    TextColor="Transparent" BackgroundColor="Transparent" />
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <TimePicker Time="{Binding SleepStart, TargetNullValue='00:00', FallbackValue='00:00'}" Format="HH:mm" TextColor="Transparent" BackgroundColor="Transparent" />
                     </Grid>
                 </Border>
-
-                <Label Grid.Column="2" Text="{x:Static localization:AppResources.SleepEndLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" Margin="4,0,0,0" />
-                <Border Grid.Column="3" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 8" HeightRequest="36">
+                
+                <Label Grid.Column="2" Text="{x:Static localization:AppResources.SleepEndLabel}" FontSize="9" TextColor="{DynamicResource Theme_Ocean_Dust}" TextTransform="Uppercase" VerticalOptions="Center" HorizontalOptions="End" />
+                <Border Grid.Column="3" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 8" HeightRequest="28" Padding="8,0" VerticalOptions="Center">
                     <Grid>
                         <Label Text="{Binding SleepEnd, StringFormat='{0:hh\\:mm}'}" 
                                IsVisible="{Binding HasSleepEnd}"
-                               TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                        <Label Text="HH:mm" 
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="00:00" 
                                IsVisible="{Binding IsSleepEndEmpty}"
-                               TextColor="{DynamicResource Theme_Ocean_Dust}" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                        <TimePicker Time="{Binding SleepEnd, TargetNullValue='00:00', FallbackValue='00:00'}" Format="HH:mm"
-                                    TextColor="Transparent" BackgroundColor="Transparent" />
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <TimePicker Time="{Binding SleepEnd, TargetNullValue='00:00', FallbackValue='00:00'}" Format="HH:mm" TextColor="Transparent" BackgroundColor="Transparent" />
                     </Grid>
                 </Border>
             </Grid>
-            <Grid ColumnDefinitions="110, *" ColumnSpacing="12">
-                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepQualityLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                <controls:RatingView Grid.Column="1" Value="{Binding SleepQuality}" MaxValue="5" VerticalOptions="Center" HorizontalOptions="Start" />
+
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepQualityLabel}" VerticalOptions="Center" FontSize="9" TextColor="{DynamicResource Theme_Ocean_Dust}" TextTransform="Uppercase" />
+                <controls:RatingView Grid.Column="1" Value="{Binding SleepQuality}" MaxValue="5" VerticalOptions="Center" HorizontalOptions="End" />
             </Grid>
+
+            <!-- Text Field for Notes -->
+            <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0" Margin="0,2,0,0">
+                <Entry Text="{Binding SleepNotes}" Placeholder="{x:Static localization:AppResources.NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" />
+            </Border>
         </VerticalStackLayout>
     </Border>
 </ContentView>

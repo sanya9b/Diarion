@@ -191,7 +191,7 @@
     <value>TODAY</value>
   </data>
   <data name="HabitTrackerTitle" xml:space="preserve">
-    <value>Harmful Habit Tracker</value>
+    <value>Habit Tracker</value>
   </data>
   <data name="HabitTrackerSubtitle" xml:space="preserve">
     <value>Create a separate tracker for each habit and mark every clean day.</value>
@@ -200,10 +200,10 @@
     <value>New tracker</value>
   </data>
   <data name="HabitTrackerSetupSubtitle" xml:space="preserve">
-    <value>Add the harmful habit name, choose the start date, and keep daily marks in one place.</value>
+    <value>Add the habit name, choose the start date, and keep daily marks in one place.</value>
   </data>
   <data name="HabitTrackerNameLabel" xml:space="preserve">
-    <value>Harmful habit name</value>
+    <value>Habit name</value>
   </data>
   <data name="HabitTrackerNamePlaceholder" xml:space="preserve">
     <value>For example: smoking or doomscrolling</value>
@@ -224,7 +224,7 @@
     <value>Marked days</value>
   </data>
   <data name="HabitTrackerNameRequiredMessage" xml:space="preserve">
-    <value>Enter the harmful habit name.</value>
+    <value>Enter the habit name.</value>
   </data>
   <data name="HabitTrackerDuplicateMessage" xml:space="preserve">
     <value>A tracker with this name already exists.</value>

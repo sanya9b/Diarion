@@ -16,36 +16,10 @@
 
     <Grid Padding="0" RowDefinitions="Auto, *">
         
-        <!-- Custom Top Bar -->
-        <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
-            <!-- Hamburger Menu Button -->
-            <Grid Grid.Column="0" Padding="10,0">
-                <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding OpenMenuCommand}" />
-                </Grid.GestureRecognizers>
-                <Label Text="☰" FontSize="32" 
-                       InputTransparent="True"
-                       TextColor="{DynamicResource Theme_Midnight_Snow}" 
-                       VerticalOptions="Center" HorizontalOptions="Start" />
-            </Grid>
+        <!-- Custom Top Bar: Removed Hamburger Menu for Clean Minimalism -->
+        <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="*, Auto" ColumnSpacing="12">
             
-            <controls:QuickMenuView Grid.Column="1" />
-
-            <!-- Streak Badge -->
-            <Border Grid.Column="2" 
-                    IsVisible="{Binding IsStreakVisible}"
-                    StrokeThickness="1" 
-                    Stroke="{DynamicResource Theme_Coral}" 
-                    BackgroundColor="{DynamicResource Theme_Snow_Black}" 
-                    StrokeShape="RoundRectangle 16"
-                    Padding="12,0" 
-                    VerticalOptions="Center" 
-                    HeightRequest="36">
-                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                    <Label Text="🔥" FontSize="16" VerticalOptions="Center" />
-                    <Label Text="{Binding CurrentStreak}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-            </Border>
+            <controls:QuickMenuView Grid.Column="0" HorizontalOptions="Start" />
         </Grid>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
@@ -54,82 +28,79 @@
                 <SwipeGestureRecognizer Direction="Down" Command="{Binding CalendarSection.ToggleCalendarCommand}" />
             </Grid.GestureRecognizers>
 
-            <VerticalStackLayout Grid.Row="0" Padding="24,4,24,10" Spacing="2">
+            <VerticalStackLayout Grid.Row="0" Padding="24,4,24,10" Spacing="0">
                 
                 <controls:CalendarView IsExpanded="{Binding BindingContext.CalendarSection.IsCalendarExpanded, Source={x:Reference PageRoot}}" BindingContext="{Binding CalendarSection}" x:DataType="viewmodels:CalendarSectionViewModel" />
 
-                <VerticalStackLayout Margin="0,0,0,10" Spacing="0" HorizontalOptions="Fill">
-                    <BoxView HeightRequest="4" WidthRequest="32" CornerRadius="2" 
-                             BackgroundColor="{DynamicResource Theme_Dust_Ocean}" 
-                             HorizontalOptions="Center" Margin="0,0,0,4" />
-                    <Label Text="{Binding CalendarSection.SelectedDateDayName}" FontFamily="MarckScript" FontSize="32" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <!-- Date Typographical Editorial Style -->
+                <VerticalStackLayout Margin="0,-4,0,16" Spacing="0" HorizontalOptions="Fill">
+                    <Label Text="{Binding CalendarSection.SelectedDateDayName}" FontFamily="MarckScript" FontSize="28" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </VerticalStackLayout>
 
-                <Grid ColumnDefinitions="*, *" Margin="0,4,0,6">
-                    <Border Grid.Column="0" StrokeThickness="0" BackgroundColor="Transparent" Padding="0,8">
-                        <Border.GestureRecognizers>
+                <!-- Tabs: Typography-Driven Design -->
+                <HorizontalStackLayout Spacing="24" Margin="0,0,0,16" HorizontalOptions="Center">
+                    <Label Text="{x:Static localization:AppResources.TabDiary}"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SwitchToDiaryModeCommand}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{x:Static localization:AppResources.TabDiary}"
-                               InputTransparent="True"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               FontAttributes="Bold"
-                               FontSize="15">
-                            <Label.Triggers>
-                                <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="True">
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="False">
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
-                    </Border>
-                    <Border Grid.Column="1" StrokeThickness="0" BackgroundColor="Transparent" Padding="0,8">
-                        <Border.GestureRecognizers>
+                        </Label.GestureRecognizers>
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="True">
+                                <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                <Setter Property="FontSize" Value="20" />
+                                <Setter Property="FontAttributes" Value="Bold" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="False">
+                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                <Setter Property="FontSize" Value="16" />
+                                <Setter Property="FontAttributes" Value="None" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+
+                    <Label Text="{x:Static localization:AppResources.TabPlanner}"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SwitchToPlannerModeCommand}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{x:Static localization:AppResources.TabPlanner}"
-                               InputTransparent="True"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               FontAttributes="Bold"
-                               FontSize="15">
-                            <Label.Triggers>
-                                <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="True">
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="False">
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
-                    </Border>
-                    <BoxView Grid.Column="0" HeightRequest="2" BackgroundColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="End" IsVisible="{Binding IsDiaryMode}" />
-                    <BoxView Grid.Column="1" HeightRequest="2" BackgroundColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="End" IsVisible="{Binding IsPlannerMode}" />
-                </Grid>
+                        </Label.GestureRecognizers>
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="True">
+                                <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                <Setter Property="FontSize" Value="20" />
+                                <Setter Property="FontAttributes" Value="Bold" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="False">
+                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                <Setter Property="FontSize" Value="16" />
+                                <Setter Property="FontAttributes" Value="None" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </HorizontalStackLayout>
             </VerticalStackLayout>
 
+            <!-- Bento Box Content Container -->
             <Grid Grid.Row="1">
                 <ScrollView x:Name="DiaryContainer" IsVisible="{Binding IsDiaryMode}" Padding="24,10,24,40">
-                    <VerticalStackLayout Spacing="24" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel">
+                    
+                    <!-- Bento Box Asymmetrical Grid -->
+                    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *" RowSpacing="16" ColumnSpacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel">
                         
-                        <!-- Sleep Block -->
-                        <controls:SleepSection BindingContext="{Binding}" />
+                        <!-- Row 0: Sleep -->
+                        <controls:SleepSection Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+                        
+                        <!-- Row 1: Health -->
+                        <controls:HealthSection Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
 
-                        <!-- Health Block -->
-                        <controls:HealthSection BindingContext="{Binding}" />
+                        <!-- Row 2: Food -->
+                        <controls:FoodTrackerSection Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
 
-                        <!-- Food Block -->
-                        <controls:FoodTrackerSection BindingContext="{Binding}" />
+                        <!-- Row 3: Habits -->
+                        <controls:HabitTrackerSection Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
 
-                        <!-- Habits Block -->
-                        <controls:HabitTrackerSection BindingContext="{Binding}" />
-
-                        <!-- Reflection / Text blocks -->
-                        <controls:ReflectionSection BindingContext="{Binding}" />
-                    </VerticalStackLayout>
+                        <!-- Row 4: Reflection / Text blocks -->
+                        <controls:ReflectionSection Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+                    </Grid>
                 </ScrollView>
 
                 <views:PlannerView x:Name="PlannerContainer" IsVisible="{Binding BindingContext.IsPlannerMode, Source={x:Reference PageRoot}}" BindingContext="{Binding PlannerSection}" />

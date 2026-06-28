@@ -45,6 +45,12 @@ public partial class StatisticsTabItem : ObservableObject
 public partial class StatisticsViewModel : BaseViewModel
 {
     private readonly Diarion.Services.IStatisticsService _statisticsService;
+    private readonly Diarion.Services.IDiaryService _diaryService;
+
+    [ObservableProperty]
+    private int _currentStreak;
+
+    public bool IsStreakVisible => CurrentStreak > 0;
 
     [ObservableProperty]
     private System.Collections.ObjectModel.ObservableCollection<TimeRangeItem> _timeRanges = new();
@@ -77,12 +83,14 @@ public partial class StatisticsViewModel : BaseViewModel
 
     public StatisticsViewModel(
         Diarion.Services.IStatisticsService statisticsService,
+        Diarion.Services.IDiaryService diaryService,
         ViewModels.Statistics.MoodStatsViewModel moodStats,
         ViewModels.Statistics.SleepStatsViewModel sleepStats,
         ViewModels.Statistics.ProductivityStatsViewModel productivityStats,
         ViewModels.Statistics.FinanceStatsViewModel financeStats)
     {
         _statisticsService = statisticsService;
+        _diaryService = diaryService;
         MoodStats = moodStats;
         SleepStats = sleepStats;
         ProductivityStats = productivityStats;
@@ -162,6 +170,9 @@ public partial class StatisticsViewModel : BaseViewModel
         
         try
         {
+            CurrentStreak = await _diaryService.GetCurrentStreakAsync();
+            OnPropertyChanged(nameof(IsStreakVisible));
+
             int days = (int)(SelectedTimeRange?.Option ?? TimeRangeOption.Week);
             
             if (IsGeneralTabVisible)

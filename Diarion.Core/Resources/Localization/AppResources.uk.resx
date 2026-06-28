@@ -191,7 +191,7 @@
     <value>СЬОГОДНІ</value>
   </data>
   <data name="HabitTrackerTitle" xml:space="preserve">
-    <value>Трекер шкідливих звичок</value>
+    <value>Трекер звичок</value>
   </data>
   <data name="HabitTrackerSubtitle" xml:space="preserve">
     <value>Створи окремий трекер для кожної звички та відмічай кожен чистий день.</value>
@@ -200,10 +200,10 @@
     <value>Новий трекер</value>
   </data>
   <data name="HabitTrackerSetupSubtitle" xml:space="preserve">
-    <value>Додай назву шкідливої звички, обери дату старту та веди щоденні відмітки в одному місці.</value>
+    <value>Додай назву звички, обери дату старту та веди щоденні відмітки в одному місці.</value>
   </data>
   <data name="HabitTrackerNameLabel" xml:space="preserve">
-    <value>Назва шкідливої звички</value>
+    <value>Назва звички</value>
   </data>
   <data name="HabitTrackerNamePlaceholder" xml:space="preserve">
     <value>Наприклад: куріння або безкінечний скролінг</value>
@@ -224,7 +224,7 @@
     <value>Відмічено днів</value>
   </data>
   <data name="HabitTrackerNameRequiredMessage" xml:space="preserve">
-    <value>Вкажи назву шкідливої звички.</value>
+    <value>Вкажи назву звички.</value>
   </data>
   <data name="HabitTrackerDuplicateMessage" xml:space="preserve">
     <value>Трекер з такою назвою вже існує.</value>
@@ -431,7 +431,7 @@
     <value>Увімкнути нагадування</value>
   </data>
   <data name="ProfileMenuTitle" xml:space="preserve">
-    <value>Особисті налаштування</value>
+    <value>Налаштування</value>
   </data>
   <data name="GeneralInfoLabel" xml:space="preserve">
     <value>ЗАГАЛЬНА ІНФОРМАЦІЯ</value>

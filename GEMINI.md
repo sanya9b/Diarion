@@ -20,8 +20,15 @@ This file contains the foundational mandates, conventions, and architectural rul
 - **XAML Usage**: Use `Text="{x:Static localization:AppResources.MyKey}"`.
 - **C# Usage**: Use `AppResources.MyKey`.
 
-## 🎨 UI/UX & Theming
-- **Monochromatic Style**: UI elements must be strictly monochromatic based on the base palette. Do not use colorful alerts (e.g., red for delete).
+## 🎨 UI/UX & Modern Design Philosophy
+- **Creative Minimalism & Bento Box**: Reject the "Default" MAUI look. Do not just stack elements in a basic `VerticalStackLayout`. Use `Grid` for creative, overlapping, asymmetrical, or "Bento box" layouts. Treat whitespace as a core UI element with generous Margin/Padding (e.g., 24, 32, 48). Group elements using subtle backgrounds or thin borders (1px Dust or Ocean).
+- **Typography-Driven Design**: Use typography to create structure. Use high contrast in text weights: bold/heavy for large titles, and muted (Ocean), smaller, tracking-spaced uppercase text for subheadings (e.g., `FontSize="10" FontAttributes="Bold" CharacterSpacing="1.5"`).
+- **Custom, Premium Inputs & Controls**: 
+  - **Entries**: Never use default MAUI Entry styling. Wrap in a `Border` (`StrokeShape="RoundRectangle 12"` or `16`), set Entry background to `Transparent`.
+  - **Buttons**: Use Midnight for primary actions and Dust/Earth for secondary. Ensure consistent CornerRadius.
+  - **Interactions**: Suggest state changes using opacity, subtle color shifts, or custom visual indicators rather than standard checkboxes.
+- **Navigation & Layouts**: NO standard hamburger menus (`Flyout`); use modern bottom tabs or floating navigation. NO full-width standard list cells with chevrons; design custom `DataTemplates` (editorial cards / soft blocks).
+- **The Monochromatic Challenge**: UI must be strictly monochromatic. You MUST use iconography, font weights, opacities, and positioning to communicate hierarchy, warnings, or states. NO bright colors (no red for delete, no green for success).
 - **Themes**: Must support Light and Dark modes via `.resx` or `ResourceDictionary`.
 - **Color Palette**:
   - `Midnight`: #22282C

@@ -1,4 +1,4 @@
-using System.Windows.Input;
+using System;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 
@@ -24,8 +24,6 @@ public partial class RoundedCheckBox : ContentView
         set => SetValue(ColorProperty, value);
     }
 
-    // This property is used internally by the XAML to bind the background color.
-    // If it's checked, it uses the Color. If unchecked, it's transparent.
     private Color _computedBackgroundColor = Colors.Transparent;
     public Color ComputedBackgroundColor
     {
@@ -40,13 +38,15 @@ public partial class RoundedCheckBox : ContentView
         }
     }
 
-    public ICommand ToggleCommand { get; }
-
     public RoundedCheckBox()
     {
         InitializeComponent();
-        ToggleCommand = new Command(() => IsChecked = !IsChecked);
         UpdateBackgroundColor();
+    }
+
+    private void OnButtonClicked(object? sender, EventArgs e)
+    {
+        IsChecked = !IsChecked;
     }
 
     private static void OnIsCheckedChanged(BindableObject bindable, object oldValue, object newValue)
@@ -63,8 +63,6 @@ public partial class RoundedCheckBox : ContentView
 
     private void UpdateBackgroundColor()
     {
-        // When checking for color, if Color is null (default), we try to get Theme_Coral from resources,
-        // but it's better to let XAML handle the fallback if possible, or we just resolve it here.
         Color activeColor = Color;
         if (activeColor == null)
         {
