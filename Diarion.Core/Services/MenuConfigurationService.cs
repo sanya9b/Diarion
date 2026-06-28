@@ -14,7 +14,8 @@ public class MenuConfigurationService : IMenuConfigurationService
             { 
                 Id = "Reading", 
                 StrokeColorKey = "Theme_Sage", 
-                PathData = "M 3 4 H 7 V 20 H 3 Z M 3 8 H 7 M 10 6 H 14 V 20 H 10 Z M 10 10 H 14 M 17 5 H 21 V 20 H 17 Z M 17 9 H 21"
+                UsesUniformAspect = true,
+                PathData = "M 19,36 H 50 C 50.5,36 51,36.5 51,37 V 44 C 51,44.5 50.5,45 50,45 H 19 C 17.5,45 16,43.5 16,42 V 38 C 16,36.5 17.5,36 19,36 Z M 22,36 V 45 M 45,28 H 15 C 14.5,28 14,28.5 14,29 V 36 C 14,36.5 14.5,37 15,37 H 45 C 46.5,37 48,35.5 48,34 V 30 C 48,28.5 46.5,28 45,28 Z M 42,28 V 37 M 20,20 H 46 C 46.5,20 47,20.5 47,21 V 28 C 47,28.5 46.5,29 46,29 H 20 C 18.5,29 17,27.5 17,26 V 22 C 17,20.5 18.5,20 20,20 Z M 23,20 V 29 M 47,39 H 51 M 47,42 H 51 M 18,31 H 14 M 18,34 H 14 M 43,23 H 47 M 43,26 H 47 M 29,20 V 32 L 32,29 L 35,32 V 20 Z"
             },
             new QuickMenuItem 
             { 
