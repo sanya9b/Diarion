@@ -682,4 +682,7 @@
   <data name="BiometricErrorMessage" xml:space="preserve">
     <value>Біометрична автентифікація не налаштована або недоступна на цьому пристрої.</value>
   </data>
+  <data name="EditTransactionTitle" xml:space="preserve">
+    <value>Редагувати транзакцію</value>
+  </data>
 </root>

@@ -670,4 +670,7 @@
   <data name="BiometricErrorMessage" xml:space="preserve">
     <value>Biometric authentication is not set up or not available on this device.</value>
   </data>
+  <data name="EditTransactionTitle" xml:space="preserve">
+    <value>Edit Transaction</value>
+  </data>
 </root>

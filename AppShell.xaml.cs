@@ -6,12 +6,49 @@ namespace Diarion;
 
 public partial class AppShell : Shell
 {
-        public AppShell()
+    private LayoutOptions _langThumbAlignment;
+    public LayoutOptions LangThumbAlignment
+    {
+        get => _langThumbAlignment;
+        set
         {
+            _langThumbAlignment = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private LayoutOptions _themeThumbAlignment;
+    public LayoutOptions ThemeThumbAlignment
+    {
+        get => _themeThumbAlignment;
+        set
+        {
+            _themeThumbAlignment = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public AppShell()
+    {
         using var _ = StartupTrace.Measure("AppShell..ctor");
-                InitializeComponent();
+        
+        // Налаштовуємо позицію бігунка (switch) для мови при старті
+        var currentLanguage = Preferences.Get("AppLanguage", "en");
+        LangThumbAlignment = currentLanguage == "uk" ? LayoutOptions.End : LayoutOptions.Start;
+
+        // Налаштовуємо позицію бігунка (switch) для теми при старті
+        var currentTheme = Diarion.Services.ThemeManager.GetCurrentTheme();
+        if (currentTheme == Diarion.Services.ThemeManager.ThemePink)
+            ThemeThumbAlignment = LayoutOptions.End;
+        else if (currentTheme == Diarion.Services.ThemeManager.ThemeDark)
+            ThemeThumbAlignment = LayoutOptions.Center;
+        else
+            ThemeThumbAlignment = LayoutOptions.Start;
+
+        InitializeComponent();
         StartupTrace.Mark("AppShell.InitializeComponent complete");
-                Routing.RegisterRoute("DiaryDetail", typeof(Views.DiaryDetailPage));
+        
+        Routing.RegisterRoute("DiaryDetail", typeof(Views.DiaryDetailPage));
         Routing.RegisterRoute("TodoDetail", typeof(Views.TodoDetailPage));
         Routing.RegisterRoute("HabitTracker", typeof(Views.HabitTrackerPage));
         Routing.RegisterRoute("ReadingTracker", typeof(Views.ReadingTrackerPage));
@@ -19,20 +56,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("GoodDeeds", typeof(Views.GoodDeedsPage));
         Routing.RegisterRoute("Wishlist", typeof(Views.WishlistPage));
         Routing.RegisterRoute("Finance", typeof(Views.FinancePage));
-
-        // Налаштовуємо позицію бігунка (switch) для мови при старті
-        var currentLanguage = Preferences.Get("AppLanguage", "en");
-        LangThumb.HorizontalOptions = currentLanguage == "uk" ? LayoutOptions.End : LayoutOptions.Start;
-
-        // Налаштовуємо позицію бігунка (switch) для теми при старті
-        var currentTheme = Diarion.Services.ThemeManager.GetCurrentTheme();
-        if (currentTheme == Diarion.Services.ThemeManager.ThemePink)
-            ThemeThumb.HorizontalOptions = LayoutOptions.End;
-        else if (currentTheme == Diarion.Services.ThemeManager.ThemeDark)
-            ThemeThumb.HorizontalOptions = LayoutOptions.Center;
-        else
-            ThemeThumb.HorizontalOptions = LayoutOptions.Start;
-        }
+    }
 
     private async void OnToggleThemeClicked(object? sender, TappedEventArgs e)
     {
@@ -52,11 +76,11 @@ public partial class AppShell : Shell
 
         // Оновлюємо UI Thumb
         if (newTheme == Diarion.Services.ThemeManager.ThemePink)
-            ThemeThumb.HorizontalOptions = LayoutOptions.End;
+            ThemeThumbAlignment = LayoutOptions.End;
         else if (newTheme == Diarion.Services.ThemeManager.ThemeDark)
-            ThemeThumb.HorizontalOptions = LayoutOptions.Center;
+            ThemeThumbAlignment = LayoutOptions.Center;
         else
-            ThemeThumb.HorizontalOptions = LayoutOptions.Start;
+            ThemeThumbAlignment = LayoutOptions.Start;
 
         Current.FlyoutIsPresented = false;
     }

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Diarion.Services;
 using Diarion.Services.Database;
+using Diarion.Core.Services;
 using Diarion.ViewModels;
 using Diarion.ViewModels.Statistics;
 using Diarion.Views;
@@ -29,6 +30,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IBackupService, BackupService>();
         services.AddSingleton<INavigationService, MauiNavigationService>();
         services.AddSingleton<IDialogService, MauiDialogService>();
+        services.AddSingleton<IHealthDataService, HealthDataService>();
         
         return services;
     }
@@ -52,6 +54,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<MoodStatsViewModel>();
         services.AddTransient<SleepStatsViewModel>();
         services.AddTransient<ProductivityStatsViewModel>();
+        services.AddTransient<FinanceStatsViewModel>();
         services.AddTransient<StatisticsViewModel>();
         
         services.AddTransient<WishlistViewModel>();

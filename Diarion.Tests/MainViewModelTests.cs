@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Core.Services;
 using Diarion.ViewModels;
 using FluentAssertions;
 using Moq;
@@ -95,6 +96,7 @@ public class MainViewModelTests
             new Mock<IDiaryHabitSyncService>().Object,
             _navigationServiceMock.Object,
             _dialogServiceMock.Object,
+            new Mock<IHealthDataService>().Object,
             _calendarSection,
             _plannerSection,
             _quickMenuSection,

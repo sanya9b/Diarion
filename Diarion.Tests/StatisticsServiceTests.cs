@@ -30,7 +30,7 @@ public class StatisticsServiceTests
             .ReturnsAsync(mockData);
         var mockTodoService = new Mock<ITodoService>();
 
-        var statsService = new StatisticsService(mockDiaryService.Object, mockTodoService.Object);
+        var statsService = new StatisticsService(mockDiaryService.Object, mockTodoService.Object, new Mock<IFinanceService>().Object);
 
         // Act
         var result = await statsService.GetSleepStatisticsAsync(7);
@@ -62,7 +62,7 @@ public class StatisticsServiceTests
             .ReturnsAsync(mockData);
         var mockTodoService = new Mock<ITodoService>();
 
-        var statsService = new StatisticsService(mockDiaryService.Object, mockTodoService.Object);
+        var statsService = new StatisticsService(mockDiaryService.Object, mockTodoService.Object, new Mock<IFinanceService>().Object);
 
         // Act
         var result = await statsService.GetMoodStatisticsAsync(7);
@@ -91,7 +91,7 @@ public class StatisticsServiceTests
         mockTodoService.Setup(s => s.GetTodoStatsSummaryAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .ReturnsAsync(new TodoStatistics { TotalCount = 3, CompletedCount = 2 });
 
-        var statsService = new StatisticsService(mockDiaryService.Object, mockTodoService.Object);
+        var statsService = new StatisticsService(mockDiaryService.Object, mockTodoService.Object, new Mock<IFinanceService>().Object);
 
         // Act
         var result = await statsService.GetTodoStatisticsAsync(7);

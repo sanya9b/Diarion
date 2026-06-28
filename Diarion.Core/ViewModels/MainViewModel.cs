@@ -10,6 +10,7 @@ using Diarion.Diagnostics;
 using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Core.Services;
 using Diarion.Helpers;
 
 namespace Diarion.ViewModels;
@@ -20,6 +21,7 @@ public partial class MainViewModel : BaseViewModel
     private readonly IDiaryHabitSyncService _diaryHabitSyncService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly IHealthDataService _healthDataService;
 
     public CalendarSectionViewModel CalendarSection { get; }
     public PlannerSectionViewModel PlannerSection { get; }
@@ -29,6 +31,11 @@ public partial class MainViewModel : BaseViewModel
 
     [ObservableProperty]
     private DiaryEntryViewModel? _currentEntry;
+
+    [ObservableProperty]
+    private int _currentStreak;
+
+    public bool IsStreakVisible => CurrentStreak > 0;
 
     [ObservableProperty]
     private bool _isPlannerMode;
@@ -43,6 +50,7 @@ public partial class MainViewModel : BaseViewModel
         IDiaryHabitSyncService diaryHabitSyncService,
         INavigationService navigationService,
         IDialogService dialogService,
+        IHealthDataService healthDataService,
         CalendarSectionViewModel calendarSection,
         PlannerSectionViewModel plannerSection,
         QuickMenuViewModel quickMenuSection,
@@ -54,6 +62,7 @@ public partial class MainViewModel : BaseViewModel
         _diaryHabitSyncService = diaryHabitSyncService;
         _navigationService = navigationService;
         _dialogService = dialogService;
+        _healthDataService = healthDataService;
         
         CalendarSection = calendarSection;
         PlannerSection = plannerSection;
@@ -194,6 +203,28 @@ public partial class MainViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    public async Task ImportSleepDataAsync()
+    {
+        if (CurrentEntry == null) return;
+
+        if (!await _healthDataService.IsSupportedAsync())
+        {
+            await _dialogService.ShowAlertAsync("Error", "Health sync is not supported on this device.", "OK");
+            return;
+        }
+
+        var hasPermission = await _healthDataService.RequestPermissionsAsync();
+        if (hasPermission)
+        {
+            var data = await _healthDataService.GetSleepDataAsync(CurrentEntry.Date);
+            if (data.SleepStart.HasValue)
+                CurrentEntry.SleepStart = data.SleepStart;
+            if (data.SleepEnd.HasValue)
+                CurrentEntry.SleepEnd = data.SleepEnd;
+        }
+    }
+
+    [RelayCommand]
     public async Task SaveEntryAsync()
     {
         if (CurrentEntry == null) return;
@@ -203,6 +234,7 @@ public partial class MainViewModel : BaseViewModel
         {
             CurrentEntry.SyncToModel();
             await _diaryService.SaveEntryAsync(CurrentEntry.Model);
+            await UpdateStreakAsync();
         }
         catch (Exception ex)
         {
@@ -227,6 +259,7 @@ public partial class MainViewModel : BaseViewModel
             IsBusy = true;
             await LoadDayContentAsync(CalendarSection.GetSelectedDate());
             await CalendarSection.UpdateCalendarTasksCompletionAsync();
+            await UpdateStreakAsync();
         }
         catch (Exception ex)
         {
@@ -236,6 +269,12 @@ public partial class MainViewModel : BaseViewModel
         {
             IsBusy = false;
         }
+    }
+
+    private async Task UpdateStreakAsync()
+    {
+        CurrentStreak = await _diaryService.GetCurrentStreakAsync();
+        OnPropertyChanged(nameof(IsStreakVisible));
     }
 
     [RelayCommand]

@@ -224,6 +224,66 @@
                 </Border>
             </VerticalStackLayout>
             
+            <!-- FINANCE TAB -->
+            <VerticalStackLayout Spacing="20" IsVisible="{Binding IsFinanceTabVisible}">
+                
+                <VerticalStackLayout IsVisible="{Binding FinanceStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
+                    <Label Text="💸" FontSize="48" HorizontalOptions="Center" />
+                    <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <!-- Finance Summary Card -->
+                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    Padding="16"
+                    IsVisible="{Binding FinanceStats.IsNotEmpty}">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                </Border.Shadow>
+                
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="{x:Static localization:AppResources.FinanceTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    
+                    <!-- Overall Balances -->
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="{x:Static localization:AppResources.IncomeLabel}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Label Text="{Binding FinanceStats.TotalIncome, StringFormat='+{0:N2}'}" FontAttributes="Bold" FontSize="18" TextColor="{DynamicResource Theme_Sage}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" HorizontalOptions="End">
+                            <Label Text="{x:Static localization:AppResources.ExpenseLabel}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="End" />
+                            <Label Text="{Binding FinanceStats.TotalExpense, StringFormat='-{0:N2}'}" FontAttributes="Bold" FontSize="18" TextColor="{DynamicResource Theme_Coral}" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
+
+                    <!-- Expenses Chart & Legend -->
+                    <Label Text="{x:Static localization:AppResources.ExpenseLabel}" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" Margin="0,8,0,0" />
+                    
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="16">
+                        
+                        <VerticalStackLayout Grid.Column="0" Spacing="10" VerticalOptions="Center" BindableLayout.ItemsSource="{Binding FinanceStats.ExpenseByCategory}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:CategoryStatItem">
+                                    <Grid ColumnDefinitions="12, *, Auto" ColumnSpacing="8">
+                                        <BoxView Grid.Column="0" Color="{Binding ColorHex}" CornerRadius="6" WidthRequest="12" HeightRequest="12" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding Category}" FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                        <Label Grid.Column="2" Text="{Binding Percentage, StringFormat='{0:P0}'}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <controls:CategoryDonutChart Grid.Column="1" WidthRequest="120" HeightRequest="120" 
+                                                     Items="{Binding FinanceStats.ExpenseByCategory}" 
+                                                     VerticalOptions="Center" HorizontalOptions="Center" />
+                    </Grid>
+                </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+            
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

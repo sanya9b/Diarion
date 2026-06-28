@@ -34,5 +34,9 @@
 	<string>Used to attach photos to your diary entries.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to take photos for your diary entries.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Used to read sleep data and populate your diary automatically.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Used to read sleep data and populate your diary automatically.</string>
 </dict>
 </plist>

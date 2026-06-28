@@ -24,6 +24,28 @@ public class FinanceService : IFinanceService
         return Task.Run(() => FinanceCollection.Query().OrderByDescending(x => x.Date).ToList());
     }
 
+    public Task<List<FinanceTransaction>> GetFinanceTransactionsForStatsAsync(DateTime startDate, DateTime endDate)
+    {
+        return Task.Run(() => FinanceCollection.Query()
+            .Where(x => x.Date >= startDate.Date && x.Date <= endDate.Date)
+            .OrderByDescending(x => x.Date)
+            .ToList());
+    }
+
+    public Task<List<string>> GetCategoriesAsync(TransactionType type)
+    {
+        return Task.Run(() => 
+        {
+            return FinanceCollection.Query()
+                .Where(x => x.Type == type)
+                .Select(x => x.Category)
+                .ToEnumerable()
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        });
+    }
+
     public Task SaveFinanceTransactionAsync(FinanceTransaction transaction)
     {
         return Task.Run(() =>

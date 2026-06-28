@@ -125,4 +125,73 @@ public class FinanceViewModelTests
         // Assert
         diaryServiceMock.Verify(s => s.SaveFinanceTransactionAsync(It.IsAny<FinanceTransaction>()), Times.Never);
     }
+
+    [Fact]
+    public async Task ToggleAddTransaction_LoadsCategoriesAndPopulatesSuggestions()
+    {
+        // Arrange
+        var financeServiceMock = new Mock<IFinanceService>();
+        financeServiceMock
+            .Setup(s => s.GetCategoriesAsync(TransactionType.Expense))
+            .ReturnsAsync(new List<string> { "Groceries", "Transport", "Entertainment" });
+            
+        var viewModel = new FinanceViewModel(financeServiceMock.Object);
+        
+        // Act - Open the add dialog
+        await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null);
+        
+        // Assert
+        viewModel.IsAddTransactionVisible.Should().BeTrue();
+        financeServiceMock.Verify(s => s.GetCategoriesAsync(TransactionType.Expense), Times.Once);
+        viewModel.SuggestedCategories.Should().HaveCount(3);
+        viewModel.SuggestedCategories.Should().Contain("Groceries");
+    }
+
+    [Fact]
+    public async Task SetTransactionType_ReloadsCategoriesForSelectedType()
+    {
+        // Arrange
+        var financeServiceMock = new Mock<IFinanceService>();
+        financeServiceMock
+            .Setup(s => s.GetCategoriesAsync(TransactionType.Expense))
+            .ReturnsAsync(new List<string> { "Groceries" });
+        financeServiceMock
+            .Setup(s => s.GetCategoriesAsync(TransactionType.Income))
+            .ReturnsAsync(new List<string> { "Salary", "Bonus" });
+            
+        var viewModel = new FinanceViewModel(financeServiceMock.Object);
+        await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null); // Defaults to Expense
+        
+        // Act
+        await viewModel.SetTransactionTypeCommand.ExecuteAsync("Income");
+        
+        // Assert
+        viewModel.IsIncomeTypeSelected.Should().BeTrue();
+        financeServiceMock.Verify(s => s.GetCategoriesAsync(TransactionType.Income), Times.Once);
+        viewModel.SuggestedCategories.Should().HaveCount(2);
+        viewModel.SuggestedCategories.Should().Contain("Salary");
+    }
+
+    [Fact]
+    public async Task SelectCategory_SetsNewCategoryAndClearsSuggestions()
+    {
+        // Arrange
+        var financeServiceMock = new Mock<IFinanceService>();
+        financeServiceMock
+            .Setup(s => s.GetCategoriesAsync(It.IsAny<TransactionType>()))
+            .ReturnsAsync(new List<string> { "Groceries" });
+            
+        var viewModel = new FinanceViewModel(financeServiceMock.Object);
+        await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null);
+        
+        // Ensure suggestions are initially populated
+        viewModel.SuggestedCategories.Should().NotBeEmpty();
+
+        // Act
+        viewModel.SelectCategoryCommand.Execute("Groceries");
+
+        // Assert
+        viewModel.NewCategory.Should().Be("Groceries");
+        viewModel.SuggestedCategories.Should().BeEmpty();
+    }
 }

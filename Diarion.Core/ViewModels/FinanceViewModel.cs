@@ -30,11 +30,20 @@ public partial class FinanceViewModel : BaseViewModel
     [ObservableProperty]
     private TransactionType _newTransactionType = TransactionType.Expense;
 
+    private FinanceTransaction? _editingTransaction;
+
+    public bool IsEditing => _editingTransaction != null;
+
     [ObservableProperty]
     private string _newAmountText = string.Empty;
 
     [ObservableProperty]
     private string _newCategory = string.Empty;
+
+    partial void OnNewCategoryChanged(string value)
+    {
+        UpdateSuggestions(value);
+    }
 
     [ObservableProperty]
     private string _newNote = string.Empty;
@@ -45,10 +54,77 @@ public partial class FinanceViewModel : BaseViewModel
     public bool IsExpenseTypeSelected => NewTransactionType == TransactionType.Expense;
     public bool IsIncomeTypeSelected => NewTransactionType == TransactionType.Income;
 
+    private List<string> _allCategories = new();
+    public ObservableCollection<string> SuggestedCategories { get; } = new();
+
     public FinanceViewModel(IFinanceService financeService)
     {
         _financeService = financeService;
         Title = Diarion.Resources.Localization.AppResources.FinanceTitle ?? "Income/Expenses";
+    }
+
+    private void UpdateSuggestions(string query)
+    {
+        SuggestedCategories.Clear();
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            foreach (var c in _allCategories.Take(5))
+            {
+                SuggestedCategories.Add(c);
+            }
+            return;
+        }
+
+        var filtered = _allCategories
+            .Where(c => c.Contains(query, StringComparison.OrdinalIgnoreCase) && !c.Equals(query, StringComparison.OrdinalIgnoreCase))
+            .Take(5)
+            .ToList();
+
+        foreach (var c in filtered)
+        {
+            SuggestedCategories.Add(c);
+        }
+    }
+
+    [RelayCommand]
+    private void SelectCategory(string category)
+    {
+        NewCategory = category;
+        SuggestedCategories.Clear(); // Hide suggestions after selection
+    }
+
+    private void ResetForm()
+    {
+        _editingTransaction = null;
+        OnPropertyChanged(nameof(IsEditing));
+        NewAmountText = string.Empty;
+        NewCategory = string.Empty;
+        NewNote = string.Empty;
+        NewDate = DateTime.Today;
+        NewTransactionType = TransactionType.Expense;
+        OnPropertyChanged(nameof(IsExpenseTypeSelected));
+        OnPropertyChanged(nameof(IsIncomeTypeSelected));
+    }
+
+    [RelayCommand]
+    private async Task EditTransactionAsync(FinanceTransaction transaction)
+    {
+        if (transaction == null) return;
+        
+        _editingTransaction = transaction;
+        OnPropertyChanged(nameof(IsEditing));
+        
+        NewTransactionType = transaction.Type;
+        NewAmountText = transaction.Amount.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+        NewCategory = transaction.Category;
+        NewNote = transaction.Note;
+        NewDate = transaction.Date;
+        
+        OnPropertyChanged(nameof(IsExpenseTypeSelected));
+        OnPropertyChanged(nameof(IsIncomeTypeSelected));
+
+        IsAddTransactionVisible = true;
+        await LoadCategoriesForCurrentTypeAsync();
     }
 
     public async Task LoadAsync()
@@ -85,19 +161,38 @@ public partial class FinanceViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void ToggleAddTransaction()
+    private async Task ToggleAddTransactionAsync()
     {
         IsAddTransactionVisible = !IsAddTransactionVisible;
+        if (IsAddTransactionVisible)
+        {
+            if (!IsEditing) 
+            {
+                ResetForm();
+            }
+            await LoadCategoriesForCurrentTypeAsync();
+        }
+        else
+        {
+            ResetForm();
+        }
+    }
+
+    private async Task LoadCategoriesForCurrentTypeAsync()
+    {
+        _allCategories = await _financeService.GetCategoriesAsync(NewTransactionType);
+        UpdateSuggestions(NewCategory);
     }
 
     [RelayCommand]
-    private void SetTransactionType(string typeStr)
+    private async Task SetTransactionTypeAsync(string typeStr)
     {
         if (Enum.TryParse<TransactionType>(typeStr, out var type))
         {
             NewTransactionType = type;
             OnPropertyChanged(nameof(IsExpenseTypeSelected));
             OnPropertyChanged(nameof(IsIncomeTypeSelected));
+            await LoadCategoriesForCurrentTypeAsync();
         }
     }
 
@@ -109,21 +204,31 @@ public partial class FinanceViewModel : BaseViewModel
             return;
         }
 
-        var transaction = new FinanceTransaction
+        FinanceTransaction transaction;
+        if (_editingTransaction != null)
         {
-            Type = NewTransactionType,
-            Amount = amount,
-            Category = NewCategory?.Trim() ?? string.Empty,
-            Note = NewNote?.Trim() ?? string.Empty,
-            Date = NewDate.Date
-        };
+            transaction = _editingTransaction;
+            transaction.Type = NewTransactionType;
+            transaction.Amount = amount;
+            transaction.Category = NewCategory?.Trim() ?? string.Empty;
+            transaction.Note = NewNote?.Trim() ?? string.Empty;
+            transaction.Date = NewDate.Date;
+        }
+        else
+        {
+            transaction = new FinanceTransaction
+            {
+                Type = NewTransactionType,
+                Amount = amount,
+                Category = NewCategory?.Trim() ?? string.Empty,
+                Note = NewNote?.Trim() ?? string.Empty,
+                Date = NewDate.Date
+            };
+        }
 
         await _financeService.SaveFinanceTransactionAsync(transaction);
         
-        NewAmountText = string.Empty;
-        NewCategory = string.Empty;
-        NewNote = string.Empty;
-        NewDate = DateTime.Today;
+        ResetForm();
         IsAddTransactionVisible = false;
 
         await LoadAsync();

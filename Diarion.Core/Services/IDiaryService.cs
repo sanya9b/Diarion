@@ -12,6 +12,7 @@ public interface IDiaryService
     Task<DiaryEntry> GetEntryByIdAsync(Guid id);
     Task SaveEntryAsync(DiaryEntry entry);
     Task DeleteEntryAsync(Guid id);
+    Task<int> GetCurrentStreakAsync();
 
     // Statistics (Optimized DB Queries)
     Task<IEnumerable<DiaryEntryStatsDto>> GetDiaryEntriesForStatsAsync(DateTime startDate, DateTime endDate);

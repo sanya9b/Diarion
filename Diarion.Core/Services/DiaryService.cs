@@ -66,6 +66,57 @@ public class DiaryService : IDiaryService
         await _todoService.DeleteTodosByDiaryEntryAsync(id);
     }
 
+    public Task<int> GetCurrentStreakAsync()
+    {
+        return Task.Run(() =>
+        {
+            var dates = EntriesCollection.Query()
+                .Select(x => x.Date)
+                .ToEnumerable()
+                .Select(d => d.Date)
+                .Distinct()
+                .OrderByDescending(d => d)
+                .ToList();
+
+            if (!dates.Any()) return 0;
+
+            var today = DateTime.Today;
+            var yesterday = today.AddDays(-1);
+
+            int streak = 0;
+            DateTime currentDateToCheck;
+
+            if (dates[0] == today)
+            {
+                currentDateToCheck = today;
+            }
+            else if (dates[0] == yesterday)
+            {
+                currentDateToCheck = yesterday;
+            }
+            else
+            {
+                // Last entry was before yesterday, streak is broken
+                return 0;
+            }
+
+            foreach (var date in dates)
+            {
+                if (date == currentDateToCheck)
+                {
+                    streak++;
+                    currentDateToCheck = currentDateToCheck.AddDays(-1);
+                }
+                else
+                {
+                    break; // Streak broken
+                }
+            }
+
+            return streak;
+        });
+    }
+
     public Task<IEnumerable<DiaryEntryStatsDto>> GetDiaryEntriesForStatsAsync(DateTime startDate, DateTime endDate)
     {
         return Task.Run(() =>

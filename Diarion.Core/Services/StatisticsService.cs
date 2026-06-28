@@ -10,11 +10,13 @@ public class StatisticsService : IStatisticsService
 {
     private readonly IDiaryService _diaryService;
     private readonly ITodoService _todoService;
+    private readonly IFinanceService _financeService;
 
-    public StatisticsService(IDiaryService diaryService, ITodoService todoService)
+    public StatisticsService(IDiaryService diaryService, ITodoService todoService, IFinanceService financeService)
     {
         _diaryService = diaryService;
         _todoService = todoService;
+        _financeService = financeService;
     }
 
     public async Task<SleepStatistics> GetSleepStatisticsAsync(int days)
@@ -131,5 +133,62 @@ public class StatisticsService : IStatisticsService
         var startDate = DateTime.Today.AddDays(-days);
         // Using the optimized summary method that counts directly in DB
         return await _todoService.GetTodoStatsSummaryAsync(startDate, DateTime.Today);
+    }
+
+    public async Task<FinanceStatistics> GetFinanceStatisticsAsync(int days)
+    {
+        var startDate = DateTime.Today.AddDays(-days);
+        var transactions = await _financeService.GetFinanceTransactionsForStatsAsync(startDate, DateTime.Today);
+        
+        var stats = new FinanceStatistics();
+        
+        var expenses = transactions.Where(t => t.Type == TransactionType.Expense).ToList();
+        var incomes = transactions.Where(t => t.Type == TransactionType.Income).ToList();
+        
+        stats.TotalExpense = expenses.Sum(e => e.Amount);
+        stats.TotalIncome = incomes.Sum(i => i.Amount);
+        
+        var defaultColors = new[] { "#E07A5F", "#3D405B", "#81B29A", "#F2CC8F", "#E9C46A", "#2A9D8F", "#264653" };
+        
+        if (stats.TotalExpense > 0)
+        {
+            var grouped = expenses.GroupBy(e => string.IsNullOrWhiteSpace(e.Category) ? "Other" : e.Category)
+                                  .Select(g => new CategoryStatItem
+                                  {
+                                      Category = g.Key,
+                                      Amount = g.Sum(x => x.Amount),
+                                      Percentage = (double)(g.Sum(x => x.Amount) / stats.TotalExpense)
+                                  })
+                                  .OrderByDescending(x => x.Amount)
+                                  .ToList();
+                                  
+            for (int i = 0; i < grouped.Count; i++)
+            {
+                grouped[i].ColorHex = defaultColors[i % defaultColors.Length];
+            }
+            stats.ExpenseByCategory = grouped;
+        }
+
+        if (stats.TotalIncome > 0)
+        {
+            var grouped = incomes.GroupBy(e => string.IsNullOrWhiteSpace(e.Category) ? "Other" : e.Category)
+                                 .Select(g => new CategoryStatItem
+                                 {
+                                     Category = g.Key,
+                                     Amount = g.Sum(x => x.Amount),
+                                     Percentage = (double)(g.Sum(x => x.Amount) / stats.TotalIncome)
+                                 })
+                                 .OrderByDescending(x => x.Amount)
+                                 .ToList();
+                                 
+            var incomeColors = new[] { "#81B29A", "#2A9D8F", "#F2CC8F" };
+            for (int i = 0; i < grouped.Count; i++)
+            {
+                grouped[i].ColorHex = incomeColors[i % incomeColors.Length];
+            }
+            stats.IncomeByCategory = grouped;
+        }
+
+        return stats;
     }
 }
