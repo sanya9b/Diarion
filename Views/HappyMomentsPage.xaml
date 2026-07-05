@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
-             xmlns:views="clr-namespace:Diarion.Views"
              x:Class="Diarion.Views.HappyMomentsPage"
              x:Name="RootPage"
              x:DataType="viewModels:HappyMomentsViewModel"
@@ -36,50 +35,95 @@
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="24,10,24,32" Spacing="18">
-                <FlexLayout BindableLayout.ItemsSource="{Binding MomentSlots}" Wrap="Wrap" JustifyContent="Center" AlignItems="Start" AlignContent="Start">
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding MomentSlots}" Spacing="8">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:HappyMomentSlotItemViewModel">
-                            <Grid Margin="8">
-                                <Grid.GestureRecognizers>
+                            <Border Padding="12,10"
+                                    StrokeThickness="1"
+                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                                    StrokeShape="RoundRectangle 14">
+                                <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectSlotCommand}"
                                                           CommandParameter="{Binding .}" />
-                                </Grid.GestureRecognizers>
-                                
-                                <!-- Filled State (Polaroid 3D Vector) -->
-                                <views:HappyMomentsItem IsVisible="{Binding IsFilled}" />
-                                
-                                <!-- Empty State -->
-                                <Border IsVisible="{Binding IsEmpty}"
-                                        WidthRequest="120" HeightRequest="160"
-                                        StrokeThickness="1.5"
-                                        Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                        BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
-                                        StrokeShape="RoundRectangle 8"
-                                        StrokeDashArray="6,6">
-                                    <Border.Triggers>
-                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Berry}" />
-                                            <Setter Property="StrokeThickness" Value="2" />
-                                            <Setter Property="StrokeDashArray" Value="" />
-                                        </DataTrigger>
-                                    </Border.Triggers>
-                                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
-                                        <Label Text="+"
-                                               FontSize="32"
-                                               FontAttributes="Bold"
-                                               HorizontalOptions="Center"
-                                               TextColor="{DynamicResource Theme_Berry}" />
+                                </Border.GestureRecognizers>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Berry}" />
+                                        <Setter Property="StrokeThickness" Value="2" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                    <Border Grid.Column="0"
+                                            WidthRequest="36"
+                                            HeightRequest="36"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 8"
+                                            BackgroundColor="{DynamicResource Theme_Val_1AA87C8E_268FA083}">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsEmpty}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Val_14A87C8E_1AFFFFFF}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Grid>
+                                            <Label Text="+"
+                                                   IsVisible="{Binding IsEmpty}"
+                                                   FontSize="20"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   InputTransparent="True"
+                                                   TextColor="{DynamicResource Theme_Berry}" />
+                                            <Label Text="✦"
+                                                   IsVisible="{Binding IsFilled}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   InputTransparent="True"
+                                                   TextColor="{DynamicResource Theme_Berry}" />
+                                        </Grid>
+                                    </Border>
+
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
                                         <Label Text="{Binding SlotCaption}"
-                                               FontSize="11"
+                                               IsVisible="{Binding IsEmpty}"
+                                               FontSize="13"
                                                FontAttributes="Bold"
-                                               HorizontalTextAlignment="Center"
+                                               VerticalOptions="Center"
+                                               InputTransparent="True"
+                                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                        
+                                        <Label Text="{Binding MomentTitle}"
+                                               IsVisible="{Binding IsFilled}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="WordWrap"
+                                               MaxLines="2"
+                                               InputTransparent="True"
+                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        
+                                        <Label Text="{Binding SlotCaption}"
+                                               IsVisible="{Binding IsFilled}"
+                                               FontSize="10"
+                                               InputTransparent="True"
                                                TextColor="{DynamicResource Theme_Ocean_Dust}" />
                                     </VerticalStackLayout>
-                                </Border>
-                            </Grid>
+
+                                    <Label Grid.Column="2"
+                                           Text="{Binding DateText}"
+                                           IsVisible="{Binding IsFilled}"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           VerticalOptions="Center"
+                                           InputTransparent="True"
+                                           TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                </Grid>
+                            </Border>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
-                </FlexLayout>
+                </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>
 
