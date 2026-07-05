@@ -78,6 +78,7 @@ public partial class DiaryEntryViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(HasSleepStart))]
     [NotifyPropertyChangedFor(nameof(IsSleepStartEmpty))]
     [NotifyPropertyChangedFor(nameof(SleepDurationText))]
+    [NotifyPropertyChangedFor(nameof(SleepStartTime))]
     private TimeSpan? _sleepStart;
 
     partial void OnSleepStartChanged(TimeSpan? value) => Model.SleepStart = value;
@@ -85,16 +86,29 @@ public partial class DiaryEntryViewModel : ObservableObject
     public bool HasSleepStart => SleepStart.HasValue;
     public bool IsSleepStartEmpty => !SleepStart.HasValue;
 
+    public TimeSpan SleepStartTime
+    {
+        get => SleepStart ?? TimeSpan.Zero;
+        set => SleepStart = value;
+    }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSleepEnd))]
     [NotifyPropertyChangedFor(nameof(IsSleepEndEmpty))]
     [NotifyPropertyChangedFor(nameof(SleepDurationText))]
+    [NotifyPropertyChangedFor(nameof(SleepEndTime))]
     private TimeSpan? _sleepEnd;
 
     partial void OnSleepEndChanged(TimeSpan? value) => Model.SleepEnd = value;
 
     public bool HasSleepEnd => SleepEnd.HasValue;
     public bool IsSleepEndEmpty => !SleepEnd.HasValue;
+
+    public TimeSpan SleepEndTime
+    {
+        get => SleepEnd ?? TimeSpan.Zero;
+        set => SleepEnd = value;
+    }
 
     public string SleepDurationText
     {

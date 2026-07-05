@@ -12,10 +12,6 @@
              Title="{localization:Translate Key=Notes}"
              BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
 
-    <ContentPage.Behaviors>
-        <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding InitializeCommand}" />
-    </ContentPage.Behaviors>
-
     <Grid RowDefinitions="Auto,*">
         <!-- Top Custom Bar -->
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
@@ -82,26 +78,37 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Note">
                         <ContentView Padding="24,0">
-                            <Border StrokeThickness="1"
-                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
-                                    StrokeShape="RoundRectangle 16"
-                                    Padding="16">
-                                <Border.Behaviors>
-                                    <toolkit:TouchBehavior 
-                                        LongPressCommand="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteNoteCommand}" 
-                                        LongPressCommandParameter="{Binding .}" />
-                                </Border.Behaviors>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenNoteCommand}" CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                                
-                                <VerticalStackLayout Spacing="6">
-                                    <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
-                                    <Label Text="{Binding Content}" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="2" />
-                                    <Label Text="{Binding UpdatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="End" />
-                                </VerticalStackLayout>
-                            </Border>
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItems>
+                                        <SwipeItemView Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteNoteCommand}" CommandParameter="{Binding .}">
+                                            <Border StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Coral}" StrokeShape="RoundRectangle 16" Padding="20" Margin="12,0,0,0" WidthRequest="70">
+                                                <Path Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" Fill="White" HorizontalOptions="Center" VerticalOptions="Center" Aspect="Uniform" WidthRequest="24" HeightRequest="24"/>
+                                            </Border>
+                                        </SwipeItemView>
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                                <Border StrokeThickness="1"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                        BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                                        StrokeShape="RoundRectangle 16"
+                                        Padding="16">
+                                    <Border.Behaviors>
+                                        <toolkit:TouchBehavior 
+                                            LongPressCommand="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteNoteCommand}" 
+                                            LongPressCommandParameter="{Binding .}" />
+                                    </Border.Behaviors>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenNoteCommand}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    
+                                    <VerticalStackLayout Spacing="6">
+                                        <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding Content}" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="2" />
+                                        <Label Text="{Binding UpdatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="End" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </SwipeView>
                         </ContentView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

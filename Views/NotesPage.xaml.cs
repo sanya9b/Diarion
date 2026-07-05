@@ -12,6 +12,15 @@ public partial class NotesPage : ContentPage
         BindingContext = viewModel;
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is NotesViewModel vm)
+        {
+            vm.InitializeCommand.Execute(null);
+        }
+    }
+
     private async void OnCloseTapped(object? sender, TappedEventArgs e)
     {
         await Shell.Current.Navigation.PopModalAsync();

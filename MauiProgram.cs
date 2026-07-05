@@ -39,6 +39,7 @@ public static class MauiProgram
 #if ANDROID
 			if (handler?.PlatformView != null)
 			{
+				handler.PlatformView.Background = null;
 				handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
 				handler.PlatformView.SetPadding(0, 0, 0, 0);
 			}
@@ -55,6 +56,7 @@ public static class MauiProgram
 #if ANDROID
 			if (handler?.PlatformView != null)
 			{
+				handler.PlatformView.Background = null;
 				handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
 				handler.PlatformView.SetPadding(0, 0, 0, 0);
 			}
@@ -70,6 +72,7 @@ public static class MauiProgram
 #if ANDROID
 			if (handler?.PlatformView != null)
 			{
+				handler.PlatformView.Background = null;
 				handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
 				handler.PlatformView.SetPadding(0, 0, 0, 0);
 			}
@@ -85,6 +88,7 @@ public static class MauiProgram
 #if ANDROID
 			if (handler?.PlatformView != null)
 			{
+				handler.PlatformView.Background = null;
 				handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
 				handler.PlatformView.SetPadding(0, 0, 0, 0);
 			}
