@@ -48,6 +48,9 @@ public class DatabaseSeeder : IDatabaseSeeder
         if (startDate > today) startDate = startDate.AddYears(-1);
         int daysDiff = (int)(today.AddDays(3) - startDate).TotalDays;
 
+        var entriesToInsert = new System.Collections.Generic.List<DiaryEntry>();
+        var todosToInsert = new System.Collections.Generic.List<TodoItem>();
+
         for (int i = 0; i <= daysDiff; i++)
         {
             var date = startDate.AddDays(i);
@@ -78,12 +81,12 @@ public class DatabaseSeeder : IDatabaseSeeder
                 });
             }
 
-            entriesCollection.Insert(entry);
+            entriesToInsert.Add(entry);
 
             int tasksCount = random.Next(1, 5);
             for (int t = 0; t < tasksCount; t++)
             {
-                todosCollection.Insert(new TodoItem
+                todosToInsert.Add(new TodoItem
                 {
                     Id = Guid.NewGuid(),
                     TargetDate = date,
@@ -96,6 +99,9 @@ public class DatabaseSeeder : IDatabaseSeeder
                 });
             }
         }
+
+        entriesCollection.InsertBulk(entriesToInsert);
+        todosCollection.InsertBulk(todosToInsert);
     }
 #endif
 }

@@ -107,9 +107,9 @@ public partial class NoteDetailViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task SaveNoteAsync()
+    private async Task FlushSaveAsync()
     {
-        // Flush debouncer and save immediately, then navigate back
+        CurrentNote.Content = NoteContent;
         if (!string.IsNullOrWhiteSpace(CurrentNote.Content))
         {
             IsBusy = true;
@@ -122,7 +122,13 @@ public partial class NoteDetailViewModel : BaseViewModel
                 IsBusy = false;
             }
         }
+    }
 
+    [RelayCommand]
+    private async Task SaveNoteAsync()
+    {
+        // Flush debouncer and save immediately, then navigate back
+        await FlushSaveAsync();
         await _navigationService.NavigateBackAsync();
     }
 

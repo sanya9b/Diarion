@@ -43,26 +43,6 @@
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
             
             <VerticalStackLayout Grid.Row="0" Padding="24,10,24,10" Spacing="16">
-                <!-- Add Button -->
-                <Border Padding="16"
-                        StrokeThickness="1"
-                        Stroke="{DynamicResource Theme_Amber}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
-                        StrokeShape="RoundRectangle 16"
-                        HorizontalOptions="Fill">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding CreateNewNoteCommand}" />
-                    </Border.GestureRecognizers>
-                    <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Amber}" Offset="0,4" Radius="8" Opacity="0.15" />
-                    </Border.Shadow>
-                    
-                    <Grid ColumnDefinitions="Auto, *">
-                        <Label Grid.Column="0" Text="+" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource Theme_Amber}" VerticalOptions="Center" Margin="0,0,12,0"/>
-                        <Label Grid.Column="1" Text="{localization:Translate Key=NewNote}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center"/>
-                    </Grid>
-                </Border>
-
                 <!-- Search Bar -->
                 <Border StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
@@ -82,7 +62,7 @@
             <!-- Notes List -->
             <CollectionView Grid.Row="1"
                             ItemsSource="{Binding Notes}"
-                            Margin="0,0,0,32"
+                            Margin="0,0,0,0"
                             VerticalScrollBarVisibility="Never"
                             SelectionMode="None">
                 <CollectionView.EmptyView>
@@ -94,6 +74,10 @@
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
                 </CollectionView.ItemsLayout>
+
+                <CollectionView.Footer>
+                    <BoxView HeightRequest="88" BackgroundColor="Transparent" />
+                </CollectionView.Footer>
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Note">
@@ -123,6 +107,29 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
             
+            <!-- Floating Action Button (iOS Style Compose) -->
+            <Border Grid.RowSpan="2"
+                    WidthRequest="56"
+                    HeightRequest="56"
+                    StrokeShape="RoundRectangle 28"
+                    HorizontalOptions="End"
+                    VerticalOptions="End"
+                    Margin="0,0,24,32"
+                    BackgroundColor="{DynamicResource Theme_Amber}"
+                    StrokeThickness="0">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Amber}" Offset="0,4" Radius="8" Opacity="0.3" />
+                </Border.Shadow>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CreateNewNoteCommand}" />
+                </Border.GestureRecognizers>
+                <!-- Compose Icon (Pencil) -->
+                <Path Fill="{DynamicResource Theme_Snow}" 
+                      Data="M 4,20 L 4,24 L 8,24 L 21.5,10.5 L 17.5,6.5 L 4,20 Z M 23.7,8.3 C 24.1,7.9 24.1,7.3 23.7,6.9 L 21.1,4.3 C 20.7,3.9 20.1,3.9 19.7,4.3 L 18.5,5.5 L 22.5,9.5 L 23.7,8.3 Z"
+                      HorizontalOptions="Center" VerticalOptions="Center"
+                      WidthRequest="24" HeightRequest="24"
+                      Aspect="Uniform" />
+            </Border>
         </Grid>
     </Grid>
 </ContentPage>
