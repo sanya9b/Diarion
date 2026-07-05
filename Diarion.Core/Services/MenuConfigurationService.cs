@@ -12,6 +12,13 @@ public class MenuConfigurationService : IMenuConfigurationService
         {
             new QuickMenuItem 
             { 
+                Id = "Notes", 
+                StrokeColorKey = "Theme_Amber", 
+                UsesUniformAspect = true,
+                PathData = "M 16 10 H 34 V 40 H 16 Z M 20 16 H 30 M 20 22 H 30 M 20 28 H 30"
+            },
+            new QuickMenuItem 
+            { 
                 Id = "Reading", 
                 StrokeColorKey = "Theme_Sage", 
                 UsesUniformAspect = true,

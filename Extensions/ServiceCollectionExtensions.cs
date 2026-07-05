@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IProfileService, ProfileService>();
         services.AddSingleton<IAuxiliaryService, AuxiliaryService>();
         services.AddSingleton<IDiaryService, DiaryService>();
+        services.AddSingleton<INoteService, NoteService>();
         services.AddSingleton<IMenstrualCycleService, MenstrualCycleService>();
         services.AddSingleton<ICalendarService, CalendarService>();
         services.AddSingleton<IStatisticsService, StatisticsService>();
@@ -59,6 +60,8 @@ public static class ServiceCollectionExtensions
         
         services.AddTransient<WishlistViewModel>();
         services.AddTransient<FinanceViewModel>();
+        services.AddTransient<NotesViewModel>();
+        services.AddTransient<NoteDetailViewModel>();
         
         return services;
     }
@@ -76,6 +79,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<StatisticsPage>();
         services.AddTransient<WishlistPage>();
         services.AddTransient<FinancePage>();
+        services.AddTransient<NotesPage>();
+        services.AddTransient<NoteDetailPage>();
         
         return services;
     }

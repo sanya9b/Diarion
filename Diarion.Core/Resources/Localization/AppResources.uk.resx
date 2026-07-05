@@ -685,4 +685,22 @@
   <data name="EditTransactionTitle" xml:space="preserve">
     <value>Редагувати транзакцію</value>
   </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Нотатки</value>
+  </data>
+  <data name="SearchNotes" xml:space="preserve">
+    <value>Пошук нотаток...</value>
+  </data>
+  <data name="NewNote" xml:space="preserve">
+    <value>Нова нотатка</value>
+  </data>
+  <data name="NoteTitlePlaceholder" xml:space="preserve">
+    <value>Заголовок...</value>
+  </data>
+  <data name="NoteContentPlaceholder" xml:space="preserve">
+    <value>Напишіть щось тут...</value>
+  </data>
+  <data name="EmptyNotes" xml:space="preserve">
+    <value>Нотаток ще немає. Створіть першу.</value>
+  </data>
 </root>

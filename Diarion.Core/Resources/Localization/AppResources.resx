@@ -673,4 +673,22 @@
   <data name="EditTransactionTitle" xml:space="preserve">
     <value>Edit Transaction</value>
   </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="SearchNotes" xml:space="preserve">
+    <value>Search notes...</value>
+  </data>
+  <data name="NewNote" xml:space="preserve">
+    <value>New Note</value>
+  </data>
+  <data name="NoteTitlePlaceholder" xml:space="preserve">
+    <value>Note title...</value>
+  </data>
+  <data name="NoteContentPlaceholder" xml:space="preserve">
+    <value>Write your note here...</value>
+  </data>
+  <data name="EmptyNotes" xml:space="preserve">
+    <value>No notes found.</value>
+  </data>
 </root>

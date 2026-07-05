@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="Diarion.Views.NotesPage"
+             x:Name="RootPage"
+             x:DataType="viewModels:NotesViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{localization:Translate Key=Notes}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding InitializeCommand}" />
+    </ContentPage.Behaviors>
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Top Custom Bar -->
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCloseTapped" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <Label Text="{localization:Translate Key=Notes}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator Grid.Column="2"
+                               WidthRequest="28"
+                               HeightRequest="28"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{DynamicResource Theme_Amber}"
+                               VerticalOptions="Center" />
+        </Grid>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+            
+            <VerticalStackLayout Grid.Row="0" Padding="24,10,24,10" Spacing="16">
+                <!-- Add Button -->
+                <Border Padding="16"
+                        StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Amber}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                        StrokeShape="RoundRectangle 16"
+                        HorizontalOptions="Fill">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CreateNewNoteCommand}" />
+                    </Border.GestureRecognizers>
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Amber}" Offset="0,4" Radius="8" Opacity="0.15" />
+                    </Border.Shadow>
+                    
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Label Grid.Column="0" Text="+" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource Theme_Amber}" VerticalOptions="Center" Margin="0,0,12,0"/>
+                        <Label Grid.Column="1" Text="{localization:Translate Key=NewNote}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center"/>
+                    </Grid>
+                </Border>
+
+                <!-- Search Bar -->
+                <Border StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        StrokeShape="RoundRectangle 16"
+                        Padding="16,4">
+                    <SearchBar Text="{Binding SearchQuery}"
+                               Placeholder="{localization:Translate Key=SearchNotes}"
+                               PlaceholderColor="{DynamicResource Theme_Ocean_Dust}"
+                               TextColor="{DynamicResource Theme_Midnight_Snow}"
+                               CancelButtonColor="{DynamicResource Theme_Coral}"
+                               SearchCommand="{Binding PerformSearchCommand}"
+                               BackgroundColor="Transparent" />
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Notes List -->
+            <CollectionView Grid.Row="1"
+                            ItemsSource="{Binding Notes}"
+                            Margin="0,0,0,32"
+                            VerticalScrollBarVisibility="Never"
+                            SelectionMode="None">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8" Margin="0,40,0,0">
+                        <Label Text="{localization:Translate Key=EmptyNotes}" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Note">
+                        <ContentView Padding="24,0">
+                            <Border StrokeThickness="1"
+                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                                    StrokeShape="RoundRectangle 16"
+                                    Padding="16">
+                                <Border.Behaviors>
+                                    <toolkit:TouchBehavior 
+                                        LongPressCommand="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteNoteCommand}" 
+                                        LongPressCommandParameter="{Binding .}" />
+                                </Border.Behaviors>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenNoteCommand}" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding Content}" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="2" />
+                                    <Label Text="{Binding UpdatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="End" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </ContentView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            
+        </Grid>
+    </Grid>
+</ContentPage>

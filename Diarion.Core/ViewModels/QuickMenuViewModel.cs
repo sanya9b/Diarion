@@ -42,6 +42,7 @@ public partial class QuickMenuViewModel : ObservableObject
         {
             switch (item.Id)
             {
+                case "Notes": item.Command = OpenNotesCommand; break;
                 case "Reading": item.Command = OpenReadingTrackerCommand; break;
                 case "Moments": item.Command = OpenHappyMomentsCommand; break;
                 case "Deeds": item.Command = OpenGoodDeedsCommand; break;
@@ -138,4 +139,7 @@ public partial class QuickMenuViewModel : ObservableObject
 
     [RelayCommand]
     private async Task OpenFinanceAsync() => await _navigationService.NavigateToAsync("Finance");
+
+    [RelayCommand]
+    private async Task OpenNotesAsync() => await _navigationService.NavigateToAsync("Notes");
 }

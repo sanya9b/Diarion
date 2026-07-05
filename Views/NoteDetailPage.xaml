@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             x:Class="Diarion.Views.NoteDetailPage"
+             x:Name="RootPage"
+             x:DataType="viewModels:NoteDetailViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{localization:Translate Key=EditEntryTitle}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Top Custom Bar -->
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SaveNoteCommand}" />
+                </Grid.GestureRecognizers>
+                <!-- Back/Close arrow -->
+                <Path Data="M 20 24 L 12 16 L 20 8 M 12 16 H 32" 
+                      Stroke="{DynamicResource Theme_Midnight_Snow}" 
+                      StrokeThickness="2" 
+                      StrokeLineCap="Round" 
+                      StrokeLineJoin="Round" 
+                      VerticalOptions="Center" 
+                      HorizontalOptions="Center"
+                      WidthRequest="32" 
+                      HeightRequest="32" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <!-- Empty for minimal look, or you can add a small text -->
+            </VerticalStackLayout>
+
+        </Grid>
+
+        <!-- Editor Area -->
+        <ScrollView Grid.Row="1" Padding="24,10,24,32">
+            <!-- Content Editor -->
+            <Editor Text="{Binding NoteContent}"
+                    Placeholder="{localization:Translate Key=NoteContentPlaceholder}"
+                    PlaceholderColor="{DynamicResource Theme_Ocean_Dust}"
+                    TextColor="{DynamicResource Theme_Midnight_Snow}"
+                    FontSize="18"
+                    AutoSize="TextChanges"
+                    BackgroundColor="Transparent"
+                    MinimumHeightRequest="200" />
+        </ScrollView>
+    </Grid>
+</ContentPage>
