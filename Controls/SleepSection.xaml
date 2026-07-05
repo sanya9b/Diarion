@@ -21,8 +21,9 @@
                 </HorizontalStackLayout>
             </Grid>
             
-            <Grid ColumnDefinitions="Auto, Auto, *, Auto" ColumnSpacing="8" VerticalOptions="Center">
-                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepStartLabel}" FontSize="9" TextColor="{DynamicResource Theme_Ocean_Dust}" TextTransform="Uppercase" VerticalOptions="Center" />
+            <Grid ColumnDefinitions="Auto, *, Auto, *" ColumnSpacing="8" VerticalOptions="Center">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepStartLabel}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                
                 <Border Grid.Column="1" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 8" HeightRequest="28" Padding="8,0" VerticalOptions="Center">
                     <Grid>
                         <Label Text="{Binding SleepStart, StringFormat='{0:hh\\:mm}'}" 
@@ -35,7 +36,8 @@
                     </Grid>
                 </Border>
                 
-                <Label Grid.Column="2" Text="{x:Static localization:AppResources.SleepEndLabel}" FontSize="9" TextColor="{DynamicResource Theme_Ocean_Dust}" TextTransform="Uppercase" VerticalOptions="Center" HorizontalOptions="End" />
+                <Label Grid.Column="2" Text="{x:Static localization:AppResources.SleepEndLabel}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" Margin="4,0,0,0" />
+                
                 <Border Grid.Column="3" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 8" HeightRequest="28" Padding="8,0" VerticalOptions="Center">
                     <Grid>
                         <Label Text="{Binding SleepEnd, StringFormat='{0:hh\\:mm}'}" 
@@ -49,9 +51,9 @@
                 </Border>
             </Grid>
 
-            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepQualityLabel}" VerticalOptions="Center" FontSize="9" TextColor="{DynamicResource Theme_Ocean_Dust}" TextTransform="Uppercase" />
-                <controls:RatingView Grid.Column="1" Value="{Binding SleepQuality}" MaxValue="5" VerticalOptions="Center" HorizontalOptions="End" />
+            <Grid ColumnDefinitions="100, *" ColumnSpacing="12">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.SleepQualityLabel}" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                <controls:RatingView Grid.Column="1" Value="{Binding SleepQuality}" MaxValue="5" VerticalOptions="Center" HorizontalOptions="Start" />
             </Grid>
 
             <!-- Text Field for Notes -->

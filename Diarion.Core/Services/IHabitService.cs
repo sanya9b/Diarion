@@ -15,4 +15,5 @@ public interface IHabitService
     Task<List<HarmfulHabitTracker>> GetHarmfulHabitTrackersAsync();
     Task SaveHarmfulHabitTrackerAsync(HarmfulHabitTracker tracker);
     Task SetHarmfulHabitDayMarkedAsync(Guid trackerId, DateTime date, bool isMarked);
+    Task DeleteHarmfulHabitTrackerAsync(Guid id);
 }

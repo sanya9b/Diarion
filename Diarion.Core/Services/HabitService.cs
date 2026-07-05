@@ -103,6 +103,14 @@ public class HabitService : IHabitService
         });
     }
 
+    public Task DeleteHarmfulHabitTrackerAsync(Guid id)
+    {
+        return Task.Run(() =>
+        {
+            HarmfulHabitTrackersCollection.Delete(id);
+        });
+    }
+
     public Task SetHarmfulHabitDayMarkedAsync(Guid trackerId, DateTime date, bool isMarked)
     {
         return Task.Run(() =>

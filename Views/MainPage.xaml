@@ -34,13 +34,16 @@
 
                 <!-- Date Typographical Editorial Style -->
                 <VerticalStackLayout Margin="0,-4,0,16" Spacing="0" HorizontalOptions="Fill">
+                    <BoxView HeightRequest="4" WidthRequest="32" CornerRadius="2"
+                             BackgroundColor="{DynamicResource Theme_Dust_Ocean}"
+                             HorizontalOptions="Center" Margin="0,0,0,4" />
                     <Label Text="{Binding CalendarSection.SelectedDateDayName}" FontFamily="MarckScript" FontSize="28" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </VerticalStackLayout>
 
                 <!-- Tabs: Typography-Driven Design -->
-                <HorizontalStackLayout Spacing="24" Margin="0,0,0,16" HorizontalOptions="Center">
-                    <Label Text="{x:Static localization:AppResources.TabDiary}"
-                           VerticalOptions="Center">
+                <Grid Margin="0,0,0,16" ColumnDefinitions="*,*">
+                    <Label Grid.Column="0" Text="{x:Static localization:AppResources.TabDiary}"
+                           HorizontalOptions="Center" VerticalOptions="Center">
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SwitchToDiaryModeCommand}" />
                         </Label.GestureRecognizers>
@@ -58,8 +61,8 @@
                         </Label.Triggers>
                     </Label>
 
-                    <Label Text="{x:Static localization:AppResources.TabPlanner}"
-                           VerticalOptions="Center">
+                    <Label Grid.Column="1" Text="{x:Static localization:AppResources.TabPlanner}"
+                           HorizontalOptions="Center" VerticalOptions="Center">
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SwitchToPlannerModeCommand}" />
                         </Label.GestureRecognizers>
@@ -76,7 +79,7 @@
                             </DataTrigger>
                         </Label.Triggers>
                     </Label>
-                </HorizontalStackLayout>
+                </Grid>
             </VerticalStackLayout>
 
             <!-- Bento Box Content Container -->

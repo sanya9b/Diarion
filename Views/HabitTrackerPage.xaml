@@ -82,6 +82,7 @@
                                                    FontSize="14"
                                                    FontAttributes="Bold"
                                                    InputTransparent="True"
+                                                   VerticalOptions="Center"
                                                    TextColor="{DynamicResource Theme_Midnight_Snow}">
                                                 <Label.Triggers>
                                                     <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
@@ -135,15 +136,25 @@
                                         StrokeShape="RoundRectangle 18"
                                         BackgroundColor="{DynamicResource Theme_Val_148FA083_18FFFFFF}"
                                         Padding="14,12">
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Text="{localization:Translate Key=HabitTrackerMarkedDaysLabel}"
-                                               FontSize="11"
-                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Label Text="{Binding SelectedTracker.MarkedDaysCountText}"
-                                               FontSize="16"
-                                               FontAttributes="Bold"
-                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                    </VerticalStackLayout>
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                                            <Label Text="{localization:Translate Key=HabitTrackerMarkedDaysLabel}"
+                                                   FontSize="11"
+                                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Label Text="{Binding SelectedTracker.MarkedDaysCountText}"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        </VerticalStackLayout>
+                                        
+                                        <Grid Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8" Margin="0,-4,-4,0">
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteTrackerCommand}"
+                                                                      CommandParameter="{Binding SelectedTracker}" />
+                                            </Grid.GestureRecognizers>
+                                            <Label Text="✕" FontSize="20" TextColor="{DynamicResource Theme_Coral}" />
+                                        </Grid>
+                                    </Grid>
                                 </Border>
                             </Grid>
 

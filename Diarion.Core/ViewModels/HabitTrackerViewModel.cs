@@ -36,9 +36,12 @@ public partial class HabitTrackerViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isAddTrackerFormVisible;
 
-    public HabitTrackerViewModel(IHabitService habitService)
+    private readonly IDialogService _dialogService;
+
+    public HabitTrackerViewModel(IHabitService habitService, IDialogService dialogService)
     {
         _habitService = habitService;
+        _dialogService = dialogService;
         Title = AppResources.HabitTrackerTitle;
     }
 
@@ -96,6 +99,29 @@ public partial class HabitTrackerViewModel : BaseViewModel
 
         HideAddTrackerForm();
         await LoadAsync(tracker.Id);
+    }
+
+    [RelayCommand]
+    private async Task DeleteTrackerAsync(HarmfulHabitTrackerItemViewModel? tracker)
+    {
+        if (tracker == null) return;
+
+        var result = await _dialogService.ShowConfirmationAsync(
+            "Delete",
+            "Are you sure you want to delete this?");
+            
+        if (!result) return;
+
+        await _habitService.DeleteHarmfulHabitTrackerAsync(tracker.Id);
+        
+        Trackers.Remove(tracker);
+        if (SelectedTracker?.Id == tracker.Id)
+        {
+            SelectedTracker = Trackers.FirstOrDefault();
+        }
+        
+        OnPropertyChanged(nameof(HasTrackers));
+        OnPropertyChanged(nameof(HasNoTrackers));
     }
 
     [RelayCommand]

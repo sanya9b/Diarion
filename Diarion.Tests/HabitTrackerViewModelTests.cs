@@ -33,7 +33,8 @@ public class HabitTrackerViewModelTests
                 return Task.CompletedTask;
             });
 
-        var viewModel = new HabitTrackerViewModel(habitServiceMock.Object)
+        var dialogServiceMock = new Mock<IDialogService>();
+        var viewModel = new HabitTrackerViewModel(habitServiceMock.Object, dialogServiceMock.Object)
         {
             NewTrackerName = "Smoking",
             NewTrackerStartDate = DateTime.Today.AddDays(-3)
@@ -70,7 +71,8 @@ public class HabitTrackerViewModelTests
             .Setup(s => s.SetHarmfulHabitDayMarkedAsync(tracker.Id, It.IsAny<DateTime>(), true))
             .Returns(Task.CompletedTask);
 
-        var viewModel = new HabitTrackerViewModel(habitServiceMock.Object);
+        var dialogServiceMock = new Mock<IDialogService>();
+        var viewModel = new HabitTrackerViewModel(habitServiceMock.Object, dialogServiceMock.Object);
         await viewModel.LoadAsync();
         var day = viewModel.TrackerDays[0];
 
