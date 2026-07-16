@@ -150,32 +150,36 @@ public partial class MainViewModel : BaseViewModel
 
     private void ScheduleAutoSave()
     {
+        // Capture the entry being edited NOW; the debounced save must persist THIS entry even if
+        // the user switches to another day before the debounce fires (otherwise edits are lost).
+        var entry = CurrentEntry;
+        if (entry == null)
+        {
+            return;
+        }
+
         _autoSaveDebouncer.Debounce(async () =>
         {
-            if (CurrentEntry != null)
-            {
-                CurrentEntry.SyncToModel();
-                await _diaryService.SaveEntryAsync(CurrentEntry.Model);
-                System.Diagnostics.Debug.WriteLine($"Auto-saved entry for {CurrentEntry.Date:dd.MM.yyyy}");
-            }
+            entry.SyncToModel();
+            await _diaryService.SaveEntryAsync(entry.Model);
+            System.Diagnostics.Debug.WriteLine($"Auto-saved entry for {entry.Date:dd.MM.yyyy}");
         });
     }
 
     public Task FlushAutoSaveAsync()
     {
-        return _autoSaveDebouncer.FlushAsync(async () =>
-        {
-            if (CurrentEntry != null)
-            {
-                CurrentEntry.SyncToModel();
-                await _diaryService.SaveEntryAsync(CurrentEntry.Model);
-            }
-        });
+        // The pending action already captured the correct entry (see ScheduleAutoSave).
+        return _autoSaveDebouncer.FlushAsync();
     }
 
     private async Task LoadDayContentAsync(DateTime date)
     {
         using var _ = StartupTrace.Measure("MainViewModel.LoadDayContentAsync");
+
+        // Persist any pending edits for the currently-open day BEFORE switching, otherwise the
+        // debounced save would still be pending and the previous day's edits could be lost.
+        await FlushAutoSaveAsync();
+
         await LoadEntriesForDateAsync(date);
         await CycleStatusSection.UpdateForDateAsync(date);
 
