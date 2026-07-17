@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IMenstrualCycleService, MenstrualCycleService>();
         services.AddSingleton<ICalendarService, CalendarService>();
         services.AddSingleton<IStatisticsService, StatisticsService>();
+        services.AddSingleton<ICorrelationService, CorrelationService>();
         services.AddSingleton<IMenuConfigurationService, MenuConfigurationService>();
         services.AddSingleton<IBackupService, BackupService>();
         services.AddSingleton<INavigationService, MauiNavigationService>();

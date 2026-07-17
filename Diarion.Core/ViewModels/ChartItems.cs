@@ -14,3 +14,9 @@ public class SleepBarChartItem
     public string Label { get; set; } = string.Empty;
     public double Value { get; set; } // e.g. hours
 }
+
+public class MoodCorrelationItem
+{
+    public string Description { get; set; } = string.Empty;
+    public string Dots { get; set; } = string.Empty; // e.g. "●●●○○"
+}

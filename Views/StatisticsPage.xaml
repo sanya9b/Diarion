@@ -171,6 +171,34 @@
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
+
+                <!-- What affects your mood (on-device correlations) -->
+                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16"
+                        IsVisible="{Binding MoodStats.HasCorrelations}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.StatsMoodInfluencesTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
+
+                        <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding MoodStats.Correlations}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:MoodCorrelationItem">
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                                        <Label Grid.Column="0" Text="{Binding Description}" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Grid.Column="1" Text="{Binding Dots}" FontSize="12" CharacterSpacing="1" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <Label Text="{x:Static localization:AppResources.StatsCorrelationDisclaimer}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
 
             <!-- SLEEP TAB -->

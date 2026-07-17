@@ -1050,6 +1050,22 @@ public static string ClearAllDataSuccessMsg {
         public static string DailyReminderMessage {
             get { return ResourceManager.GetString("DailyReminderMessage", resourceCulture) ?? "A quiet minute for yourself?"; }
         }
+
+        public static string StatsMoodInfluencesTitle {
+            get { return ResourceManager.GetString("StatsMoodInfluencesTitle", resourceCulture) ?? "WHAT AFFECTS YOUR MOOD"; }
+        }
+
+        public static string StatsCorrelationDisclaimer {
+            get { return ResourceManager.GetString("StatsCorrelationDisclaimer", resourceCulture) ?? "Linked to your mood — not proven to cause it."; }
+        }
+
+        public static string FactorSleepDuration {
+            get { return ResourceManager.GetString("FactorSleepDuration", resourceCulture) ?? "Sleep duration"; }
+        }
+
+        public static string FactorSleepQuality {
+            get { return ResourceManager.GetString("FactorSleepQuality", resourceCulture) ?? "Sleep quality"; }
+        }
     }
 }
 

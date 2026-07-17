@@ -778,4 +778,16 @@
   <data name="DailyReminderMessage" xml:space="preserve">
     <value>Хвилинка для себе?</value>
   </data>
+  <data name="StatsMoodInfluencesTitle" xml:space="preserve">
+    <value>ЩО ВПЛИВАЄ НА НАСТРІЙ</value>
+  </data>
+  <data name="StatsCorrelationDisclaimer" xml:space="preserve">
+    <value>Пов'язано з настроєм — не доведено, що є причиною.</value>
+  </data>
+  <data name="FactorSleepDuration" xml:space="preserve">
+    <value>Тривалість сну</value>
+  </data>
+  <data name="FactorSleepQuality" xml:space="preserve">
+    <value>Якість сну</value>
+  </data>
 </root>

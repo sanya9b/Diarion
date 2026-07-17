@@ -18,3 +18,26 @@ public class TodoStatsDto
     public DateTime TargetDate { get; set; }
     public bool IsCompleted { get; set; }
 }
+
+public enum CorrelationStrength
+{
+    Negligible,
+    Weak,
+    Moderate,
+    Strong
+}
+
+/// <summary>
+/// A statistical association between a daily factor (e.g. sleep duration) and mood valence.
+/// Coefficient is Pearson's r (-1..+1); Confidence is 1..5 (significance from a Fisher z-test);
+/// it is a correlation, not proven causation.
+/// </summary>
+public class MoodCorrelation
+{
+    public string FactorKey { get; set; } = string.Empty;
+    public double Coefficient { get; set; }
+    public CorrelationStrength Strength { get; set; }
+    public int Confidence { get; set; }
+    public int SampleSize { get; set; }
+    public int LagDays { get; set; }
+}
