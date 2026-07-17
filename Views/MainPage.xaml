@@ -87,22 +87,25 @@
                 <ScrollView x:Name="DiaryContainer" IsVisible="{Binding IsDiaryMode}" Padding="24,10,24,40">
                     
                     <!-- Bento Box Asymmetrical Grid -->
-                    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *" RowSpacing="16" ColumnSpacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel">
-                        
-                        <!-- Row 0: Sleep -->
-                        <controls:SleepSection Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
-                        
-                        <!-- Row 1: Health -->
-                        <controls:HealthSection Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+                    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *" RowSpacing="16" ColumnSpacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel">
 
-                        <!-- Row 2: Food -->
-                        <controls:FoodTrackerSection Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+                        <!-- Row 0: Mood -->
+                        <controls:MoodSection Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
 
-                        <!-- Row 3: Habits -->
-                        <controls:HabitTrackerSection Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+                        <!-- Row 1: Sleep -->
+                        <controls:SleepSection Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
 
-                        <!-- Row 4: Reflection / Text blocks -->
-                        <controls:ReflectionSection Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+                        <!-- Row 2: Health -->
+                        <controls:HealthSection Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+
+                        <!-- Row 3: Food -->
+                        <controls:FoodTrackerSection Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+
+                        <!-- Row 4: Habits -->
+                        <controls:HabitTrackerSection Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+
+                        <!-- Row 5: Reflection / Text blocks -->
+                        <controls:ReflectionSection Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
                     </Grid>
                 </ScrollView>
 

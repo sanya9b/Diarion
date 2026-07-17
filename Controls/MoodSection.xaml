@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Controls.MoodSection"
+             x:DataType="viewmodels:DiaryEntryViewModel">
+
+    <ContentView.Resources>
+        <Style x:Key="MoodDot" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="HorizontalOptions" Value="Fill" />
+        </Style>
+    </ContentView.Resources>
+
+    <Border Padding="16"
+            StrokeThickness="1"
+            Stroke="{DynamicResource Theme_Dust_Ocean}"
+            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+            StrokeShape="RoundRectangle 20">
+        <Border.Shadow>
+            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+        </Border.Shadow>
+
+        <VerticalStackLayout Spacing="12">
+            <Label Text="{x:Static localization:AppResources.EmotionLabel}"
+                   FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5"
+                   TextColor="{DynamicResource Theme_Coral}" />
+
+            <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="8">
+
+                <!-- Happy -->
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                    <Border Style="{StaticResource MoodDot}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Happy}" />
+                        </Border.GestureRecognizers>
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="{x:Static models:Emotion.Happy}">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label Text="😊" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                    </Border>
+                    <Label Text="{x:Static localization:AppResources.EmotionHappy}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                </VerticalStackLayout>
+
+                <!-- Calm -->
+                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                    <Border Style="{StaticResource MoodDot}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Calm}" />
+                        </Border.GestureRecognizers>
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="{x:Static models:Emotion.Calm}">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label Text="😌" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                    </Border>
+                    <Label Text="{x:Static localization:AppResources.EmotionCalm}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                </VerticalStackLayout>
+
+                <!-- Anxious -->
+                <VerticalStackLayout Grid.Column="2" Spacing="4">
+                    <Border Style="{StaticResource MoodDot}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Anxious}" />
+                        </Border.GestureRecognizers>
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="{x:Static models:Emotion.Anxious}">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label Text="😰" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                    </Border>
+                    <Label Text="{x:Static localization:AppResources.EmotionAnxious}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                </VerticalStackLayout>
+
+                <!-- Sad -->
+                <VerticalStackLayout Grid.Column="3" Spacing="4">
+                    <Border Style="{StaticResource MoodDot}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Sad}" />
+                        </Border.GestureRecognizers>
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="{x:Static models:Emotion.Sad}">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label Text="😢" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                    </Border>
+                    <Label Text="{x:Static localization:AppResources.EmotionSad}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                </VerticalStackLayout>
+
+                <!-- Angry -->
+                <VerticalStackLayout Grid.Column="4" Spacing="4">
+                    <Border Style="{StaticResource MoodDot}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Angry}" />
+                        </Border.GestureRecognizers>
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="{x:Static models:Emotion.Angry}">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label Text="😠" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                    </Border>
+                    <Label Text="{x:Static localization:AppResources.EmotionAngry}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                </VerticalStackLayout>
+            </Grid>
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

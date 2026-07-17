@@ -57,4 +57,29 @@ public class DiaryEntryViewModelTests
         model.SleepEnd.Should().Be(end);
         model.SleepQuality.Should().Be(4);
     }
+
+    [Fact]
+    public void SelectEmotion_SetsEmotionAndPersistsToModelOnSync()
+    {
+        var model = new DiaryEntry();
+        var viewModel = new DiaryEntryViewModel(model);
+
+        viewModel.SelectEmotionCommand.Execute(Emotion.Sad);
+
+        viewModel.Emotion.Should().Be(Emotion.Sad);
+        viewModel.SyncToModel();
+        model.Emotion.Should().Be(Emotion.Sad);
+    }
+
+    [Theory]
+    [InlineData(Emotion.Happy, 2)]
+    [InlineData(Emotion.Calm, 1)]
+    [InlineData(Emotion.Anxious, -1)]
+    [InlineData(Emotion.Sad, -2)]
+    [InlineData(Emotion.Angry, -2)]
+    [InlineData(Emotion.None, 0)]
+    public void ToValence_MapsEmotionToScore(Emotion emotion, int expected)
+    {
+        emotion.ToValence().Should().Be(expected);
+    }
 }
