@@ -14,6 +14,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IDatabaseSeeder, DatabaseSeeder>();
         services.AddSingleton<IEncryptionKeyProvider, SecureStorageKeyProvider>();
+        services.AddSingleton<IAppLockService, AppLockService>();
+        services.AddSingleton<IBiometricService, BiometricService>();
         services.AddSingleton<IDatabaseContext, DatabaseContext>();
         services.AddSingleton<INotificationService, LocalNotificationService>();
         services.AddSingleton<ITodoService, TodoService>();
@@ -45,6 +47,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<HabitsSectionViewModel>();
         services.AddTransient<CycleStatusViewModel>();
         services.AddTransient<MainViewModel>();
+        services.AddTransient<LockViewModel>();
         services.AddTransient<DiaryDetailViewModel>();
         services.AddTransient<TodoDetailViewModel>();
         services.AddTransient<ProfileViewModel>();
@@ -70,6 +73,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAppViews(this IServiceCollection services)
     {
         services.AddTransient<MainPage>();
+        services.AddTransient<LockPage>();
         services.AddTransient<DiaryDetailPage>();
         services.AddTransient<TodoDetailPage>();
         services.AddTransient<ProfilePage>();

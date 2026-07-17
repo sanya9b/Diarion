@@ -1,23 +1,74 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.LockPage"
+             x:DataType="viewmodels:LockViewModel"
              BackgroundColor="{DynamicResource Theme_Earth_Midnight}"
              NavigationPage.HasNavigationBar="False">
-    <Grid>
-        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="24">
-            <Label Text="🔒" FontSize="64" HorizontalOptions="Center" />
-            <Label Text="{x:Static localization:AppResources.AppTitle}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-            
-            <Button Text="Unlock"
-                    Clicked="OnUnlockClicked"
-                    BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
-                    TextColor="{DynamicResource Theme_Snow}"
-                    CornerRadius="12"
-                    HeightRequest="48"
-                    WidthRequest="200"
-                    Margin="0,32,0,0" />
+
+    <ContentPage.Resources>
+        <Style x:Key="PinKey" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Black}" />
+            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="CornerRadius" Value="40" />
+            <Setter Property="HeightRequest" Value="72" />
+            <Setter Property="WidthRequest" Value="72" />
+            <Setter Property="BorderColor" Value="{DynamicResource Theme_Dust_Ocean}" />
+            <Setter Property="BorderWidth" Value="1" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*, Auto, Auto, *" Padding="32">
+
+        <!-- Header + PIN dots -->
+        <VerticalStackLayout Grid.Row="1" Spacing="18" VerticalOptions="End" HorizontalOptions="Center">
+            <Label Text="🔒" FontSize="52" HorizontalOptions="Center" />
+            <Label Text="{x:Static localization:AppResources.EnterPinTitle}"
+                   FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"
+                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            <Label Text="{Binding PinDisplay}"
+                   FontSize="34" CharacterSpacing="10" HorizontalOptions="Center"
+                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            <Label Text="{Binding ErrorMessage}"
+                   FontSize="13" HorizontalOptions="Center" MinimumHeightRequest="18"
+                   TextColor="{DynamicResource Theme_Coral}" />
         </VerticalStackLayout>
+
+        <!-- Numeric keypad -->
+        <Grid Grid.Row="2" Margin="0,32,0,0"
+              ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto"
+              ColumnSpacing="20" RowSpacing="20" HorizontalOptions="Center">
+
+            <Button Grid.Row="0" Grid.Column="0" Text="1" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="1" />
+            <Button Grid.Row="0" Grid.Column="1" Text="2" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="2" />
+            <Button Grid.Row="0" Grid.Column="2" Text="3" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="3" />
+
+            <Button Grid.Row="1" Grid.Column="0" Text="4" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="4" />
+            <Button Grid.Row="1" Grid.Column="1" Text="5" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="5" />
+            <Button Grid.Row="1" Grid.Column="2" Text="6" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="6" />
+
+            <Button Grid.Row="2" Grid.Column="0" Text="7" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="7" />
+            <Button Grid.Row="2" Grid.Column="1" Text="8" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="8" />
+            <Button Grid.Row="2" Grid.Column="2" Text="9" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="9" />
+
+            <!-- Biometric (only when available) -->
+            <Button Grid.Row="3" Grid.Column="0" Text="👆"
+                    Style="{StaticResource PinKey}"
+                    BackgroundColor="Transparent" BorderWidth="0"
+                    IsVisible="{Binding IsBiometricAvailable}"
+                    Command="{Binding TryBiometricCommand}"
+                    SemanticProperties.Description="{x:Static localization:AppResources.UnlockWithBiometricsButton}" />
+
+            <Button Grid.Row="3" Grid.Column="1" Text="0" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="0" />
+
+            <Button Grid.Row="3" Grid.Column="2" Text="⌫"
+                    Style="{StaticResource PinKey}"
+                    BackgroundColor="Transparent" BorderWidth="0"
+                    Command="{Binding DeleteDigitCommand}"
+                    SemanticProperties.Description="{x:Static localization:AppResources.DeleteButtonLabel}" />
+        </Grid>
     </Grid>
 </ContentPage>

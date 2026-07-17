@@ -703,4 +703,49 @@
   <data name="EmptyNotes" xml:space="preserve">
     <value>Нотаток ще немає. Створіть першу.</value>
   </data>
+  <data name="AppLockTitle" xml:space="preserve">
+    <value>Блокування застосунку</value>
+  </data>
+  <data name="EnterPinTitle" xml:space="preserve">
+    <value>Введіть PIN</value>
+  </data>
+  <data name="EnterPinPrompt" xml:space="preserve">
+    <value>Введіть 4-значний PIN</value>
+  </data>
+  <data name="ConfirmPinPrompt" xml:space="preserve">
+    <value>Підтвердіть PIN</value>
+  </data>
+  <data name="PinInvalidMessage" xml:space="preserve">
+    <value>PIN має містити 4 цифри.</value>
+  </data>
+  <data name="PinMismatchMessage" xml:space="preserve">
+    <value>PIN-коди не збігаються.</value>
+  </data>
+  <data name="PinSetSuccessMessage" xml:space="preserve">
+    <value>Блокування увімкнено.</value>
+  </data>
+  <data name="PinIncorrectMessage" xml:space="preserve">
+    <value>Невірний PIN</value>
+  </data>
+  <data name="PinLockedOutMessage" xml:space="preserve">
+    <value>Забагато спроб. Спробуйте через {0} с.</value>
+  </data>
+  <data name="RemovePinConfirmMessage" xml:space="preserve">
+    <value>Прибрати PIN блокування?</value>
+  </data>
+  <data name="SetPinButton" xml:space="preserve">
+    <value>Встановити PIN</value>
+  </data>
+  <data name="ChangePinButton" xml:space="preserve">
+    <value>Змінити PIN</value>
+  </data>
+  <data name="RemovePinButton" xml:space="preserve">
+    <value>Прибрати PIN</value>
+  </data>
+  <data name="UnlockWithBiometricsButton" xml:space="preserve">
+    <value>Розблокувати біометрією</value>
+  </data>
+  <data name="DeleteButtonLabel" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
 </root>

@@ -16,6 +16,9 @@ public partial class ProfileViewModel : BaseViewModel
 {
     private readonly IProfileService _profileService;
     private readonly IBackupService _backupService;
+    private readonly IAppLockService _appLockService;
+    private readonly IBiometricService _biometricService;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
@@ -31,10 +34,18 @@ public partial class ProfileViewModel : BaseViewModel
         new(GenderType.Other, Diarion.Resources.Localization.AppResources.GenderOther)
     };
 
-    public ProfileViewModel(IProfileService profileService, IBackupService backupService)
+    public ProfileViewModel(
+        IProfileService profileService,
+        IBackupService backupService,
+        IAppLockService appLockService,
+        IBiometricService biometricService,
+        IDialogService dialogService)
     {
         _profileService = profileService;
         _backupService = backupService;
+        _appLockService = appLockService;
+        _biometricService = biometricService;
+        _dialogService = dialogService;
         Title = Diarion.Resources.Localization.AppResources.ProfileMenuTitle;
     }
 
@@ -43,93 +54,119 @@ public partial class ProfileViewModel : BaseViewModel
         IsBusy = true;
         Profile = await _profileService.GetUserProfileAsync();
         SelectedGenderItem = GenderList.FirstOrDefault(g => g.Value == Profile.Gender) ?? GenderList[0];
-        
-        // Prevent triggering the change event during load
-        _isBiometricAuthEnabled = Profile.IsBiometricAuthEnabled;
-        OnPropertyChanged(nameof(IsBiometricAuthEnabled));
-        
+
+        NotifyLockState();
+
         IsBusy = false;
     }
 
-    private bool _isBiometricAuthEnabled;
-    public bool IsBiometricAuthEnabled
+    // ---- App lock (PIN + optional biometrics) ----
+
+    public bool IsLockEnabled => _appLockService.IsLockEnabled;
+    public bool IsLockDisabled => !_appLockService.IsLockEnabled;
+
+    public bool IsBiometricEnabled
     {
-        get => _isBiometricAuthEnabled;
+        get => _appLockService.IsBiometricEnabled;
         set
         {
-            if (_isBiometricAuthEnabled != value)
+            if (_appLockService.IsBiometricEnabled == value) return;
+
+            if (value)
             {
-                // If turning on, we need to authenticate first
-                if (value)
-                {
-                    // Store locally, but don't set immediately to prevent UI flicker until verified
-                    _isBiometricAuthEnabled = true;
-                    OnPropertyChanged();
-                    VerifyAndEnableBiometricsAsync();
-                }
-                else
-                {
-                    _isBiometricAuthEnabled = false;
-                    Profile.IsBiometricAuthEnabled = false;
-                    OnPropertyChanged();
-                    _ = SaveProfileAsync();
-                }
+                _ = EnableBiometricAsync();
+            }
+            else
+            {
+                _appLockService.IsBiometricEnabled = false;
+                OnPropertyChanged();
             }
         }
     }
 
-    private async void VerifyAndEnableBiometricsAsync()
+    private async Task EnableBiometricAsync()
     {
-        try
+        var available = await _biometricService.IsAvailableAsync();
+        if (!available)
         {
-            var isAvailable = await Plugin.Fingerprint.CrossFingerprint.Current.IsAvailableAsync();
-            if (!isAvailable)
-            {
-                _isBiometricAuthEnabled = false;
-                OnPropertyChanged(nameof(IsBiometricAuthEnabled));
-
-                await Shell.Current.DisplayAlertAsync(
-                    Diarion.Resources.Localization.AppResources.BiometricErrorTitle,
-                    Diarion.Resources.Localization.AppResources.BiometricErrorMessage,
-                    Diarion.Resources.Localization.AppResources.OkButtonLabel);
-                return;
-            }
-
-            var result = await Plugin.Fingerprint.CrossFingerprint.Current.AuthenticateAsync(new Plugin.Fingerprint.Abstractions.AuthenticationRequestConfiguration(
-                Diarion.Resources.Localization.AppResources.SecurityLabel,
-                Diarion.Resources.Localization.AppResources.BiometricPromptReason)
-            {
-                AllowAlternativeAuthentication = true
-            });
-
-            if (result.Authenticated)
-            {
-                Profile.IsBiometricAuthEnabled = true;
-                await SaveProfileAsync();
-            }
-            else
-            {
-                // Revert UI toggle if failed
-                _isBiometricAuthEnabled = false;
-                OnPropertyChanged(nameof(IsBiometricAuthEnabled));
-                
-                await Shell.Current.DisplayAlertAsync(
-                    Diarion.Resources.Localization.AppResources.BiometricErrorTitle,
-                    Diarion.Resources.Localization.AppResources.BiometricErrorMessage,
-                    Diarion.Resources.Localization.AppResources.OkButtonLabel);
-            }
-        }
-        catch (System.Exception)
-        {
-            // Revert UI toggle on exception to prevent application crash
-            _isBiometricAuthEnabled = false;
-            OnPropertyChanged(nameof(IsBiometricAuthEnabled));
-
-            await Shell.Current.DisplayAlertAsync(
+            await _dialogService.ShowAlertAsync(
                 Diarion.Resources.Localization.AppResources.BiometricErrorTitle,
                 Diarion.Resources.Localization.AppResources.BiometricErrorMessage,
                 Diarion.Resources.Localization.AppResources.OkButtonLabel);
+            OnPropertyChanged(nameof(IsBiometricEnabled)); // revert the switch in the UI
+            return;
         }
+
+        _appLockService.IsBiometricEnabled = true;
+        OnPropertyChanged(nameof(IsBiometricEnabled));
+    }
+
+    [RelayCommand]
+    public async Task SetPinAsync()
+    {
+        var pin = await _dialogService.ShowPromptAsync(
+            Diarion.Resources.Localization.AppResources.AppLockTitle,
+            Diarion.Resources.Localization.AppResources.EnterPinPrompt,
+            Diarion.Resources.Localization.AppResources.OkButtonLabel,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
+
+        if (string.IsNullOrWhiteSpace(pin)) return;
+
+        if (!IsValidPin(pin))
+        {
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.AppLockTitle,
+                Diarion.Resources.Localization.AppResources.PinInvalidMessage,
+                Diarion.Resources.Localization.AppResources.OkButtonLabel);
+            return;
+        }
+
+        var confirm = await _dialogService.ShowPromptAsync(
+            Diarion.Resources.Localization.AppResources.AppLockTitle,
+            Diarion.Resources.Localization.AppResources.ConfirmPinPrompt,
+            Diarion.Resources.Localization.AppResources.OkButtonLabel,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
+
+        if (confirm != pin)
+        {
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.AppLockTitle,
+                Diarion.Resources.Localization.AppResources.PinMismatchMessage,
+                Diarion.Resources.Localization.AppResources.OkButtonLabel);
+            return;
+        }
+
+        _appLockService.SetPin(pin);
+        NotifyLockState();
+
+        await _dialogService.ShowAlertAsync(
+            Diarion.Resources.Localization.AppResources.AppLockTitle,
+            Diarion.Resources.Localization.AppResources.PinSetSuccessMessage,
+            Diarion.Resources.Localization.AppResources.OkButtonLabel);
+    }
+
+    [RelayCommand]
+    public async Task RemovePinAsync()
+    {
+        var confirm = await _dialogService.ShowConfirmationAsync(
+            Diarion.Resources.Localization.AppResources.AppLockTitle,
+            Diarion.Resources.Localization.AppResources.RemovePinConfirmMessage,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
+
+        if (!confirm) return;
+
+        _appLockService.RemovePin();
+        NotifyLockState();
+    }
+
+    private static bool IsValidPin(string pin) => pin.Length == 4 && pin.All(char.IsDigit);
+
+    private void NotifyLockState()
+    {
+        OnPropertyChanged(nameof(IsLockEnabled));
+        OnPropertyChanged(nameof(IsLockDisabled));
+        OnPropertyChanged(nameof(IsBiometricEnabled));
     }
 
     partial void OnSelectedGenderItemChanged(GenderItem? value)
