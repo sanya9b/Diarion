@@ -748,4 +748,34 @@
   <data name="DeleteButtonLabel" xml:space="preserve">
     <value>Видалити</value>
   </data>
+  <data name="OnboardingTitle" xml:space="preserve">
+    <value>Ласкаво просимо до Diarion</value>
+  </data>
+  <data name="OnboardingSubtitle" xml:space="preserve">
+    <value>Ваш приватний офлайн-щоденник</value>
+  </data>
+  <data name="OnboardingPrivacyText" xml:space="preserve">
+    <value>Усе лишається на вашому пристрої. Без хмари й акаунтів — нічого витікати.</value>
+  </data>
+  <data name="OnboardingReminderLabel" xml:space="preserve">
+    <value>Нагадувати вести щоденник щодня</value>
+  </data>
+  <data name="OnboardingGetStartedButton" xml:space="preserve">
+    <value>Почати</value>
+  </data>
+  <data name="RemindersTitle" xml:space="preserve">
+    <value>НАГАДУВАННЯ</value>
+  </data>
+  <data name="DailyReminderLabel" xml:space="preserve">
+    <value>Щоденне нагадування</value>
+  </data>
+  <data name="ReminderTimeLabel" xml:space="preserve">
+    <value>Час</value>
+  </data>
+  <data name="DailyReminderTitle" xml:space="preserve">
+    <value>Час для щоденника</value>
+  </data>
+  <data name="DailyReminderMessage" xml:space="preserve">
+    <value>Хвилинка для себе?</value>
+  </data>
 </root>

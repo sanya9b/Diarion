@@ -1010,6 +1010,46 @@ public static string ClearAllDataSuccessMsg {
         public static string DeleteButtonLabel {
             get { return ResourceManager.GetString("DeleteButtonLabel", resourceCulture) ?? "Delete"; }
         }
+
+        public static string OnboardingTitle {
+            get { return ResourceManager.GetString("OnboardingTitle", resourceCulture) ?? "Welcome to Diarion"; }
+        }
+
+        public static string OnboardingSubtitle {
+            get { return ResourceManager.GetString("OnboardingSubtitle", resourceCulture) ?? "Your private, offline diary"; }
+        }
+
+        public static string OnboardingPrivacyText {
+            get { return ResourceManager.GetString("OnboardingPrivacyText", resourceCulture) ?? "Everything stays on your device. No cloud, no account — nothing to leak."; }
+        }
+
+        public static string OnboardingReminderLabel {
+            get { return ResourceManager.GetString("OnboardingReminderLabel", resourceCulture) ?? "Remind me to journal daily"; }
+        }
+
+        public static string OnboardingGetStartedButton {
+            get { return ResourceManager.GetString("OnboardingGetStartedButton", resourceCulture) ?? "Get started"; }
+        }
+
+        public static string RemindersTitle {
+            get { return ResourceManager.GetString("RemindersTitle", resourceCulture) ?? "REMINDERS"; }
+        }
+
+        public static string DailyReminderLabel {
+            get { return ResourceManager.GetString("DailyReminderLabel", resourceCulture) ?? "Daily journaling reminder"; }
+        }
+
+        public static string ReminderTimeLabel {
+            get { return ResourceManager.GetString("ReminderTimeLabel", resourceCulture) ?? "Time"; }
+        }
+
+        public static string DailyReminderTitle {
+            get { return ResourceManager.GetString("DailyReminderTitle", resourceCulture) ?? "Time for your diary"; }
+        }
+
+        public static string DailyReminderMessage {
+            get { return ResourceManager.GetString("DailyReminderMessage", resourceCulture) ?? "A quiet minute for yourself?"; }
+        }
     }
 }
 

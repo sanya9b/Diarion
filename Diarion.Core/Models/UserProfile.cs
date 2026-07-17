@@ -30,6 +30,10 @@ public partial class UserProfile : ObservableObject
     // Безпека
     [ObservableProperty] private bool _isBiometricAuthEnabled;
 
+    // Нагадування вести щоденник
+    [ObservableProperty] private bool _isDailyReminderEnabled;
+    [ObservableProperty] private TimeSpan _dailyReminderTime = new(20, 0, 0);
+
     // Сортування меню
     [ObservableProperty] private System.Collections.Generic.List<string>? _quickMenuOrder;
 

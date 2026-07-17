@@ -19,6 +19,7 @@ public partial class ProfileViewModel : BaseViewModel
     private readonly IAppLockService _appLockService;
     private readonly IBiometricService _biometricService;
     private readonly IDialogService _dialogService;
+    private readonly INotificationService _notificationService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
@@ -39,13 +40,15 @@ public partial class ProfileViewModel : BaseViewModel
         IBackupService backupService,
         IAppLockService appLockService,
         IBiometricService biometricService,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        INotificationService notificationService)
     {
         _profileService = profileService;
         _backupService = backupService;
         _appLockService = appLockService;
         _biometricService = biometricService;
         _dialogService = dialogService;
+        _notificationService = notificationService;
         Title = Diarion.Resources.Localization.AppResources.ProfileMenuTitle;
     }
 
@@ -193,12 +196,26 @@ public partial class ProfileViewModel : BaseViewModel
     {
         IsBusy = true;
         await _profileService.SaveUserProfileAsync(Profile);
+        await ApplyDailyReminderAsync();
         IsBusy = false;
-        
-        await Shell.Current.DisplayAlertAsync(
-            Title, 
-            Diarion.Resources.Localization.AppResources.ProfileSavedMessage, 
+
+        await _dialogService.ShowAlertAsync(
+            Title,
+            Diarion.Resources.Localization.AppResources.ProfileSavedMessage,
             Diarion.Resources.Localization.AppResources.OkButtonLabel);
+    }
+
+    private async Task ApplyDailyReminderAsync()
+    {
+        if (Profile.IsDailyReminderEnabled)
+        {
+            await _notificationService.RequestPermissionsAsync();
+            _notificationService.ScheduleDailyJournalReminder(Profile.DailyReminderTime);
+        }
+        else
+        {
+            _notificationService.CancelDailyJournalReminder();
+        }
     }
 
     [RelayCommand]

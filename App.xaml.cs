@@ -10,6 +10,7 @@ namespace Diarion;
 
 public partial class App : Application
 {
+    private const string OnboardingCompletedKey = "OnboardingCompleted";
     private static readonly TimeSpan RelockGrace = TimeSpan.FromSeconds(30);
     private DateTime? _backgroundedAtUtc;
     private bool _isLockShown;
@@ -42,10 +43,34 @@ public partial class App : Application
         using var _ = StartupTrace.Measure("App.CreateWindow");
         var window = new Window(new AppShell());
 
-        window.Created += async (s, e) => await CheckSecurityAsync(window, coldStart: true);
+        window.Created += async (s, e) =>
+        {
+            await CheckOnboardingAsync(window);
+            await CheckSecurityAsync(window, coldStart: true);
+        };
         window.Resumed += async (s, e) => await CheckSecurityAsync(window, coldStart: false);
 
         return window;
+    }
+
+    private async Task CheckOnboardingAsync(Window window)
+    {
+        if (Preferences.Get(OnboardingCompletedKey, false)) return;
+
+        var services = window.Handler?.MauiContext?.Services;
+        var navigation = window.Page?.Navigation;
+        if (services == null || navigation == null) return;
+
+        var page = services.GetService<Diarion.Views.OnboardingPage>();
+        if (page == null) return;
+
+        page.ViewModel.Completed = () =>
+        {
+            Preferences.Set(OnboardingCompletedKey, true);
+            _ = navigation.PopModalAsync();
+        };
+
+        await navigation.PushModalAsync(page);
     }
 
     protected override void OnSleep()
