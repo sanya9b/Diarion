@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
         services.AddSingleton<IDatabaseSeeder, DatabaseSeeder>();
+        services.AddSingleton<IEncryptionKeyProvider, SecureStorageKeyProvider>();
         services.AddSingleton<IDatabaseContext, DatabaseContext>();
         services.AddSingleton<INotificationService, LocalNotificationService>();
         services.AddSingleton<ITodoService, TodoService>();

@@ -11,13 +11,19 @@ public class DatabaseContext : IDatabaseContext, IDisposable
 {
     private const string DbFileName = "diarion_local.db";
     private readonly object _lock = new();
+    private readonly IEncryptionKeyProvider? _keyProvider;
+    private readonly IDatabaseSeeder? _seeder;
+    private readonly bool _useInMemory;
     private LiteDatabase? _db;
     private string _dbPath = string.Empty;
 
     public string DatabasePath => _dbPath;
 
-    public DatabaseContext(IDatabaseSeeder? seeder = null, bool useInMemory = false)
+    public DatabaseContext(IDatabaseSeeder? seeder = null, IEncryptionKeyProvider? keyProvider = null, bool useInMemory = false)
     {
+        _keyProvider = keyProvider;
+        _seeder = seeder;
+        _useInMemory = useInMemory;
         Initialize(seeder, useInMemory);
     }
 
@@ -32,7 +38,10 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         else
         {
             _dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DbFileName);
-            _db = new LiteDatabase(_dbPath);
+            // Encrypt the database at rest using a device-keychain-backed key. On the first run
+            // after upgrading, a pre-existing plaintext file is migrated transparently and safely.
+            var password = _keyProvider?.GetOrCreateKey();
+            _db = EncryptedLiteDatabaseFactory.Open(_dbPath, password);
         }
         
         var entriesCollection = _db.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
@@ -85,6 +94,16 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         {
             _db?.Dispose();
             _db = null;
+        }
+    }
+
+    public void Reopen()
+    {
+        lock (_lock)
+        {
+            _db?.Dispose();
+            _db = null;
+            Initialize(_seeder, _useInMemory);
         }
     }
 
