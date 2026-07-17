@@ -19,9 +19,12 @@ public class StatisticsService : IStatisticsService
         _financeService = financeService;
     }
 
+    // A "N day" window means exactly N calendar days INCLUDING today: [today-(N-1), today].
+    private static DateTime GetStartDate(int days) => DateTime.Today.AddDays(-(Math.Max(1, days) - 1));
+
     public async Task<SleepStatistics> GetSleepStatisticsAsync(int days)
     {
-        var startDate = DateTime.Today.AddDays(-days);
+        var startDate = GetStartDate(days);
         var entries = await _diaryService.GetDiaryEntriesForStatsAsync(startDate, DateTime.Today);
         var entriesList = entries.ToList();
 
@@ -57,19 +60,19 @@ public class StatisticsService : IStatisticsService
             averageDuration = TimeSpan.FromHours(totalHours / validSleepEntries.Count);
         }
 
-        // Fill gaps with 0 duration for chart
+        // Fill gaps with 0 duration for chart (O(days) lookup via a date-keyed map)
+        var byDate = new Dictionary<DateTime, SleepDataPoint>();
+        foreach (var p in dataPoints)
+        {
+            byDate[p.Date.Date] = p;
+        }
+
         var fullDataPoints = new List<SleepDataPoint>();
         for (var d = startDate.Date; d <= DateTime.Today; d = d.AddDays(1))
         {
-            var pt = dataPoints.FirstOrDefault(p => p.Date.Date == d);
-            if (pt != null)
-            {
-                fullDataPoints.Add(pt);
-            }
-            else
-            {
-                fullDataPoints.Add(new SleepDataPoint { Date = d, Duration = TimeSpan.Zero, Quality = 0 });
-            }
+            fullDataPoints.Add(byDate.TryGetValue(d, out var pt)
+                ? pt
+                : new SleepDataPoint { Date = d, Duration = TimeSpan.Zero, Quality = 0 });
         }
 
         return new SleepStatistics
@@ -82,7 +85,7 @@ public class StatisticsService : IStatisticsService
 
     public async Task<MoodStatistics> GetMoodStatisticsAsync(int days)
     {
-        var startDate = DateTime.Today.AddDays(-days);
+        var startDate = GetStartDate(days);
         var entries = await _diaryService.GetDiaryEntriesForStatsAsync(startDate, DateTime.Today);
         var entriesList = entries.ToList();
 
@@ -130,14 +133,14 @@ public class StatisticsService : IStatisticsService
 
     public async Task<TodoStatistics> GetTodoStatisticsAsync(int days)
     {
-        var startDate = DateTime.Today.AddDays(-days);
+        var startDate = GetStartDate(days);
         // Using the optimized summary method that counts directly in DB
         return await _todoService.GetTodoStatsSummaryAsync(startDate, DateTime.Today);
     }
 
     public async Task<FinanceStatistics> GetFinanceStatisticsAsync(int days)
     {
-        var startDate = DateTime.Today.AddDays(-days);
+        var startDate = GetStartDate(days);
         var transactions = await _financeService.GetFinanceTransactionsForStatsAsync(startDate, DateTime.Today);
         
         var stats = new FinanceStatistics();

@@ -363,6 +363,24 @@ public class DiaryServiceTests : IDisposable
         streak.Should().Be(1);
     }
 
+    [Fact]
+    public async Task GetTodoStatsSummary_CountsTotalAndCompletedInRange()
+    {
+        await ClearDatabaseAsync();
+        var today = DateTime.Today;
+
+        var todos = _dbContext.GetCollection<TodoItem>(DatabaseConstants.TodosCollection);
+        todos.Insert(new TodoItem { TargetDate = today, IsCompleted = true });
+        todos.Insert(new TodoItem { TargetDate = today.AddDays(-1), IsCompleted = true });
+        todos.Insert(new TodoItem { TargetDate = today.AddDays(-1), IsCompleted = false });
+        todos.Insert(new TodoItem { TargetDate = today.AddDays(-10), IsCompleted = true }); // out of range
+
+        var summary = await _todoService.GetTodoStatsSummaryAsync(today.AddDays(-2), today.AddDays(1));
+
+        summary.TotalCount.Should().Be(3);
+        summary.CompletedCount.Should().Be(2);
+    }
+
     public void Dispose()
     {
         _dbContext.Dispose();

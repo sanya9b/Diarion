@@ -44,14 +44,17 @@ public class TodoService : ITodoService
     {
         return Task.Run(() =>
         {
-            // Optimized LiteDB queries that count directly without loading objects into memory
-            int total = TodosCollection.Count(x => x.TargetDate >= startDate && x.TargetDate <= endDate);
-            int completed = TodosCollection.Count(x => x.TargetDate >= startDate && x.TargetDate <= endDate && x.IsCompleted);
-            
+            // Single ranged scan: project only the completion flag, then count both in memory
+            // (avoids traversing the date range twice with two separate Count queries).
+            var flags = TodosCollection.Query()
+                .Where(x => x.TargetDate >= startDate && x.TargetDate <= endDate)
+                .Select(x => x.IsCompleted)
+                .ToList();
+
             return new TodoStatistics
             {
-                TotalCount = total,
-                CompletedCount = completed
+                TotalCount = flags.Count,
+                CompletedCount = flags.Count(c => c)
             };
         });
     }
