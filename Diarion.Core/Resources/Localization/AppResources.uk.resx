@@ -790,4 +790,22 @@
   <data name="FactorSleepQuality" xml:space="preserve">
     <value>Якість сну</value>
   </data>
+  <data name="ExportDataTitle" xml:space="preserve">
+    <value>ЕКСПОРТ ДАНИХ</value>
+  </data>
+  <data name="ExportDataDescription" xml:space="preserve">
+    <value>Експортуйте свої дані у відкритих форматах — зберігайте чи переносьте будь-куди.</value>
+  </data>
+  <data name="ExportJsonButton" xml:space="preserve">
+    <value>JSON</value>
+  </data>
+  <data name="ExportCsvButton" xml:space="preserve">
+    <value>CSV</value>
+  </data>
+  <data name="ExportMarkdownButton" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
+  <data name="ExportSuccessMessage" xml:space="preserve">
+    <value>Експорт готовий до надсилання.</value>
+  </data>
 </root>

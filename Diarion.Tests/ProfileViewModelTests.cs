@@ -18,7 +18,8 @@ public class ProfileViewModelTests
             new Mock<IAppLockService>().Object,
             new Mock<IBiometricService>().Object,
             new Mock<IDialogService>().Object,
-            notif.Object);
+            notif.Object,
+            new Mock<IExportService>().Object);
     }
 
     [Fact]

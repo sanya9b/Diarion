@@ -1066,6 +1066,30 @@ public static string ClearAllDataSuccessMsg {
         public static string FactorSleepQuality {
             get { return ResourceManager.GetString("FactorSleepQuality", resourceCulture) ?? "Sleep quality"; }
         }
+
+        public static string ExportDataTitle {
+            get { return ResourceManager.GetString("ExportDataTitle", resourceCulture) ?? "EXPORT DATA"; }
+        }
+
+        public static string ExportDataDescription {
+            get { return ResourceManager.GetString("ExportDataDescription", resourceCulture) ?? "Export your data in open formats you can keep or move anywhere."; }
+        }
+
+        public static string ExportJsonButton {
+            get { return ResourceManager.GetString("ExportJsonButton", resourceCulture) ?? "JSON"; }
+        }
+
+        public static string ExportCsvButton {
+            get { return ResourceManager.GetString("ExportCsvButton", resourceCulture) ?? "CSV"; }
+        }
+
+        public static string ExportMarkdownButton {
+            get { return ResourceManager.GetString("ExportMarkdownButton", resourceCulture) ?? "Markdown"; }
+        }
+
+        public static string ExportSuccessMessage {
+            get { return ResourceManager.GetString("ExportSuccessMessage", resourceCulture) ?? "Export ready to share."; }
+        }
     }
 }
 

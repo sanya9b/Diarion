@@ -33,6 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ICorrelationService, CorrelationService>();
         services.AddSingleton<IMenuConfigurationService, MenuConfigurationService>();
         services.AddSingleton<IBackupService, BackupService>();
+        services.AddSingleton<IExportService, ExportService>();
         services.AddSingleton<INavigationService, MauiNavigationService>();
         services.AddSingleton<IDialogService, MauiDialogService>();
         services.AddSingleton<IHealthDataService, HealthDataService>();

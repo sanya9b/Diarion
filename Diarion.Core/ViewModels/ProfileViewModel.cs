@@ -20,6 +20,7 @@ public partial class ProfileViewModel : BaseViewModel
     private readonly IBiometricService _biometricService;
     private readonly IDialogService _dialogService;
     private readonly INotificationService _notificationService;
+    private readonly IExportService _exportService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
@@ -41,7 +42,8 @@ public partial class ProfileViewModel : BaseViewModel
         IAppLockService appLockService,
         IBiometricService biometricService,
         IDialogService dialogService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IExportService exportService)
     {
         _profileService = profileService;
         _backupService = backupService;
@@ -49,6 +51,7 @@ public partial class ProfileViewModel : BaseViewModel
         _biometricService = biometricService;
         _dialogService = dialogService;
         _notificationService = notificationService;
+        _exportService = exportService;
         Title = Diarion.Resources.Localization.AppResources.ProfileMenuTitle;
     }
 
@@ -248,6 +251,26 @@ public partial class ProfileViewModel : BaseViewModel
             await Shell.Current.DisplayAlertAsync(
                 Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup", 
                 Diarion.Resources.Localization.AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.", 
+                Diarion.Resources.Localization.AppResources.OkButtonLabel);
+        }
+    }
+
+    [RelayCommand]
+    public async Task ExportDataAsync(string format)
+    {
+        var exportFormat = (format ?? string.Empty).ToLowerInvariant() switch
+        {
+            "csv" => ExportFormat.Csv,
+            "markdown" => ExportFormat.Markdown,
+            _ => ExportFormat.Json
+        };
+
+        var success = await _exportService.ExportAndShareAsync(exportFormat);
+        if (success)
+        {
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.ExportDataTitle,
+                Diarion.Resources.Localization.AppResources.ExportSuccessMessage,
                 Diarion.Resources.Localization.AppResources.OkButtonLabel);
         }
     }
