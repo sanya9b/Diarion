@@ -124,26 +124,30 @@
                                 <Border StrokeThickness="1"
                                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                                         BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
-                                        StrokeShape="RoundRectangle 16"
-                                        Padding="16">
+                                        StrokeShape="RoundRectangle 14"
+                                        Padding="14,10">
                                     <Border.Behaviors>
-                                        <toolkit:TouchBehavior 
-                                            LongPressCommand="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteNoteCommand}" 
+                                        <toolkit:TouchBehavior
+                                            LongPressCommand="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteNoteCommand}"
                                             LongPressCommandParameter="{Binding .}" />
                                     </Border.Behaviors>
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenNoteCommand}" CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
-                                    
-                                    <VerticalStackLayout Spacing="6">
-                                        <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
-                                        <Label Text="{Binding Content}" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="2" />
+
+                                    <VerticalStackLayout Spacing="3">
+                                        <!-- Title + date on one row -->
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <Label Grid.Column="0" Text="{Binding Title}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="{Binding UpdatedAt, StringFormat='{0:dd.MM.yyyy}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                                        </Grid>
+                                        <Label Text="{Binding Content}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="1" />
 
                                         <!-- Tag chips -->
                                         <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding Tags}">
                                             <BindableLayout.ItemTemplate>
                                                 <DataTemplate x:DataType="x:String">
-                                                    <Border Margin="0,4,6,0" Padding="8,2" StrokeThickness="1"
+                                                    <Border Margin="0,3,6,0" Padding="8,1" StrokeThickness="1"
                                                             Stroke="{DynamicResource Theme_Dust_Ocean}"
                                                             BackgroundColor="Transparent" StrokeShape="RoundRectangle 10">
                                                         <Label Text="{Binding ., StringFormat='#{0}'}" FontSize="11" TextColor="{DynamicResource Theme_Amber}" />
@@ -151,8 +155,6 @@
                                                 </DataTemplate>
                                             </BindableLayout.ItemTemplate>
                                         </FlexLayout>
-
-                                        <Label Text="{Binding UpdatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="End" />
                                     </VerticalStackLayout>
                                 </Border>
                             </SwipeView>
