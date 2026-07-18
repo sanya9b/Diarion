@@ -19,7 +19,8 @@ public class ProfileViewModelTests
             new Mock<IBiometricService>().Object,
             new Mock<IDialogService>().Object,
             notif.Object,
-            new Mock<IExportService>().Object);
+            new Mock<IExportService>().Object,
+            new Mock<INavigationService>().Object);
     }
 
     [Fact]

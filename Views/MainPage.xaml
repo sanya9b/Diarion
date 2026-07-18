@@ -85,28 +85,29 @@
             <!-- Bento Box Content Container -->
             <Grid Grid.Row="1">
                 <ScrollView x:Name="DiaryContainer" IsVisible="{Binding IsDiaryMode}" Padding="24,10,24,40">
-                    
-                    <!-- Bento Box Asymmetrical Grid -->
-                    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *" RowSpacing="16" ColumnSpacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel">
 
-                        <!-- Row 0: Mood -->
-                        <controls:MoodSection Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+                    <!-- Home-screen blocks. Each block's visibility is toggled from Settings; a
+                         VerticalStackLayout collapses hidden blocks without leaving empty gaps. -->
+                    <VerticalStackLayout Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel">
 
-                        <!-- Row 1: Sleep -->
-                        <controls:SleepSection Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+                        <controls:MoodSection BindingContext="{Binding}"
+                                              IsVisible="{Binding BindingContext.Profile.IsMoodBlockVisible, Source={x:Reference PageRoot}}" />
 
-                        <!-- Row 2: Health -->
-                        <controls:HealthSection Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+                        <controls:SleepSection BindingContext="{Binding}"
+                                               IsVisible="{Binding BindingContext.Profile.IsSleepBlockVisible, Source={x:Reference PageRoot}}" />
 
-                        <!-- Row 3: Food -->
-                        <controls:FoodTrackerSection Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+                        <controls:HealthSection BindingContext="{Binding}"
+                                                IsVisible="{Binding BindingContext.Profile.IsHealthBlockVisible, Source={x:Reference PageRoot}}" />
 
-                        <!-- Row 4: Habits -->
-                        <controls:HabitTrackerSection Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
+                        <controls:FoodTrackerSection BindingContext="{Binding}"
+                                                     IsVisible="{Binding BindingContext.Profile.IsFoodBlockVisible, Source={x:Reference PageRoot}}" />
 
-                        <!-- Row 5: Reflection / Text blocks -->
-                        <controls:ReflectionSection Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" BindingContext="{Binding}" />
-                    </Grid>
+                        <controls:HabitTrackerSection BindingContext="{Binding}"
+                                                      IsVisible="{Binding BindingContext.Profile.IsHabitsBlockVisible, Source={x:Reference PageRoot}}" />
+
+                        <controls:ReflectionSection BindingContext="{Binding}"
+                                                    IsVisible="{Binding BindingContext.Profile.IsReflectionBlockVisible, Source={x:Reference PageRoot}}" />
+                    </VerticalStackLayout>
                 </ScrollView>
 
                 <views:PlannerView x:Name="PlannerContainer" IsVisible="{Binding BindingContext.IsPlannerMode, Source={x:Reference PageRoot}}" BindingContext="{Binding PlannerSection}" />

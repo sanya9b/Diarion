@@ -25,9 +25,20 @@ public class HabitService : IHabitService
         return Task.Run(() =>
         {
             var dateOnly = date.Date;
-            return HabitsCollection.Query()
+            var defs = HabitsCollection.Query()
                 .Where(x => x.CreatedAt <= dateOnly && (x.DeletedAt == null || x.DeletedAt > dateOnly))
                 .ToList();
+
+            // Built-in default habits are re-localized to the current UI language here so they
+            // stay bilingual regardless of the language active when the database was seeded.
+            foreach (var def in defs)
+            {
+                var localized = HabitLocalization.ResolveName(def);
+                if (!string.IsNullOrEmpty(localized))
+                    def.Name = localized;
+            }
+
+            return defs;
         });
     }
 

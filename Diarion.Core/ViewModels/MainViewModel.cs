@@ -22,6 +22,7 @@ public partial class MainViewModel : BaseViewModel
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
     private readonly IHealthDataService _healthDataService;
+    private readonly IProfileService _profileService;
 
     public CalendarSectionViewModel CalendarSection { get; }
     public PlannerSectionViewModel PlannerSection { get; }
@@ -31,6 +32,10 @@ public partial class MainViewModel : BaseViewModel
 
     [ObservableProperty]
     private DiaryEntryViewModel? _currentEntry;
+
+    // Drives which home-screen blocks are shown; the sections bind their IsVisible to these flags.
+    [ObservableProperty]
+    private UserProfile _profile = new();
 
     [ObservableProperty]
     private int _currentStreak;
@@ -51,6 +56,7 @@ public partial class MainViewModel : BaseViewModel
         INavigationService navigationService,
         IDialogService dialogService,
         IHealthDataService healthDataService,
+        IProfileService profileService,
         CalendarSectionViewModel calendarSection,
         PlannerSectionViewModel plannerSection,
         QuickMenuViewModel quickMenuSection,
@@ -63,6 +69,7 @@ public partial class MainViewModel : BaseViewModel
         _navigationService = navigationService;
         _dialogService = dialogService;
         _healthDataService = healthDataService;
+        _profileService = profileService;
         
         CalendarSection = calendarSection;
         PlannerSection = plannerSection;
@@ -257,6 +264,8 @@ public partial class MainViewModel : BaseViewModel
         try
         {
             IsBusy = true;
+            // Reload so home-screen block visibility reflects changes made in settings.
+            Profile = await _profileService.GetUserProfileAsync();
             await LoadDayContentAsync(CalendarSection.GetSelectedDate());
             await CalendarSection.UpdateCalendarTasksCompletionAsync();
             await UpdateStreakAsync();
@@ -280,7 +289,7 @@ public partial class MainViewModel : BaseViewModel
     [RelayCommand]
     public void OpenMenu()
     {
-        Microsoft.Maui.Controls.Shell.Current.FlyoutIsPresented = true;
+        _ = _navigationService.OpenFlyoutAsync();
     }
 
     [RelayCommand]

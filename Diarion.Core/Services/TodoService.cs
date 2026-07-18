@@ -103,6 +103,11 @@ public class TodoService : ITodoService
     {
         var pastUncompletedTasks = TodosCollection.Query()
             .Where(x => x.TargetDate < dateOnly && !x.IsCompleted && !x.IsDailyRepeat)
+            .ToList()
+            // A task that carries a RepeatEndDate was a daily-repeat instance whose series
+            // was turned off. It must stay pinned to its own day (within the start..end range),
+            // not be dragged forward like an ordinary un-done task.
+            .Where(x => x.RepeatEndDate == null)
             .ToList();
 
         foreach (var task in pastUncompletedTasks)

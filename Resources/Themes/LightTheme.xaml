@@ -4,7 +4,8 @@
                     x:Class="Diarion.Resources.Themes.LightTheme">
     <Color x:Key="Theme_Earth_Midnight">#E9E7E1</Color>
     <Color x:Key="Theme_Midnight_Snow">#22282C</Color>
-    <Color x:Key="Theme_Ocean_Dust">#929FA7</Color>
+    <!-- Darkened from #929FA7 to meet WCAG AA (>=4.5:1) for secondary text on light backgrounds -->
+    <Color x:Key="Theme_Ocean_Dust">#6B7680</Color>
     <Color x:Key="Theme_Dust_Ocean">#E0E6EA</Color>
     <Color x:Key="Theme_Snow_Black">#FFFFFF</Color>
     <Color x:Key="Theme_Ocean_Ocean">#929FA7</Color>

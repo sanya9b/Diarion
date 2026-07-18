@@ -21,12 +21,31 @@ public partial class ProfileViewModel : BaseViewModel
     private readonly IDialogService _dialogService;
     private readonly INotificationService _notificationService;
     private readonly IExportService _exportService;
+    private readonly INavigationService _navigationService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
 
     [ObservableProperty]
     private GenderItem? _selectedGenderItem;
+
+    // Settings tabs: 0 = Profile, 1 = Screen, 2 = Data.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsProfileTab))]
+    [NotifyPropertyChangedFor(nameof(IsScreenTab))]
+    [NotifyPropertyChangedFor(nameof(IsDataTab))]
+    private int _selectedTabIndex;
+
+    public bool IsProfileTab => SelectedTabIndex == 0;
+    public bool IsScreenTab => SelectedTabIndex == 1;
+    public bool IsDataTab => SelectedTabIndex == 2;
+
+    [RelayCommand]
+    private void SelectTab(string index)
+    {
+        if (int.TryParse(index, out var i))
+            SelectedTabIndex = i;
+    }
 
     public List<GenderItem> GenderList { get; } = new()
     {
@@ -43,7 +62,8 @@ public partial class ProfileViewModel : BaseViewModel
         IBiometricService biometricService,
         IDialogService dialogService,
         INotificationService notificationService,
-        IExportService exportService)
+        IExportService exportService,
+        INavigationService navigationService)
     {
         _profileService = profileService;
         _backupService = backupService;
@@ -52,6 +72,7 @@ public partial class ProfileViewModel : BaseViewModel
         _dialogService = dialogService;
         _notificationService = notificationService;
         _exportService = exportService;
+        _navigationService = navigationService;
         Title = Diarion.Resources.Localization.AppResources.ProfileMenuTitle;
     }
 
@@ -191,7 +212,7 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     public void OpenMenu()
     {
-        Microsoft.Maui.Controls.Shell.Current.FlyoutIsPresented = true;
+        _ = _navigationService.OpenFlyoutAsync();
     }
 
     [RelayCommand]
@@ -227,9 +248,9 @@ public partial class ProfileViewModel : BaseViewModel
         bool success = await _backupService.ExportBackupAsync();
         if (success)
         {
-            await Shell.Current.DisplayAlertAsync(
-                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup", 
-                Diarion.Resources.Localization.AppResources.BackupExportSuccess ?? "Backup created successfully.", 
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup",
+                Diarion.Resources.Localization.AppResources.BackupExportSuccess ?? "Backup created successfully.",
                 Diarion.Resources.Localization.AppResources.OkButtonLabel);
         }
     }
@@ -237,10 +258,10 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     public async Task ImportBackupAsync()
     {
-        bool confirm = await Shell.Current.DisplayAlertAsync(
-            Diarion.Resources.Localization.AppResources.BackupTitle ?? "Restore Backup", 
-            Diarion.Resources.Localization.AppResources.BackupImportWarning ?? "This will overwrite your current data. Are you sure?", 
-            Diarion.Resources.Localization.AppResources.DeleteConfirmYes, 
+        bool confirm = await _dialogService.ShowConfirmationAsync(
+            Diarion.Resources.Localization.AppResources.BackupTitle ?? "Restore Backup",
+            Diarion.Resources.Localization.AppResources.BackupImportWarning ?? "This will overwrite your current data. Are you sure?",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
             Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
             
         if (!confirm) return;
@@ -248,9 +269,9 @@ public partial class ProfileViewModel : BaseViewModel
         bool success = await _backupService.ImportBackupAsync();
         if (success)
         {
-            await Shell.Current.DisplayAlertAsync(
-                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup", 
-                Diarion.Resources.Localization.AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.", 
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup",
+                Diarion.Resources.Localization.AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.",
                 Diarion.Resources.Localization.AppResources.OkButtonLabel);
         }
     }
@@ -278,10 +299,10 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     public async Task ClearAllDataAsync()
     {
-        bool confirm = await Shell.Current.DisplayAlertAsync(
-            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning", 
-            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmMsg ?? "Are you sure you want to delete all your data?", 
-            Diarion.Resources.Localization.AppResources.DeleteConfirmYes, 
+        bool confirm = await _dialogService.ShowConfirmationAsync(
+            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning",
+            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmMsg ?? "Are you sure you want to delete all your data?",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
             Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
             
         if (!confirm) return;
@@ -293,9 +314,9 @@ public partial class ProfileViewModel : BaseViewModel
         await LoadProfileAsync();
         IsBusy = false;
 
-        await Shell.Current.DisplayAlertAsync(
-            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning", 
-            Diarion.Resources.Localization.AppResources.ClearAllDataSuccessMsg ?? "All your data has been successfully deleted.", 
+        await _dialogService.ShowAlertAsync(
+            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning",
+            Diarion.Resources.Localization.AppResources.ClearAllDataSuccessMsg ?? "All your data has been successfully deleted.",
             Diarion.Resources.Localization.AppResources.OkButtonLabel);
     }
 }

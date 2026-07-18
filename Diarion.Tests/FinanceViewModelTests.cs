@@ -35,7 +35,7 @@ public class FinanceViewModelTests
                 new() { Type = TransactionType.Expense, Amount = 100m, Date = new DateTime(currentYear, currentMonth, 1).AddMonths(-1) }
             });
 
-        var viewModel = new FinanceViewModel(diaryServiceMock.Object);
+        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object);
 
         // Act
         await viewModel.LoadAsync();
@@ -71,7 +71,7 @@ public class FinanceViewModelTests
                 return Task.CompletedTask;
             });
 
-        var viewModel = new FinanceViewModel(diaryServiceMock.Object);
+        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object);
         await viewModel.LoadAsync();
 
         viewModel.NewTransactionType = TransactionType.Expense;
@@ -99,7 +99,7 @@ public class FinanceViewModelTests
     {
         // Arrange
         var diaryServiceMock = new Mock<IFinanceService>();
-        var viewModel = new FinanceViewModel(diaryServiceMock.Object);
+        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object);
         
         viewModel.NewAmountText = "invalid_number";
 
@@ -115,7 +115,7 @@ public class FinanceViewModelTests
     {
         // Arrange
         var diaryServiceMock = new Mock<IFinanceService>();
-        var viewModel = new FinanceViewModel(diaryServiceMock.Object);
+        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object);
         
         viewModel.NewAmountText = "-50";
 
@@ -135,7 +135,7 @@ public class FinanceViewModelTests
             .Setup(s => s.GetCategoriesAsync(TransactionType.Expense))
             .ReturnsAsync(new List<string> { "Groceries", "Transport", "Entertainment" });
             
-        var viewModel = new FinanceViewModel(financeServiceMock.Object);
+        var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object);
         
         // Act - Open the add dialog
         await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null);
@@ -159,7 +159,7 @@ public class FinanceViewModelTests
             .Setup(s => s.GetCategoriesAsync(TransactionType.Income))
             .ReturnsAsync(new List<string> { "Salary", "Bonus" });
             
-        var viewModel = new FinanceViewModel(financeServiceMock.Object);
+        var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object);
         await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null); // Defaults to Expense
         
         // Act
@@ -181,7 +181,7 @@ public class FinanceViewModelTests
             .Setup(s => s.GetCategoriesAsync(It.IsAny<TransactionType>()))
             .ReturnsAsync(new List<string> { "Groceries" });
             
-        var viewModel = new FinanceViewModel(financeServiceMock.Object);
+        var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object);
         await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null);
         
         // Ensure suggestions are initially populated

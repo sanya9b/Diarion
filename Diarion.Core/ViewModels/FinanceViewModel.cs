@@ -57,9 +57,12 @@ public partial class FinanceViewModel : BaseViewModel
     private List<string> _allCategories = new();
     public ObservableCollection<string> SuggestedCategories { get; } = new();
 
-    public FinanceViewModel(IFinanceService financeService)
+    private readonly IDialogService _dialogService;
+
+    public FinanceViewModel(IFinanceService financeService, IDialogService dialogService)
     {
         _financeService = financeService;
+        _dialogService = dialogService;
         Title = Diarion.Resources.Localization.AppResources.FinanceTitle ?? "Income/Expenses";
     }
 
@@ -239,7 +242,7 @@ public partial class FinanceViewModel : BaseViewModel
     {
         if (transaction == null) return;
 
-        bool confirm = await Microsoft.Maui.Controls.Shell.Current.DisplayAlertAsync(
+        bool confirm = await _dialogService.ShowConfirmationAsync(
             Diarion.Resources.Localization.AppResources.DeleteConfirmTitle ?? "Delete",
             Diarion.Resources.Localization.AppResources.DeleteConfirmMsg ?? "Are you sure you want to delete this record?",
             Diarion.Resources.Localization.AppResources.DeleteConfirmYes ?? "Yes",

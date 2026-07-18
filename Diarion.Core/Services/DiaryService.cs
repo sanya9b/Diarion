@@ -123,18 +123,21 @@ public class DiaryService : IDiaryService
     {
         return Task.Run(() =>
         {
-            var items = EntriesCollection.Query()
-                .Where(x => x.Date >= startDate && x.Date <= endDate)
-                .Select(x => new DiaryEntryStatsDto
-                {
-                    Date = x.Date,
-                    SleepStart = x.SleepStart,
-                    SleepEnd = x.SleepEnd,
-                    SleepQuality = x.SleepQuality,
-                    Emotion = x.Emotion
-                })
-                .ToList();
-            return (IEnumerable<DiaryEntryStatsDto>)items;
+            var dateOnlyStart = startDate.Date;
+            var dateOnlyEnd = endDate.Date;
+            
+            var items = EntriesCollection.Find(x => x.Date >= dateOnlyStart && x.Date <= dateOnlyEnd).ToList();
+            
+            var result = items.Select(x => new DiaryEntryStatsDto
+            {
+                Date = x.Date,
+                SleepStart = x.SleepStart,
+                SleepEnd = x.SleepEnd,
+                SleepQuality = x.SleepQuality,
+                Emotion = x.Emotion
+            }).ToList();
+            
+            return (IEnumerable<DiaryEntryStatsDto>)result;
         });
     }
 }

@@ -16,6 +16,15 @@ public class MauiNavigationService : INavigationService
         return Shell.Current.GoToAsync(route);
     }
 
+    public Task OpenFlyoutAsync()
+    {
+        if (Shell.Current != null)
+        {
+            Shell.Current.FlyoutIsPresented = true;
+        }
+        return Task.CompletedTask;
+    }
+
     public async Task NavigateBackAsync()
     {
         if (Shell.Current != null)

@@ -72,6 +72,19 @@ namespace Diarion.Resources.Localization {
         public static string TriggersLabel => ResourceManager.GetString("TriggersLabel", resourceCulture) ?? "TRIGGERS:";
         public static string GratitudeLabel => ResourceManager.GetString("GratitudeLabel", resourceCulture) ?? "GRATITUDE:";
         public static string SoulFoodLabel => ResourceManager.GetString("SoulFoodLabel", resourceCulture) ?? "FOR MYSELF:";
+        public static string TriggersPlaceholder => ResourceManager.GetString("TriggersPlaceholder", resourceCulture) ?? "For example: work stress, a traffic jam...";
+        public static string GratitudePlaceholder => ResourceManager.GetString("GratitudePlaceholder", resourceCulture) ?? "For example: tasty morning coffee, a friend called...";
+        public static string SoulFoodPlaceholder => ResourceManager.GetString("SoulFoodPlaceholder", resourceCulture) ?? "For example: read a book, listened to music...";
+        public static string HomeBlocksTitle => ResourceManager.GetString("HomeBlocksTitle", resourceCulture) ?? "HOME SCREEN BLOCKS";
+        public static string BlockMoodLabel => ResourceManager.GetString("BlockMoodLabel", resourceCulture) ?? "Mood";
+        public static string BlockSleepLabel => ResourceManager.GetString("BlockSleepLabel", resourceCulture) ?? "Sleep";
+        public static string BlockHealthLabel => ResourceManager.GetString("BlockHealthLabel", resourceCulture) ?? "Health";
+        public static string BlockFoodLabel => ResourceManager.GetString("BlockFoodLabel", resourceCulture) ?? "Food";
+        public static string BlockHabitsLabel => ResourceManager.GetString("BlockHabitsLabel", resourceCulture) ?? "Habits";
+        public static string BlockReflectionLabel => ResourceManager.GetString("BlockReflectionLabel", resourceCulture) ?? "Reflection";
+        public static string SettingsTabProfile => ResourceManager.GetString("SettingsTabProfile", resourceCulture) ?? "Profile";
+        public static string SettingsTabScreen => ResourceManager.GetString("SettingsTabScreen", resourceCulture) ?? "Screen";
+        public static string SettingsTabData => ResourceManager.GetString("SettingsTabData", resourceCulture) ?? "Data";
         public static string AddTimeLabel => ResourceManager.GetString("AddTimeLabel", resourceCulture) ?? "Add target time";
         public static string TimeLabel => ResourceManager.GetString("TimeLabel", resourceCulture) ?? "Time:";
         public static string DailyRepeatLabel => ResourceManager.GetString("DailyRepeatLabel", resourceCulture) ?? "Repeat daily";
@@ -1089,6 +1102,10 @@ public static string ClearAllDataSuccessMsg {
 
         public static string ExportSuccessMessage {
             get { return ResourceManager.GetString("ExportSuccessMessage", resourceCulture) ?? "Export ready to share."; }
+        }
+
+        public static string CloseButtonLabel {
+            get { return ResourceManager.GetString("CloseButtonLabel", resourceCulture) ?? "Close"; }
         }
     }
 }

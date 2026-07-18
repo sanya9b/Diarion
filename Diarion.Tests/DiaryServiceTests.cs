@@ -311,6 +311,66 @@ public class DiaryServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetTodosForDateAsync_WhenRepeatTurnedOff_ShouldNotGenerateFutureRepeats()
+    {
+        await ClearDatabaseAsync();
+
+        // A daily-repeat task created 10 days ago, viewed on the next 3 days (clones generated).
+        var day0 = DateTime.Today.AddDays(-10);
+        await _todoService.SaveTodoAsync(new TodoItem
+        {
+            TaskDescription = "Drink water",
+            TargetDate = day0,
+            IsDailyRepeat = true
+        });
+        for (int i = 1; i <= 3; i++)
+            await _todoService.GetTodosForDateAsync(day0.AddDays(i));
+
+        // On day 3 the user unchecks "repeat".
+        var day3 = (await _todoService.GetTodosForDateAsync(day0.AddDays(3)))
+            .Single(t => t.TaskDescription == "Drink water");
+        day3.IsDailyRepeat = false;
+        await _todoService.SaveTodoAsync(day3);
+
+        // Days after the uncheck day must not have the task any more.
+        for (int i = 4; i <= 6; i++)
+        {
+            var todos = await _todoService.GetTodosForDateAsync(day0.AddDays(i));
+            todos.Should().BeEmpty($"repeat was turned off on day 3, so day {i} must be empty");
+        }
+    }
+
+    [Fact]
+    public async Task GetTodosForDateAsync_WhenRepeatTurnedOff_ShouldNotAutoMigrateToToday()
+    {
+        await ClearDatabaseAsync();
+
+        // Daily-repeat task created 3 days ago; clones generated for the in-between days.
+        var today = DateTime.Today;
+        await _todoService.SaveTodoAsync(new TodoItem
+        {
+            TaskDescription = "Drink water",
+            TargetDate = today.AddDays(-3),
+            IsDailyRepeat = true
+        });
+        await _todoService.GetTodosForDateAsync(today.AddDays(-2));
+        var yesterday = await _todoService.GetTodosForDateAsync(today.AddDays(-1));
+
+        // Yesterday the user unchecks "repeat".
+        var task = yesterday.Single(t => t.TaskDescription == "Drink water");
+        task.IsDailyRepeat = false;
+        await _todoService.SaveTodoAsync(task);
+
+        // Opening today must NOT drag the (now non-repeat) task forward via auto-migration.
+        var todayTodos = await _todoService.GetTodosForDateAsync(today);
+        todayTodos.Should().BeEmpty("a repeat instance that was turned off must stay on its own day");
+
+        // And it must still be present on the day it was unchecked.
+        var yesterdayTodos = await _todoService.GetTodosForDateAsync(today.AddDays(-1));
+        yesterdayTodos.Should().ContainSingle(t => t.TaskDescription == "Drink water");
+    }
+
+    [Fact]
     public async Task GetCurrentStreak_WithConsecutiveDays_ReturnsCorrectStreak()
     {
         await ClearDatabaseAsync();

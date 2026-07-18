@@ -29,9 +29,12 @@ public partial class WishlistViewModel : BaseViewModel
 
     public bool IsEditing => SelectedEntry != null;
 
-    public WishlistViewModel(IWishlistService wishlistService)
+    private readonly IDialogService _dialogService;
+
+    public WishlistViewModel(IWishlistService wishlistService, IDialogService dialogService)
     {
         _wishlistService = wishlistService;
+        _dialogService = dialogService;
         Title = Diarion.Resources.Localization.AppResources.WishlistTitle ?? "Wishlist";
     }
 
@@ -112,7 +115,7 @@ public partial class WishlistViewModel : BaseViewModel
     {
         if (entry == null) return;
 
-        bool confirm = await Microsoft.Maui.Controls.Shell.Current.DisplayAlertAsync(
+        bool confirm = await _dialogService.ShowConfirmationAsync(
             Diarion.Resources.Localization.AppResources.DeleteConfirmTitle ?? "Delete",
             Diarion.Resources.Localization.AppResources.DeleteConfirmMsg ?? "Are you sure you want to delete this record?",
             Diarion.Resources.Localization.AppResources.DeleteConfirmYes ?? "Yes",

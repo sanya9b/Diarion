@@ -18,7 +18,7 @@ public class TodoDetailViewModelTests
     public TodoDetailViewModelTests()
     {
         _todoServiceMock = new Mock<ITodoService>();
-        _viewModel = new TodoDetailViewModel(_todoServiceMock.Object);
+        _viewModel = new TodoDetailViewModel(_todoServiceMock.Object, new Mock<INavigationService>().Object, new Mock<IDialogService>().Object);
     }
 
     [Fact]

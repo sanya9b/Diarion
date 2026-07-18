@@ -418,6 +418,45 @@
   <data name="SoulFoodLabel" xml:space="preserve">
     <value>ДЛЯ СЕБЕ:</value>
   </data>
+  <data name="TriggersPlaceholder" xml:space="preserve">
+    <value>Наприклад: стрес на роботі, затори...</value>
+  </data>
+  <data name="GratitudePlaceholder" xml:space="preserve">
+    <value>Наприклад: смачна ранкова кава, зателефонував друг...</value>
+  </data>
+  <data name="SoulFoodPlaceholder" xml:space="preserve">
+    <value>Наприклад: почитав книгу, послухав музику...</value>
+  </data>
+  <data name="HomeBlocksTitle" xml:space="preserve">
+    <value>БЛОКИ ГОЛОВНОГО ЕКРАНА</value>
+  </data>
+  <data name="BlockMoodLabel" xml:space="preserve">
+    <value>Настрій</value>
+  </data>
+  <data name="BlockSleepLabel" xml:space="preserve">
+    <value>Сон</value>
+  </data>
+  <data name="BlockHealthLabel" xml:space="preserve">
+    <value>Здоров'я</value>
+  </data>
+  <data name="BlockFoodLabel" xml:space="preserve">
+    <value>Їжа</value>
+  </data>
+  <data name="BlockHabitsLabel" xml:space="preserve">
+    <value>Звички</value>
+  </data>
+  <data name="BlockReflectionLabel" xml:space="preserve">
+    <value>Рефлексія</value>
+  </data>
+  <data name="SettingsTabProfile" xml:space="preserve">
+    <value>Профіль</value>
+  </data>
+  <data name="SettingsTabScreen" xml:space="preserve">
+    <value>Екран</value>
+  </data>
+  <data name="SettingsTabData" xml:space="preserve">
+    <value>Дані</value>
+  </data>
   <data name="AddTimeLabel" xml:space="preserve">
     <value>Додати час виконання</value>
   </data>
@@ -807,5 +846,8 @@
   </data>
   <data name="ExportSuccessMessage" xml:space="preserve">
     <value>Експорт готовий до надсилання.</value>
+  </data>
+  <data name="CloseButtonLabel" xml:space="preserve">
+    <value>Закрити</value>
   </data>
 </root>

@@ -43,7 +43,7 @@
 
                         <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:TodoItemViewModel">
-                    <Border Margin="0,4" StrokeShape="RoundRectangle 24" StrokeThickness="0"
+                    <Border Margin="0,3" StrokeShape="RoundRectangle 18" StrokeThickness="0"
                             BackgroundColor="{DynamicResource Theme_Snow_Black}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.GoToTodoDetailsCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
@@ -51,8 +51,8 @@
                         <Border.Shadow>
                             <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="{AppThemeBinding Light=0.05, Dark=0.2}" />
                         </Border.Shadow>
-                        <Grid ColumnDefinitions="Auto, *, Auto, Auto" Padding="12,10" ColumnSpacing="10" VerticalOptions="Center">
-                            <Border Grid.Column="0" WidthRequest="28" HeightRequest="28" StrokeShape="RoundRectangle 8"
+                        <Grid ColumnDefinitions="Auto, *, Auto, Auto" Padding="12,4" ColumnSpacing="10" VerticalOptions="Center">
+                            <Border Grid.Column="0" WidthRequest="22" HeightRequest="22" StrokeShape="RoundRectangle 6"
                                     StrokeThickness="2" VerticalOptions="Center">
                                 <Border.Triggers>
                                     <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="False">
@@ -88,7 +88,7 @@
                                     <TapGestureRecognizer Command="{Binding BindingContext.ToggleTodoCompletionCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
                                 </Border.GestureRecognizers>
 
-                                <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="15" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
+                                <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
                             </Border>
 
                             <Label Grid.Column="1" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
@@ -130,11 +130,11 @@
                                 </Label>
                             </Border>
 
-                            <ImageButton Grid.Column="3" WidthRequest="20" HeightRequest="20" VerticalOptions="Center" BackgroundColor="Transparent"
+                            <ImageButton Grid.Column="3" WidthRequest="18" HeightRequest="18" VerticalOptions="Center" BackgroundColor="Transparent"
                                          Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}"
                                          CommandParameter="{Binding .}">
                                 <ImageButton.Source>
-                                    <FontImageSource FontFamily="OpenSansRegular" Glyph="✕" Color="{DynamicResource Theme_Midnight_Dust}" Size="16" />
+                                    <FontImageSource FontFamily="OpenSansRegular" Glyph="✕" Color="{DynamicResource Theme_Midnight_Dust}" Size="11" />
                                 </ImageButton.Source>
                             </ImageButton>
                         </Grid>
