@@ -217,14 +217,19 @@ public class TodoService : ITodoService
                     .ToList()
                     .Where(x => x.RepeatGroupId == groupId || (string.IsNullOrEmpty(x.RepeatGroupId) && x.TaskDescription == groupId))
                     .ToList();
-                    
+
+                // End the series the day BEFORE the instance being turned off. The generation
+                // filter is inclusive (RepeatEndDate >= date), so ending on this very day would
+                // re-generate a duplicate for it (and re-create it after deletion). This instance
+                // already exists as its own row, so nothing needs to be generated for today.
+                var endDate = todo.TargetDate.Date.AddDays(-1);
                 foreach (var p in pastRepeats)
                 {
-                    p.RepeatEndDate = todo.TargetDate.Date;
+                    p.RepeatEndDate = endDate;
                     TodosCollection.Update(p);
                 }
-                
-                todo.RepeatEndDate = todo.TargetDate.Date;
+
+                todo.RepeatEndDate = endDate;
             }
             
             if (todo.IsDailyRepeat && string.IsNullOrEmpty(todo.RepeatGroupId))
