@@ -24,7 +24,11 @@ public partial class FinanceStatsViewModel : BaseViewModel
     private decimal _totalExpense;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NetBalanceText))]
     private decimal _netBalance;
+
+    /// <summary>Net balance formatted with an explicit sign (e.g. "+1 149,50"), for the KPI tile.</summary>
+    public string NetBalanceText => $"{(NetBalance >= 0 ? "+" : "-")}{System.Math.Abs(NetBalance):N2}";
 
     public ObservableCollection<CategoryStatItem> ExpenseByCategory { get; } = new();
     public ObservableCollection<CategoryStatItem> IncomeByCategory { get; } = new();

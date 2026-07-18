@@ -69,6 +69,68 @@ public class NoteServiceTests : IDisposable
         await _noteService.DeleteNoteAsync(note3.Id.ToString());
     }
 
+    [Fact]
+    public async Task SaveNoteAsync_PopulatesTagsAndLinksFromContent()
+    {
+        var note = new Note { Content = "Planning #project with [[Design Doc]] and #idea" };
+
+        await _noteService.SaveNoteAsync(note);
+        var fetched = await _noteService.GetNoteAsync(note.Id.ToString());
+
+        fetched!.Tags.Should().BeEquivalentTo(new[] { "project", "idea" });
+        fetched.LinkedTitles.Should().Equal("design doc"); // normalized
+    }
+
+    [Fact]
+    public async Task GetBacklinksAsync_ReturnsNotesLinkingToTitle_ExcludingSelf()
+    {
+        var target = new Note { Content = "Design Doc" };                 // Title -> "Design Doc"
+        var linker = new Note { Content = "See [[Design Doc]] for specs" };
+        var unrelated = new Note { Content = "Nothing relevant here" };
+
+        await _noteService.SaveNoteAsync(target);
+        await _noteService.SaveNoteAsync(linker);
+        await _noteService.SaveNoteAsync(unrelated);
+
+        var backlinks = await _noteService.GetBacklinksAsync("Design Doc", target.Id.ToString());
+
+        backlinks.Should().ContainSingle(n => n.Id == linker.Id);
+    }
+
+    [Fact]
+    public async Task GetNoteByTitleAsync_ResolvesCaseInsensitively()
+    {
+        var note = new Note { Content = "Weekly Review" };
+        await _noteService.SaveNoteAsync(note);
+
+        var found = await _noteService.GetNoteByTitleAsync("weekly review");
+
+        found.Should().NotBeNull();
+        found!.Id.Should().Be(note.Id);
+    }
+
+    [Fact]
+    public async Task GetAllTagsAsync_ReturnsDistinctSorted()
+    {
+        await _noteService.SaveNoteAsync(new Note { Content = "#zeta and #alpha" });
+        await _noteService.SaveNoteAsync(new Note { Content = "#alpha again and #mid" });
+
+        var tags = await _noteService.GetAllTagsAsync();
+
+        tags.Should().Equal("alpha", "mid", "zeta");
+    }
+
+    [Fact]
+    public async Task SearchNotesAsync_MultiTerm_RequiresAllTermsAcrossTitleContentTags()
+    {
+        await _noteService.SaveNoteAsync(new Note { Content = "Trip planning to Kyiv #travel" });
+        await _noteService.SaveNoteAsync(new Note { Content = "Kyiv weather notes" });
+
+        var results = await _noteService.SearchNotesAsync("kyiv travel");
+
+        results.Should().ContainSingle(n => n.Content.Contains("Trip planning"));
+    }
+
     public void Dispose()
     {
         _dbContext.Dispose();

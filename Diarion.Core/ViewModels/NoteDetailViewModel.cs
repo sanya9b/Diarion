@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -7,6 +9,14 @@ using Diarion.Services;
 using LiteDB;
 
 namespace Diarion.ViewModels;
+
+/// <summary>An outgoing <c>[[link]]</c> shown under a note: its display title and whether it resolves to
+/// an existing note (missing targets are created on tap).</summary>
+public class NoteLinkItem
+{
+    public string Title { get; set; } = string.Empty;
+    public bool Exists { get; set; }
+}
 
 [QueryProperty(nameof(NoteId), "NoteId")]
 public partial class NoteDetailViewModel : BaseViewModel
@@ -23,6 +33,24 @@ public partial class NoteDetailViewModel : BaseViewModel
 
     [ObservableProperty]
     private string _noteContent = string.Empty;
+
+    /// <summary>Tags (without '#') parsed from the body, shown as chips.</summary>
+    public ObservableCollection<string> Tags { get; } = new();
+
+    /// <summary>Outgoing <c>[[links]]</c> in this note.</summary>
+    public ObservableCollection<NoteLinkItem> OutgoingLinks { get; } = new();
+
+    /// <summary>Other notes that link to this one.</summary>
+    public ObservableCollection<Note> Backlinks { get; } = new();
+
+    [ObservableProperty]
+    private bool _hasTags;
+
+    [ObservableProperty]
+    private bool _hasOutgoingLinks;
+
+    [ObservableProperty]
+    private bool _hasBacklinks;
 
     private readonly Helpers.AsyncDebouncer _autoSaveDebouncer = new(TimeSpan.FromSeconds(1));
 
@@ -58,6 +86,7 @@ public partial class NoteDetailViewModel : BaseViewModel
                 _noteContent = note.Content; // Set backing field to avoid triggering OnNoteContentChanged immediately
 #pragma warning restore MVVMTK0034
                 OnPropertyChanged(nameof(NoteContent));
+                await RefreshMetadataAsync();
             }
         }
         catch (Exception ex)
@@ -101,11 +130,74 @@ public partial class NoteDetailViewModel : BaseViewModel
         try
         {
             await _noteService.SaveNoteAsync(CurrentNote);
+            await RefreshMetadataAsync();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error auto-saving note: {ex.Message}");
         }
+    }
+
+    private async Task RefreshMetadataAsync()
+    {
+        Tags.Clear();
+        foreach (var tag in NoteParser.ExtractTags(CurrentNote.Content))
+        {
+            Tags.Add(tag);
+        }
+        HasTags = Tags.Count > 0;
+
+        OutgoingLinks.Clear();
+        foreach (var display in NoteParser.ExtractLinkDisplayTitles(CurrentNote.Content))
+        {
+            var target = await _noteService.GetNoteByTitleAsync(display);
+            OutgoingLinks.Add(new NoteLinkItem { Title = display, Exists = target != null });
+        }
+        HasOutgoingLinks = OutgoingLinks.Count > 0;
+
+        Backlinks.Clear();
+        if (!string.IsNullOrWhiteSpace(CurrentNote.Title))
+        {
+            var backs = await _noteService.GetBacklinksAsync(CurrentNote.Title, CurrentNote.Id.ToString());
+            foreach (var b in backs)
+            {
+                Backlinks.Add(b);
+            }
+        }
+        HasBacklinks = Backlinks.Count > 0;
+    }
+
+    [RelayCommand]
+    private async Task OpenLinkedNoteAsync(string? title)
+    {
+        if (string.IsNullOrWhiteSpace(title)) return;
+
+        await FlushSaveAsync(); // persist the current note before leaving
+
+        var target = await _noteService.GetNoteByTitleAsync(title);
+        string id;
+        if (target == null)
+        {
+            // Obsidian-style: tapping a link to a missing note creates it.
+            var newNote = new Note { Content = title };
+            await _noteService.SaveNoteAsync(newNote);
+            id = newNote.Id.ToString();
+        }
+        else
+        {
+            id = target.Id.ToString();
+        }
+
+        await _navigationService.NavigateToAsync("NoteDetail", new Dictionary<string, object> { { "NoteId", id } });
+    }
+
+    [RelayCommand]
+    private async Task OpenBacklinkAsync(Note? note)
+    {
+        if (note == null) return;
+
+        await FlushSaveAsync();
+        await _navigationService.NavigateToAsync("NoteDetail", new Dictionary<string, object> { { "NoteId", note.Id.ToString() } });
     }
 
     [RelayCommand]

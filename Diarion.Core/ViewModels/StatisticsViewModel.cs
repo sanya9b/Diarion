@@ -38,6 +38,9 @@ public partial class StatisticsTabItem : ObservableObject
     public StatisticsTabOption Option { get; set; }
     public string DisplayName { get; set; } = string.Empty;
 
+    /// <summary>Emoji glyph shown before the tab label in the segmented selector.</summary>
+    public string Icon { get; set; } = string.Empty;
+
     [ObservableProperty]
     private bool _isSelected;
 }
@@ -108,10 +111,10 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         Tabs = new System.Collections.ObjectModel.ObservableCollection<StatisticsTabItem>
         {
-            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, IsSelected = true },
-            new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = AppResources.TabSleep },
-            new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = AppResources.TabProductivity },
-            new StatisticsTabItem { Option = StatisticsTabOption.Finance, DisplayName = AppResources.FinanceTitle ?? "Finance" }
+            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, Icon = "😊", IsSelected = true },
+            new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = AppResources.TabSleep, Icon = "😴" },
+            new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = AppResources.TabProductivity, Icon = "✅" },
+            new StatisticsTabItem { Option = StatisticsTabOption.Finance, DisplayName = AppResources.FinanceTitle ?? "Finance", Icon = "💸" }
         };
         SelectTab(Tabs[0]);
     }

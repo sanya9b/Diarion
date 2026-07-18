@@ -1,14 +1,14 @@
-using System;
+using System.Collections.Generic;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 
 namespace Diarion.Controls;
 
-public class ProgressDonutChart : GraphicsView, IDrawable
+public class ProgressDonutChart : ChartViewBase
 {
     public static readonly BindableProperty ProgressProperty =
         BindableProperty.Create(nameof(Progress), typeof(double), typeof(ProgressDonutChart), 0.0,
-            propertyChanged: (bindable, oldValue, newValue) => ((ProgressDonutChart)bindable).Invalidate());
+            propertyChanged: OnVisualChanged);
 
     public double Progress
     {
@@ -17,8 +17,8 @@ public class ProgressDonutChart : GraphicsView, IDrawable
     }
 
     public static readonly BindableProperty ProgressColorProperty =
-        BindableProperty.Create(nameof(ProgressColor), typeof(Color), typeof(ProgressDonutChart), Colors.Green,
-            propertyChanged: (bindable, oldValue, newValue) => ((ProgressDonutChart)bindable).Invalidate());
+        BindableProperty.Create(nameof(ProgressColor), typeof(Color), typeof(ProgressDonutChart), Color.FromArgb("#8FA083"),
+            propertyChanged: OnVisualChanged);
 
     public Color ProgressColor
     {
@@ -28,7 +28,7 @@ public class ProgressDonutChart : GraphicsView, IDrawable
 
     public static readonly BindableProperty CenterTextProperty =
         BindableProperty.Create(nameof(CenterText), typeof(string), typeof(ProgressDonutChart), string.Empty,
-            propertyChanged: (bindable, oldValue, newValue) => ((ProgressDonutChart)bindable).Invalidate());
+            propertyChanged: OnVisualChanged);
 
     public string CenterText
     {
@@ -36,48 +36,26 @@ public class ProgressDonutChart : GraphicsView, IDrawable
         set => SetValue(CenterTextProperty, value);
     }
 
-    public ProgressDonutChart()
+    public static readonly BindableProperty CenterCaptionProperty =
+        BindableProperty.Create(nameof(CenterCaption), typeof(string), typeof(ProgressDonutChart), string.Empty,
+            propertyChanged: OnVisualChanged);
+
+    public string CenterCaption
     {
-        Drawable = this;
+        get => (string)GetValue(CenterCaptionProperty);
+        set => SetValue(CenterCaptionProperty, value);
     }
 
-    public void Draw(ICanvas canvas, RectF dirtyRect)
+    public override void Draw(ICanvas canvas, RectF dirtyRect)
     {
-        canvas.Antialias = true;
+        double clamped = Progress < 0 ? 0 : (Progress > 1 ? 1 : Progress);
 
-        var center = new PointF(dirtyRect.Center.X, dirtyRect.Center.Y);
-        var radius = Math.Min(dirtyRect.Width, dirtyRect.Height) / 2 - 10;
-        var thickness = radius * 0.35f;
+        // Single arc over a full track; rounded leading cap for a softer, modern look.
+        var segments = new List<(float, Color)> { ((float)clamped, ProgressColor) };
 
-        var drawRadius = radius - thickness / 2;
-        var x = center.X - drawRadius;
-        var y = center.Y - drawRadius;
-        var size = drawRadius * 2;
-
-        // Draw track
-        canvas.StrokeColor = Color.FromArgb("#338FA083");
-        canvas.StrokeSize = thickness;
-        canvas.DrawArc(x, y, size, size, 0, 360, true, false);
-
-        // Draw progress
-        float sweepAngle = (float)(Progress * 360);
-        if (sweepAngle > 0)
-        {
-            float startAngle = 90; 
-            float endAngle = startAngle - sweepAngle;
-
-            canvas.StrokeColor = ProgressColor;
-            canvas.StrokeSize = thickness;
-            canvas.StrokeLineCap = LineCap.Round;
-            canvas.DrawArc(x, y, size, size, startAngle, endAngle, true, false);
-        }
-
-        if (!string.IsNullOrEmpty(CenterText))
-        {
-            canvas.FontColor = Application.Current?.UserAppTheme == AppTheme.Dark ? Colors.White : Colors.Black;
-            canvas.FontSize = radius * 0.5f;
-            canvas.Font = Microsoft.Maui.Graphics.Font.DefaultBold;
-            canvas.DrawString(CenterText, dirtyRect, HorizontalAlignment.Center, VerticalAlignment.Center);
-        }
+        DrawDonut(canvas, dirtyRect, segments, drawTrack: true,
+            centerText: string.IsNullOrEmpty(CenterText) ? null : CenterText,
+            centerCaption: string.IsNullOrEmpty(CenterCaption) ? null : CenterCaption,
+            roundCap: true);
     }
 }

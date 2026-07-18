@@ -34,7 +34,26 @@ public class MigrationRunnerTests
         var migrated = entries.FindById(id);
         migrated.Date.TimeOfDay.Should().Be(TimeSpan.Zero);
         migrated.Date.Date.Should().Be(new DateTime(2026, 1, 10));
-        db.UserVersion.Should().Be(1);
+        db.UserVersion.Should().Be(MigrationRunner.CurrentVersion);
+    }
+
+    [Fact]
+    public void Run_BackfillsNoteTagsAndLinks_FromLegacyContent()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        var notes = db.GetCollection<Note>(DatabaseConstants.NotesCollection);
+        // A note created before tag/link parsing existed: content has them, but the fields are empty.
+        var note = new Note { Title = "Legacy", Content = "Idea #spark linking [[Other Note]]" };
+        note.Tags = new();
+        note.LinkedTitles = new();
+        notes.Insert(note);
+
+        MigrationRunner.Run(db);
+
+        var migrated = notes.FindById(note.Id);
+        migrated.Tags.Should().Equal("spark");
+        migrated.LinkedTitles.Should().Equal("other note");
+        db.UserVersion.Should().Be(MigrationRunner.CurrentVersion);
     }
 
     [Fact]

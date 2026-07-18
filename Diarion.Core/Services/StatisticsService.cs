@@ -124,10 +124,33 @@ public class StatisticsService : IStatisticsService
             }
         }
 
+        // Daily mood series (gap-filled so it spans exactly N days): average valence for the trend line
+        // plus the day's dominant emotion (mode, deterministic tie-break) for the Year-in-Pixels heatmap.
+        var moodByDate = entriesList
+            .Where(e => e.Emotion != Emotion.None)
+            .GroupBy(e => e.Date.Date)
+            .ToDictionary(
+                g => g.Key,
+                g => (
+                    Valence: g.Average(e => e.Emotion.ToValence()),
+                    Dominant: g.GroupBy(e => e.Emotion)
+                               .OrderByDescending(x => x.Count())
+                               .ThenBy(x => (int)x.Key)
+                               .First().Key));
+
+        var dailyTrend = new List<MoodTrendPoint>();
+        for (var d = startDate.Date; d <= DateTime.Today; d = d.AddDays(1))
+        {
+            dailyTrend.Add(moodByDate.TryGetValue(d, out var info)
+                ? new MoodTrendPoint { Date = d, Valence = info.Valence, HasData = true, DominantEmotion = info.Dominant }
+                : new MoodTrendPoint { Date = d, Valence = 0, HasData = false });
+        }
+
         return new MoodStatistics
         {
             EmotionCounts = counts,
-            TopEmotion = topEmotion
+            TopEmotion = topEmotion,
+            DailyTrend = dailyTrend
         };
     }
 

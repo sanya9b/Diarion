@@ -560,7 +560,7 @@
     <value>Статистика</value>
   </data>
   <data name="StatisticsTitle" xml:space="preserve">
-    <value>Дашборд</value>
+    <value>Dashboard</value>
   </data>
   <data name="StatsSleepDuration" xml:space="preserve">
     <value>Середня тривалість:</value>
@@ -576,6 +576,36 @@
   </data>
   <data name="StatsTasksCompleted" xml:space="preserve">
     <value>Виконано завдань:</value>
+  </data>
+  <data name="StatsKpiTopMood" xml:space="preserve">
+    <value>Настрій</value>
+  </data>
+  <data name="StatsKpiEntries" xml:space="preserve">
+    <value>Записів</value>
+  </data>
+  <data name="StatsKpiDuration" xml:space="preserve">
+    <value>Тривалість</value>
+  </data>
+  <data name="StatsKpiQuality" xml:space="preserve">
+    <value>Якість</value>
+  </data>
+  <data name="StatsKpiTasks" xml:space="preserve">
+    <value>Задачі</value>
+  </data>
+  <data name="StatsKpiCompletion" xml:space="preserve">
+    <value>Виконано</value>
+  </data>
+  <data name="StatsKpiBalance" xml:space="preserve">
+    <value>Баланс</value>
+  </data>
+  <data name="StatsMoodTrend" xml:space="preserve">
+    <value>Динаміка настрою</value>
+  </data>
+  <data name="StatsYearInPixels" xml:space="preserve">
+    <value>Рік у пікселях</value>
+  </data>
+  <data name="StatsPeriod" xml:space="preserve">
+    <value>Період</value>
   </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Тиждень</value>
@@ -741,6 +771,24 @@
   </data>
   <data name="EmptyNotes" xml:space="preserve">
     <value>Нотаток ще немає. Створіть першу.</value>
+  </data>
+  <data name="NotesTags" xml:space="preserve">
+    <value>Теги</value>
+  </data>
+  <data name="NotesLinked" xml:space="preserve">
+    <value>Повʼязані нотатки</value>
+  </data>
+  <data name="NotesBacklinks" xml:space="preserve">
+    <value>Зворотні посилання</value>
+  </data>
+  <data name="NotesFilterAll" xml:space="preserve">
+    <value>Всі</value>
+  </data>
+  <data name="NotesFilterInbox" xml:space="preserve">
+    <value>Вхідні</value>
+  </data>
+  <data name="NotesQuickCapturePlaceholder" xml:space="preserve">
+    <value>Швидка нотатка…</value>
   </data>
   <data name="AppLockTitle" xml:space="preserve">
     <value>Блокування застосунку</value>

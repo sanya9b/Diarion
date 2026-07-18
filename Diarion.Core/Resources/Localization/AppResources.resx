@@ -577,6 +577,36 @@
   <data name="StatsTasksCompleted" xml:space="preserve">
     <value>Tasks Completed:</value>
   </data>
+  <data name="StatsKpiTopMood" xml:space="preserve">
+    <value>Top mood</value>
+  </data>
+  <data name="StatsKpiEntries" xml:space="preserve">
+    <value>Entries</value>
+  </data>
+  <data name="StatsKpiDuration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="StatsKpiQuality" xml:space="preserve">
+    <value>Quality</value>
+  </data>
+  <data name="StatsKpiTasks" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="StatsKpiCompletion" xml:space="preserve">
+    <value>Completion</value>
+  </data>
+  <data name="StatsKpiBalance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="StatsMoodTrend" xml:space="preserve">
+    <value>Mood trend</value>
+  </data>
+  <data name="StatsYearInPixels" xml:space="preserve">
+    <value>Year in pixels</value>
+  </data>
+  <data name="StatsPeriod" xml:space="preserve">
+    <value>Period</value>
+  </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Week</value>
   </data>
@@ -729,5 +759,23 @@
   </data>
   <data name="EmptyNotes" xml:space="preserve">
     <value>No notes found.</value>
+  </data>
+  <data name="NotesTags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="NotesLinked" xml:space="preserve">
+    <value>Linked notes</value>
+  </data>
+  <data name="NotesBacklinks" xml:space="preserve">
+    <value>Backlinks</value>
+  </data>
+  <data name="NotesFilterAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="NotesFilterInbox" xml:space="preserve">
+    <value>Inbox</value>
+  </data>
+  <data name="NotesQuickCapturePlaceholder" xml:space="preserve">
+    <value>Quick note…</value>
   </data>
 </root>

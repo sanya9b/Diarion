@@ -713,7 +713,79 @@ namespace Diarion.Resources.Localization {
                 return ResourceManager.GetString("StatsTasksCompleted", resourceCulture);
             }
         }
-        
+
+        public static string StatsKpiTopMood {
+            get {
+                return ResourceManager.GetString("StatsKpiTopMood", resourceCulture);
+            }
+        }
+
+        public static string StatsKpiEntries {
+            get {
+                return ResourceManager.GetString("StatsKpiEntries", resourceCulture);
+            }
+        }
+
+        public static string StatsKpiDuration {
+            get {
+                return ResourceManager.GetString("StatsKpiDuration", resourceCulture);
+            }
+        }
+
+        public static string StatsKpiQuality {
+            get {
+                return ResourceManager.GetString("StatsKpiQuality", resourceCulture);
+            }
+        }
+
+        public static string StatsKpiTasks {
+            get {
+                return ResourceManager.GetString("StatsKpiTasks", resourceCulture);
+            }
+        }
+
+        public static string StatsKpiCompletion {
+            get {
+                return ResourceManager.GetString("StatsKpiCompletion", resourceCulture);
+            }
+        }
+
+        public static string StatsKpiBalance {
+            get {
+                return ResourceManager.GetString("StatsKpiBalance", resourceCulture);
+            }
+        }
+
+        public static string StatsMoodTrend {
+            get {
+                return ResourceManager.GetString("StatsMoodTrend", resourceCulture);
+            }
+        }
+
+        public static string StatsYearInPixels {
+            get {
+                return ResourceManager.GetString("StatsYearInPixels", resourceCulture);
+            }
+        }
+
+        public static string StatsPeriod {
+            get {
+                return ResourceManager.GetString("StatsPeriod", resourceCulture);
+            }
+        }
+
+        public static string NotesFilterAll {
+            get {
+                return ResourceManager.GetString("NotesFilterAll", resourceCulture);
+            }
+        }
+
+        public static string NotesFilterInbox {
+            get {
+                return ResourceManager.GetString("NotesFilterInbox", resourceCulture);
+            }
+        }
+
         public static string TimeRangeWeek {
             get {
                 return ResourceManager.GetString("TimeRangeWeek", resourceCulture);
