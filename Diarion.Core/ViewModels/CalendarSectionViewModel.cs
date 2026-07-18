@@ -19,6 +19,7 @@ public partial class CalendarSectionViewModel : ObservableObject
     private readonly IMenstrualCycleService _menstrualCycleService;
     private readonly IProfileService _profileService;
     private readonly ITodoService _todoService;
+    private readonly IDispatcherService _dispatcher;
 
     [ObservableProperty]
     private bool _isCalendarExpanded = false;
@@ -50,12 +51,14 @@ public partial class CalendarSectionViewModel : ObservableObject
         ICalendarService calendarService,
         IMenstrualCycleService menstrualCycleService,
         IProfileService profileService,
-        ITodoService todoService)
+        ITodoService todoService,
+        IDispatcherService dispatcher)
     {
         _calendarService = calendarService;
         _menstrualCycleService = menstrualCycleService;
         _profileService = profileService;
         _todoService = todoService;
+        _dispatcher = dispatcher;
 
         var culture = Diarion.Resources.Localization.AppResources.Culture ?? CultureInfo.CurrentCulture;
         TodayMonthShort = DateTime.Now.ToString("MMM", culture).ToUpper();
@@ -147,7 +150,7 @@ public partial class CalendarSectionViewModel : ObservableObject
         var grouped = allTodos.GroupBy(t => t.TargetDate.Date).ToDictionary(g => g.Key, g => g.ToList());
         var profile = await _profileService.GetUserProfileAsync();
 
-        Microsoft.Maui.ApplicationModel.MainThread.BeginInvokeOnMainThread(() =>
+        _dispatcher.InvokeOnMainThread(() =>
         {
             foreach (var day in CalendarDays)
             {
@@ -165,7 +168,7 @@ public partial class CalendarSectionViewModel : ObservableObject
         var dayTodos = await _todoService.GetTodosForDateAsync(targetDate);
         var profile = await _profileService.GetUserProfileAsync();
 
-        Microsoft.Maui.ApplicationModel.MainThread.BeginInvokeOnMainThread(() =>
+        _dispatcher.InvokeOnMainThread(() =>
         {
             UpdateDayTasksCompletion(dayToUpdate, dayTodos, profile);
         });

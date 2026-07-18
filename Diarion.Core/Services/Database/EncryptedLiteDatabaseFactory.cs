@@ -57,7 +57,7 @@ public static class EncryptedLiteDatabaseFactory
     /// validate a restore candidate before overwriting live data — this rejects foreign, corrupt,
     /// or wrong-key/wrong-device files.
     /// </summary>
-    public static bool IsValidEncryptedDatabase(string path, string? password, string requiredCollection)
+    public static bool IsValidEncryptedDatabase(string path, string? password, string requiredCollection, int maxUserVersion = int.MaxValue)
     {
         if (!File.Exists(path))
         {
@@ -71,7 +71,8 @@ public static class EncryptedLiteDatabaseFactory
                 : new ConnectionString { Filename = path, Password = password };
 
             using var db = new LiteDatabase(cs);
-            return db.GetCollectionNames().Contains(requiredCollection);
+            // Reject a backup created by a newer app schema (would otherwise be silently downgraded).
+            return db.GetCollectionNames().Contains(requiredCollection) && db.UserVersion <= maxUserVersion;
         }
         catch
         {

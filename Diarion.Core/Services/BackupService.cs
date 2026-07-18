@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Diarion.Services.Database;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Storage;
 
 namespace Diarion.Services;
 
@@ -13,11 +10,22 @@ public class BackupService : IBackupService
     private const string BackupFilePrefix = "DiarionBackup_";
     private readonly IDatabaseContext _dbContext;
     private readonly IEncryptionKeyProvider _keyProvider;
+    private readonly IFileSystemService _fileSystem;
+    private readonly IShareService _shareService;
+    private readonly IFilePickerService _filePicker;
 
-    public BackupService(IDatabaseContext dbContext, IEncryptionKeyProvider keyProvider)
+    public BackupService(
+        IDatabaseContext dbContext,
+        IEncryptionKeyProvider keyProvider,
+        IFileSystemService fileSystem,
+        IShareService shareService,
+        IFilePickerService filePicker)
     {
         _dbContext = dbContext;
         _keyProvider = keyProvider;
+        _fileSystem = fileSystem;
+        _shareService = shareService;
+        _filePicker = filePicker;
     }
 
     public async Task<bool> ExportBackupAsync()
@@ -35,7 +43,7 @@ public class BackupService : IBackupService
             // Close the DB so the on-disk file is fully checkpointed and unlocked before copying,
             // then reopen. The copied file is already AES-encrypted (encryption at rest), so the
             // backup never contains plaintext.
-            var tempFile = Path.Combine(FileSystem.CacheDirectory, $"{BackupFilePrefix}{DateTime.Now:yyyyMMdd_HHmmss}.db");
+            var tempFile = Path.Combine(_fileSystem.CacheDirectory, $"{BackupFilePrefix}{DateTime.Now:yyyyMMdd_HHmmss}.db");
             _dbContext.Close();
             try
             {
@@ -46,12 +54,7 @@ public class BackupService : IBackupService
                 _dbContext.Reopen();
             }
 
-            await Share.Default.RequestAsync(new ShareFileRequest
-            {
-                Title = "Diarion Backup",
-                File = new ShareFile(tempFile)
-            });
-
+            await _shareService.ShareFileAsync("Diarion Backup", tempFile);
             return true;
         }
         catch (Exception ex)
@@ -66,13 +69,8 @@ public class BackupService : IBackupService
         string? tempImportPath = null;
         try
         {
-            var result = await FilePicker.Default.PickAsync(new PickOptions
-            {
-                PickerTitle = "Select Backup File",
-                FileTypes = BackupFileType()
-            });
-
-            if (result == null)
+            using var picked = await _filePicker.PickBackupFileAsync("Select Backup File");
+            if (picked == null)
             {
                 return false;
             }
@@ -87,16 +85,15 @@ public class BackupService : IBackupService
             //    later File.Replace/Move is atomic and cross-volume-safe) — never over the live DB yet.
             var dbDir = Path.GetDirectoryName(dbPath)!;
             tempImportPath = Path.Combine(dbDir, $"import_{Guid.NewGuid():N}.tmp");
-            using (var source = await result.OpenReadAsync())
             using (var dest = File.Create(tempImportPath))
             {
-                await source.CopyToAsync(dest);
+                await picked.CopyToAsync(dest);
             }
 
-            // 2. Validate: it must be a real Diarion database that opens with THIS device's key.
-            //    Rejects foreign/corrupt files and, by design, backups from another device.
+            // 2. Validate: it must be a real Diarion database that opens with THIS device's key and
+            //    is not from a newer schema. Rejects foreign/corrupt/wrong-device/newer files.
             var password = _keyProvider.GetOrCreateKey();
-            if (!EncryptedLiteDatabaseFactory.IsValidEncryptedDatabase(tempImportPath, password, DatabaseConstants.EntriesCollection))
+            if (!EncryptedLiteDatabaseFactory.IsValidEncryptedDatabase(tempImportPath, password, DatabaseConstants.EntriesCollection, MigrationRunner.CurrentVersion))
             {
                 return false; // live DB untouched
             }
@@ -148,20 +145,11 @@ public class BackupService : IBackupService
         }
     }
 
-    private static FilePickerFileType BackupFileType() =>
-        new(new Dictionary<DevicePlatform, IEnumerable<string>>
-        {
-            { DevicePlatform.iOS, new[] { "public.data", "public.database" } },
-            { DevicePlatform.Android, new[] { "application/octet-stream" } },
-            { DevicePlatform.WinUI, new[] { ".db" } },
-            { DevicePlatform.macOS, new[] { "public.data", "public.database" } }
-        });
-
-    private static void CleanupOldTempBackups()
+    private void CleanupOldTempBackups()
     {
         try
         {
-            foreach (var file in Directory.EnumerateFiles(FileSystem.CacheDirectory, $"{BackupFilePrefix}*.db"))
+            foreach (var file in Directory.EnumerateFiles(_fileSystem.CacheDirectory, $"{BackupFilePrefix}*.db"))
             {
                 SafeDelete(file);
             }

@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services.Database;
 using LiteDB;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.ApplicationModel.DataTransfer;
-using Microsoft.Maui.Storage;
 
 namespace Diarion.Services;
 
@@ -37,10 +34,14 @@ public class ExportService : IExportService
     };
 
     private readonly IDatabaseContext _dbContext;
+    private readonly IFileSystemService _fileSystem;
+    private readonly IShareService _shareService;
 
-    public ExportService(IDatabaseContext dbContext)
+    public ExportService(IDatabaseContext dbContext, IFileSystemService fileSystem, IShareService shareService)
     {
         _dbContext = dbContext;
+        _fileSystem = fileSystem;
+        _shareService = shareService;
     }
 
     public Task<string> BuildAsync(ExportFormat format) => format switch
@@ -64,14 +65,10 @@ public class ExportService : IExportService
                 _ => "json"
             };
 
-            var path = Path.Combine(FileSystem.CacheDirectory, $"{ExportPrefix}{DateTime.Now:yyyyMMdd_HHmmss}.{ext}");
+            var path = Path.Combine(_fileSystem.CacheDirectory, $"{ExportPrefix}{DateTime.Now:yyyyMMdd_HHmmss}.{ext}");
             await File.WriteAllTextAsync(path, content, new UTF8Encoding(false));
 
-            await Share.Default.RequestAsync(new ShareFileRequest
-            {
-                Title = "Diarion Export",
-                File = new ShareFile(path)
-            });
+            await _shareService.ShareFileAsync("Diarion Export", path);
 
             return true;
         }
@@ -178,7 +175,7 @@ public class ExportService : IExportService
     {
         try
         {
-            foreach (var file in Directory.EnumerateFiles(FileSystem.CacheDirectory, $"{ExportPrefix}*"))
+            foreach (var file in Directory.EnumerateFiles(_fileSystem.CacheDirectory, $"{ExportPrefix}*"))
             {
                 try { File.Delete(file); } catch { /* best-effort */ }
             }

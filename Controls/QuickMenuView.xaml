@@ -69,7 +69,7 @@
                 </HorizontalStackLayout.Behaviors>
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:QuickMenuItem">
-                        <ContentView>
+                        <ContentView SemanticProperties.Description="{Binding Id}">
                             <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Command}" />
                                 <DragGestureRecognizer DragStartingCommand="{Binding BindingContext.QuickMenuSection.DragMenuStartingCommand, Source={x:Reference QuickMenuViewRoot}}"

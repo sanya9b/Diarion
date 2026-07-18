@@ -70,7 +70,8 @@ public class MainViewModelTests
             _calendarServiceMock.Object,
             _menstrualCycleServiceMock.Object,
             _profileServiceMock.Object,
-            _todoServiceMock.Object);
+            _todoServiceMock.Object,
+            new Mock<IDispatcherService>().Object);
 
         _plannerSection = new PlannerSectionViewModel(
             _todoServiceMock.Object,

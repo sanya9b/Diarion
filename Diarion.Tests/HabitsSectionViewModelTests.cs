@@ -35,7 +35,8 @@ public class HabitsSectionViewModelTests
             _calendarServiceMock.Object,
             _menstrualCycleServiceMock.Object,
             _profileServiceMock.Object,
-            _todoServiceMock.Object);
+            _todoServiceMock.Object,
+            new Mock<IDispatcherService>().Object);
 
         _viewModel = new HabitsSectionViewModel(
             _habitServiceMock.Object,

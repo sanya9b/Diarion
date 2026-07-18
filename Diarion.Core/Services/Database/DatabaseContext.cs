@@ -64,6 +64,9 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         happyMomentsCollection.EnsureIndex(x => x.SlotNumber, true);
         goodDeedsCollection.EnsureIndex(x => x.SlotNumber, true);
 
+        // Apply any pending schema migrations before seeding/using the data.
+        MigrationRunner.Run(_db);
+
         seeder?.Seed(_db);
     }
 

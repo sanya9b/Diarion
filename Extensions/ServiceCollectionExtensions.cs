@@ -37,6 +37,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<INavigationService, MauiNavigationService>();
         services.AddSingleton<IDialogService, MauiDialogService>();
         services.AddSingleton<IHealthDataService, HealthDataService>();
+        services.AddSingleton<IFileSystemService, MauiFileSystemService>();
+        services.AddSingleton<IShareService, MauiShareService>();
+        services.AddSingleton<IFilePickerService, MauiFilePickerService>();
+        services.AddSingleton<IDispatcherService, MauiDispatcherService>();
         
         return services;
     }

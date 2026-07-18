@@ -4,6 +4,7 @@ using Diarion.Models;
 using Diarion.Services;
 using Diarion.Services.Database;
 using FluentAssertions;
+using Moq;
 using Xunit;
 
 namespace Diarion.Tests;
@@ -16,7 +17,7 @@ public class ExportServiceTests : IDisposable
     public ExportServiceTests()
     {
         _dbContext = new DatabaseContext(useInMemory: true);
-        _service = new ExportService(_dbContext);
+        _service = new ExportService(_dbContext, new Mock<IFileSystemService>().Object, new Mock<IShareService>().Object);
 
         _dbContext.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection).Insert(new DiaryEntry
         {

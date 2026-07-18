@@ -46,7 +46,7 @@
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label Text="😊" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                        <Label Text="😊" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionHappy}" />
                     </Border>
                     <Label Text="{x:Static localization:AppResources.EmotionHappy}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 </VerticalStackLayout>
@@ -63,7 +63,7 @@
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label Text="😌" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                        <Label Text="😌" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionCalm}" />
                     </Border>
                     <Label Text="{x:Static localization:AppResources.EmotionCalm}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 </VerticalStackLayout>
@@ -80,7 +80,7 @@
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label Text="😰" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                        <Label Text="😰" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionAnxious}" />
                     </Border>
                     <Label Text="{x:Static localization:AppResources.EmotionAnxious}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 </VerticalStackLayout>
@@ -97,7 +97,7 @@
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label Text="😢" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                        <Label Text="😢" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionSad}" />
                     </Border>
                     <Label Text="{x:Static localization:AppResources.EmotionSad}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 </VerticalStackLayout>
@@ -114,7 +114,7 @@
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label Text="😠" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                        <Label Text="😠" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionAngry}" />
                     </Border>
                     <Label Text="{x:Static localization:AppResources.EmotionAngry}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 </VerticalStackLayout>
