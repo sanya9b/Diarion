@@ -319,7 +319,10 @@
     </Style>
 
     <Style TargetType="Switch">
-        <Setter Property="OnColor" Value="{DynamicResource Theme_Primary_White}" />
+        <!-- On = accent-filled track + white knob; Off = default track + white knob. The white knob
+             always contrasts the track so the on/off state reads clearly in every theme (previously
+             the "On" thumb used Theme_Primary_White = pink in the Pink theme, blending into the track). -->
+        <Setter Property="OnColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
         <Setter Property="ThumbColor" Value="{StaticResource White}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
@@ -333,13 +336,13 @@
                     </VisualState>
                     <VisualState x:Name="On">
                         <VisualState.Setters>
-                            <Setter Property="OnColor" Value="{DynamicResource Theme_Secondary_Gray200}" />
-                            <Setter Property="ThumbColor" Value="{DynamicResource Theme_Primary_White}" />
+                            <Setter Property="OnColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                            <Setter Property="ThumbColor" Value="{StaticResource White}" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Off">
                         <VisualState.Setters>
-                            <Setter Property="ThumbColor" Value="{DynamicResource Theme_Gray400_Gray500}" />
+                            <Setter Property="ThumbColor" Value="{StaticResource White}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -422,14 +425,20 @@
         <Setter Property="Padding" Value="16" />
     </Style>
 
-    <!-- Circular PIN keypad button, shared by LockPage (unlock) and PinSetupPage (set/change). -->
+    <!-- Circular PIN keypad button, shared by LockPage (unlock) and PinSetupPage (set/change).
+         Padding=0 + Center options keep the frame a true 72x72 square so CornerRadius renders as a
+         perfect circle (without them the button can stretch wider than tall and look like a pill). -->
     <Style x:Key="PinKey" TargetType="Button">
         <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Black}" />
         <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-        <Setter Property="FontSize" Value="24" />
-        <Setter Property="CornerRadius" Value="40" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="36" />
         <Setter Property="HeightRequest" Value="72" />
         <Setter Property="WidthRequest" Value="72" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="BorderColor" Value="{DynamicResource Theme_Dust_Ocean}" />
         <Setter Property="BorderWidth" Value="1" />
     </Style>
