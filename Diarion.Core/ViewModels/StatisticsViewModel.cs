@@ -46,6 +46,7 @@ public partial class StatisticsViewModel : BaseViewModel
 {
     private readonly Diarion.Services.IStatisticsService _statisticsService;
     private readonly Diarion.Services.IDiaryService _diaryService;
+    private readonly Diarion.Services.INavigationService _navigationService;
 
     [ObservableProperty]
     private int _currentStreak;
@@ -84,6 +85,7 @@ public partial class StatisticsViewModel : BaseViewModel
     public StatisticsViewModel(
         Diarion.Services.IStatisticsService statisticsService,
         Diarion.Services.IDiaryService diaryService,
+        Diarion.Services.INavigationService navigationService,
         ViewModels.Statistics.MoodStatsViewModel moodStats,
         ViewModels.Statistics.SleepStatsViewModel sleepStats,
         ViewModels.Statistics.ProductivityStatsViewModel productivityStats,
@@ -91,6 +93,7 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         _statisticsService = statisticsService;
         _diaryService = diaryService;
+        _navigationService = navigationService;
         MoodStats = moodStats;
         SleepStats = sleepStats;
         ProductivityStats = productivityStats;
@@ -201,6 +204,6 @@ public partial class StatisticsViewModel : BaseViewModel
     [CommunityToolkit.Mvvm.Input.RelayCommand]
     public void OpenMenu()
     {
-        Microsoft.Maui.Controls.Shell.Current.FlyoutIsPresented = true;
+        _ = _navigationService.OpenFlyoutAsync();
     }
 }

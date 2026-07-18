@@ -26,7 +26,7 @@ public class WishlistViewModelTests
                 new() { WishText = "Be happy", Date = new DateTime(2025, 6, 2) }
             });
 
-        var viewModel = new WishlistViewModel(diaryServiceMock.Object);
+        var viewModel = new WishlistViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object);
 
         // Act
         await viewModel.LoadAsync();
@@ -55,7 +55,7 @@ public class WishlistViewModelTests
                 return Task.CompletedTask;
             });
 
-        var viewModel = new WishlistViewModel(diaryServiceMock.Object);
+        var viewModel = new WishlistViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object);
         await viewModel.LoadAsync();
 
         viewModel.NewWantText = "  A pet dog  ";
@@ -76,7 +76,7 @@ public class WishlistViewModelTests
     {
         // Arrange
         var diaryServiceMock = new Mock<IWishlistService>();
-        var viewModel = new WishlistViewModel(diaryServiceMock.Object);
+        var viewModel = new WishlistViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object);
         
         viewModel.NewWantText = "  ";
 

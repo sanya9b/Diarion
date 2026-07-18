@@ -39,9 +39,27 @@ public class StatisticsServiceTests
         result.AverageSleepQuality.Should().Be(7.0); // (8+6)/2
         result.AverageSleepDuration.TotalHours.Should().Be(7.0); // (8h + 6h) / 2
         
-        // 8 points for 7 days past + today = 8 points total
-        result.DailyData.Should().HaveCount(8);
+        // A "7 day" window is exactly 7 calendar days including today.
+        result.DailyData.Should().HaveCount(7);
         result.DailyData.FirstOrDefault(d => d.Date == today.AddDays(-2))?.Duration.TotalHours.Should().Be(8);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(7)]
+    [InlineData(30)]
+    public async Task GetSleepStatisticsAsync_ReturnsExactlyNDailyPoints(int days)
+    {
+        var mockDiaryService = new Mock<IDiaryService>();
+        mockDiaryService.Setup(s => s.GetDiaryEntriesForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(new List<DiaryEntryStatsDto>());
+
+        var statsService = new StatisticsService(
+            mockDiaryService.Object, new Mock<ITodoService>().Object, new Mock<IFinanceService>().Object);
+
+        var result = await statsService.GetSleepStatisticsAsync(days);
+
+        result.DailyData.Should().HaveCount(days);
     }
 
     [Fact]

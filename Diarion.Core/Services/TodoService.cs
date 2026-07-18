@@ -44,14 +44,17 @@ public class TodoService : ITodoService
     {
         return Task.Run(() =>
         {
-            // Optimized LiteDB queries that count directly without loading objects into memory
-            int total = TodosCollection.Count(x => x.TargetDate >= startDate && x.TargetDate <= endDate);
-            int completed = TodosCollection.Count(x => x.TargetDate >= startDate && x.TargetDate <= endDate && x.IsCompleted);
-            
+            // Single ranged scan: project only the completion flag, then count both in memory
+            // (avoids traversing the date range twice with two separate Count queries).
+            var flags = TodosCollection.Query()
+                .Where(x => x.TargetDate >= startDate && x.TargetDate <= endDate)
+                .Select(x => x.IsCompleted)
+                .ToList();
+
             return new TodoStatistics
             {
-                TotalCount = total,
-                CompletedCount = completed
+                TotalCount = flags.Count,
+                CompletedCount = flags.Count(c => c)
             };
         });
     }
@@ -100,6 +103,11 @@ public class TodoService : ITodoService
     {
         var pastUncompletedTasks = TodosCollection.Query()
             .Where(x => x.TargetDate < dateOnly && !x.IsCompleted && !x.IsDailyRepeat)
+            .ToList()
+            // A task that carries a RepeatEndDate was a daily-repeat instance whose series
+            // was turned off. It must stay pinned to its own day (within the start..end range),
+            // not be dragged forward like an ordinary un-done task.
+            .Where(x => x.RepeatEndDate == null)
             .ToList();
 
         foreach (var task in pastUncompletedTasks)
@@ -209,14 +217,19 @@ public class TodoService : ITodoService
                     .ToList()
                     .Where(x => x.RepeatGroupId == groupId || (string.IsNullOrEmpty(x.RepeatGroupId) && x.TaskDescription == groupId))
                     .ToList();
-                    
+
+                // End the series the day BEFORE the instance being turned off. The generation
+                // filter is inclusive (RepeatEndDate >= date), so ending on this very day would
+                // re-generate a duplicate for it (and re-create it after deletion). This instance
+                // already exists as its own row, so nothing needs to be generated for today.
+                var endDate = todo.TargetDate.Date.AddDays(-1);
                 foreach (var p in pastRepeats)
                 {
-                    p.RepeatEndDate = todo.TargetDate.Date;
+                    p.RepeatEndDate = endDate;
                     TodosCollection.Update(p);
                 }
-                
-                todo.RepeatEndDate = todo.TargetDate.Date;
+
+                todo.RepeatEndDate = endDate;
             }
             
             if (todo.IsDailyRepeat && string.IsNullOrEmpty(todo.RepeatGroupId))

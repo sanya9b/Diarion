@@ -18,7 +18,7 @@
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCloseTapped" />
                 </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="✕" FontSize="22" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </Grid>
 
             <VerticalStackLayout Grid.Column="1" Spacing="4">
@@ -34,57 +34,63 @@
                                VerticalOptions="Center" />
         </Grid>
 
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="24,10,24,32" Spacing="18">
-                
-                <!-- Картка балансу -->
-                <Border Padding="20"
-                        StrokeThickness="0"
-                        BackgroundColor="{DynamicResource Theme_Sage}"
-                        StrokeShape="RoundRectangle 20">
-                    <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Sage}" Offset="0,6" Radius="12" Opacity="0.3" />
-                    </Border.Shadow>
-                    
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="{localization:Translate Key=TotalBalanceLabel}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
-                        <Label Text="{Binding TotalBalance, StringFormat='{0:N2}'}" FontSize="36" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" Margin="0,0,0,12" />
+        <!-- Virtualized list: balance summary + add button in the header, transactions recycled -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Transactions}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+            </CollectionView.ItemsLayout>
 
-                        <Grid ColumnDefinitions="*, Auto, *" ColumnSpacing="16">
-                            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
-                                <Label Text="{localization:Translate Key=MonthIncomeLabel}" FontSize="10" TextColor="{DynamicResource Theme_Snow}" Opacity="0.8" HorizontalOptions="Center" />
-                                <Label Text="{Binding MonthIncome, StringFormat='+{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
+            <CollectionView.Header>
+                <VerticalStackLayout Padding="24,10,24,4" Spacing="18">
+                    <!-- Картка балансу -->
+                    <Border Padding="20"
+                            StrokeThickness="0"
+                            BackgroundColor="{DynamicResource Theme_Sage}"
+                            StrokeShape="RoundRectangle 20">
+                        <Border.Shadow>
+                            <Shadow Brush="{DynamicResource Theme_Sage}" Offset="0,6" Radius="12" Opacity="0.3" />
+                        </Border.Shadow>
 
-                            <BoxView Grid.Column="1" WidthRequest="1" BackgroundColor="{DynamicResource Theme_Snow}" Opacity="0.3" VerticalOptions="Fill" />
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{localization:Translate Key=TotalBalanceLabel}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
+                            <Label Text="{Binding TotalBalance, StringFormat='{0:N2}'}" FontSize="36" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" Margin="0,0,0,12" />
 
-                            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
-                                <Label Text="{localization:Translate Key=MonthExpenseLabel}" FontSize="10" TextColor="{DynamicResource Theme_Snow}" Opacity="0.8" HorizontalOptions="Center" />
-                                <Label Text="{Binding MonthExpense, StringFormat='-{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
+                            <Grid ColumnDefinitions="*, Auto, *" ColumnSpacing="16">
+                                <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                                    <Label Text="{localization:Translate Key=MonthIncomeLabel}" FontSize="10" TextColor="{DynamicResource Theme_Snow}" Opacity="0.8" HorizontalOptions="Center" />
+                                    <Label Text="{Binding MonthIncome, StringFormat='+{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
 
-                <!-- Кнопка додавання -->
-                <Button Text="{localization:Translate Key=AddTransactionButton}"
-                        Command="{Binding ToggleAddTransactionCommand}"
-                        CornerRadius="12"
-                        Padding="16,12"
-                        BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
-                        TextColor="{DynamicResource Theme_Snow_Midnight}"
-                        FontAttributes="Bold" />
+                                <BoxView Grid.Column="1" WidthRequest="1" BackgroundColor="{DynamicResource Theme_Snow}" Opacity="0.3" VerticalOptions="Fill" />
 
-                <!-- Список транзакцій -->
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Transactions}" Spacing="12" Margin="0,4,0,0">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="models:FinanceTransaction">
-                            <Border Padding="16"
-                                    StrokeThickness="1"
-                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                                    StrokeShape="RoundRectangle 16">
-                                <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="12" VerticalOptions="Center">
+                                <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                                    <Label Text="{localization:Translate Key=MonthExpenseLabel}" FontSize="10" TextColor="{DynamicResource Theme_Snow}" Opacity="0.8" HorizontalOptions="Center" />
+                                    <Label Text="{Binding MonthExpense, StringFormat='-{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Кнопка додавання -->
+                    <Button Text="{localization:Translate Key=AddTransactionButton}"
+                            Command="{Binding ToggleAddTransactionCommand}"
+                            CornerRadius="12"
+                            Padding="16,12"
+                            BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
+                            TextColor="{DynamicResource Theme_Snow_Midnight}"
+                            FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </CollectionView.Header>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:FinanceTransaction">
+                    <Border Padding="16"
+                            Margin="24,0"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                            StrokeShape="RoundRectangle 16">
+                        <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="12" VerticalOptions="Center">
                                     <VerticalStackLayout Grid.Column="0" Spacing="4">
                                         <Label Text="{Binding Category}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                                         <Label Text="{Binding Note}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
@@ -121,10 +127,12 @@
                                 </Grid>
                             </Border>
                         </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </VerticalStackLayout>
-            </VerticalStackLayout>
-        </ScrollView>
+                    </CollectionView.ItemTemplate>
+
+                    <CollectionView.Footer>
+                        <BoxView HeightRequest="24" Color="Transparent" />
+                    </CollectionView.Footer>
+                </CollectionView>
 
         <!-- Popup Overlay -->
         <Grid Grid.RowSpan="2"

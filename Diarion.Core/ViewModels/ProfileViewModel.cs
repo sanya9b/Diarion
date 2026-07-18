@@ -16,12 +16,36 @@ public partial class ProfileViewModel : BaseViewModel
 {
     private readonly IProfileService _profileService;
     private readonly IBackupService _backupService;
+    private readonly IAppLockService _appLockService;
+    private readonly IBiometricService _biometricService;
+    private readonly IDialogService _dialogService;
+    private readonly INotificationService _notificationService;
+    private readonly IExportService _exportService;
+    private readonly INavigationService _navigationService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
 
     [ObservableProperty]
     private GenderItem? _selectedGenderItem;
+
+    // Settings tabs: 0 = Profile, 1 = Screen, 2 = Data.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsProfileTab))]
+    [NotifyPropertyChangedFor(nameof(IsScreenTab))]
+    [NotifyPropertyChangedFor(nameof(IsDataTab))]
+    private int _selectedTabIndex;
+
+    public bool IsProfileTab => SelectedTabIndex == 0;
+    public bool IsScreenTab => SelectedTabIndex == 1;
+    public bool IsDataTab => SelectedTabIndex == 2;
+
+    [RelayCommand]
+    private void SelectTab(string index)
+    {
+        if (int.TryParse(index, out var i))
+            SelectedTabIndex = i;
+    }
 
     public List<GenderItem> GenderList { get; } = new()
     {
@@ -31,10 +55,24 @@ public partial class ProfileViewModel : BaseViewModel
         new(GenderType.Other, Diarion.Resources.Localization.AppResources.GenderOther)
     };
 
-    public ProfileViewModel(IProfileService profileService, IBackupService backupService)
+    public ProfileViewModel(
+        IProfileService profileService,
+        IBackupService backupService,
+        IAppLockService appLockService,
+        IBiometricService biometricService,
+        IDialogService dialogService,
+        INotificationService notificationService,
+        IExportService exportService,
+        INavigationService navigationService)
     {
         _profileService = profileService;
         _backupService = backupService;
+        _appLockService = appLockService;
+        _biometricService = biometricService;
+        _dialogService = dialogService;
+        _notificationService = notificationService;
+        _exportService = exportService;
+        _navigationService = navigationService;
         Title = Diarion.Resources.Localization.AppResources.ProfileMenuTitle;
     }
 
@@ -43,93 +81,119 @@ public partial class ProfileViewModel : BaseViewModel
         IsBusy = true;
         Profile = await _profileService.GetUserProfileAsync();
         SelectedGenderItem = GenderList.FirstOrDefault(g => g.Value == Profile.Gender) ?? GenderList[0];
-        
-        // Prevent triggering the change event during load
-        _isBiometricAuthEnabled = Profile.IsBiometricAuthEnabled;
-        OnPropertyChanged(nameof(IsBiometricAuthEnabled));
-        
+
+        NotifyLockState();
+
         IsBusy = false;
     }
 
-    private bool _isBiometricAuthEnabled;
-    public bool IsBiometricAuthEnabled
+    // ---- App lock (PIN + optional biometrics) ----
+
+    public bool IsLockEnabled => _appLockService.IsLockEnabled;
+    public bool IsLockDisabled => !_appLockService.IsLockEnabled;
+
+    public bool IsBiometricEnabled
     {
-        get => _isBiometricAuthEnabled;
+        get => _appLockService.IsBiometricEnabled;
         set
         {
-            if (_isBiometricAuthEnabled != value)
+            if (_appLockService.IsBiometricEnabled == value) return;
+
+            if (value)
             {
-                // If turning on, we need to authenticate first
-                if (value)
-                {
-                    // Store locally, but don't set immediately to prevent UI flicker until verified
-                    _isBiometricAuthEnabled = true;
-                    OnPropertyChanged();
-                    VerifyAndEnableBiometricsAsync();
-                }
-                else
-                {
-                    _isBiometricAuthEnabled = false;
-                    Profile.IsBiometricAuthEnabled = false;
-                    OnPropertyChanged();
-                    _ = SaveProfileAsync();
-                }
+                _ = EnableBiometricAsync();
+            }
+            else
+            {
+                _appLockService.IsBiometricEnabled = false;
+                OnPropertyChanged();
             }
         }
     }
 
-    private async void VerifyAndEnableBiometricsAsync()
+    private async Task EnableBiometricAsync()
     {
-        try
+        var available = await _biometricService.IsAvailableAsync();
+        if (!available)
         {
-            var isAvailable = await Plugin.Fingerprint.CrossFingerprint.Current.IsAvailableAsync();
-            if (!isAvailable)
-            {
-                _isBiometricAuthEnabled = false;
-                OnPropertyChanged(nameof(IsBiometricAuthEnabled));
-
-                await Shell.Current.DisplayAlertAsync(
-                    Diarion.Resources.Localization.AppResources.BiometricErrorTitle,
-                    Diarion.Resources.Localization.AppResources.BiometricErrorMessage,
-                    Diarion.Resources.Localization.AppResources.OkButtonLabel);
-                return;
-            }
-
-            var result = await Plugin.Fingerprint.CrossFingerprint.Current.AuthenticateAsync(new Plugin.Fingerprint.Abstractions.AuthenticationRequestConfiguration(
-                Diarion.Resources.Localization.AppResources.SecurityLabel,
-                Diarion.Resources.Localization.AppResources.BiometricPromptReason)
-            {
-                AllowAlternativeAuthentication = true
-            });
-
-            if (result.Authenticated)
-            {
-                Profile.IsBiometricAuthEnabled = true;
-                await SaveProfileAsync();
-            }
-            else
-            {
-                // Revert UI toggle if failed
-                _isBiometricAuthEnabled = false;
-                OnPropertyChanged(nameof(IsBiometricAuthEnabled));
-                
-                await Shell.Current.DisplayAlertAsync(
-                    Diarion.Resources.Localization.AppResources.BiometricErrorTitle,
-                    Diarion.Resources.Localization.AppResources.BiometricErrorMessage,
-                    Diarion.Resources.Localization.AppResources.OkButtonLabel);
-            }
-        }
-        catch (System.Exception)
-        {
-            // Revert UI toggle on exception to prevent application crash
-            _isBiometricAuthEnabled = false;
-            OnPropertyChanged(nameof(IsBiometricAuthEnabled));
-
-            await Shell.Current.DisplayAlertAsync(
+            await _dialogService.ShowAlertAsync(
                 Diarion.Resources.Localization.AppResources.BiometricErrorTitle,
                 Diarion.Resources.Localization.AppResources.BiometricErrorMessage,
                 Diarion.Resources.Localization.AppResources.OkButtonLabel);
+            OnPropertyChanged(nameof(IsBiometricEnabled)); // revert the switch in the UI
+            return;
         }
+
+        _appLockService.IsBiometricEnabled = true;
+        OnPropertyChanged(nameof(IsBiometricEnabled));
+    }
+
+    [RelayCommand]
+    public async Task SetPinAsync()
+    {
+        var pin = await _dialogService.ShowPromptAsync(
+            Diarion.Resources.Localization.AppResources.AppLockTitle,
+            Diarion.Resources.Localization.AppResources.EnterPinPrompt,
+            Diarion.Resources.Localization.AppResources.OkButtonLabel,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
+
+        if (string.IsNullOrWhiteSpace(pin)) return;
+
+        if (!IsValidPin(pin))
+        {
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.AppLockTitle,
+                Diarion.Resources.Localization.AppResources.PinInvalidMessage,
+                Diarion.Resources.Localization.AppResources.OkButtonLabel);
+            return;
+        }
+
+        var confirm = await _dialogService.ShowPromptAsync(
+            Diarion.Resources.Localization.AppResources.AppLockTitle,
+            Diarion.Resources.Localization.AppResources.ConfirmPinPrompt,
+            Diarion.Resources.Localization.AppResources.OkButtonLabel,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
+
+        if (confirm != pin)
+        {
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.AppLockTitle,
+                Diarion.Resources.Localization.AppResources.PinMismatchMessage,
+                Diarion.Resources.Localization.AppResources.OkButtonLabel);
+            return;
+        }
+
+        _appLockService.SetPin(pin);
+        NotifyLockState();
+
+        await _dialogService.ShowAlertAsync(
+            Diarion.Resources.Localization.AppResources.AppLockTitle,
+            Diarion.Resources.Localization.AppResources.PinSetSuccessMessage,
+            Diarion.Resources.Localization.AppResources.OkButtonLabel);
+    }
+
+    [RelayCommand]
+    public async Task RemovePinAsync()
+    {
+        var confirm = await _dialogService.ShowConfirmationAsync(
+            Diarion.Resources.Localization.AppResources.AppLockTitle,
+            Diarion.Resources.Localization.AppResources.RemovePinConfirmMessage,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
+
+        if (!confirm) return;
+
+        _appLockService.RemovePin();
+        NotifyLockState();
+    }
+
+    private static bool IsValidPin(string pin) => pin.Length == 4 && pin.All(char.IsDigit);
+
+    private void NotifyLockState()
+    {
+        OnPropertyChanged(nameof(IsLockEnabled));
+        OnPropertyChanged(nameof(IsLockDisabled));
+        OnPropertyChanged(nameof(IsBiometricEnabled));
     }
 
     partial void OnSelectedGenderItemChanged(GenderItem? value)
@@ -148,7 +212,7 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     public void OpenMenu()
     {
-        Microsoft.Maui.Controls.Shell.Current.FlyoutIsPresented = true;
+        _ = _navigationService.OpenFlyoutAsync();
     }
 
     [RelayCommand]
@@ -156,12 +220,26 @@ public partial class ProfileViewModel : BaseViewModel
     {
         IsBusy = true;
         await _profileService.SaveUserProfileAsync(Profile);
+        await ApplyDailyReminderAsync();
         IsBusy = false;
-        
-        await Shell.Current.DisplayAlertAsync(
-            Title, 
-            Diarion.Resources.Localization.AppResources.ProfileSavedMessage, 
+
+        await _dialogService.ShowAlertAsync(
+            Title,
+            Diarion.Resources.Localization.AppResources.ProfileSavedMessage,
             Diarion.Resources.Localization.AppResources.OkButtonLabel);
+    }
+
+    private async Task ApplyDailyReminderAsync()
+    {
+        if (Profile.IsDailyReminderEnabled)
+        {
+            await _notificationService.RequestPermissionsAsync();
+            _notificationService.ScheduleDailyJournalReminder(Profile.DailyReminderTime);
+        }
+        else
+        {
+            _notificationService.CancelDailyJournalReminder();
+        }
     }
 
     [RelayCommand]
@@ -170,9 +248,9 @@ public partial class ProfileViewModel : BaseViewModel
         bool success = await _backupService.ExportBackupAsync();
         if (success)
         {
-            await Shell.Current.DisplayAlertAsync(
-                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup", 
-                Diarion.Resources.Localization.AppResources.BackupExportSuccess ?? "Backup created successfully.", 
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup",
+                Diarion.Resources.Localization.AppResources.BackupExportSuccess ?? "Backup created successfully.",
                 Diarion.Resources.Localization.AppResources.OkButtonLabel);
         }
     }
@@ -180,10 +258,10 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     public async Task ImportBackupAsync()
     {
-        bool confirm = await Shell.Current.DisplayAlertAsync(
-            Diarion.Resources.Localization.AppResources.BackupTitle ?? "Restore Backup", 
-            Diarion.Resources.Localization.AppResources.BackupImportWarning ?? "This will overwrite your current data. Are you sure?", 
-            Diarion.Resources.Localization.AppResources.DeleteConfirmYes, 
+        bool confirm = await _dialogService.ShowConfirmationAsync(
+            Diarion.Resources.Localization.AppResources.BackupTitle ?? "Restore Backup",
+            Diarion.Resources.Localization.AppResources.BackupImportWarning ?? "This will overwrite your current data. Are you sure?",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
             Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
             
         if (!confirm) return;
@@ -191,9 +269,29 @@ public partial class ProfileViewModel : BaseViewModel
         bool success = await _backupService.ImportBackupAsync();
         if (success)
         {
-            await Shell.Current.DisplayAlertAsync(
-                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup", 
-                Diarion.Resources.Localization.AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.", 
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup",
+                Diarion.Resources.Localization.AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.",
+                Diarion.Resources.Localization.AppResources.OkButtonLabel);
+        }
+    }
+
+    [RelayCommand]
+    public async Task ExportDataAsync(string format)
+    {
+        var exportFormat = (format ?? string.Empty).ToLowerInvariant() switch
+        {
+            "csv" => ExportFormat.Csv,
+            "markdown" => ExportFormat.Markdown,
+            _ => ExportFormat.Json
+        };
+
+        var success = await _exportService.ExportAndShareAsync(exportFormat);
+        if (success)
+        {
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.ExportDataTitle,
+                Diarion.Resources.Localization.AppResources.ExportSuccessMessage,
                 Diarion.Resources.Localization.AppResources.OkButtonLabel);
         }
     }
@@ -201,10 +299,10 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     public async Task ClearAllDataAsync()
     {
-        bool confirm = await Shell.Current.DisplayAlertAsync(
-            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning", 
-            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmMsg ?? "Are you sure you want to delete all your data?", 
-            Diarion.Resources.Localization.AppResources.DeleteConfirmYes, 
+        bool confirm = await _dialogService.ShowConfirmationAsync(
+            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning",
+            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmMsg ?? "Are you sure you want to delete all your data?",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
             Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
             
         if (!confirm) return;
@@ -216,9 +314,9 @@ public partial class ProfileViewModel : BaseViewModel
         await LoadProfileAsync();
         IsBusy = false;
 
-        await Shell.Current.DisplayAlertAsync(
-            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning", 
-            Diarion.Resources.Localization.AppResources.ClearAllDataSuccessMsg ?? "All your data has been successfully deleted.", 
+        await _dialogService.ShowAlertAsync(
+            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning",
+            Diarion.Resources.Localization.AppResources.ClearAllDataSuccessMsg ?? "All your data has been successfully deleted.",
             Diarion.Resources.Localization.AppResources.OkButtonLabel);
     }
 }

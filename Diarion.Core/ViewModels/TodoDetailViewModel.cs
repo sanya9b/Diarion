@@ -12,12 +12,16 @@ namespace Diarion.ViewModels;
 public partial class TodoDetailViewModel : BaseViewModel
 {
     private readonly ITodoService _todoService;
+    private readonly INavigationService _navigationService;
+    private readonly IDialogService _dialogService;
     private DateTime _targetDate = DateTime.Today;
     private TodoItem? _currentTodo;
 
-    public TodoDetailViewModel(ITodoService todoService)
+    public TodoDetailViewModel(ITodoService todoService, INavigationService navigationService, IDialogService dialogService)
     {
         _todoService = todoService;
+        _navigationService = navigationService;
+        _dialogService = dialogService;
         Title = Diarion.Resources.Localization.AppResources.NewTaskTitle;
         PrioritiesList[1].IsSelected = true; // Medium is default
         UpdateTargetDateDisplay();
@@ -124,7 +128,7 @@ public partial class TodoDetailViewModel : BaseViewModel
     [RelayCommand]
     public async Task CloseAsync()
     {
-        await Shell.Current.GoToAsync("..");
+        await _navigationService.NavigateBackAsync();
     }
 
     [RelayCommand]
@@ -153,7 +157,7 @@ public partial class TodoDetailViewModel : BaseViewModel
                     IsBusy = false;
                     var title = Diarion.Resources.Localization.AppResources.MaxHighPriorityAlertTitle;
                     var message = Diarion.Resources.Localization.AppResources.MaxHighPriorityAlertMessage;
-                    await Shell.Current.DisplayAlertAsync(title, message, Diarion.Resources.Localization.AppResources.OkButtonLabel);
+                    await _dialogService.ShowAlertAsync(title, message, Diarion.Resources.Localization.AppResources.OkButtonLabel);
                     return;
                 }
             }
@@ -177,7 +181,7 @@ public partial class TodoDetailViewModel : BaseViewModel
             _currentTodo.HasReminder = HasReminder;
 
             await _todoService.SaveTodoAsync(_currentTodo);
-            await Shell.Current.GoToAsync("..");
+            await _navigationService.NavigateBackAsync();
         }
         finally
         {

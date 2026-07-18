@@ -18,7 +18,7 @@
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCloseTapped" />
                 </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="✕" FontSize="22" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </Grid>
 
             <VerticalStackLayout Grid.Column="1" Spacing="4">
@@ -34,11 +34,16 @@
                                VerticalOptions="Center" />
         </Grid>
 
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="24,10,24,32" Spacing="18">
-                
+        <!-- Virtualized list: summary/add-button in the header, entries recycled by CollectionView -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Entries}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.Header>
                 <!-- Кнопка додавання -->
                 <Border Padding="16"
+                        Margin="24,10,24,12"
                         StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Berry}"
                         BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
@@ -50,56 +55,58 @@
                     <Border.Shadow>
                         <Shadow Brush="{DynamicResource Theme_Berry}" Offset="0,4" Radius="8" Opacity="0.15" />
                     </Border.Shadow>
-                    
+
                     <Grid ColumnDefinitions="Auto, *">
                         <Label Grid.Column="0" Text="+" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource Theme_Berry}" VerticalOptions="Center" Margin="0,0,12,0"/>
                         <Label Grid.Column="1" Text="{localization:Translate Key=AddTodoButton}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center"/>
                     </Grid>
                 </Border>
+            </CollectionView.Header>
 
-                <!-- Список записів -->
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Entries}" Spacing="12" Margin="0,12,0,0">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="models:WishlistEntry">
-                            <Border Padding="12,10"
-                                    StrokeThickness="1"
-                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
-                                    StrokeShape="RoundRectangle 14">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenAddFormCommand}" CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                                <Border.Triggers>
-                                    <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="True">
-                                        <Setter Property="Opacity" Value="0.6" />
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:WishlistEntry">
+                    <Border Padding="12,10"
+                            Margin="24,0"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                            StrokeShape="RoundRectangle 14">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenAddFormCommand}" CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="True">
+                                <Setter Property="Opacity" Value="0.6" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
+                            <!-- Checkbox for completion -->
+                            <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0">
+                                <CheckBox.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleCompletedCommand}" CommandParameter="{Binding .}" />
+                                </CheckBox.GestureRecognizers>
+                            </CheckBox>
+
+                            <!-- Want Text -->
+                            <Label Grid.Column="1" Text="{Binding WantText}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" LineBreakMode="TailTruncation" IsVisible="{Binding WantText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
                                     </DataTrigger>
-                                </Border.Triggers>
-                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
-                                    <!-- Checkbox for completion -->
-                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0">
-                                        <CheckBox.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleCompletedCommand}" CommandParameter="{Binding .}" />
-                                        </CheckBox.GestureRecognizers>
-                                    </CheckBox>
+                                </Label.Triggers>
+                            </Label>
 
-                                    <!-- Want Text -->
-                                    <Label Grid.Column="1" Text="{Binding WantText}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" LineBreakMode="TailTruncation" IsVisible="{Binding WantText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
-                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
-                                    
-                                    <!-- Date -->
-                                    <Label Grid.Column="2" Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </VerticalStackLayout>
-            </VerticalStackLayout>
-        </ScrollView>
+                            <!-- Date -->
+                            <Label Grid.Column="2" Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.Footer>
+                <BoxView HeightRequest="24" Color="Transparent" />
+            </CollectionView.Footer>
+        </CollectionView>
 
         <!-- Popup Overlay для додавання/редагування -->
         <Grid Grid.RowSpan="2"

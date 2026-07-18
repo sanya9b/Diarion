@@ -21,6 +21,16 @@ public partial class UserProfile : ObservableObject
     // Налаштування завдань
     [ObservableProperty] private bool _autoMigrateUncompletedTasksEnabled = true;
 
+    // Видимість блоків на головному екрані (за замовчуванням усі показані).
+    // Значення true в ініціалізаторі гарантує, що наявні профілі без цих полів
+    // (після оновлення застосунку) також відображатимуть усі блоки.
+    [ObservableProperty] private bool _isMoodBlockVisible = true;
+    [ObservableProperty] private bool _isSleepBlockVisible = true;
+    [ObservableProperty] private bool _isHealthBlockVisible = true;
+    [ObservableProperty] private bool _isFoodBlockVisible = true;
+    [ObservableProperty] private bool _isHabitsBlockVisible = true;
+    [ObservableProperty] private bool _isReflectionBlockVisible = true;
+
     // Менструальний календар
     [ObservableProperty] private bool _isMenstrualTrackingEnabled;
     [ObservableProperty] private int _cycleLength = DefaultCycleLength;
@@ -29,6 +39,10 @@ public partial class UserProfile : ObservableObject
 
     // Безпека
     [ObservableProperty] private bool _isBiometricAuthEnabled;
+
+    // Нагадування вести щоденник
+    [ObservableProperty] private bool _isDailyReminderEnabled;
+    [ObservableProperty] private TimeSpan _dailyReminderTime = new(20, 0, 0);
 
     // Сортування меню
     [ObservableProperty] private System.Collections.Generic.List<string>? _quickMenuOrder;

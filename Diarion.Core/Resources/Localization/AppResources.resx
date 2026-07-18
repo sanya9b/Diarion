@@ -418,6 +418,45 @@
   <data name="SoulFoodLabel" xml:space="preserve">
     <value>FOR MYSELF:</value>
   </data>
+  <data name="TriggersPlaceholder" xml:space="preserve">
+    <value>For example: work stress, a traffic jam...</value>
+  </data>
+  <data name="GratitudePlaceholder" xml:space="preserve">
+    <value>For example: tasty morning coffee, a friend called...</value>
+  </data>
+  <data name="SoulFoodPlaceholder" xml:space="preserve">
+    <value>For example: read a book, listened to music...</value>
+  </data>
+  <data name="HomeBlocksTitle" xml:space="preserve">
+    <value>HOME SCREEN BLOCKS</value>
+  </data>
+  <data name="BlockMoodLabel" xml:space="preserve">
+    <value>Mood</value>
+  </data>
+  <data name="BlockSleepLabel" xml:space="preserve">
+    <value>Sleep</value>
+  </data>
+  <data name="BlockHealthLabel" xml:space="preserve">
+    <value>Health</value>
+  </data>
+  <data name="BlockFoodLabel" xml:space="preserve">
+    <value>Food</value>
+  </data>
+  <data name="BlockHabitsLabel" xml:space="preserve">
+    <value>Habits</value>
+  </data>
+  <data name="BlockReflectionLabel" xml:space="preserve">
+    <value>Reflection</value>
+  </data>
+  <data name="SettingsTabProfile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="SettingsTabScreen" xml:space="preserve">
+    <value>Screen</value>
+  </data>
+  <data name="SettingsTabData" xml:space="preserve">
+    <value>Data</value>
+  </data>
   <data name="AddTimeLabel" xml:space="preserve">
     <value>Add target time</value>
   </data>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Views.OnboardingPage"
+             x:DataType="viewmodels:OnboardingViewModel"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}"
+             NavigationPage.HasNavigationBar="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="24" VerticalOptions="Center">
+
+            <Label Text="D" FontSize="72" FontAttributes="Bold" HorizontalOptions="Center"
+                   TextColor="{DynamicResource Theme_Coral}" />
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="{x:Static localization:AppResources.OnboardingTitle}"
+                       FontSize="26" FontAttributes="Bold" HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="{x:Static localization:AppResources.OnboardingSubtitle}"
+                       FontSize="15" HorizontalOptions="Center" HorizontalTextAlignment="Center"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            </VerticalStackLayout>
+
+            <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    Padding="18">
+                <Label Text="{x:Static localization:AppResources.OnboardingPrivacyText}"
+                       FontSize="14" HorizontalTextAlignment="Center"
+                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </Border>
+
+            <!-- Daily reminder opt-in -->
+            <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    Padding="18">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                        <Label Grid.Column="0" Text="{x:Static localization:AppResources.OnboardingReminderLabel}"
+                               VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Switch Grid.Column="1" IsToggled="{Binding IsDailyReminderEnabled}"
+                                OnColor="{DynamicResource Theme_Ocean_Ocean}" VerticalOptions="Center" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12" IsVisible="{Binding IsDailyReminderEnabled}">
+                        <Label Grid.Column="0" Text="{x:Static localization:AppResources.ReminderTimeLabel}"
+                               VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <TimePicker Grid.Column="1" Time="{Binding DailyReminderTime}"
+                                    TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="{x:Static localization:AppResources.OnboardingGetStartedButton}"
+                    Command="{Binding CompleteCommand}"
+                    BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
+                    TextColor="{DynamicResource Theme_Snow}"
+                    CornerRadius="12"
+                    HeightRequest="50"
+                    Margin="0,8,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

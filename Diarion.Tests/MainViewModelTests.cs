@@ -97,6 +97,7 @@ public class MainViewModelTests
             _navigationServiceMock.Object,
             _dialogServiceMock.Object,
             new Mock<IHealthDataService>().Object,
+            _profileServiceMock.Object,
             _calendarSection,
             _plannerSection,
             _quickMenuSection,

@@ -54,7 +54,9 @@ public partial class NoteDetailViewModel : BaseViewModel
             if (note != null)
             {
                 CurrentNote = note;
+#pragma warning disable MVVMTK0034 // Direct reference to observable backing field
                 _noteContent = note.Content; // Set backing field to avoid triggering OnNoteContentChanged immediately
+#pragma warning restore MVVMTK0034
                 OnPropertyChanged(nameof(NoteContent));
             }
         }

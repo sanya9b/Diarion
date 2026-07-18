@@ -13,6 +13,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
         services.AddSingleton<IDatabaseSeeder, DatabaseSeeder>();
+        services.AddSingleton<IEncryptionKeyProvider, SecureStorageKeyProvider>();
+        services.AddSingleton<IAppLockService, AppLockService>();
+        services.AddSingleton<IBiometricService, BiometricService>();
         services.AddSingleton<IDatabaseContext, DatabaseContext>();
         services.AddSingleton<INotificationService, LocalNotificationService>();
         services.AddSingleton<ITodoService, TodoService>();
@@ -27,8 +30,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IMenstrualCycleService, MenstrualCycleService>();
         services.AddSingleton<ICalendarService, CalendarService>();
         services.AddSingleton<IStatisticsService, StatisticsService>();
+        services.AddSingleton<ICorrelationService, CorrelationService>();
         services.AddSingleton<IMenuConfigurationService, MenuConfigurationService>();
         services.AddSingleton<IBackupService, BackupService>();
+        services.AddSingleton<IExportService, ExportService>();
         services.AddSingleton<INavigationService, MauiNavigationService>();
         services.AddSingleton<IDialogService, MauiDialogService>();
         services.AddSingleton<IHealthDataService, HealthDataService>();
@@ -44,6 +49,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<HabitsSectionViewModel>();
         services.AddTransient<CycleStatusViewModel>();
         services.AddTransient<MainViewModel>();
+        services.AddTransient<LockViewModel>();
+        services.AddTransient<OnboardingViewModel>();
         services.AddTransient<DiaryDetailViewModel>();
         services.AddTransient<TodoDetailViewModel>();
         services.AddTransient<ProfileViewModel>();
@@ -69,6 +76,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAppViews(this IServiceCollection services)
     {
         services.AddTransient<MainPage>();
+        services.AddTransient<LockPage>();
+        services.AddTransient<OnboardingPage>();
         services.AddTransient<DiaryDetailPage>();
         services.AddTransient<TodoDetailPage>();
         services.AddTransient<ProfilePage>();

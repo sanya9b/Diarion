@@ -72,6 +72,19 @@ namespace Diarion.Resources.Localization {
         public static string TriggersLabel => ResourceManager.GetString("TriggersLabel", resourceCulture) ?? "TRIGGERS:";
         public static string GratitudeLabel => ResourceManager.GetString("GratitudeLabel", resourceCulture) ?? "GRATITUDE:";
         public static string SoulFoodLabel => ResourceManager.GetString("SoulFoodLabel", resourceCulture) ?? "FOR MYSELF:";
+        public static string TriggersPlaceholder => ResourceManager.GetString("TriggersPlaceholder", resourceCulture) ?? "For example: work stress, a traffic jam...";
+        public static string GratitudePlaceholder => ResourceManager.GetString("GratitudePlaceholder", resourceCulture) ?? "For example: tasty morning coffee, a friend called...";
+        public static string SoulFoodPlaceholder => ResourceManager.GetString("SoulFoodPlaceholder", resourceCulture) ?? "For example: read a book, listened to music...";
+        public static string HomeBlocksTitle => ResourceManager.GetString("HomeBlocksTitle", resourceCulture) ?? "HOME SCREEN BLOCKS";
+        public static string BlockMoodLabel => ResourceManager.GetString("BlockMoodLabel", resourceCulture) ?? "Mood";
+        public static string BlockSleepLabel => ResourceManager.GetString("BlockSleepLabel", resourceCulture) ?? "Sleep";
+        public static string BlockHealthLabel => ResourceManager.GetString("BlockHealthLabel", resourceCulture) ?? "Health";
+        public static string BlockFoodLabel => ResourceManager.GetString("BlockFoodLabel", resourceCulture) ?? "Food";
+        public static string BlockHabitsLabel => ResourceManager.GetString("BlockHabitsLabel", resourceCulture) ?? "Habits";
+        public static string BlockReflectionLabel => ResourceManager.GetString("BlockReflectionLabel", resourceCulture) ?? "Reflection";
+        public static string SettingsTabProfile => ResourceManager.GetString("SettingsTabProfile", resourceCulture) ?? "Profile";
+        public static string SettingsTabScreen => ResourceManager.GetString("SettingsTabScreen", resourceCulture) ?? "Screen";
+        public static string SettingsTabData => ResourceManager.GetString("SettingsTabData", resourceCulture) ?? "Data";
         public static string AddTimeLabel => ResourceManager.GetString("AddTimeLabel", resourceCulture) ?? "Add target time";
         public static string TimeLabel => ResourceManager.GetString("TimeLabel", resourceCulture) ?? "Time:";
         public static string DailyRepeatLabel => ResourceManager.GetString("DailyRepeatLabel", resourceCulture) ?? "Repeat daily";
@@ -949,6 +962,150 @@ public static string ClearAllDataSuccessMsg {
 
         public static string BiometricErrorMessage {
             get { return ResourceManager.GetString("BiometricErrorMessage", resourceCulture) ?? "Biometric authentication is not set up or not available on this device."; }
+        }
+
+        public static string AppLockTitle {
+            get { return ResourceManager.GetString("AppLockTitle", resourceCulture) ?? "App Lock"; }
+        }
+
+        public static string EnterPinTitle {
+            get { return ResourceManager.GetString("EnterPinTitle", resourceCulture) ?? "Enter PIN"; }
+        }
+
+        public static string EnterPinPrompt {
+            get { return ResourceManager.GetString("EnterPinPrompt", resourceCulture) ?? "Enter a 4-digit PIN"; }
+        }
+
+        public static string ConfirmPinPrompt {
+            get { return ResourceManager.GetString("ConfirmPinPrompt", resourceCulture) ?? "Confirm your PIN"; }
+        }
+
+        public static string PinInvalidMessage {
+            get { return ResourceManager.GetString("PinInvalidMessage", resourceCulture) ?? "The PIN must be 4 digits."; }
+        }
+
+        public static string PinMismatchMessage {
+            get { return ResourceManager.GetString("PinMismatchMessage", resourceCulture) ?? "The PINs do not match."; }
+        }
+
+        public static string PinSetSuccessMessage {
+            get { return ResourceManager.GetString("PinSetSuccessMessage", resourceCulture) ?? "App lock enabled."; }
+        }
+
+        public static string PinIncorrectMessage {
+            get { return ResourceManager.GetString("PinIncorrectMessage", resourceCulture) ?? "Incorrect PIN"; }
+        }
+
+        public static string PinLockedOutMessage {
+            get { return ResourceManager.GetString("PinLockedOutMessage", resourceCulture) ?? "Too many attempts. Try again in {0}s."; }
+        }
+
+        public static string RemovePinConfirmMessage {
+            get { return ResourceManager.GetString("RemovePinConfirmMessage", resourceCulture) ?? "Remove the app lock PIN?"; }
+        }
+
+        public static string SetPinButton {
+            get { return ResourceManager.GetString("SetPinButton", resourceCulture) ?? "Set PIN"; }
+        }
+
+        public static string ChangePinButton {
+            get { return ResourceManager.GetString("ChangePinButton", resourceCulture) ?? "Change PIN"; }
+        }
+
+        public static string RemovePinButton {
+            get { return ResourceManager.GetString("RemovePinButton", resourceCulture) ?? "Remove PIN"; }
+        }
+
+        public static string UnlockWithBiometricsButton {
+            get { return ResourceManager.GetString("UnlockWithBiometricsButton", resourceCulture) ?? "Unlock with biometrics"; }
+        }
+
+        public static string DeleteButtonLabel {
+            get { return ResourceManager.GetString("DeleteButtonLabel", resourceCulture) ?? "Delete"; }
+        }
+
+        public static string OnboardingTitle {
+            get { return ResourceManager.GetString("OnboardingTitle", resourceCulture) ?? "Welcome to Diarion"; }
+        }
+
+        public static string OnboardingSubtitle {
+            get { return ResourceManager.GetString("OnboardingSubtitle", resourceCulture) ?? "Your private, offline diary"; }
+        }
+
+        public static string OnboardingPrivacyText {
+            get { return ResourceManager.GetString("OnboardingPrivacyText", resourceCulture) ?? "Everything stays on your device. No cloud, no account — nothing to leak."; }
+        }
+
+        public static string OnboardingReminderLabel {
+            get { return ResourceManager.GetString("OnboardingReminderLabel", resourceCulture) ?? "Remind me to journal daily"; }
+        }
+
+        public static string OnboardingGetStartedButton {
+            get { return ResourceManager.GetString("OnboardingGetStartedButton", resourceCulture) ?? "Get started"; }
+        }
+
+        public static string RemindersTitle {
+            get { return ResourceManager.GetString("RemindersTitle", resourceCulture) ?? "REMINDERS"; }
+        }
+
+        public static string DailyReminderLabel {
+            get { return ResourceManager.GetString("DailyReminderLabel", resourceCulture) ?? "Daily journaling reminder"; }
+        }
+
+        public static string ReminderTimeLabel {
+            get { return ResourceManager.GetString("ReminderTimeLabel", resourceCulture) ?? "Time"; }
+        }
+
+        public static string DailyReminderTitle {
+            get { return ResourceManager.GetString("DailyReminderTitle", resourceCulture) ?? "Time for your diary"; }
+        }
+
+        public static string DailyReminderMessage {
+            get { return ResourceManager.GetString("DailyReminderMessage", resourceCulture) ?? "A quiet minute for yourself?"; }
+        }
+
+        public static string StatsMoodInfluencesTitle {
+            get { return ResourceManager.GetString("StatsMoodInfluencesTitle", resourceCulture) ?? "WHAT AFFECTS YOUR MOOD"; }
+        }
+
+        public static string StatsCorrelationDisclaimer {
+            get { return ResourceManager.GetString("StatsCorrelationDisclaimer", resourceCulture) ?? "Linked to your mood — not proven to cause it."; }
+        }
+
+        public static string FactorSleepDuration {
+            get { return ResourceManager.GetString("FactorSleepDuration", resourceCulture) ?? "Sleep duration"; }
+        }
+
+        public static string FactorSleepQuality {
+            get { return ResourceManager.GetString("FactorSleepQuality", resourceCulture) ?? "Sleep quality"; }
+        }
+
+        public static string ExportDataTitle {
+            get { return ResourceManager.GetString("ExportDataTitle", resourceCulture) ?? "EXPORT DATA"; }
+        }
+
+        public static string ExportDataDescription {
+            get { return ResourceManager.GetString("ExportDataDescription", resourceCulture) ?? "Export your data in open formats you can keep or move anywhere."; }
+        }
+
+        public static string ExportJsonButton {
+            get { return ResourceManager.GetString("ExportJsonButton", resourceCulture) ?? "JSON"; }
+        }
+
+        public static string ExportCsvButton {
+            get { return ResourceManager.GetString("ExportCsvButton", resourceCulture) ?? "CSV"; }
+        }
+
+        public static string ExportMarkdownButton {
+            get { return ResourceManager.GetString("ExportMarkdownButton", resourceCulture) ?? "Markdown"; }
+        }
+
+        public static string ExportSuccessMessage {
+            get { return ResourceManager.GetString("ExportSuccessMessage", resourceCulture) ?? "Export ready to share."; }
+        }
+
+        public static string CloseButtonLabel {
+            get { return ResourceManager.GetString("CloseButtonLabel", resourceCulture) ?? "Close"; }
         }
     }
 }

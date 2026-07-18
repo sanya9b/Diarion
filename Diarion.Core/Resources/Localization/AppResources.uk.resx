@@ -418,6 +418,45 @@
   <data name="SoulFoodLabel" xml:space="preserve">
     <value>ДЛЯ СЕБЕ:</value>
   </data>
+  <data name="TriggersPlaceholder" xml:space="preserve">
+    <value>Наприклад: стрес на роботі, затори...</value>
+  </data>
+  <data name="GratitudePlaceholder" xml:space="preserve">
+    <value>Наприклад: смачна ранкова кава, зателефонував друг...</value>
+  </data>
+  <data name="SoulFoodPlaceholder" xml:space="preserve">
+    <value>Наприклад: почитав книгу, послухав музику...</value>
+  </data>
+  <data name="HomeBlocksTitle" xml:space="preserve">
+    <value>БЛОКИ ГОЛОВНОГО ЕКРАНА</value>
+  </data>
+  <data name="BlockMoodLabel" xml:space="preserve">
+    <value>Настрій</value>
+  </data>
+  <data name="BlockSleepLabel" xml:space="preserve">
+    <value>Сон</value>
+  </data>
+  <data name="BlockHealthLabel" xml:space="preserve">
+    <value>Здоров'я</value>
+  </data>
+  <data name="BlockFoodLabel" xml:space="preserve">
+    <value>Їжа</value>
+  </data>
+  <data name="BlockHabitsLabel" xml:space="preserve">
+    <value>Звички</value>
+  </data>
+  <data name="BlockReflectionLabel" xml:space="preserve">
+    <value>Рефлексія</value>
+  </data>
+  <data name="SettingsTabProfile" xml:space="preserve">
+    <value>Профіль</value>
+  </data>
+  <data name="SettingsTabScreen" xml:space="preserve">
+    <value>Екран</value>
+  </data>
+  <data name="SettingsTabData" xml:space="preserve">
+    <value>Дані</value>
+  </data>
   <data name="AddTimeLabel" xml:space="preserve">
     <value>Додати час виконання</value>
   </data>
@@ -702,5 +741,113 @@
   </data>
   <data name="EmptyNotes" xml:space="preserve">
     <value>Нотаток ще немає. Створіть першу.</value>
+  </data>
+  <data name="AppLockTitle" xml:space="preserve">
+    <value>Блокування застосунку</value>
+  </data>
+  <data name="EnterPinTitle" xml:space="preserve">
+    <value>Введіть PIN</value>
+  </data>
+  <data name="EnterPinPrompt" xml:space="preserve">
+    <value>Введіть 4-значний PIN</value>
+  </data>
+  <data name="ConfirmPinPrompt" xml:space="preserve">
+    <value>Підтвердіть PIN</value>
+  </data>
+  <data name="PinInvalidMessage" xml:space="preserve">
+    <value>PIN має містити 4 цифри.</value>
+  </data>
+  <data name="PinMismatchMessage" xml:space="preserve">
+    <value>PIN-коди не збігаються.</value>
+  </data>
+  <data name="PinSetSuccessMessage" xml:space="preserve">
+    <value>Блокування увімкнено.</value>
+  </data>
+  <data name="PinIncorrectMessage" xml:space="preserve">
+    <value>Невірний PIN</value>
+  </data>
+  <data name="PinLockedOutMessage" xml:space="preserve">
+    <value>Забагато спроб. Спробуйте через {0} с.</value>
+  </data>
+  <data name="RemovePinConfirmMessage" xml:space="preserve">
+    <value>Прибрати PIN блокування?</value>
+  </data>
+  <data name="SetPinButton" xml:space="preserve">
+    <value>Встановити PIN</value>
+  </data>
+  <data name="ChangePinButton" xml:space="preserve">
+    <value>Змінити PIN</value>
+  </data>
+  <data name="RemovePinButton" xml:space="preserve">
+    <value>Прибрати PIN</value>
+  </data>
+  <data name="UnlockWithBiometricsButton" xml:space="preserve">
+    <value>Розблокувати біометрією</value>
+  </data>
+  <data name="DeleteButtonLabel" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="OnboardingTitle" xml:space="preserve">
+    <value>Ласкаво просимо до Diarion</value>
+  </data>
+  <data name="OnboardingSubtitle" xml:space="preserve">
+    <value>Ваш приватний офлайн-щоденник</value>
+  </data>
+  <data name="OnboardingPrivacyText" xml:space="preserve">
+    <value>Усе лишається на вашому пристрої. Без хмари й акаунтів — нічого витікати.</value>
+  </data>
+  <data name="OnboardingReminderLabel" xml:space="preserve">
+    <value>Нагадувати вести щоденник щодня</value>
+  </data>
+  <data name="OnboardingGetStartedButton" xml:space="preserve">
+    <value>Почати</value>
+  </data>
+  <data name="RemindersTitle" xml:space="preserve">
+    <value>НАГАДУВАННЯ</value>
+  </data>
+  <data name="DailyReminderLabel" xml:space="preserve">
+    <value>Щоденне нагадування</value>
+  </data>
+  <data name="ReminderTimeLabel" xml:space="preserve">
+    <value>Час</value>
+  </data>
+  <data name="DailyReminderTitle" xml:space="preserve">
+    <value>Час для щоденника</value>
+  </data>
+  <data name="DailyReminderMessage" xml:space="preserve">
+    <value>Хвилинка для себе?</value>
+  </data>
+  <data name="StatsMoodInfluencesTitle" xml:space="preserve">
+    <value>ЩО ВПЛИВАЄ НА НАСТРІЙ</value>
+  </data>
+  <data name="StatsCorrelationDisclaimer" xml:space="preserve">
+    <value>Пов'язано з настроєм — не доведено, що є причиною.</value>
+  </data>
+  <data name="FactorSleepDuration" xml:space="preserve">
+    <value>Тривалість сну</value>
+  </data>
+  <data name="FactorSleepQuality" xml:space="preserve">
+    <value>Якість сну</value>
+  </data>
+  <data name="ExportDataTitle" xml:space="preserve">
+    <value>ЕКСПОРТ ДАНИХ</value>
+  </data>
+  <data name="ExportDataDescription" xml:space="preserve">
+    <value>Експортуйте свої дані у відкритих форматах — зберігайте чи переносьте будь-куди.</value>
+  </data>
+  <data name="ExportJsonButton" xml:space="preserve">
+    <value>JSON</value>
+  </data>
+  <data name="ExportCsvButton" xml:space="preserve">
+    <value>CSV</value>
+  </data>
+  <data name="ExportMarkdownButton" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
+  <data name="ExportSuccessMessage" xml:space="preserve">
+    <value>Експорт готовий до надсилання.</value>
+  </data>
+  <data name="CloseButtonLabel" xml:space="preserve">
+    <value>Закрити</value>
   </data>
 </root>

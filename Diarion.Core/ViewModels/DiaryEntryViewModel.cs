@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 
 namespace Diarion.ViewModels;
@@ -63,6 +64,11 @@ public partial class DiaryEntryViewModel : ObservableObject
             Model.HabitsList.Add(h.Model);
         }
     }
+
+    // Day-level mood selection (2-tap). Setting Emotion raises PropertyChanged, which the main
+    // ViewModel observes to trigger the debounced auto-save.
+    [RelayCommand]
+    private void SelectEmotion(Emotion emotion) => Emotion = emotion;
 
     [ObservableProperty]
     private Guid _id;

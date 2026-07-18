@@ -39,6 +39,44 @@ public class LocalNotificationService : INotificationService
 #endif
     }
 
+    // Fixed, unusual id so the single daily reminder can be reliably updated/cancelled.
+    private const int DailyReminderId = 990424;
+
+    public void ScheduleDailyJournalReminder(TimeSpan timeOfDay)
+    {
+#if ANDROID || IOS || MACCATALYST
+        LocalNotificationCenter.Current.Cancel(DailyReminderId);
+
+        var now = DateTime.Now;
+        var next = now.Date.Add(timeOfDay);
+        if (next <= now)
+        {
+            next = next.AddDays(1);
+        }
+
+        var request = new NotificationRequest
+        {
+            NotificationId = DailyReminderId,
+            Title = Diarion.Resources.Localization.AppResources.DailyReminderTitle,
+            Description = Diarion.Resources.Localization.AppResources.DailyReminderMessage,
+            Schedule = new NotificationRequestSchedule
+            {
+                NotifyTime = next,
+                RepeatType = NotificationRepeat.Daily
+            }
+        };
+
+        LocalNotificationCenter.Current.Show(request);
+#endif
+    }
+
+    public void CancelDailyJournalReminder()
+    {
+#if ANDROID || IOS || MACCATALYST
+        LocalNotificationCenter.Current.Cancel(DailyReminderId);
+#endif
+    }
+
     public async Task<bool> RequestPermissionsAsync()
     {
 #if ANDROID || IOS || MACCATALYST
