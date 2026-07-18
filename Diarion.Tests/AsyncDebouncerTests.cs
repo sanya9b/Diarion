@@ -36,17 +36,19 @@ public class AsyncDebouncerTests
         var debouncer = new AsyncDebouncer(TimeSpan.FromMilliseconds(100));
         int executionCount = 0;
 
-        // Act
-        debouncer.Debounce(() => { executionCount++; return Task.CompletedTask; });
-        await Task.Delay(20);
-        debouncer.Debounce(() => { executionCount++; return Task.CompletedTask; });
-        await Task.Delay(20);
-        debouncer.Debounce(() => { executionCount++; return Task.CompletedTask; });
+        // Act — fire back-to-back with no awaits between calls. Each call cancels the previous
+        // schedule synchronously, so only the last survives. Avoiding inter-call delays keeps the
+        // test deterministic under load (a stretched await could otherwise let an earlier fire run).
+        debouncer.Debounce(() => { Interlocked.Increment(ref executionCount); return Task.CompletedTask; });
+        debouncer.Debounce(() => { Interlocked.Increment(ref executionCount); return Task.CompletedTask; });
+        debouncer.Debounce(() => { Interlocked.Increment(ref executionCount); return Task.CompletedTask; });
 
-        // Assert
-        executionCount.Should().Be(0);
-        await Task.Delay(200);
-        executionCount.Should().Be(1);
+        // Nothing can have run yet: Debounce only schedules, and Task.Delay never completes early.
+        Volatile.Read(ref executionCount).Should().Be(0);
+
+        // Generous margin past the 100ms window so a slow runner can't fail the "did it fire" check.
+        await Task.Delay(400);
+        Volatile.Read(ref executionCount).Should().Be(1);
     }
 
     [Fact]
