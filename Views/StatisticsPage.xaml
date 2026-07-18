@@ -113,6 +113,7 @@
                                        Label="{x:Static localization:AppResources.StatsKpiTopMood}"
                                        Value="{Binding MoodStats.TopEmotionText}"
                                        Caption="{Binding MoodStats.TopEmotionShareText}"
+                                       Sparkline="{Binding MoodStats.MoodSparkline}"
                                        AccentColor="{DynamicResource Theme_Coral}" />
                     <controls:StatTile Grid.Column="1"
                                        Label="{x:Static localization:AppResources.StatsKpiEntries}"
@@ -206,10 +207,12 @@
                     <controls:StatTile Grid.Column="0"
                                        Label="{x:Static localization:AppResources.StatsKpiDuration}"
                                        Value="{Binding SleepStats.AverageSleepDurationText}"
+                                       Sparkline="{Binding SleepStats.DurationSparkline}"
                                        AccentColor="{DynamicResource Theme_Amber}" />
                     <controls:StatTile Grid.Column="1"
                                        Label="{x:Static localization:AppResources.StatsKpiQuality}"
                                        Value="{Binding SleepStats.AverageSleepQualityText}"
+                                       Sparkline="{Binding SleepStats.QualitySparkline}"
                                        AccentColor="{DynamicResource Theme_Amber}" />
                 </Grid>
 

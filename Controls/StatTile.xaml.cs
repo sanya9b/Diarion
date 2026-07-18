@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 
@@ -55,6 +57,25 @@ public partial class StatTile : ContentView
         private set => SetValue(HasCaptionProperty, value);
     }
 
+    public static readonly BindableProperty SparklineProperty =
+        BindableProperty.Create(nameof(Sparkline), typeof(IEnumerable<double?>), typeof(StatTile), null,
+            propertyChanged: OnSparklineChanged);
+
+    public IEnumerable<double?>? Sparkline
+    {
+        get => (IEnumerable<double?>?)GetValue(SparklineProperty);
+        set => SetValue(SparklineProperty, value);
+    }
+
+    public static readonly BindableProperty HasSparklineProperty =
+        BindableProperty.Create(nameof(HasSparkline), typeof(bool), typeof(StatTile), false);
+
+    public bool HasSparkline
+    {
+        get => (bool)GetValue(HasSparklineProperty);
+        private set => SetValue(HasSparklineProperty, value);
+    }
+
     public StatTile()
     {
         InitializeComponent();
@@ -65,6 +86,15 @@ public partial class StatTile : ContentView
         if (bindable is StatTile tile)
         {
             tile.HasCaption = !string.IsNullOrWhiteSpace(newValue as string);
+        }
+    }
+
+    private static void OnSparklineChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        if (bindable is StatTile tile)
+        {
+            // Only show the sparkline when there is at least one real data point to plot.
+            tile.HasSparkline = newValue is IEnumerable<double?> values && values.Any(v => v.HasValue);
         }
     }
 }

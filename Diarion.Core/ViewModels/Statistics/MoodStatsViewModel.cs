@@ -50,6 +50,10 @@ public partial class MoodStatsViewModel : ObservableObject
     /// <summary>True when at least two days have logged mood, so a trend line is meaningful.</summary>
     public bool HasMoodTrend => MoodTrend.Count(p => p.HasData) >= 2;
 
+    /// <summary>Daily valence for the KPI-tile sparkline; null marks a day with no logged mood.</summary>
+    [ObservableProperty]
+    private System.Collections.ObjectModel.ObservableCollection<double?> _moodSparkline = new();
+
     public MoodStatsViewModel(IStatisticsService statisticsService, ICorrelationService correlationService)
     {
         _statisticsService = statisticsService;
@@ -99,6 +103,7 @@ public partial class MoodStatsViewModel : ObservableObject
                 TopEmotionShareText = string.Empty;
                 EntriesCountText = "0";
                 MoodTrend = new System.Collections.ObjectModel.ObservableCollection<MoodTrendPoint>();
+                MoodSparkline = new System.Collections.ObjectModel.ObservableCollection<double?>();
                 return;
             }
 
@@ -153,6 +158,8 @@ public partial class MoodStatsViewModel : ObservableObject
             TopEmotionShareText = topShare.ToString("P0", System.Globalization.CultureInfo.CurrentCulture);
 
             MoodTrend = new System.Collections.ObjectModel.ObservableCollection<MoodTrendPoint>(moodStats.DailyTrend);
+            MoodSparkline = new System.Collections.ObjectModel.ObservableCollection<double?>(
+                moodStats.DailyTrend.Select(p => p.HasData ? (double?)p.Valence : null));
 
             await LoadCorrelationsAsync(days);
         }

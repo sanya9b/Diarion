@@ -91,6 +91,37 @@ public class StatisticsViewModelsTests
 
         vm.MoodTrend.Should().HaveCount(3);
         vm.HasMoodTrend.Should().BeTrue(); // two days have data
+
+        // Sparkline mirrors the trend, with gaps mapped to null.
+        vm.MoodSparkline.Should().HaveCount(3);
+        vm.MoodSparkline.Should().Equal(new double?[] { 2, null, -2 });
+    }
+
+    [Fact]
+    public async Task SleepStats_LoadData_BuildsDurationAndQualitySparklines()
+    {
+        var today = DateTime.Today;
+        var statsMock = new Mock<IStatisticsService>();
+        statsMock.Setup(s => s.GetSleepStatisticsAsync(It.IsAny<int>()))
+            .ReturnsAsync(new SleepStatistics
+            {
+                AverageSleepDuration = TimeSpan.FromHours(7),
+                AverageSleepQuality = 8,
+                DailyData = new List<SleepDataPoint>
+                {
+                    new SleepDataPoint { Date = today.AddDays(-2), Duration = TimeSpan.FromHours(8), Quality = 9 },
+                    new SleepDataPoint { Date = today.AddDays(-1), Duration = TimeSpan.Zero, Quality = 0 }, // gap
+                    new SleepDataPoint { Date = today, Duration = TimeSpan.FromHours(6), Quality = 7 }
+                }
+            });
+
+        var vm = new SleepStatsViewModel(statsMock.Object);
+
+        await vm.LoadDataAsync(7);
+
+        vm.IsEmpty.Should().BeFalse();
+        vm.DurationSparkline.Should().Equal(new double?[] { 8, null, 6 });
+        vm.QualitySparkline.Should().Equal(new double?[] { 9, null, 7 });
     }
 
     [Fact]
