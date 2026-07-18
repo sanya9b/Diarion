@@ -96,7 +96,7 @@ public class BackupService : IBackupService
             // 2. Validate: it must be a real Diarion database that opens with THIS device's key.
             //    Rejects foreign/corrupt files and, by design, backups from another device.
             var password = _keyProvider.GetOrCreateKey();
-            if (!EncryptedLiteDatabaseFactory.IsValidEncryptedDatabase(tempImportPath, password, DatabaseConstants.EntriesCollection))
+            if (!EncryptedLiteDatabaseFactory.IsValidEncryptedDatabase(tempImportPath, password, DatabaseConstants.EntriesCollection, MigrationRunner.CurrentVersion))
             {
                 return false; // live DB untouched
             }
