@@ -30,7 +30,8 @@ public enum StatisticsTabOption
     General,
     Sleep,
     Productivity,
-    Finance
+    Finance,
+    Habits
 }
 
 public partial class StatisticsTabItem : ObservableObject
@@ -78,12 +79,16 @@ public partial class StatisticsViewModel : BaseViewModel
     private bool _isFinanceTabVisible;
 
     [ObservableProperty]
+    private bool _isHabitsTabVisible;
+
+    [ObservableProperty]
     private TimeRangeItem? _selectedTimeRange;
 
     public ViewModels.Statistics.MoodStatsViewModel MoodStats { get; }
     public ViewModels.Statistics.SleepStatsViewModel SleepStats { get; }
     public ViewModels.Statistics.ProductivityStatsViewModel ProductivityStats { get; }
     public ViewModels.Statistics.FinanceStatsViewModel FinanceStats { get; }
+    public ViewModels.Statistics.HabitStatsViewModel HabitStats { get; }
 
     public StatisticsViewModel(
         Diarion.Services.IStatisticsService statisticsService,
@@ -92,7 +97,8 @@ public partial class StatisticsViewModel : BaseViewModel
         ViewModels.Statistics.MoodStatsViewModel moodStats,
         ViewModels.Statistics.SleepStatsViewModel sleepStats,
         ViewModels.Statistics.ProductivityStatsViewModel productivityStats,
-        ViewModels.Statistics.FinanceStatsViewModel financeStats)
+        ViewModels.Statistics.FinanceStatsViewModel financeStats,
+        ViewModels.Statistics.HabitStatsViewModel habitStats)
     {
         _statisticsService = statisticsService;
         _diaryService = diaryService;
@@ -101,7 +107,8 @@ public partial class StatisticsViewModel : BaseViewModel
         SleepStats = sleepStats;
         ProductivityStats = productivityStats;
         FinanceStats = financeStats;
-        
+        HabitStats = habitStats;
+
         Title = AppResources.StatisticsTitle;
         InitializeTabs();
         InitializeTimeRanges();
@@ -114,7 +121,8 @@ public partial class StatisticsViewModel : BaseViewModel
             new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, Icon = "😊", IsSelected = true },
             new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = AppResources.TabSleep, Icon = "😴" },
             new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = AppResources.TabProductivity, Icon = "✅" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Finance, DisplayName = AppResources.FinanceTitle ?? "Finance", Icon = "💸" }
+            new StatisticsTabItem { Option = StatisticsTabOption.Finance, DisplayName = AppResources.FinanceTitle ?? "Finance", Icon = "💸" },
+            new StatisticsTabItem { Option = StatisticsTabOption.Habits, DisplayName = AppResources.TabHabits, Icon = "🌱" }
         };
         SelectTab(Tabs[0]);
     }
@@ -135,6 +143,7 @@ public partial class StatisticsViewModel : BaseViewModel
         IsSleepTabVisible = item.Option == StatisticsTabOption.Sleep;
         IsProductivityTabVisible = item.Option == StatisticsTabOption.Productivity;
         IsFinanceTabVisible = item.Option == StatisticsTabOption.Finance;
+        IsHabitsTabVisible = item.Option == StatisticsTabOption.Habits;
         
         // Load data for the selected tab when switched
         _ = LoadStatisticsAsync();
@@ -196,6 +205,10 @@ public partial class StatisticsViewModel : BaseViewModel
             else if (IsFinanceTabVisible)
             {
                 await FinanceStats.LoadDataAsync(days);
+            }
+            else if (IsHabitsTabVisible)
+            {
+                await HabitStats.LoadDataAsync(days);
             }
         }
         finally

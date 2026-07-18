@@ -53,6 +53,15 @@ public class TodoStatistics
     public double CompletionPercentage => TotalCount == 0 ? 0 : (double)CompletedCount / TotalCount;
 }
 
+/// <summary>Completion history for a single good habit over a date window, for strength/streak/heatmap.</summary>
+public class HabitCompletionHistory
+{
+    public Guid HabitId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public HashSet<DateTime> CompletedDates { get; set; } = new();
+}
+
 public class CategoryStatItem
 {
     public string Category { get; set; } = string.Empty;

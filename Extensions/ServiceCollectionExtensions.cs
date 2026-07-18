@@ -68,6 +68,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<SleepStatsViewModel>();
         services.AddTransient<ProductivityStatsViewModel>();
         services.AddTransient<FinanceStatsViewModel>();
+        services.AddTransient<HabitStatsViewModel>();
         services.AddTransient<StatisticsViewModel>();
         
         services.AddTransient<WishlistViewModel>();

@@ -756,6 +756,18 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string TabHabits {
+            get {
+                return ResourceManager.GetString("TabHabits", resourceCulture);
+            }
+        }
+
+        public static string StatsHabitStrength {
+            get {
+                return ResourceManager.GetString("StatsHabitStrength", resourceCulture);
+            }
+        }
+
         public static string StatsMoodTrend {
             get {
                 return ResourceManager.GetString("StatsMoodTrend", resourceCulture);

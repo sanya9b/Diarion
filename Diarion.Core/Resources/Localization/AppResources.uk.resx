@@ -184,6 +184,12 @@
   <data name="TabProductivity" xml:space="preserve">
     <value>Продуктивність</value>
   </data>
+  <data name="TabHabits" xml:space="preserve">
+    <value>Звички</value>
+  </data>
+  <data name="StatsHabitStrength" xml:space="preserve">
+    <value>Сила</value>
+  </data>
   <data name="NoTasks" xml:space="preserve">
     <value>Немає завдань на цей день</value>
   </data>
