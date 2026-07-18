@@ -560,7 +560,7 @@
     <value>Статистика</value>
   </data>
   <data name="StatisticsTitle" xml:space="preserve">
-    <value>Дашборд</value>
+    <value>Dashboard</value>
   </data>
   <data name="StatsSleepDuration" xml:space="preserve">
     <value>Середня тривалість:</value>
