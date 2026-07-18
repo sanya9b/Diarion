@@ -412,4 +412,14 @@
         <Setter Property="IconColor" Value="{DynamicResource Theme_Gray200_White}" />
     </Style>
 
+    <!-- Reusable statistics card. Shadow is applied inline per card to avoid sharing a
+         single Shadow instance across elements (a known MAUI pitfall). -->
+    <Style TargetType="Border" x:Key="StatCard">
+        <Setter Property="StrokeShape" Value="RoundRectangle 24" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Black}" />
+        <Setter Property="Padding" Value="16" />
+    </Style>
+
 </ResourceDictionary>

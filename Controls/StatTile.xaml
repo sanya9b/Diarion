@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Diarion.Controls.StatTile"
+             x:Name="Root">
+    <Border StrokeShape="RoundRectangle 20"
+            StrokeThickness="1"
+            Stroke="{DynamicResource Theme_Dust_Ocean}"
+            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+            Padding="14,12">
+        <VerticalStackLayout Spacing="3">
+            <Label Text="{Binding Label, Source={x:Reference Root}}"
+                   FontSize="11"
+                   CharacterSpacing="1"
+                   FontAttributes="Bold"
+                   TextTransform="Uppercase"
+                   LineBreakMode="TailTruncation"
+                   TextColor="{Binding AccentColor, Source={x:Reference Root}}" />
+
+            <Label Text="{Binding Value, Source={x:Reference Root}}"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   LineBreakMode="TailTruncation"
+                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+            <Label Text="{Binding Caption, Source={x:Reference Root}}"
+                   FontSize="11"
+                   LineBreakMode="TailTruncation"
+                   IsVisible="{Binding HasCaption, Source={x:Reference Root}}"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

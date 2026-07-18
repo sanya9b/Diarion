@@ -577,6 +577,27 @@
   <data name="StatsTasksCompleted" xml:space="preserve">
     <value>Tasks Completed:</value>
   </data>
+  <data name="StatsKpiTopMood" xml:space="preserve">
+    <value>Top mood</value>
+  </data>
+  <data name="StatsKpiEntries" xml:space="preserve">
+    <value>Entries</value>
+  </data>
+  <data name="StatsKpiDuration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="StatsKpiQuality" xml:space="preserve">
+    <value>Quality</value>
+  </data>
+  <data name="StatsKpiTasks" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="StatsKpiCompletion" xml:space="preserve">
+    <value>Completion</value>
+  </data>
+  <data name="StatsKpiBalance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Week</value>
   </data>

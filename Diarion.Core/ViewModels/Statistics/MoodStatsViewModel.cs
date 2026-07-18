@@ -26,6 +26,14 @@ public partial class MoodStatsViewModel : ObservableObject
     [ObservableProperty]
     private string _topEmotionText = string.Empty;
 
+    /// <summary>Share of the most frequent emotion (e.g. "42%"), for the KPI tile.</summary>
+    [ObservableProperty]
+    private string _topEmotionShareText = string.Empty;
+
+    /// <summary>Total number of logged emotion entries in the period, for the KPI tile.</summary>
+    [ObservableProperty]
+    private string _entriesCountText = "0";
+
     [ObservableProperty]
     private System.Collections.ObjectModel.ObservableCollection<EmotionChartItem> _emotionChartData = new();
 
@@ -81,10 +89,13 @@ public partial class MoodStatsViewModel : ObservableObject
                 EmotionChartData.Clear();
                 Correlations = new System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem>();
                 TopEmotionText = AppResources.EmotionNone;
+                TopEmotionShareText = string.Empty;
+                EntriesCountText = "0";
                 return;
             }
 
             IsEmpty = false;
+            EntriesCountText = totalEmotions.ToString(System.Globalization.CultureInfo.CurrentCulture);
             TopEmotionText = moodStats.TopEmotion switch
             {
                 Emotion.Happy => AppResources.EmotionHappy,
@@ -129,6 +140,9 @@ public partial class MoodStatsViewModel : ObservableObject
                 }
             }
             EmotionChartData = newEmotionData;
+
+            var topShare = newEmotionData.Count > 0 ? newEmotionData[0].Percentage : 0;
+            TopEmotionShareText = topShare.ToString("P0", System.Globalization.CultureInfo.CurrentCulture);
 
             await LoadCorrelationsAsync(days);
         }
