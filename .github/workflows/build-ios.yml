@@ -22,8 +22,10 @@ jobs:
           exit 1
         fi
         sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+        # DEVELOPER_DIR points at .../Contents/Developer, but MD_APPLE_SDK_ROOT
+        # must point at the .app bundle root itself (not the Developer subfolder).
         echo "DEVELOPER_DIR=$XCODE_PATH/Contents/Developer" >> $GITHUB_ENV
-        echo "MD_APPLE_SDK_ROOT=$XCODE_PATH/Contents/Developer" >> $GITHUB_ENV
+        echo "MD_APPLE_SDK_ROOT=$XCODE_PATH" >> $GITHUB_ENV
         xcodebuild -version
 
     - name: Setup .NET
