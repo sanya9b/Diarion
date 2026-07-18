@@ -768,6 +768,12 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string StatsPeriod {
+            get {
+                return ResourceManager.GetString("StatsPeriod", resourceCulture);
+            }
+        }
+
         public static string TimeRangeWeek {
             get {
                 return ResourceManager.GetString("TimeRangeWeek", resourceCulture);

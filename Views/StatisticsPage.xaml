@@ -14,88 +14,94 @@
     <ScrollView>
         <VerticalStackLayout Padding="24,18,24,32" Spacing="20">
 
-            <Grid Margin="0,0,0,8">
-                <!-- Заголовок -->
-                <Label Text="{Binding Title}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            <!-- Header: title + streak pill -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,4" VerticalOptions="Center">
+                <Label Grid.Column="0" Text="{Binding Title}" FontSize="26" FontAttributes="Bold"
+                       VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
-                <!-- Streak Badge -->
-                <Border WidthRequest="56" HeightRequest="56" HorizontalOptions="End" VerticalOptions="Center"
-                        IsVisible="{Binding IsStreakVisible}"
+                <Border Grid.Column="1" IsVisible="{Binding IsStreakVisible}" VerticalOptions="Center"
                         StrokeThickness="1.5" Stroke="{DynamicResource Theme_Coral}"
-                        BackgroundColor="Transparent" StrokeShape="RoundRectangle 16">
-                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="-2" Margin="0,4,0,0">
-                        <Label Text="🔥" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center" />
-                        <Label Text="{Binding CurrentStreak}" FontSize="16" FontAttributes="Bold"
-                               TextColor="{DynamicResource Theme_Midnight_Snow}"
-                               HorizontalOptions="Center" VerticalOptions="Center" />
-                    </VerticalStackLayout>
+                        BackgroundColor="Transparent" StrokeShape="RoundRectangle 18" Padding="12,6">
+                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                        <Label Text="🔥" FontSize="16" VerticalOptions="Center" />
+                        <Label Text="{Binding CurrentStreak}" FontSize="15" FontAttributes="Bold"
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
                 </Border>
             </Grid>
 
-            <!-- Tab Selector -->
-            <CollectionView ItemsSource="{Binding Tabs}" ItemsLayout="HorizontalList" HeightRequest="40" Margin="0,0,0,4" HorizontalScrollBarVisibility="Never">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="viewmodels:StatisticsTabItem">
-                        <Border Padding="16,0" Margin="0,0,8,0" HeightRequest="36" StrokeShape="RoundRectangle 18"
-                                Stroke="{DynamicResource Theme_Dust_Ocean}">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
-                                    <Setter Property="BackgroundColor" Value="Transparent" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:StatisticsViewModel}}, Path=SelectTabCommand}" CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
-                            <Label Text="{Binding DisplayName}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="14" FontAttributes="Bold">
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
-                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+            <!-- Tab selector: segmented pill-bar with icons inside a track -->
+            <Border StrokeShape="RoundRectangle 22" StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    Padding="4" Margin="0,4,0,0" HorizontalOptions="Fill">
+                <CollectionView ItemsSource="{Binding Tabs}" ItemsLayout="HorizontalList" HeightRequest="38" HorizontalScrollBarVisibility="Never">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:StatisticsTabItem">
+                            <Border Padding="14,0" Margin="1,0" HeightRequest="38" StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 19" BackgroundColor="Transparent">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
                                     </DataTrigger>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
-                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                    </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                                </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:StatisticsViewModel}}, Path=SelectTabCommand}" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="6" VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Label Text="{Binding Icon}" FontSize="15" VerticalOptions="Center" />
+                                    <Label Text="{Binding DisplayName}" VerticalOptions="Center" FontSize="14" FontAttributes="Bold">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </HorizontalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
 
-            <!-- Фільтр періодів -->
-            <CollectionView ItemsSource="{Binding TimeRanges}" ItemsLayout="HorizontalList" HeightRequest="40" Margin="0,0,0,4" HorizontalScrollBarVisibility="Never">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="viewmodels:TimeRangeItem">
-                        <Border Padding="16,0" Margin="0,0,8,0" HeightRequest="36" StrokeShape="RoundRectangle 18"
-                                Stroke="{DynamicResource Theme_Dust_Ocean}">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Dust_Ocean}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
-                                    <Setter Property="BackgroundColor" Value="Transparent" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:StatisticsViewModel}}, Path=SelectTimeRangeCommand}" CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
-                            <Label Text="{Binding DisplayName}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="14" FontAttributes="Bold">
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
-                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+            <!-- Period filter: leading label + compact chips (same Coral selection as tabs) -->
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="0,4,0,0" VerticalOptions="Center">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.StatsPeriod}"
+                       FontSize="11" FontAttributes="Bold" CharacterSpacing="1" TextTransform="Uppercase"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                <CollectionView Grid.Column="1" ItemsSource="{Binding TimeRanges}" ItemsLayout="HorizontalList" HeightRequest="34" HorizontalScrollBarVisibility="Never">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:TimeRangeItem">
+                            <Border Padding="12,0" Margin="0,0,6,0" HeightRequest="32" StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 16" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                    BackgroundColor="Transparent">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                                     </DataTrigger>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
-                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                    </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                                </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:StatisticsViewModel}}, Path=SelectTimeRangeCommand}" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="{Binding DisplayName}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
 
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{DynamicResource Theme_Ocean_Dust}" />
 

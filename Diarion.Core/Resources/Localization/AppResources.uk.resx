@@ -604,6 +604,9 @@
   <data name="StatsYearInPixels" xml:space="preserve">
     <value>Рік у пікселях</value>
   </data>
+  <data name="StatsPeriod" xml:space="preserve">
+    <value>Період</value>
+  </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Тиждень</value>
   </data>
