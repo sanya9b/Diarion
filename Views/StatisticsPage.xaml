@@ -120,6 +120,23 @@
                                        AccentColor="{DynamicResource Theme_Coral}" />
                 </Grid>
 
+                <!-- Mood trend over time -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasMoodTrend}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.StatsMoodTrend}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
+                        <controls:LineChart HeightRequest="140"
+                                            Items="{Binding MoodStats.MoodTrend}"
+                                            MinValue="-2" MaxValue="2"
+                                            LineColor="{DynamicResource Theme_Coral}"
+                                            SurfaceColor="{DynamicResource Theme_Snow_Black}"
+                                            TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                            MutedColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Mood distribution card -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.IsNotEmpty}">
                     <Border.Shadow>

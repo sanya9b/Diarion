@@ -756,6 +756,12 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string StatsMoodTrend {
+            get {
+                return ResourceManager.GetString("StatsMoodTrend", resourceCulture);
+            }
+        }
+
         public static string TimeRangeWeek {
             get {
                 return ResourceManager.GetString("TimeRangeWeek", resourceCulture);

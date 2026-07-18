@@ -124,10 +124,25 @@ public class StatisticsService : IStatisticsService
             }
         }
 
+        // Daily mood valence series (gap-filled so the trend spans exactly N days).
+        var valenceByDate = entriesList
+            .Where(e => e.Emotion != Emotion.None)
+            .GroupBy(e => e.Date.Date)
+            .ToDictionary(g => g.Key, g => g.Average(e => e.Emotion.ToValence()));
+
+        var dailyTrend = new List<MoodTrendPoint>();
+        for (var d = startDate.Date; d <= DateTime.Today; d = d.AddDays(1))
+        {
+            dailyTrend.Add(valenceByDate.TryGetValue(d, out var v)
+                ? new MoodTrendPoint { Date = d, Valence = v, HasData = true }
+                : new MoodTrendPoint { Date = d, Valence = 0, HasData = false });
+        }
+
         return new MoodStatistics
         {
             EmotionCounts = counts,
-            TopEmotion = topEmotion
+            TopEmotion = topEmotion,
+            DailyTrend = dailyTrend
         };
     }
 

@@ -43,6 +43,13 @@ public partial class MoodStatsViewModel : ObservableObject
 
     public bool HasCorrelations => Correlations.Count > 0;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasMoodTrend))]
+    private System.Collections.ObjectModel.ObservableCollection<MoodTrendPoint> _moodTrend = new();
+
+    /// <summary>True when at least two days have logged mood, so a trend line is meaningful.</summary>
+    public bool HasMoodTrend => MoodTrend.Count(p => p.HasData) >= 2;
+
     public MoodStatsViewModel(IStatisticsService statisticsService, ICorrelationService correlationService)
     {
         _statisticsService = statisticsService;
@@ -91,6 +98,7 @@ public partial class MoodStatsViewModel : ObservableObject
                 TopEmotionText = AppResources.EmotionNone;
                 TopEmotionShareText = string.Empty;
                 EntriesCountText = "0";
+                MoodTrend = new System.Collections.ObjectModel.ObservableCollection<MoodTrendPoint>();
                 return;
             }
 
@@ -143,6 +151,8 @@ public partial class MoodStatsViewModel : ObservableObject
 
             var topShare = newEmotionData.Count > 0 ? newEmotionData[0].Percentage : 0;
             TopEmotionShareText = topShare.ToString("P0", System.Globalization.CultureInfo.CurrentCulture);
+
+            MoodTrend = new System.Collections.ObjectModel.ObservableCollection<MoodTrendPoint>(moodStats.DailyTrend);
 
             await LoadCorrelationsAsync(days);
         }

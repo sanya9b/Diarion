@@ -92,6 +92,40 @@ public class StatisticsServiceTests
     }
 
     [Fact]
+    public async Task GetMoodStatisticsAsync_BuildsGapFilledDailyTrend()
+    {
+        // Arrange
+        var mockDiaryService = new Mock<IDiaryService>();
+        var today = DateTime.Today;
+
+        var mockData = new List<DiaryEntryStatsDto>
+        {
+            // Two emotions the same day -> averaged valence (2 + 1) / 2 = 1.5
+            new DiaryEntryStatsDto { Date = today.AddDays(-3), Emotion = Emotion.Happy },
+            new DiaryEntryStatsDto { Date = today.AddDays(-3), Emotion = Emotion.Calm },
+            new DiaryEntryStatsDto { Date = today.AddDays(-1), Emotion = Emotion.Sad },
+            new DiaryEntryStatsDto { Date = today, Emotion = Emotion.None } // no mood logged today
+        };
+
+        mockDiaryService.Setup(s => s.GetDiaryEntriesForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(mockData);
+
+        var statsService = new StatisticsService(
+            mockDiaryService.Object, new Mock<ITodoService>().Object, new Mock<IFinanceService>().Object);
+
+        // Act
+        var result = await statsService.GetMoodStatisticsAsync(7);
+
+        // Assert
+        result.DailyTrend.Should().HaveCount(7); // exactly N days, gap-filled
+        result.DailyTrend.Count(p => p.HasData).Should().Be(2);
+
+        result.DailyTrend.Single(p => p.Date == today.AddDays(-3)).Valence.Should().Be(1.5);
+        result.DailyTrend.Single(p => p.Date == today.AddDays(-1)).Valence.Should().Be(-2);
+        result.DailyTrend.Single(p => p.Date == today).HasData.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task GetTodoStatisticsAsync_ShouldCalculateCorrectly()
     {
         // Arrange

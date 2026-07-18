@@ -598,6 +598,9 @@
   <data name="StatsKpiBalance" xml:space="preserve">
     <value>Balance</value>
   </data>
+  <data name="StatsMoodTrend" xml:space="preserve">
+    <value>Mood trend</value>
+  </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Week</value>
   </data>

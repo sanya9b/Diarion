@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Diarion.Models;
@@ -60,6 +61,36 @@ public class StatisticsViewModelsTests
         vm.IsEmpty.Should().BeTrue();
         vm.EntriesCountText.Should().Be("0");
         vm.TopEmotionShareText.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task MoodStats_LoadData_PopulatesTrendAndHasMoodTrend()
+    {
+        var today = DateTime.Today;
+        var statsMock = new Mock<IStatisticsService>();
+        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<int>()))
+            .ReturnsAsync(new MoodStatistics
+            {
+                TopEmotion = Emotion.Happy,
+                EmotionCounts = new Dictionary<Emotion, int> { { Emotion.Happy, 2 }, { Emotion.Sad, 1 } },
+                DailyTrend = new List<MoodTrendPoint>
+                {
+                    new MoodTrendPoint { Date = today.AddDays(-2), Valence = 2, HasData = true },
+                    new MoodTrendPoint { Date = today.AddDays(-1), Valence = 0, HasData = false },
+                    new MoodTrendPoint { Date = today, Valence = -2, HasData = true }
+                }
+            });
+
+        var correlationMock = new Mock<ICorrelationService>();
+        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<int>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<MoodCorrelation>());
+
+        var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
+
+        await vm.LoadDataAsync(7);
+
+        vm.MoodTrend.Should().HaveCount(3);
+        vm.HasMoodTrend.Should().BeTrue(); // two days have data
     }
 
     [Fact]

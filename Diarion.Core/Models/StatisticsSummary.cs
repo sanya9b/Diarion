@@ -17,10 +17,22 @@ public class SleepStatistics
     public List<SleepDataPoint> DailyData { get; set; } = new();
 }
 
+/// <summary>A single day on the mood trend line. <see cref="HasData"/> is false for days with no
+/// logged emotion, so the chart can break the line across gaps instead of inventing a value.</summary>
+public class MoodTrendPoint
+{
+    public DateTime Date { get; set; }
+    public double Valence { get; set; }
+    public bool HasData { get; set; }
+}
+
 public class MoodStatistics
 {
     public Dictionary<Emotion, int> EmotionCounts { get; set; } = new();
     public Emotion TopEmotion { get; set; } = Emotion.None;
+
+    /// <summary>Daily average mood valence (-2..+2), one point per calendar day in the window.</summary>
+    public List<MoodTrendPoint> DailyTrend { get; set; } = new();
 }
 
 public class TodoStatistics
