@@ -38,7 +38,7 @@
         <!-- Main Content -->
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
             
-            <VerticalStackLayout Grid.Row="0" Padding="24,10,24,10" Spacing="16">
+            <VerticalStackLayout Grid.Row="0" Padding="24,10,24,10" Spacing="12">
                 <!-- Search Bar -->
                 <Border StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
@@ -53,6 +53,39 @@
                                SearchCommand="{Binding PerformSearchCommand}"
                                BackgroundColor="Transparent" />
                 </Border>
+
+                <!-- Filter chips: All / Inbox / #tags -->
+                <CollectionView ItemsSource="{Binding Filters}" ItemsLayout="HorizontalList"
+                                HeightRequest="34" IsVisible="{Binding ShowFilters}"
+                                HorizontalScrollBarVisibility="Never">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:NoteFilterChip">
+                            <Border Padding="12,0" Margin="0,0,6,0" HeightRequest="32" StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 16" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                    BackgroundColor="Transparent">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectFilterCommand}" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="{Binding DisplayName}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </VerticalStackLayout>
 
             <!-- Notes List -->
@@ -105,6 +138,20 @@
                                     <VerticalStackLayout Spacing="6">
                                         <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
                                         <Label Text="{Binding Content}" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="2" />
+
+                                        <!-- Tag chips -->
+                                        <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding Tags}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <Border Margin="0,4,6,0" Padding="8,2" StrokeThickness="1"
+                                                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                                            BackgroundColor="Transparent" StrokeShape="RoundRectangle 10">
+                                                        <Label Text="{Binding ., StringFormat='#{0}'}" FontSize="11" TextColor="{DynamicResource Theme_Amber}" />
+                                                    </Border>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </FlexLayout>
+
                                         <Label Text="{Binding UpdatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="End" />
                                     </VerticalStackLayout>
                                 </Border>

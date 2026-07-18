@@ -774,6 +774,18 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string NotesFilterAll {
+            get {
+                return ResourceManager.GetString("NotesFilterAll", resourceCulture);
+            }
+        }
+
+        public static string NotesFilterInbox {
+            get {
+                return ResourceManager.GetString("NotesFilterInbox", resourceCulture);
+            }
+        }
+
         public static string TimeRangeWeek {
             get {
                 return ResourceManager.GetString("TimeRangeWeek", resourceCulture);

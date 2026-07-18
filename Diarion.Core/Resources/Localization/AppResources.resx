@@ -769,4 +769,10 @@
   <data name="NotesBacklinks" xml:space="preserve">
     <value>Backlinks</value>
   </data>
+  <data name="NotesFilterAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="NotesFilterInbox" xml:space="preserve">
+    <value>Inbox</value>
+  </data>
 </root>

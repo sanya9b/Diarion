@@ -781,6 +781,12 @@
   <data name="NotesBacklinks" xml:space="preserve">
     <value>Зворотні посилання</value>
   </data>
+  <data name="NotesFilterAll" xml:space="preserve">
+    <value>Всі</value>
+  </data>
+  <data name="NotesFilterInbox" xml:space="preserve">
+    <value>Вхідні</value>
+  </data>
   <data name="AppLockTitle" xml:space="preserve">
     <value>Блокування застосунку</value>
   </data>
