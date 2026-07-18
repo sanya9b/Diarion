@@ -16,17 +16,26 @@ jobs:
       run: |
         echo "Installed Xcode versions:"
         ls -d /Applications/Xcode*.app || true
-        XCODE_PATH=$(ls -d /Applications/Xcode_26.6*.app 2>/dev/null | head -n 1)
+        # Prefer the canonical alias (Xcode_26.6.app). The patch-suffixed bundle
+        # (Xcode_26.6.0.app) on this runner is missing the macOS SDK that actool needs.
+        if [ -d /Applications/Xcode_26.6.app ]; then
+          XCODE_PATH=/Applications/Xcode_26.6.app
+        else
+          XCODE_PATH=$(ls -d /Applications/Xcode_26.6*.app 2>/dev/null | head -n 1)
+        fi
         if [ -z "$XCODE_PATH" ]; then
           echo "::error::Xcode 26.6 is not installed on this runner. See the list above and pin a matching .NET iOS workload instead."
           exit 1
         fi
+        echo "Using Xcode at: $XCODE_PATH"
         sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
         # DEVELOPER_DIR points at .../Contents/Developer, but MD_APPLE_SDK_ROOT
         # must point at the .app bundle root itself (not the Developer subfolder).
         echo "DEVELOPER_DIR=$XCODE_PATH/Contents/Developer" >> $GITHUB_ENV
         echo "MD_APPLE_SDK_ROOT=$XCODE_PATH" >> $GITHUB_ENV
         xcodebuild -version
+        # Fail early (with a clear message) if the macOS SDK actool relies on is missing.
+        xcrun --sdk macosx --show-sdk-path
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
