@@ -190,6 +190,30 @@
   <data name="StatsHabitStrength" xml:space="preserve">
     <value>Strength</value>
   </data>
+  <data name="HabitEditorTitle" xml:space="preserve">
+    <value>Habit</value>
+  </data>
+  <data name="HabitNamePlaceholder" xml:space="preserve">
+    <value>Habit name</value>
+  </data>
+  <data name="HabitScheduleLabel" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="HabitScheduleDaily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="HabitScheduleSpecificDays" xml:space="preserve">
+    <value>Specific days</value>
+  </data>
+  <data name="HabitEditorDelete" xml:space="preserve">
+    <value>Delete habit</value>
+  </data>
+  <data name="HabitEditorNameRequired" xml:space="preserve">
+    <value>Please enter a habit name.</value>
+  </data>
+  <data name="HabitEditorDaysRequired" xml:space="preserve">
+    <value>Pick at least one day.</value>
+  </data>
   <data name="NoTasks" xml:space="preserve">
     <value>No tasks for this day</value>
   </data>

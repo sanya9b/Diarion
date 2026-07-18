@@ -75,7 +75,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<FinanceViewModel>();
         services.AddTransient<NotesViewModel>();
         services.AddTransient<NoteDetailViewModel>();
-        
+        services.AddTransient<HabitEditorViewModel>();
+
         return services;
     }
 
@@ -97,7 +98,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<FinancePage>();
         services.AddTransient<NotesPage>();
         services.AddTransient<NoteDetailPage>();
-        
+        services.AddTransient<HabitEditorPage>();
+
         return services;
     }
 }

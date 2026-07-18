@@ -68,5 +68,28 @@ public class HabitServiceTests : IDisposable
         histories.Should().NotContain(x => x.Name == "Future");
     }
 
+    [Fact]
+    public async Task GetActiveHabitsForDateAsync_ExcludesHabitsNotScheduledForThatWeekday()
+    {
+        // Most recent Monday on/before today, and the following day (Tuesday).
+        var monday = DateTime.Today;
+        while (monday.DayOfWeek != DayOfWeek.Monday) monday = monday.AddDays(-1);
+        var tuesday = monday.AddDays(1);
+
+        await _service.AddHabitDefinitionAsync(new HabitDefinition
+        {
+            Id = Guid.NewGuid(),
+            Name = "Gym",
+            CreatedAt = monday.AddDays(-7),
+            Schedule = new HabitSchedule { Type = HabitScheduleType.SpecificDays, DaysOfWeek = new() { (int)DayOfWeek.Monday } }
+        });
+
+        var onMonday = await _service.GetActiveHabitsForDateAsync(monday);
+        var onTuesday = await _service.GetActiveHabitsForDateAsync(tuesday);
+
+        onMonday.Should().Contain(h => h.Name == "Gym");
+        onTuesday.Should().NotContain(h => h.Name == "Gym");
+    }
+
     public void Dispose() => _db.Dispose();
 }

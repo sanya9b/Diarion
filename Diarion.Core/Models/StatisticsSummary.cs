@@ -59,6 +59,7 @@ public class HabitCompletionHistory
     public Guid HabitId { get; set; }
     public string Name { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public HabitSchedule Schedule { get; set; } = new();
     public HashSet<DateTime> CompletedDates { get; set; } = new();
 }
 

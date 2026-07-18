@@ -37,11 +37,22 @@
                                                        DropCommand="{Binding BindingContext.HabitsSection.ReorderHabitsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                        DropCommandParameter="{Binding .}" />
                             </ContentView.GestureRecognizers>
-                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8" HeightRequest="32">
+                            <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="8" HeightRequest="32">
                                 <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                                 <Label Grid.Column="1" Text="{Binding Name}" VerticalOptions="Center" FontSize="12" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                
+
                                 <Grid Grid.Column="2"
+                                      WidthRequest="20" HeightRequest="20"
+                                      VerticalOptions="Center"
+                                      BackgroundColor="Transparent"
+                                      IsVisible="{Binding BindingContext.HabitsSection.IsEditHabitsMode, Source={RelativeSource AncestorType={x:Type ContentPage}}}">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.HabitsSection.EditHabitCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" CommandParameter="{Binding .}" />
+                                    </Grid.GestureRecognizers>
+                                    <Label Text="✎" FontSize="13" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                </Grid>
+
+                                <Grid Grid.Column="3"
                                       WidthRequest="20" HeightRequest="20"
                                       VerticalOptions="Center"
                                       BackgroundColor="Transparent"

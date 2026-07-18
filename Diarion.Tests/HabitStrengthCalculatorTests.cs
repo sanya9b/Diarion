@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Diarion.Models;
 using Diarion.Services;
 using FluentAssertions;
 using Xunit;
@@ -8,7 +9,7 @@ namespace Diarion.Tests;
 
 public class HabitStrengthCalculatorTests
 {
-    private static readonly DateTime Today = new(2026, 7, 1);
+    private static readonly DateTime Today = new(2026, 7, 1); // Wednesday
 
     [Fact]
     public void Strength_EveryDayDone_OverFullWindow_IsHigh()
@@ -62,5 +63,37 @@ public class HabitStrengthCalculatorTests
     {
         var set = new HashSet<DateTime> { Today.AddDays(-3), Today.AddDays(-4) };
         HabitStrengthCalculator.CurrentStreak(set, Today).Should().Be(0);
+    }
+
+    [Fact]
+    public void Strength_SpecificDays_AllScheduledDone_IsHigh_NotPenalizedForOtherDays()
+    {
+        var schedule = new HabitSchedule { Type = HabitScheduleType.SpecificDays, DaysOfWeek = new() { 1, 3, 5 } };
+        var from = Today.AddDays(-179);
+
+        var set = new HashSet<DateTime>();
+        for (var d = from; d <= Today; d = d.AddDays(1))
+        {
+            if (schedule.IsScheduledOn(d)) set.Add(d); // only scheduled days done
+        }
+
+        // ~77 scheduled EMA steps over 180 days converge to ~0.83 — well above the ~0.43 a
+        // schedule-blind calc would give (which would treat every skipped Tue/Thu/weekend as a miss).
+        HabitStrengthCalculator.Strength(set, from, Today, schedule).Should().BeGreaterThan(75);
+    }
+
+    [Fact]
+    public void CurrentStreak_SpecificDays_WalksScheduledDaysOnly()
+    {
+        // Mon/Wed/Fri; the last three scheduled days on/before Wed 2026-07-01 are Jul 1, Jun 29, Jun 26.
+        var schedule = new HabitSchedule { Type = HabitScheduleType.SpecificDays, DaysOfWeek = new() { 1, 3, 5 } };
+        var set = new HashSet<DateTime>
+        {
+            new(2026, 7, 1),  // Wed
+            new(2026, 6, 29), // Mon
+            new(2026, 6, 26)  // Fri
+        };
+
+        HabitStrengthCalculator.CurrentStreak(set, Today, schedule).Should().Be(3);
     }
 }

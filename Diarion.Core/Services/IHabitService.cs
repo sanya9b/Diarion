@@ -16,6 +16,8 @@ public interface IHabitService
     Task<List<HabitCompletionHistory>> GetHabitCompletionsAsync(DateTime start, DateTime end);
 
     Task AddHabitDefinitionAsync(HabitDefinition habit);
+    Task<HabitDefinition?> GetHabitDefinitionByIdAsync(Guid id);
+    Task UpdateHabitDefinitionAsync(HabitDefinition habit);
     Task DeleteHabitDefinitionAsync(Guid id, DateTime deleteDate);
     Task UpdateHabitDefinitionsOrderAsync(List<Guid> orderedIds);
     

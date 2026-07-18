@@ -28,6 +28,9 @@ public class HabitService : IHabitService
             var dateOnly = date.Date;
             var defs = HabitsCollection.Query()
                 .Where(x => x.CreatedAt <= dateOnly && (x.DeletedAt == null || x.DeletedAt > dateOnly))
+                .ToList()
+                // Only surface habits scheduled for this weekday (IsScheduledOn isn't LiteDB-queryable).
+                .Where(x => x.IsScheduledOn(dateOnly))
                 .ToList();
 
             // Built-in default habits are re-localized to the current UI language here so they
@@ -70,6 +73,7 @@ public class HabitService : IHabitService
                     HabitId = d.Id,
                     Name = name,
                     CreatedAt = d.CreatedAt.Date,
+                    Schedule = d.Schedule ?? new HabitSchedule(),
                     CompletedDates = new HashSet<DateTime>()
                 };
                 byId[d.Id] = hist;
@@ -96,6 +100,16 @@ public class HabitService : IHabitService
     public Task AddHabitDefinitionAsync(HabitDefinition habit)
     {
         return Task.Run(() => HabitsCollection.Insert(habit));
+    }
+
+    public Task<HabitDefinition?> GetHabitDefinitionByIdAsync(Guid id)
+    {
+        return Task.Run(() => (HabitDefinition?)HabitsCollection.FindById(id));
+    }
+
+    public Task UpdateHabitDefinitionAsync(HabitDefinition habit)
+    {
+        return Task.Run(() => HabitsCollection.Update(habit));
     }
 
     public Task DeleteHabitDefinitionAsync(Guid id, DateTime deleteDate)

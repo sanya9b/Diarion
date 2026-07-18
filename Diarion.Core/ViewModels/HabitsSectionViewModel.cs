@@ -13,7 +13,8 @@ public partial class HabitsSectionViewModel : ObservableObject
     private readonly IHabitService _habitService;
     private readonly IDialogService _dialogService;
     private readonly CalendarSectionViewModel _calendarSection;
-    
+    private readonly INavigationService _navigationService;
+
     [ObservableProperty]
     private DiaryEntryViewModel? _entry;
 
@@ -25,11 +26,13 @@ public partial class HabitsSectionViewModel : ObservableObject
     public HabitsSectionViewModel(
         IHabitService habitService,
         IDialogService dialogService,
-        CalendarSectionViewModel calendarSection)
+        CalendarSectionViewModel calendarSection,
+        INavigationService navigationService)
     {
         _habitService = habitService;
         _dialogService = dialogService;
         _calendarSection = calendarSection;
+        _navigationService = navigationService;
     }
 
     [RelayCommand]
@@ -73,20 +76,20 @@ public partial class HabitsSectionViewModel : ObservableObject
     [RelayCommand]
     public async Task AddHabitAsync()
     {
-        string result = await _dialogService.ShowPromptAsync(
-            Diarion.Resources.Localization.AppResources.AddHabitPromptTitle,
-            Diarion.Resources.Localization.AppResources.AddHabitPromptMessage);
-            
-        if (!string.IsNullOrWhiteSpace(result))
+        // Opens the editor for a new habit (name + schedule). The daily section refreshes on return
+        // because MainPage reloads the day in OnAppearing.
+        await _navigationService.NavigateToAsync("HabitEditor");
+    }
+
+    [RelayCommand]
+    public async Task EditHabitAsync(HabitItemViewModel item)
+    {
+        if (item == null) return;
+
+        await _navigationService.NavigateToAsync("HabitEditor", new System.Collections.Generic.Dictionary<string, object>
         {
-            var def = new HabitDefinition { Name = result.Trim(), CreatedAt = _calendarSection.GetSelectedDate() };
-            await _habitService.AddHabitDefinitionAsync(def);
-            
-            if (Entry != null)
-            {
-                Entry.Habits.Add(new HabitItemViewModel(new HabitItem { HabitId = def.Id, Name = def.Name }));
-            }
-        }
+            { "HabitId", item.HabitId.ToString() }
+        });
     }
 
     [RelayCommand]

@@ -768,6 +768,30 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string HabitEditorTitle {
+            get {
+                return ResourceManager.GetString("HabitEditorTitle", resourceCulture);
+            }
+        }
+
+        public static string HabitScheduleDaily {
+            get {
+                return ResourceManager.GetString("HabitScheduleDaily", resourceCulture);
+            }
+        }
+
+        public static string HabitEditorNameRequired {
+            get {
+                return ResourceManager.GetString("HabitEditorNameRequired", resourceCulture);
+            }
+        }
+
+        public static string HabitEditorDaysRequired {
+            get {
+                return ResourceManager.GetString("HabitEditorDaysRequired", resourceCulture);
+            }
+        }
+
         public static string StatsMoodTrend {
             get {
                 return ResourceManager.GetString("StatsMoodTrend", resourceCulture);

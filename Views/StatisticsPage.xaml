@@ -366,6 +366,7 @@
                                     <Grid ColumnDefinitions="*,Auto">
                                         <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
                                             <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding ScheduleText}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" />
                                             <Label Text="{Binding StreakText, StringFormat='🔥 {0}'}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                                         </VerticalStackLayout>
                                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">

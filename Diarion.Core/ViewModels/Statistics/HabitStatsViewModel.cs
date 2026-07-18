@@ -14,6 +14,7 @@ namespace Diarion.ViewModels.Statistics;
 public class HabitCardViewModel
 {
     public string Name { get; set; } = string.Empty;
+    public string ScheduleText { get; set; } = string.Empty;
     public string StrengthText { get; set; } = "0%";
     public string StreakText { get; set; } = "0";
     public IReadOnlyList<DateTime> CompletedDates { get; set; } = Array.Empty<DateTime>();
@@ -60,12 +61,13 @@ public partial class HabitStatsViewModel : ObservableObject
             foreach (var h in histories)
             {
                 var from = h.CreatedAt > strengthStart ? h.CreatedAt : strengthStart;
-                var strength = HabitStrengthCalculator.Strength(h.CompletedDates, from, today);
-                var streak = HabitStrengthCalculator.CurrentStreak(h.CompletedDates, today);
+                var strength = HabitStrengthCalculator.Strength(h.CompletedDates, from, today, h.Schedule);
+                var streak = HabitStrengthCalculator.CurrentStreak(h.CompletedDates, today, h.Schedule);
 
                 Habits.Add(new HabitCardViewModel
                 {
                     Name = h.Name,
+                    ScheduleText = HabitScheduleFormatter.Describe(h.Schedule),
                     StrengthText = strength.ToString("0", CultureInfo.CurrentCulture) + "%",
                     StreakText = streak.ToString(CultureInfo.CurrentCulture),
                     CompletedDates = h.CompletedDates.ToList(),

@@ -190,6 +190,30 @@
   <data name="StatsHabitStrength" xml:space="preserve">
     <value>Сила</value>
   </data>
+  <data name="HabitEditorTitle" xml:space="preserve">
+    <value>Звичка</value>
+  </data>
+  <data name="HabitNamePlaceholder" xml:space="preserve">
+    <value>Назва звички</value>
+  </data>
+  <data name="HabitScheduleLabel" xml:space="preserve">
+    <value>Розклад</value>
+  </data>
+  <data name="HabitScheduleDaily" xml:space="preserve">
+    <value>Щодня</value>
+  </data>
+  <data name="HabitScheduleSpecificDays" xml:space="preserve">
+    <value>Певні дні</value>
+  </data>
+  <data name="HabitEditorDelete" xml:space="preserve">
+    <value>Видалити звичку</value>
+  </data>
+  <data name="HabitEditorNameRequired" xml:space="preserve">
+    <value>Введіть назву звички.</value>
+  </data>
+  <data name="HabitEditorDaysRequired" xml:space="preserve">
+    <value>Оберіть хоча б один день.</value>
+  </data>
   <data name="NoTasks" xml:space="preserve">
     <value>Немає завдань на цей день</value>
   </data>

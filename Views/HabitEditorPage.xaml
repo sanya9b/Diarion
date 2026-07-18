@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             x:Class="Diarion.Views.HabitEditorPage"
+             x:Name="RootPage"
+             x:DataType="viewModels:HabitEditorViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{Binding Title}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Top bar -->
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CancelCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </Grid>
+
+            <Label Grid.Column="1" Text="{Binding Title}" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+            <Grid Grid.Column="2" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SaveCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="✓" FontSize="22" FontAttributes="Bold" InputTransparent="True" TextColor="{DynamicResource Theme_Coral}" />
+            </Grid>
+        </Grid>
+
+        <ScrollView Grid.Row="1" Padding="24,10,24,32">
+            <VerticalStackLayout Spacing="20">
+
+                <!-- Name -->
+                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        StrokeShape="RoundRectangle 16" Padding="16,4">
+                    <Entry Text="{Binding Name}"
+                           Placeholder="{localization:Translate Key=HabitNamePlaceholder}"
+                           PlaceholderColor="{DynamicResource Theme_Ocean_Dust}"
+                           TextColor="{DynamicResource Theme_Midnight_Snow}"
+                           BackgroundColor="Transparent" />
+                </Border>
+
+                <!-- Schedule type -->
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{localization:Translate Key=HabitScheduleLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Sage}" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Border Grid.Column="0" Padding="0,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsDaily}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SetDailyCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{localization:Translate Key=HabitScheduleDaily}" HorizontalOptions="Center" FontSize="14" FontAttributes="Bold">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsDaily}" Value="True">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsDaily}" Value="False">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Border>
+
+                        <Border Grid.Column="1" Padding="0,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsSpecificDays}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SetSpecificDaysCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{localization:Translate Key=HabitScheduleSpecificDays}" HorizontalOptions="Center" FontSize="14" FontAttributes="Bold">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsSpecificDays}" Value="True">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsSpecificDays}" Value="False">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Border>
+                    </Grid>
+
+                    <!-- Weekday toggles -->
+                    <FlexLayout Wrap="Wrap" IsVisible="{Binding IsSpecificDays}" BindableLayout.ItemsSource="{Binding Weekdays}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:WeekdayToggle">
+                                <Border Margin="0,0,8,8" Padding="12,6" StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 16" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                        BackgroundColor="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleWeekdayCommand}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{Binding ShortName}" FontSize="13" FontAttributes="Bold">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+
+                <Label Text="{Binding ValidationMessage}" IsVisible="{Binding HasValidationMessage}"
+                       FontSize="13" TextColor="{DynamicResource Theme_Coral}" />
+
+                <!-- Delete (existing only) -->
+                <Button Text="{localization:Translate Key=HabitEditorDelete}"
+                        Command="{Binding DeleteCommand}"
+                        IsVisible="{Binding IsExisting}"
+                        BackgroundColor="Transparent"
+                        TextColor="{DynamicResource Theme_Coral}"
+                        BorderColor="{DynamicResource Theme_Coral}"
+                        BorderWidth="1"
+                        Margin="0,8,0,0" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
