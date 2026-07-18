@@ -760,4 +760,13 @@
   <data name="EmptyNotes" xml:space="preserve">
     <value>No notes found.</value>
   </data>
+  <data name="NotesTags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="NotesLinked" xml:space="preserve">
+    <value>Linked notes</value>
+  </data>
+  <data name="NotesBacklinks" xml:space="preserve">
+    <value>Backlinks</value>
+  </data>
 </root>

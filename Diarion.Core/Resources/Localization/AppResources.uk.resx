@@ -772,6 +772,15 @@
   <data name="EmptyNotes" xml:space="preserve">
     <value>Нотаток ще немає. Створіть першу.</value>
   </data>
+  <data name="NotesTags" xml:space="preserve">
+    <value>Теги</value>
+  </data>
+  <data name="NotesLinked" xml:space="preserve">
+    <value>Повʼязані нотатки</value>
+  </data>
+  <data name="NotesBacklinks" xml:space="preserve">
+    <value>Зворотні посилання</value>
+  </data>
   <data name="AppLockTitle" xml:space="preserve">
     <value>Блокування застосунку</value>
   </data>
