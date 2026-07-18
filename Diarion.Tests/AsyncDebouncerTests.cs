@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Diarion.Helpers;
 using FluentAssertions;
@@ -24,7 +25,7 @@ public class AsyncDebouncerTests
 
         // Assert
         executed.Should().BeFalse();
-        await Task.Delay(100);
+        await Task.Delay(150);
         executed.Should().BeTrue();
     }
 
@@ -44,43 +45,99 @@ public class AsyncDebouncerTests
 
         // Assert
         executionCount.Should().Be(0);
-        await Task.Delay(150);
+        await Task.Delay(200);
         executionCount.Should().Be(1);
     }
 
     [Fact]
-    public async Task FlushAsync_WhenPending_ExecutesImmediatelyAndCancels()
+    public async Task FlushAsync_WhenPending_ExecutesScheduledActionImmediately()
     {
         // Arrange
-        var debouncer = new AsyncDebouncer(TimeSpan.FromMilliseconds(200));
+        var debouncer = new AsyncDebouncer(TimeSpan.FromMilliseconds(500));
         int executionCount = 0;
 
         // Act
         debouncer.Debounce(() => { executionCount++; return Task.CompletedTask; });
-        await Task.Delay(20); // Not enough time to execute normally
+        await debouncer.FlushAsync();
 
-        await debouncer.FlushAsync(() => { executionCount++; return Task.CompletedTask; });
-
-        // Assert
+        // Assert - runs immediately, well before the 500ms delay
         executionCount.Should().Be(1);
 
-        // Ensure the originally scheduled task was cancelled and doesn't fire later
-        await Task.Delay(300);
+        // And the (now cancelled) scheduled fire must not run it again later.
+        await Task.Delay(600);
         executionCount.Should().Be(1);
     }
 
     [Fact]
-    public async Task FlushAsync_WhenNotPending_DoesNotExecute()
+    public async Task FlushAsync_RunsTheActionThatWasScheduled()
+    {
+        // Proves the debouncer flushes the ACTUAL pending action (capture-safe),
+        // rather than a replacement action chosen at flush time.
+        var debouncer = new AsyncDebouncer(TimeSpan.FromMilliseconds(500));
+        string? result = null;
+
+        debouncer.Debounce(() => { result = "scheduled"; return Task.CompletedTask; });
+        await debouncer.FlushAsync();
+
+        result.Should().Be("scheduled");
+    }
+
+    [Fact]
+    public async Task FlushAsync_WhenNotPending_DoesNothing()
     {
         // Arrange
         var debouncer = new AsyncDebouncer(TimeSpan.FromMilliseconds(100));
+
+        // Act / Assert - no pending action; must not throw and must not run anything
+        Func<Task> act = async () => await debouncer.FlushAsync();
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task FlushAsync_CalledTwice_ExecutesActionOnlyOnce()
+    {
+        // Arrange
+        var debouncer = new AsyncDebouncer(TimeSpan.FromMilliseconds(500));
         int executionCount = 0;
 
         // Act
-        // No debounce called before flush
-        await debouncer.FlushAsync(() => { executionCount++; return Task.CompletedTask; });
+        debouncer.Debounce(() => { executionCount++; return Task.CompletedTask; });
+        await debouncer.FlushAsync();
+        await debouncer.FlushAsync();
 
         // Assert
-        executionCount.Should().Be(0);
+        executionCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task ScheduledFireAndFlush_NeverRunConcurrently_AndEachActionRunsOnce()
+    {
+        // A slow scheduled action must not overlap with a later action forced via flush,
+        // and neither action may run more than once (exactly-once + mutual exclusion).
+        var debouncer = new AsyncDebouncer(TimeSpan.FromMilliseconds(40));
+        int running = 0;
+        int maxConcurrent = 0;
+        int executionCount = 0;
+
+        Func<Task> MakeSlowAction() => async () =>
+        {
+            int current = Interlocked.Increment(ref running);
+            maxConcurrent = Math.Max(maxConcurrent, current);
+            Interlocked.Increment(ref executionCount);
+            await Task.Delay(120);
+            Interlocked.Decrement(ref running);
+        };
+
+        // action1 fires (~40ms) and runs for ~120ms.
+        debouncer.Debounce(MakeSlowAction());
+        await Task.Delay(70); // action1 is now in flight
+
+        // Schedule action2, then flush it: flush must wait for action1's gate, then run action2 once.
+        debouncer.Debounce(MakeSlowAction());
+        await debouncer.FlushAsync();
+
+        // Assert
+        maxConcurrent.Should().Be(1);
+        executionCount.Should().Be(2);
     }
 }

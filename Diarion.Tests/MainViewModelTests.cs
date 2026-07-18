@@ -87,11 +87,9 @@ public class MainViewModelTests
             _calendarSection);
     }
 
-    [Fact]
-    public void SwitchModes_ChangesPropertiesCorrectly()
+    private MainViewModel CreateViewModel()
     {
-        // Arrange
-        var viewModel = new MainViewModel(
+        return new MainViewModel(
             _diaryServiceMock.Object,
             new Mock<IDiaryHabitSyncService>().Object,
             _navigationServiceMock.Object,
@@ -103,6 +101,13 @@ public class MainViewModelTests
             _quickMenuSection,
             _habitsSection,
             new Mock<CycleStatusViewModel>(_menstrualCycleServiceMock.Object, _profileServiceMock.Object).Object);
+    }
+
+    [Fact]
+    public void SwitchModes_ChangesPropertiesCorrectly()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
 
         // Act - Switch to Planner
         viewModel.SwitchToPlannerModeCommand.Execute(null);
@@ -117,5 +122,60 @@ public class MainViewModelTests
         // Assert
         viewModel.IsPlannerMode.Should().BeFalse();
         viewModel.IsDiaryMode.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task FlushAutoSaveAsync_PersistsPendingEditsOfCurrentEntry()
+    {
+        // Arrange
+        var saved = new List<DiaryEntry>();
+        _diaryServiceMock
+            .Setup(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()))
+            .Callback<DiaryEntry>(e => saved.Add(e))
+            .Returns(Task.CompletedTask);
+
+        var viewModel = CreateViewModel();
+        var entry = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 1, 10) });
+        viewModel.CurrentEntry = entry;
+
+        // Act - editing the entry schedules a debounced autosave; flush persists it immediately.
+        entry.SleepQuality = 7;
+        await viewModel.FlushAutoSaveAsync();
+
+        // Assert
+        saved.Should().ContainSingle();
+        saved[0].SleepQuality.Should().Be(7);
+    }
+
+    [Fact]
+    public async Task PendingSave_TargetsTheEditedEntry_NotTheEntrySwitchedToAfterwards()
+    {
+        // Regression for the autosave data-loss bug: editing day A then switching to day B
+        // within the debounce window must still persist day A's edits (the debounced save
+        // captured entry A), not silently re-save day B.
+        var saved = new List<DiaryEntry>();
+        _diaryServiceMock
+            .Setup(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()))
+            .Callback<DiaryEntry>(e => saved.Add(e))
+            .Returns(Task.CompletedTask);
+
+        var viewModel = CreateViewModel();
+        var entryA = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 1, 10) });
+        var entryB = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 1, 11) });
+
+        // Open day A and edit it -> schedules a debounced save bound to entry A.
+        viewModel.CurrentEntry = entryA;
+        entryA.SleepQuality = 5;
+
+        // Switch the current entry to day B before the debounce fires.
+        viewModel.CurrentEntry = entryB;
+
+        // Flush now: the pending save must persist day A's edit, not day B.
+        await viewModel.FlushAutoSaveAsync();
+
+        // Assert
+        saved.Should().ContainSingle();
+        saved[0].Date.Date.Should().Be(new DateTime(2026, 1, 10));
+        saved[0].SleepQuality.Should().Be(5);
     }
 }
