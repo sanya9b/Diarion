@@ -131,45 +131,9 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     public async Task SetPinAsync()
     {
-        var pin = await _dialogService.ShowPromptAsync(
-            Diarion.Resources.Localization.AppResources.AppLockTitle,
-            Diarion.Resources.Localization.AppResources.EnterPinPrompt,
-            Diarion.Resources.Localization.AppResources.OkButtonLabel,
-            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
-
-        if (string.IsNullOrWhiteSpace(pin)) return;
-
-        if (!IsValidPin(pin))
-        {
-            await _dialogService.ShowAlertAsync(
-                Diarion.Resources.Localization.AppResources.AppLockTitle,
-                Diarion.Resources.Localization.AppResources.PinInvalidMessage,
-                Diarion.Resources.Localization.AppResources.OkButtonLabel);
-            return;
-        }
-
-        var confirm = await _dialogService.ShowPromptAsync(
-            Diarion.Resources.Localization.AppResources.AppLockTitle,
-            Diarion.Resources.Localization.AppResources.ConfirmPinPrompt,
-            Diarion.Resources.Localization.AppResources.OkButtonLabel,
-            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
-
-        if (confirm != pin)
-        {
-            await _dialogService.ShowAlertAsync(
-                Diarion.Resources.Localization.AppResources.AppLockTitle,
-                Diarion.Resources.Localization.AppResources.PinMismatchMessage,
-                Diarion.Resources.Localization.AppResources.OkButtonLabel);
-            return;
-        }
-
-        _appLockService.SetPin(pin);
-        NotifyLockState();
-
-        await _dialogService.ShowAlertAsync(
-            Diarion.Resources.Localization.AppResources.AppLockTitle,
-            Diarion.Resources.Localization.AppResources.PinSetSuccessMessage,
-            Diarion.Resources.Localization.AppResources.OkButtonLabel);
+        // Full-screen keypad flow (verify current when changing → enter new → repeat) instead of
+        // the plain OS prompt dialogs. Lock state refreshes on return via ProfilePage.OnAppearing.
+        await _navigationService.NavigateToAsync("PinSetup");
     }
 
     [RelayCommand]
@@ -186,8 +150,6 @@ public partial class ProfileViewModel : BaseViewModel
         _appLockService.RemovePin();
         NotifyLockState();
     }
-
-    private static bool IsValidPin(string pin) => pin.Length == 4 && pin.All(char.IsDigit);
 
     private void NotifyLockState()
     {

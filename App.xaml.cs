@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Diarion.Diagnostics;
 using Diarion.Services;
+using Microsoft.Maui;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
 
 namespace Diarion;
@@ -41,7 +43,37 @@ public partial class App : Application
     protected override Window CreateWindow(IActivationState? activationState)
     {
         using var _ = StartupTrace.Measure("App.CreateWindow");
-        var window = new Window(new AppShell());
+
+        // Decide the root page BEFORE first paint. When the app lock is enabled we make LockPage
+        // the window root (not a modal pushed after render) so the real content never flashes
+        // before unlock. Services come from the app provider — the window Handler isn't attached
+        // yet at CreateWindow time, so window.Handler?.MauiContext is null here.
+        var services = IPlatformApplication.Current?.Services;
+        var lockService = services?.GetService<IAppLockService>();
+
+        var window = new Window();
+
+        if (services != null && lockService?.IsLockEnabled == true)
+        {
+            var lockPage = services.GetService<Diarion.Views.LockPage>();
+            if (lockPage != null)
+            {
+                _isLockShown = true;
+                lockPage.ViewModel.Unlocked = () =>
+                {
+                    _isLockShown = false;
+                    _backgroundedAtUtc = null;
+                    // Unlocked may fire off the UI thread (biometric continuation); swap on main.
+                    MainThread.BeginInvokeOnMainThread(() => window.Page = new AppShell());
+                };
+                window.Page = lockPage;
+            }
+        }
+
+        // Fallback / no-lock path: AppShell is the root. If lock is enabled but LockPage couldn't
+        // be resolved, the Created handler below still shows the lock modal (old behavior) rather
+        // than leaking content — _isLockShown stays false so that path isn't suppressed.
+        window.Page ??= new AppShell();
 
         window.Created += async (s, e) =>
         {

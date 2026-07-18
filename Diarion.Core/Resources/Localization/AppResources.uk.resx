@@ -802,6 +802,12 @@
   <data name="ConfirmPinPrompt" xml:space="preserve">
     <value>Підтвердіть PIN</value>
   </data>
+  <data name="EnterCurrentPinPrompt" xml:space="preserve">
+    <value>Введіть поточний PIN</value>
+  </data>
+  <data name="EnterNewPinPrompt" xml:space="preserve">
+    <value>Введіть новий PIN</value>
+  </data>
   <data name="PinInvalidMessage" xml:space="preserve">
     <value>PIN має містити 4 цифри.</value>
   </data>

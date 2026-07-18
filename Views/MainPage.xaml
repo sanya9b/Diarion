@@ -87,8 +87,11 @@
                 <ScrollView x:Name="DiaryContainer" IsVisible="{Binding IsDiaryMode}" Padding="24,10,24,40">
 
                     <!-- Home-screen blocks. Each block's visibility is toggled from Settings; a
-                         VerticalStackLayout collapses hidden blocks without leaving empty gaps. -->
-                    <VerticalStackLayout Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel">
+                         VerticalStackLayout collapses hidden blocks without leaving empty gaps.
+                         The whole stack stays hidden (IsContentReady) until the real profile is
+                         loaded, so the default all-blocks-visible layout never flashes on startup. -->
+                    <VerticalStackLayout Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+                                         IsVisible="{Binding BindingContext.IsContentReady, Source={x:Reference PageRoot}}">
 
                         <controls:MoodSection BindingContext="{Binding}"
                                               IsVisible="{Binding BindingContext.Profile.IsMoodBlockVisible, Source={x:Reference PageRoot}}" />
@@ -114,10 +117,12 @@
             </Grid>
         </Grid>
 
-        <!-- Завантаження -->
-        <ActivityIndicator IsRunning="{Binding IsBusy}" 
-                           IsVisible="{Binding IsBusy}"
-                           HorizontalOptions="Center" VerticalOptions="Center" 
+        <!-- Завантаження. Grid.Row/RowSpan center it over the whole page (default row 0 is the
+             Auto top-bar row); IsLoading covers both the initial startup load and day switches. -->
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2"
+                           IsRunning="{Binding IsLoading}"
+                           IsVisible="{Binding IsLoading}"
+                           HorizontalOptions="Center" VerticalOptions="Center"
                            Color="{DynamicResource Theme_Ocean_Dust}"/>
     </Grid>
 

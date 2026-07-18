@@ -54,6 +54,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<CycleStatusViewModel>();
         services.AddTransient<MainViewModel>();
         services.AddTransient<LockViewModel>();
+        services.AddTransient<PinSetupViewModel>();
         services.AddTransient<OnboardingViewModel>();
         services.AddTransient<DiaryDetailViewModel>();
         services.AddTransient<TodoDetailViewModel>();
@@ -81,6 +82,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<MainPage>();
         services.AddTransient<LockPage>();
+        services.AddTransient<PinSetupPage>();
         services.AddTransient<OnboardingPage>();
         services.AddTransient<DiaryDetailPage>();
         services.AddTransient<TodoDetailPage>();

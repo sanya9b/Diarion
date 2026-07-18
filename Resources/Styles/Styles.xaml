@@ -422,4 +422,16 @@
         <Setter Property="Padding" Value="16" />
     </Style>
 
+    <!-- Circular PIN keypad button, shared by LockPage (unlock) and PinSetupPage (set/change). -->
+    <Style x:Key="PinKey" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Black}" />
+        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="CornerRadius" Value="40" />
+        <Setter Property="HeightRequest" Value="72" />
+        <Setter Property="WidthRequest" Value="72" />
+        <Setter Property="BorderColor" Value="{DynamicResource Theme_Dust_Ocean}" />
+        <Setter Property="BorderWidth" Value="1" />
+    </Style>
+
 </ResourceDictionary>

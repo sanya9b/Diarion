@@ -37,6 +37,17 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private UserProfile _profile = new();
 
+    // False until the first LoadEntriesAsync completes. Home content stays hidden behind the
+    // loading indicator until then, so the user never sees the default all-blocks-visible layout
+    // (Profile starts as new() with every block flag true) before the real profile is applied.
+    [ObservableProperty]
+    private bool _isContentReady;
+
+    public bool IsLoading => IsBusy || !IsContentReady;
+
+    partial void OnIsContentReadyChanged(bool value) => OnPropertyChanged(nameof(IsLoading));
+    protected override void OnBusyStateChanged() => OnPropertyChanged(nameof(IsLoading));
+
     [ObservableProperty]
     private int _currentStreak;
 
@@ -280,6 +291,7 @@ public partial class MainViewModel : BaseViewModel
         }
         finally
         {
+            IsContentReady = true;
             IsBusy = false;
         }
     }

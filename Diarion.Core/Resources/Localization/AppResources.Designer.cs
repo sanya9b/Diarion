@@ -1052,6 +1052,14 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("ConfirmPinPrompt", resourceCulture) ?? "Confirm your PIN"; }
         }
 
+        public static string EnterCurrentPinPrompt {
+            get { return ResourceManager.GetString("EnterCurrentPinPrompt", resourceCulture) ?? "Enter current PIN"; }
+        }
+
+        public static string EnterNewPinPrompt {
+            get { return ResourceManager.GetString("EnterNewPinPrompt", resourceCulture) ?? "Enter new PIN"; }
+        }
+
         public static string PinInvalidMessage {
             get { return ResourceManager.GetString("PinInvalidMessage", resourceCulture) ?? "The PIN must be 4 digits."; }
         }
