@@ -95,6 +95,49 @@ public class StatisticsViewModelsTests
         // Sparkline mirrors the trend, with gaps mapped to null.
         vm.MoodSparkline.Should().HaveCount(3);
         vm.MoodSparkline.Should().Equal(new double?[] { 2, null, -2 });
+
+        // A 3-day window is too short for the heatmap.
+        vm.HasMoodCalendar.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task MoodStats_LoadData_PopulatesHeatmapForLongWindow()
+    {
+        var today = DateTime.Today;
+
+        var trend = new List<MoodTrendPoint>();
+        for (int i = 29; i >= 0; i--)
+        {
+            bool has = i % 2 == 0;
+            trend.Add(new MoodTrendPoint
+            {
+                Date = today.AddDays(-i),
+                Valence = has ? 2 : 0,
+                HasData = has,
+                DominantEmotion = has ? Emotion.Happy : Emotion.None
+            });
+        }
+
+        var statsMock = new Mock<IStatisticsService>();
+        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<int>()))
+            .ReturnsAsync(new MoodStatistics
+            {
+                TopEmotion = Emotion.Happy,
+                EmotionCounts = new Dictionary<Emotion, int> { { Emotion.Happy, 15 } },
+                DailyTrend = trend
+            });
+
+        var correlationMock = new Mock<ICorrelationService>();
+        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<int>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<MoodCorrelation>());
+
+        var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
+
+        await vm.LoadDataAsync(30);
+
+        vm.MoodCalendar.Should().HaveCount(30);
+        vm.HasMoodCalendar.Should().BeTrue();
+        vm.MoodCalendar.First(c => c.HasData).ColorHex.Should().Be("#C26D53"); // Happy = Coral
     }
 
     [Fact]

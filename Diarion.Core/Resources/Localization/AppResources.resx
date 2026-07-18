@@ -601,6 +601,9 @@
   <data name="StatsMoodTrend" xml:space="preserve">
     <value>Mood trend</value>
   </data>
+  <data name="StatsYearInPixels" xml:space="preserve">
+    <value>Year in pixels</value>
+  </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Week</value>
   </data>

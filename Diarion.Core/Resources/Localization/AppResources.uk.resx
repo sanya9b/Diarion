@@ -601,6 +601,9 @@
   <data name="StatsMoodTrend" xml:space="preserve">
     <value>Динаміка настрою</value>
   </data>
+  <data name="StatsYearInPixels" xml:space="preserve">
+    <value>Рік у пікселях</value>
+  </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Тиждень</value>
   </data>

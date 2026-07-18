@@ -54,6 +54,14 @@ public partial class MoodStatsViewModel : ObservableObject
     [ObservableProperty]
     private System.Collections.ObjectModel.ObservableCollection<double?> _moodSparkline = new();
 
+    /// <summary>Per-day cells for the Year-in-Pixels heatmap.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasMoodCalendar))]
+    private System.Collections.ObjectModel.ObservableCollection<MoodHeatDay> _moodCalendar = new();
+
+    /// <summary>Show the heatmap only for windows of at least ~a month with some logged mood.</summary>
+    public bool HasMoodCalendar => MoodCalendar.Count >= 28 && MoodCalendar.Any(d => d.HasData);
+
     public MoodStatsViewModel(IStatisticsService statisticsService, ICorrelationService correlationService)
     {
         _statisticsService = statisticsService;
@@ -104,6 +112,7 @@ public partial class MoodStatsViewModel : ObservableObject
                 EntriesCountText = "0";
                 MoodTrend = new System.Collections.ObjectModel.ObservableCollection<MoodTrendPoint>();
                 MoodSparkline = new System.Collections.ObjectModel.ObservableCollection<double?>();
+                MoodCalendar = new System.Collections.ObjectModel.ObservableCollection<MoodHeatDay>();
                 return;
             }
 
@@ -124,16 +133,8 @@ public partial class MoodStatsViewModel : ObservableObject
             {
                 if (kvp.Value > 0)
                 {
-                    var colorHex = kvp.Key switch
-                    {
-                        Emotion.Happy => "#C26D53", // Coral
-                        Emotion.Calm => "#8FA083",  // Sage
-                        Emotion.Anxious => "#C9985A", // Amber
-                        Emotion.Sad => "#929FA7",   // Ocean
-                        Emotion.Angry => "#A87C8E", // Berry
-                        _ => "#D0D3D4" // Dust
-                    };
-                    
+                    var colorHex = kvp.Key.ToColorHex();
+
                     var name = kvp.Key switch
                     {
                         Emotion.Happy => AppResources.EmotionHappy,
@@ -160,6 +161,13 @@ public partial class MoodStatsViewModel : ObservableObject
             MoodTrend = new System.Collections.ObjectModel.ObservableCollection<MoodTrendPoint>(moodStats.DailyTrend);
             MoodSparkline = new System.Collections.ObjectModel.ObservableCollection<double?>(
                 moodStats.DailyTrend.Select(p => p.HasData ? (double?)p.Valence : null));
+            MoodCalendar = new System.Collections.ObjectModel.ObservableCollection<MoodHeatDay>(
+                moodStats.DailyTrend.Select(p => new MoodHeatDay
+                {
+                    Date = p.Date,
+                    HasData = p.HasData,
+                    ColorHex = p.DominantEmotion.ToColorHex()
+                }));
 
             await LoadCorrelationsAsync(days);
         }

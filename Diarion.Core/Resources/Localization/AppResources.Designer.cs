@@ -762,6 +762,12 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string StatsYearInPixels {
+            get {
+                return ResourceManager.GetString("StatsYearInPixels", resourceCulture);
+            }
+        }
+
         public static string TimeRangeWeek {
             get {
                 return ResourceManager.GetString("TimeRangeWeek", resourceCulture);

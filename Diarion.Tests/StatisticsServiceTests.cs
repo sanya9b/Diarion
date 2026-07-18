@@ -126,6 +126,35 @@ public class StatisticsServiceTests
     }
 
     [Fact]
+    public async Task GetMoodStatisticsAsync_DailyTrend_SetsDominantEmotionPerDay()
+    {
+        // Arrange: one day with Happy x2 + Sad x1 -> dominant is Happy (mode).
+        var mockDiaryService = new Mock<IDiaryService>();
+        var today = DateTime.Today;
+
+        var mockData = new List<DiaryEntryStatsDto>
+        {
+            new DiaryEntryStatsDto { Date = today.AddDays(-1), Emotion = Emotion.Happy },
+            new DiaryEntryStatsDto { Date = today.AddDays(-1), Emotion = Emotion.Happy },
+            new DiaryEntryStatsDto { Date = today.AddDays(-1), Emotion = Emotion.Sad },
+            new DiaryEntryStatsDto { Date = today, Emotion = Emotion.Calm }
+        };
+
+        mockDiaryService.Setup(s => s.GetDiaryEntriesForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(mockData);
+
+        var statsService = new StatisticsService(
+            mockDiaryService.Object, new Mock<ITodoService>().Object, new Mock<IFinanceService>().Object);
+
+        // Act
+        var result = await statsService.GetMoodStatisticsAsync(7);
+
+        // Assert
+        result.DailyTrend.Single(p => p.Date == today.AddDays(-1)).DominantEmotion.Should().Be(Emotion.Happy);
+        result.DailyTrend.Single(p => p.Date == today).DominantEmotion.Should().Be(Emotion.Calm);
+    }
+
+    [Fact]
     public async Task GetTodoStatisticsAsync_ShouldCalculateCorrectly()
     {
         // Arrange

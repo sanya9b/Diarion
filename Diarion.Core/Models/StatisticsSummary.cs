@@ -24,6 +24,17 @@ public class MoodTrendPoint
     public DateTime Date { get; set; }
     public double Valence { get; set; }
     public bool HasData { get; set; }
+
+    /// <summary>The day's representative emotion (mode of that day's entries), used to color the heatmap.</summary>
+    public Emotion DominantEmotion { get; set; } = Emotion.None;
+}
+
+/// <summary>One cell of the Year-in-Pixels heatmap: a calendar day with a resolved color.</summary>
+public class MoodHeatDay
+{
+    public DateTime Date { get; set; }
+    public string ColorHex { get; set; } = "#D0D3D4";
+    public bool HasData { get; set; }
 }
 
 public class MoodStatistics

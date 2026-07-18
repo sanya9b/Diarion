@@ -170,6 +170,19 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Year in Pixels (mood heatmap) -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasMoodCalendar}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.StatsYearInPixels}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
+                        <controls:YearInPixelsView HeightRequest="300"
+                                                   Items="{Binding MoodStats.MoodCalendar}"
+                                                   MutedColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- What affects your mood (on-device correlations) -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasCorrelations}">
                     <Border.Shadow>

@@ -16,4 +16,18 @@ public static class EmotionExtensions
         Emotion.Angry => -2,
         _ => 0
     };
+
+    /// <summary>
+    /// Brand color (hex) for each emotion, shared by the emotion donut, the Year-in-Pixels heatmap and
+    /// anywhere else emotions are color-coded. These are fixed brand hues, not theme-dependent.
+    /// </summary>
+    public static string ToColorHex(this Emotion emotion) => emotion switch
+    {
+        Emotion.Happy => "#C26D53",   // Coral
+        Emotion.Calm => "#8FA083",    // Sage
+        Emotion.Anxious => "#C9985A", // Amber
+        Emotion.Sad => "#929FA7",     // Ocean
+        Emotion.Angry => "#A87C8E",   // Berry
+        _ => "#D0D3D4"                 // Dust (neutral / none)
+    };
 }
