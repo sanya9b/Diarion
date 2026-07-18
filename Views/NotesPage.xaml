@@ -36,7 +36,7 @@
         </Grid>
 
         <!-- Main Content -->
-        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+        <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto">
             
             <VerticalStackLayout Grid.Row="0" Padding="24,10,24,10" Spacing="12">
                 <!-- Search Bar -->
@@ -105,7 +105,7 @@
                 </CollectionView.ItemsLayout>
 
                 <CollectionView.Footer>
-                    <BoxView HeightRequest="88" BackgroundColor="Transparent" />
+                    <BoxView HeightRequest="72" BackgroundColor="Transparent" />
                 </CollectionView.Footer>
 
                 <CollectionView.ItemTemplate>
@@ -162,13 +162,13 @@
             </CollectionView>
             
             <!-- Floating Action Button (iOS Style Compose) -->
-            <Border Grid.RowSpan="2"
+            <Border Grid.Row="1"
                     WidthRequest="56"
                     HeightRequest="56"
                     StrokeShape="RoundRectangle 28"
                     HorizontalOptions="End"
                     VerticalOptions="End"
-                    Margin="0,0,24,32"
+                    Margin="0,0,24,16"
                     BackgroundColor="{DynamicResource Theme_Amber}"
                     StrokeThickness="0">
                 <Border.Shadow>
@@ -178,11 +178,42 @@
                     <TapGestureRecognizer Command="{Binding CreateNewNoteCommand}" />
                 </Border.GestureRecognizers>
                 <!-- Compose Icon (Pencil) -->
-                <Path Fill="{DynamicResource Theme_Snow}" 
+                <Path Fill="{DynamicResource Theme_Snow}"
                       Data="M 4,20 L 4,24 L 8,24 L 21.5,10.5 L 17.5,6.5 L 4,20 Z M 23.7,8.3 C 24.1,7.9 24.1,7.3 23.7,6.9 L 21.1,4.3 C 20.7,3.9 20.1,3.9 19.7,4.3 L 18.5,5.5 L 22.5,9.5 L 23.7,8.3 Z"
                       HorizontalOptions="Center" VerticalOptions="Center"
                       WidthRequest="24" HeightRequest="24"
                       Aspect="Uniform" />
+            </Border>
+
+            <!-- Quick-capture inbox bar -->
+            <Border Grid.Row="2" Margin="24,8,24,20" StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    StrokeShape="RoundRectangle 24" Padding="6,4">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                    <Entry Grid.Column="0"
+                           Text="{Binding QuickCaptureText}"
+                           Placeholder="{localization:Translate Key=NotesQuickCapturePlaceholder}"
+                           PlaceholderColor="{DynamicResource Theme_Ocean_Dust}"
+                           TextColor="{DynamicResource Theme_Midnight_Snow}"
+                           BackgroundColor="Transparent"
+                           ReturnCommand="{Binding QuickCaptureCommand}"
+                           VerticalOptions="Center"
+                           Margin="10,0,0,0" />
+                    <Border Grid.Column="1" WidthRequest="40" HeightRequest="40"
+                            StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Amber}"
+                            StrokeShape="RoundRectangle 20" VerticalOptions="Center">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding QuickCaptureCommand}" />
+                        </Border.GestureRecognizers>
+                        <!-- Send (up arrow) -->
+                        <Path Data="M 12 5 L 12 19 M 12 5 L 6 11 M 12 5 L 18 11"
+                              Stroke="{DynamicResource Theme_Snow}" StrokeThickness="2"
+                              StrokeLineCap="Round" StrokeLineJoin="Round"
+                              WidthRequest="20" HeightRequest="20" Aspect="Uniform"
+                              HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                </Grid>
             </Border>
         </Grid>
     </Grid>

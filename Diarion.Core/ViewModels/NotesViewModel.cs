@@ -35,6 +35,10 @@ public partial class NotesViewModel : BaseViewModel
     [ObservableProperty]
     private string _searchQuery = string.Empty;
 
+    /// <summary>Text of the bottom quick-capture bar.</summary>
+    [ObservableProperty]
+    private string _quickCaptureText = string.Empty;
+
     /// <summary>Hide the filter row when there is nothing to filter by (only the "All" chip).</summary>
     [ObservableProperty]
     private bool _showFilters;
@@ -171,6 +175,20 @@ public partial class NotesViewModel : BaseViewModel
     private async Task CreateNewNoteAsync()
     {
         await _navigationService.NavigateToAsync("NoteDetail");
+    }
+
+    [RelayCommand]
+    private async Task QuickCaptureAsync()
+    {
+        var text = QuickCaptureText?.Trim();
+        if (string.IsNullOrWhiteSpace(text)) return;
+
+        // Fast path: save straight to the inbox without opening the editor.
+        await _noteService.SaveNoteAsync(new Note { Content = text, IsInInbox = true });
+        QuickCaptureText = string.Empty;
+
+        await RebuildFiltersAsync(); // the "Inbox" chip appears once the first inbox note exists
+        await LoadNotesAsync();
     }
 
     [RelayCommand]

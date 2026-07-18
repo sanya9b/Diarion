@@ -93,4 +93,30 @@ public class NotesViewModelTests
         _viewModel.Notes.Should().ContainSingle(n => n.Title == "A");
         workChip.IsSelected.Should().BeTrue();
     }
+
+    [Fact]
+    public async Task QuickCapture_SavesInboxNote_ClearsText_AndShowsInboxChip()
+    {
+        var saved = new List<Note>();
+        _mockNoteService.Setup(s => s.SaveNoteAsync(It.IsAny<Note>()))
+            .Returns<Note>(n => { saved.Add(n); return Task.CompletedTask; });
+        _mockNoteService.Setup(s => s.GetAllNotesAsync()).ReturnsAsync(() => saved);
+        _mockNoteService.Setup(s => s.SearchNotesAsync(It.IsAny<string>())).ReturnsAsync(() => saved);
+
+        _viewModel.QuickCaptureText = "buy milk";
+        await _viewModel.QuickCaptureCommand.ExecuteAsync(null);
+
+        saved.Should().ContainSingle(n => n.Content == "buy milk" && n.IsInInbox);
+        _viewModel.QuickCaptureText.Should().BeEmpty();
+        _viewModel.Filters.Should().Contain(f => f.Kind == NoteFilterKind.Inbox);
+    }
+
+    [Fact]
+    public async Task QuickCapture_WhitespaceOnly_DoesNothing()
+    {
+        _viewModel.QuickCaptureText = "   ";
+        await _viewModel.QuickCaptureCommand.ExecuteAsync(null);
+
+        _mockNoteService.Verify(s => s.SaveNoteAsync(It.IsAny<Note>()), Times.Never);
+    }
 }

@@ -775,4 +775,7 @@
   <data name="NotesFilterInbox" xml:space="preserve">
     <value>Inbox</value>
   </data>
+  <data name="NotesQuickCapturePlaceholder" xml:space="preserve">
+    <value>Quick note…</value>
+  </data>
 </root>

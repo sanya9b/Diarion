@@ -787,6 +787,9 @@
   <data name="NotesFilterInbox" xml:space="preserve">
     <value>Вхідні</value>
   </data>
+  <data name="NotesQuickCapturePlaceholder" xml:space="preserve">
+    <value>Швидка нотатка…</value>
+  </data>
   <data name="AppLockTitle" xml:space="preserve">
     <value>Блокування застосунку</value>
   </data>
