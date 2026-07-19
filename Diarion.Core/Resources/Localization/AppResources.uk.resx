@@ -778,6 +778,24 @@
   <data name="AddTransactionButton" xml:space="preserve">
     <value>Додати транзакцію</value>
   </data>
+  <data name="BudgetsLabel" xml:space="preserve">
+    <value>Бюджети</value>
+  </data>
+  <data name="AddBudgetButton" xml:space="preserve">
+    <value>Додати бюджет</value>
+  </data>
+  <data name="BudgetFormTitle" xml:space="preserve">
+    <value>Бюджет</value>
+  </data>
+  <data name="BudgetLimitPlaceholder" xml:space="preserve">
+    <value>Місячний ліміт</value>
+  </data>
+  <data name="BudgetRemainingFormat" xml:space="preserve">
+    <value>Залишок {0}</value>
+  </data>
+  <data name="BudgetOverspentFormat" xml:space="preserve">
+    <value>Перевитрата {0}</value>
+  </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Недостатньо даних за цей період.</value>
   </data>

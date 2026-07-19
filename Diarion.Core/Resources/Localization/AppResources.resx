@@ -778,6 +778,24 @@
   <data name="AddTransactionButton" xml:space="preserve">
     <value>Add Transaction</value>
   </data>
+  <data name="BudgetsLabel" xml:space="preserve">
+    <value>Budgets</value>
+  </data>
+  <data name="AddBudgetButton" xml:space="preserve">
+    <value>Add budget</value>
+  </data>
+  <data name="BudgetFormTitle" xml:space="preserve">
+    <value>Budget</value>
+  </data>
+  <data name="BudgetLimitPlaceholder" xml:space="preserve">
+    <value>Monthly limit</value>
+  </data>
+  <data name="BudgetRemainingFormat" xml:space="preserve">
+    <value>{0} left</value>
+  </data>
+  <data name="BudgetOverspentFormat" xml:space="preserve">
+    <value>Over by {0}</value>
+  </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Not enough data for this period.</value>
   </data>

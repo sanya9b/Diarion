@@ -12,4 +12,8 @@ public interface IFinanceService
     Task<List<string>> GetCategoriesAsync(TransactionType type);
     Task SaveFinanceTransactionAsync(FinanceTransaction transaction);
     Task DeleteFinanceTransactionAsync(Guid id);
+
+    Task<List<Budget>> GetBudgetsAsync();
+    Task SaveBudgetAsync(Budget budget);
+    Task DeleteBudgetAsync(Guid id);
 }

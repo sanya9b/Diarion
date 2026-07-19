@@ -194,4 +194,44 @@ public class FinanceViewModelTests
         viewModel.NewCategory.Should().Be("Groceries");
         viewModel.SuggestedCategories.Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task LoadAsync_ComputesBudgetsForCurrentMonth()
+    {
+        var financeMock = new Mock<IFinanceService>();
+        financeMock.Setup(s => s.GetFinanceTransactionsAsync()).ReturnsAsync(new List<FinanceTransaction>
+        {
+            new() { Type = TransactionType.Expense, Category = "Food", Amount = 40m, Date = DateTime.Today }
+        });
+        financeMock.Setup(s => s.GetBudgetsAsync()).ReturnsAsync(new List<Budget>
+        {
+            new() { Category = "Food", MonthlyLimit = 100m }
+        });
+
+        var viewModel = new FinanceViewModel(financeMock.Object, new Mock<IDialogService>().Object);
+        await viewModel.LoadAsync();
+
+        viewModel.HasBudgets.Should().BeTrue();
+        var b = viewModel.Budgets.Should().ContainSingle().Subject;
+        b.Category.Should().Be("Food");
+        b.IsOverspent.Should().BeFalse();
+        b.AmountText.Should().Contain("40");
+    }
+
+    [Fact]
+    public async Task SaveBudget_WithValidInput_SavesAndClosesForm()
+    {
+        var financeMock = new Mock<IFinanceService>();
+        financeMock.Setup(s => s.GetFinanceTransactionsAsync()).ReturnsAsync(new List<FinanceTransaction>());
+        financeMock.Setup(s => s.GetBudgetsAsync()).ReturnsAsync(new List<Budget>());
+
+        var viewModel = new FinanceViewModel(financeMock.Object, new Mock<IDialogService>().Object);
+        viewModel.NewBudgetCategory = "Food";
+        viewModel.NewBudgetLimitText = "150";
+
+        await viewModel.SaveBudgetCommand.ExecuteAsync(null);
+
+        financeMock.Verify(s => s.SaveBudgetAsync(It.Is<Budget>(b => b.Category == "Food" && b.MonthlyLimit == 150m)), Times.Once);
+        viewModel.IsBudgetFormVisible.Should().BeFalse();
+    }
 }

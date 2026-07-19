@@ -18,6 +18,7 @@ public class FinanceService : IFinanceService
     }
 
     private ILiteCollection<FinanceTransaction> FinanceCollection => _dbContext.GetCollection<FinanceTransaction>(DatabaseConstants.FinanceCollection);
+    private ILiteCollection<Budget> BudgetsCollection => _dbContext.GetCollection<Budget>(DatabaseConstants.BudgetsCollection);
 
     public Task<List<FinanceTransaction>> GetFinanceTransactionsAsync()
     {
@@ -64,5 +65,27 @@ public class FinanceService : IFinanceService
         {
             FinanceCollection.Delete(id);
         });
+    }
+
+    public Task<List<Budget>> GetBudgetsAsync()
+    {
+        return Task.Run(() => BudgetsCollection.Query().OrderBy(x => x.Category).ToList());
+    }
+
+    public Task SaveBudgetAsync(Budget budget)
+    {
+        return Task.Run(() =>
+        {
+            if (budget.CreatedAt == default)
+            {
+                budget.CreatedAt = DateTime.UtcNow;
+            }
+            BudgetsCollection.Upsert(budget);
+        });
+    }
+
+    public Task DeleteBudgetAsync(Guid id)
+    {
+        return Task.Run(() => BudgetsCollection.Delete(id));
     }
 }

@@ -1269,6 +1269,14 @@ public static string ClearAllDataSuccessMsg {
         public static string HabitTrackerEditTitle {
             get { return ResourceManager.GetString("HabitTrackerEditTitle", resourceCulture) ?? "Edit tracker"; }
         }
+
+        public static string BudgetRemainingFormat {
+            get { return ResourceManager.GetString("BudgetRemainingFormat", resourceCulture) ?? "{0} left"; }
+        }
+
+        public static string BudgetOverspentFormat {
+            get { return ResourceManager.GetString("BudgetOverspentFormat", resourceCulture) ?? "Over by {0}"; }
+        }
     }
 }
 

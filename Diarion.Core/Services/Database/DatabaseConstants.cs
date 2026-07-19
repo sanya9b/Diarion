@@ -13,4 +13,5 @@ public static class DatabaseConstants
     public const string WishlistCollection = "wishlist_entries";
     public const string FinanceCollection = "finance_transactions";
     public const string NotesCollection = "Notes";
+    public const string BudgetsCollection = "budgets";
 }

@@ -14,6 +14,22 @@ public partial class FinanceViewModel : BaseViewModel
     private readonly IFinanceService _financeService;
 
     public ObservableCollection<FinanceTransaction> Transactions { get; } = new();
+    public ObservableCollection<BudgetItemViewModel> Budgets { get; } = new();
+
+    [ObservableProperty]
+    private bool _hasBudgets;
+
+    [ObservableProperty]
+    private bool _isBudgetFormVisible;
+
+    [ObservableProperty]
+    private string _newBudgetCategory = string.Empty;
+
+    [ObservableProperty]
+    private string _newBudgetLimitText = string.Empty;
+
+    private Budget? _editingBudget;
+    public bool IsEditingBudget => _editingBudget != null;
 
     [ObservableProperty]
     private decimal _totalBalance;
@@ -143,11 +159,37 @@ public partial class FinanceViewModel : BaseViewModel
             }
 
             CalculateBalances(transactions);
+            await LoadBudgetsAsync(transactions);
         }
         finally
         {
             IsBusy = false;
         }
+    }
+
+    private async Task LoadBudgetsAsync(System.Collections.Generic.List<FinanceTransaction> transactions)
+    {
+        var budgets = await _financeService.GetBudgetsAsync();
+        var progress = BudgetCalculator.Compute(budgets, transactions, DateTime.Today);
+
+        Budgets.Clear();
+        foreach (var p in progress)
+        {
+            Budgets.Add(new BudgetItemViewModel
+            {
+                Id = p.Budget.Id,
+                Category = p.Budget.Category,
+                AmountText = $"{p.Spent:N2} / {p.Limit:N2}",
+                Progress = p.Progress,
+                ProgressPercentText = p.Fraction.ToString("P0", System.Globalization.CultureInfo.CurrentCulture),
+                IsOverspent = p.IsOverspent,
+                RemainingText = p.IsOverspent
+                    ? string.Format(Diarion.Resources.Localization.AppResources.BudgetOverspentFormat, Math.Abs(p.Remaining).ToString("N2"))
+                    : string.Format(Diarion.Resources.Localization.AppResources.BudgetRemainingFormat, p.Remaining.ToString("N2"))
+            });
+        }
+
+        HasBudgets = Budgets.Count > 0;
     }
 
     private void CalculateBalances(System.Collections.Generic.List<FinanceTransaction> transactions)
@@ -254,4 +296,91 @@ public partial class FinanceViewModel : BaseViewModel
             await LoadAsync();
         }
     }
+
+    // --- Budgets ---
+
+    [RelayCommand]
+    private void ShowBudgetForm()
+    {
+        _editingBudget = null;
+        OnPropertyChanged(nameof(IsEditingBudget));
+        NewBudgetCategory = string.Empty;
+        NewBudgetLimitText = string.Empty;
+        IsBudgetFormVisible = true;
+    }
+
+    [RelayCommand]
+    private void HideBudgetForm()
+    {
+        IsBudgetFormVisible = false;
+        _editingBudget = null;
+        OnPropertyChanged(nameof(IsEditingBudget));
+        NewBudgetCategory = string.Empty;
+        NewBudgetLimitText = string.Empty;
+    }
+
+    [RelayCommand]
+    private async Task EditBudgetAsync(BudgetItemViewModel item)
+    {
+        if (item == null) return;
+
+        var budget = (await _financeService.GetBudgetsAsync()).FirstOrDefault(x => x.Id == item.Id);
+        if (budget == null) return;
+
+        _editingBudget = budget;
+        OnPropertyChanged(nameof(IsEditingBudget));
+        NewBudgetCategory = budget.Category;
+        NewBudgetLimitText = budget.MonthlyLimit.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+        IsBudgetFormVisible = true;
+    }
+
+    [RelayCommand]
+    private async Task SaveBudgetAsync()
+    {
+        var category = (NewBudgetCategory ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(category)) return;
+
+        if (!decimal.TryParse((NewBudgetLimitText ?? string.Empty).Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal limit) || limit <= 0)
+        {
+            return;
+        }
+
+        var budget = _editingBudget ?? new Budget();
+        budget.Category = category;
+        budget.MonthlyLimit = limit;
+
+        await _financeService.SaveBudgetAsync(budget);
+
+        HideBudgetForm();
+        await LoadAsync();
+    }
+
+    [RelayCommand]
+    private async Task DeleteBudgetAsync(BudgetItemViewModel item)
+    {
+        if (item == null) return;
+
+        bool confirm = await _dialogService.ShowConfirmationAsync(
+            Diarion.Resources.Localization.AppResources.DeleteConfirmTitle ?? "Delete",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmMsg ?? "Are you sure you want to delete this record?",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes ?? "Yes",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo ?? "No");
+
+        if (!confirm) return;
+
+        await _financeService.DeleteBudgetAsync(item.Id);
+        await LoadAsync();
+    }
+}
+
+/// <summary>A budget's computed progress row on the finance page.</summary>
+public class BudgetItemViewModel
+{
+    public Guid Id { get; set; }
+    public string Category { get; set; } = string.Empty;
+    public string AmountText { get; set; } = string.Empty;      // "spent / limit"
+    public string RemainingText { get; set; } = string.Empty;
+    public string ProgressPercentText { get; set; } = string.Empty;
+    public double Progress { get; set; }
+    public bool IsOverspent { get; set; }
 }
