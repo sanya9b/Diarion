@@ -146,6 +146,11 @@ public class HabitService : IHabitService
         return Task.Run(() => HarmfulHabitTrackersCollection.Query().OrderByDescending(x => x.CreatedAt).ToList());
     }
 
+    public Task<HarmfulHabitTracker?> GetHarmfulHabitTrackerByIdAsync(Guid id)
+    {
+        return Task.Run(() => (HarmfulHabitTracker?)HarmfulHabitTrackersCollection.FindById(id));
+    }
+
     public Task SaveHarmfulHabitTrackerAsync(HarmfulHabitTracker tracker)
     {
         return Task.Run(() =>
@@ -184,6 +189,25 @@ public class HabitService : IHabitService
         return Task.Run(() =>
         {
             HarmfulHabitTrackersCollection.Delete(id);
+        });
+    }
+
+    public Task AddRelapseAsync(Guid trackerId, DateTime date, string? note)
+    {
+        return Task.Run(() =>
+        {
+            var tracker = HarmfulHabitTrackersCollection.FindById(trackerId)
+                ?? throw new InvalidOperationException("Tracker was not found.");
+
+            var d = date.Date;
+            if (d < tracker.StartDate.Date) d = tracker.StartDate.Date;
+            if (d > DateTime.Today) d = DateTime.Today;
+
+            tracker.Relapses ??= new List<RelapseEvent>();
+            tracker.Relapses.Add(new RelapseEvent { Date = d, Note = (note ?? string.Empty).Trim() });
+            tracker.Relapses = tracker.Relapses.OrderBy(r => r.Date).ToList();
+
+            HarmfulHabitTrackersCollection.Update(tracker);
         });
     }
 

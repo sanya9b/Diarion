@@ -238,6 +238,45 @@
   <data name="HabitTrackerTitle" xml:space="preserve">
     <value>Трекер звичок</value>
   </data>
+  <data name="QuitCleanTimeLabel" xml:space="preserve">
+    <value>Чистий час</value>
+  </data>
+  <data name="QuitMoneySavedLabel" xml:space="preserve">
+    <value>Заощаджено</value>
+  </data>
+  <data name="QuitRelapseButton" xml:space="preserve">
+    <value>Я зірвався</value>
+  </data>
+  <data name="QuitRelapsesLabel" xml:space="preserve">
+    <value>Зриви</value>
+  </data>
+  <data name="QuitLiveTimeFormat" xml:space="preserve">
+    <value>{0}д {1:D2}:{2:D2}:{3:D2}</value>
+  </data>
+  <data name="QuitNextMilestoneFormat" xml:space="preserve">
+    <value>Наступна ціль: {0} днів</value>
+  </data>
+  <data name="QuitAllMilestones" xml:space="preserve">
+    <value>Усі цілі досягнуто 🎉</value>
+  </data>
+  <data name="QuitRelapseConfirmTitle" xml:space="preserve">
+    <value>Зафіксувати зрив?</value>
+  </data>
+  <data name="QuitRelapseConfirmMessage" xml:space="preserve">
+    <value>Це скине лічильник чистого часу.</value>
+  </data>
+  <data name="HabitTrackerSaveButton" xml:space="preserve">
+    <value>Зберегти</value>
+  </data>
+  <data name="HabitTrackerEditTitle" xml:space="preserve">
+    <value>Редагувати трекер</value>
+  </data>
+  <data name="HabitTrackerCostLabel" xml:space="preserve">
+    <value>Ціна за одиницю</value>
+  </data>
+  <data name="HabitTrackerUnitsLabel" xml:space="preserve">
+    <value>Одиниць на день</value>
+  </data>
   <data name="HabitTrackerSubtitle" xml:space="preserve">
     <value>Створи окремий трекер для кожної звички та відмічай кожен чистий день.</value>
   </data>
