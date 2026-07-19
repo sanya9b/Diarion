@@ -17,4 +17,14 @@ public class HabitDefinition
     public int Order { get; set; } = int.MaxValue;
     public DateTime CreatedAt { get; set; } = DateTime.Today;
     public DateTime? DeletedAt { get; set; }
+
+    /// <summary>When this habit is expected. Defaults to daily; legacy rows without a stored schedule
+    /// deserialize to this default too.</summary>
+    public HabitSchedule Schedule { get; set; } = new();
+
+    /// <summary>Optional daily reminder time-of-day. Null means no reminder.</summary>
+    public TimeSpan? ReminderTime { get; set; }
+
+    /// <summary>Whether the habit is expected on <paramref name="date"/> (null-safe over <see cref="Schedule"/>).</summary>
+    public bool IsScheduledOn(DateTime date) => (Schedule ?? new HabitSchedule()).IsScheduledOn(date);
 }

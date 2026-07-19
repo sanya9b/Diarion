@@ -23,6 +23,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("Finance", typeof(Views.FinancePage));
         Routing.RegisterRoute("Notes", typeof(Views.NotesPage));
         Routing.RegisterRoute("NoteDetail", typeof(Views.NoteDetailPage));
+        Routing.RegisterRoute("HabitEditor", typeof(Views.HabitEditorPage));
         Routing.RegisterRoute("PinSetup", typeof(Views.PinSetupPage));
     }
 }

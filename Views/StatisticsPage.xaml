@@ -347,6 +347,45 @@
                 </Border>
             </VerticalStackLayout>
 
+            <!-- ================= HABITS TAB ================= -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsHabitsTabVisible}">
+
+                <VerticalStackLayout IsVisible="{Binding HabitStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
+                    <Label Text="🌱" FontSize="48" HorizontalOptions="Center" />
+                    <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding HabitStats.Habits}" IsVisible="{Binding HabitStats.IsNotEmpty}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="stats:HabitCardViewModel">
+                            <Border Style="{StaticResource StatCard}">
+                                <Border.Shadow>
+                                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                                </Border.Shadow>
+                                <VerticalStackLayout Spacing="12">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
+                                            <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding ScheduleText}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding StreakText, StringFormat='🔥 {0}'}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
+                                            <Label Text="{Binding StrengthText}" FontSize="22" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}" HorizontalOptions="End" />
+                                            <Label Text="{x:Static localization:AppResources.StatsHabitStrength}" FontSize="10" CharacterSpacing="1" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="End" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                    <controls:ContributionGrid HeightRequest="110"
+                                                               CompletedDates="{Binding CompletedDates}"
+                                                               StartDate="{Binding RangeStart}"
+                                                               EndDate="{Binding RangeEnd}"
+                                                               AccentColor="{DynamicResource Theme_Sage}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

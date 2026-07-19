@@ -756,6 +756,60 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string TabHabits {
+            get {
+                return ResourceManager.GetString("TabHabits", resourceCulture);
+            }
+        }
+
+        public static string StatsHabitStrength {
+            get {
+                return ResourceManager.GetString("StatsHabitStrength", resourceCulture);
+            }
+        }
+
+        public static string HabitEditorTitle {
+            get {
+                return ResourceManager.GetString("HabitEditorTitle", resourceCulture);
+            }
+        }
+
+        public static string HabitScheduleDaily {
+            get {
+                return ResourceManager.GetString("HabitScheduleDaily", resourceCulture);
+            }
+        }
+
+        public static string HabitEditorNameRequired {
+            get {
+                return ResourceManager.GetString("HabitEditorNameRequired", resourceCulture);
+            }
+        }
+
+        public static string HabitEditorDaysRequired {
+            get {
+                return ResourceManager.GetString("HabitEditorDaysRequired", resourceCulture);
+            }
+        }
+
+        public static string HabitScheduleTimesPerWeekFormat {
+            get {
+                return ResourceManager.GetString("HabitScheduleTimesPerWeekFormat", resourceCulture);
+            }
+        }
+
+        public static string HabitStreakWeeksSuffix {
+            get {
+                return ResourceManager.GetString("HabitStreakWeeksSuffix", resourceCulture);
+            }
+        }
+
+        public static string HabitReminderMessage {
+            get {
+                return ResourceManager.GetString("HabitReminderMessage", resourceCulture);
+            }
+        }
+
         public static string StatsMoodTrend {
             get {
                 return ResourceManager.GetString("StatsMoodTrend", resourceCulture);

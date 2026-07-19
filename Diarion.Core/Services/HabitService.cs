@@ -19,6 +19,7 @@ public class HabitService : IHabitService
 
     private ILiteCollection<HabitDefinition> HabitsCollection => _dbContext.GetCollection<HabitDefinition>(DatabaseConstants.HabitDefinitionsCollection);
     private ILiteCollection<HarmfulHabitTracker> HarmfulHabitTrackersCollection => _dbContext.GetCollection<HarmfulHabitTracker>(DatabaseConstants.HarmfulHabitTrackersCollection);
+    private ILiteCollection<DiaryEntry> EntriesCollection => _dbContext.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
 
     public Task<List<HabitDefinition>> GetActiveHabitsForDateAsync(DateTime date)
     {
@@ -27,6 +28,9 @@ public class HabitService : IHabitService
             var dateOnly = date.Date;
             var defs = HabitsCollection.Query()
                 .Where(x => x.CreatedAt <= dateOnly && (x.DeletedAt == null || x.DeletedAt > dateOnly))
+                .ToList()
+                // Only surface habits scheduled for this weekday (IsScheduledOn isn't LiteDB-queryable).
+                .Where(x => x.IsScheduledOn(dateOnly))
                 .ToList();
 
             // Built-in default habits are re-localized to the current UI language here so they
@@ -42,9 +46,70 @@ public class HabitService : IHabitService
         });
     }
 
+    public Task<List<HabitCompletionHistory>> GetHabitCompletionsAsync(DateTime start, DateTime end)
+    {
+        return Task.Run(() =>
+        {
+            var startDate = start.Date;
+            var endDate = end.Date;
+
+            // Habits that existed at any point in the window (created on/before the end, not deleted before the start).
+            var defs = HabitsCollection.Query()
+                .Where(x => x.CreatedAt <= endDate && (x.DeletedAt == null || x.DeletedAt > startDate))
+                .ToList()
+                .OrderBy(d => d.Order)
+                .ThenBy(d => d.CreatedAt)
+                .ToList();
+
+            var byId = new Dictionary<Guid, HabitCompletionHistory>();
+            var result = new List<HabitCompletionHistory>();
+            foreach (var d in defs)
+            {
+                var name = HabitLocalization.ResolveName(d);
+                if (string.IsNullOrEmpty(name)) name = d.Name;
+
+                var hist = new HabitCompletionHistory
+                {
+                    HabitId = d.Id,
+                    Name = name,
+                    CreatedAt = d.CreatedAt.Date,
+                    Schedule = d.Schedule ?? new HabitSchedule(),
+                    CompletedDates = new HashSet<DateTime>()
+                };
+                byId[d.Id] = hist;
+                result.Add(hist);
+            }
+
+            var entries = EntriesCollection.Find(x => x.Date >= startDate && x.Date <= endDate).ToList();
+            foreach (var entry in entries)
+            {
+                var day = entry.Date.Date;
+                foreach (var h in entry.HabitsList)
+                {
+                    if (h.IsCompleted && byId.TryGetValue(h.HabitId, out var hist))
+                    {
+                        hist.CompletedDates.Add(day);
+                    }
+                }
+            }
+
+            return result;
+        });
+    }
+
     public Task AddHabitDefinitionAsync(HabitDefinition habit)
     {
         return Task.Run(() => HabitsCollection.Insert(habit));
+    }
+
+    public Task<HabitDefinition?> GetHabitDefinitionByIdAsync(Guid id)
+    {
+        return Task.Run(() => (HabitDefinition?)HabitsCollection.FindById(id));
+    }
+
+    public Task UpdateHabitDefinitionAsync(HabitDefinition habit)
+    {
+        return Task.Run(() => HabitsCollection.Update(habit));
     }
 
     public Task DeleteHabitDefinitionAsync(Guid id, DateTime deleteDate)

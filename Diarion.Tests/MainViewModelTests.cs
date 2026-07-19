@@ -85,7 +85,8 @@ public class MainViewModelTests
         _habitsSection = new HabitsSectionViewModel(
             _habitServiceMock.Object,
             _dialogServiceMock.Object,
-            _calendarSection);
+            _calendarSection,
+            _navigationServiceMock.Object);
     }
 
     private MainViewModel CreateViewModel()
