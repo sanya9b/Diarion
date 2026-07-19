@@ -64,12 +64,18 @@ public partial class HabitStatsViewModel : ObservableObject
                 var strength = HabitStrengthCalculator.Strength(h.CompletedDates, from, today, h.Schedule);
                 var streak = HabitStrengthCalculator.CurrentStreak(h.CompletedDates, today, h.Schedule);
 
+                // A TimesPerWeek streak counts weeks, not days — mark it so "🔥 5" isn't misread.
+                var isWeekly = h.Schedule?.Type == Diarion.Models.HabitScheduleType.TimesPerWeek;
+                var streakText = isWeekly
+                    ? streak.ToString(CultureInfo.CurrentCulture) + " " + Diarion.Resources.Localization.AppResources.HabitStreakWeeksSuffix
+                    : streak.ToString(CultureInfo.CurrentCulture);
+
                 Habits.Add(new HabitCardViewModel
                 {
                     Name = h.Name,
                     ScheduleText = HabitScheduleFormatter.Describe(h.Schedule),
                     StrengthText = strength.ToString("0", CultureInfo.CurrentCulture) + "%",
-                    StreakText = streak.ToString(CultureInfo.CurrentCulture),
+                    StreakText = streakText,
                     CompletedDates = h.CompletedDates.ToList(),
                     RangeStart = rangeStart,
                     RangeEnd = today

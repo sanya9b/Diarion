@@ -51,6 +51,22 @@ public class HabitEditorViewModelTests
     }
 
     [Fact]
+    public async Task Save_TimesPerWeek_AddsWithWeeklyTarget()
+    {
+        var vm = CreateVm();
+        vm.Name = "Run";
+        vm.SetTimesPerWeekCommand.Execute(null);
+        vm.IncrementTimesCommand.Execute(null); // default 3 -> 4
+
+        await vm.SaveCommand.ExecuteAsync(null);
+
+        _habitService.Verify(s => s.AddHabitDefinitionAsync(It.Is<HabitDefinition>(h =>
+            h.Schedule.Type == HabitScheduleType.TimesPerWeek &&
+            h.Schedule.TimesPerWeek == 4)), Times.Once);
+        _navigation.Verify(n => n.NavigateBackAsync(), Times.Once);
+    }
+
+    [Fact]
     public async Task Save_EmptyName_ShowsValidation_AndDoesNotSave()
     {
         var vm = CreateVm();

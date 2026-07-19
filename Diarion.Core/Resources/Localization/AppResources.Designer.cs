@@ -792,6 +792,18 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string HabitScheduleTimesPerWeekFormat {
+            get {
+                return ResourceManager.GetString("HabitScheduleTimesPerWeekFormat", resourceCulture);
+            }
+        }
+
+        public static string HabitStreakWeeksSuffix {
+            get {
+                return ResourceManager.GetString("HabitStreakWeeksSuffix", resourceCulture);
+            }
+        }
+
         public static string StatsMoodTrend {
             get {
                 return ResourceManager.GetString("StatsMoodTrend", resourceCulture);

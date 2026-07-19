@@ -48,8 +48,8 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="{localization:Translate Key=HabitScheduleLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Sage}" />
 
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                        <Border Grid.Column="0" Padding="0,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                        <Border Grid.Column="0" Padding="4,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
                                 Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
                             <Border.Triggers>
                                 <DataTrigger TargetType="Border" Binding="{Binding IsDaily}" Value="True">
@@ -60,7 +60,7 @@
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetDailyCommand}" />
                             </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=HabitScheduleDaily}" HorizontalOptions="Center" FontSize="14" FontAttributes="Bold">
+                            <Label Text="{localization:Translate Key=HabitScheduleDaily}" HorizontalOptions="Center" HorizontalTextAlignment="Center" FontSize="13" FontAttributes="Bold" LineBreakMode="TailTruncation">
                                 <Label.Triggers>
                                     <DataTrigger TargetType="Label" Binding="{Binding IsDaily}" Value="True">
                                         <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
@@ -72,7 +72,7 @@
                             </Label>
                         </Border>
 
-                        <Border Grid.Column="1" Padding="0,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
+                        <Border Grid.Column="1" Padding="4,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
                                 Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
                             <Border.Triggers>
                                 <DataTrigger TargetType="Border" Binding="{Binding IsSpecificDays}" Value="True">
@@ -83,12 +83,35 @@
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetSpecificDaysCommand}" />
                             </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=HabitScheduleSpecificDays}" HorizontalOptions="Center" FontSize="14" FontAttributes="Bold">
+                            <Label Text="{localization:Translate Key=HabitScheduleSpecificDays}" HorizontalOptions="Center" HorizontalTextAlignment="Center" FontSize="13" FontAttributes="Bold" LineBreakMode="TailTruncation">
                                 <Label.Triggers>
                                     <DataTrigger TargetType="Label" Binding="{Binding IsSpecificDays}" Value="True">
                                         <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
                                     </DataTrigger>
                                     <DataTrigger TargetType="Label" Binding="{Binding IsSpecificDays}" Value="False">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Border>
+
+                        <Border Grid.Column="2" Padding="4,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsTimesPerWeek}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SetTimesPerWeekCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{localization:Translate Key=HabitScheduleTimesPerWeek}" HorizontalOptions="Center" HorizontalTextAlignment="Center" FontSize="13" FontAttributes="Bold" LineBreakMode="TailTruncation">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsTimesPerWeek}" Value="True">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsTimesPerWeek}" Value="False">
                                         <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
                                     </DataTrigger>
                                 </Label.Triggers>
@@ -126,6 +149,23 @@
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </FlexLayout>
+
+                    <!-- Times-per-week count -->
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" IsVisible="{Binding IsTimesPerWeek}">
+                        <Label Grid.Column="0" Text="{Binding TimesPerWeekText}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Border Grid.Column="1" WidthRequest="40" HeightRequest="40" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding DecrementTimesCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="−" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                        <Border Grid.Column="2" WidthRequest="40" HeightRequest="40" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding IncrementTimesCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="+" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                    </Grid>
                 </VerticalStackLayout>
 
                 <Label Text="{Binding ValidationMessage}" IsVisible="{Binding HasValidationMessage}"

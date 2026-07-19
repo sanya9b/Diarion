@@ -35,10 +35,19 @@ public partial class HabitEditorViewModel : BaseViewModel
     private string _name = string.Empty;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsSpecificDays))]
     private bool _isDaily = true;
 
-    public bool IsSpecificDays => !IsDaily;
+    [ObservableProperty]
+    private bool _isSpecificDays;
+
+    [ObservableProperty]
+    private bool _isTimesPerWeek;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TimesPerWeekText))]
+    private int _timesPerWeek = 3;
+
+    public string TimesPerWeekText => string.Format(AppResources.HabitScheduleTimesPerWeekFormat, TimesPerWeek);
 
     [ObservableProperty]
     private bool _isExisting;
@@ -97,6 +106,10 @@ public partial class HabitEditorViewModel : BaseViewModel
 
         var schedule = def.Schedule ?? new HabitSchedule();
         IsDaily = schedule.Type == HabitScheduleType.Daily;
+        IsSpecificDays = schedule.Type == HabitScheduleType.SpecificDays;
+        IsTimesPerWeek = schedule.Type == HabitScheduleType.TimesPerWeek;
+        if (schedule.TimesPerWeek is >= 1 and <= 7) TimesPerWeek = schedule.TimesPerWeek;
+
         var selected = new HashSet<int>(schedule.DaysOfWeek ?? new List<int>());
         foreach (var day in Weekdays)
         {
@@ -105,17 +118,39 @@ public partial class HabitEditorViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void SetDaily() => IsDaily = true;
+    private void SetDaily() => SelectType(daily: true, specific: false, weekly: false);
 
     [RelayCommand]
-    private void SetSpecificDays() => IsDaily = false;
+    private void SetSpecificDays() => SelectType(daily: false, specific: true, weekly: false);
+
+    [RelayCommand]
+    private void SetTimesPerWeek() => SelectType(daily: false, specific: false, weekly: true);
+
+    private void SelectType(bool daily, bool specific, bool weekly)
+    {
+        IsDaily = daily;
+        IsSpecificDays = specific;
+        IsTimesPerWeek = weekly;
+    }
+
+    [RelayCommand]
+    private void IncrementTimes()
+    {
+        if (TimesPerWeek < 7) TimesPerWeek++;
+    }
+
+    [RelayCommand]
+    private void DecrementTimes()
+    {
+        if (TimesPerWeek > 1) TimesPerWeek--;
+    }
 
     [RelayCommand]
     private void ToggleWeekday(WeekdayToggle? day)
     {
         if (day == null) return;
         day.IsSelected = !day.IsSelected;
-        IsDaily = false; // choosing days implies a specific-days schedule
+        SelectType(daily: false, specific: true, weekly: false); // choosing days implies specific-days
     }
 
     [RelayCommand]
@@ -131,11 +166,12 @@ public partial class HabitEditorViewModel : BaseViewModel
         }
 
         var schedule = new HabitSchedule();
-        if (IsDaily)
+        if (IsTimesPerWeek)
         {
-            schedule.Type = HabitScheduleType.Daily;
+            schedule.Type = HabitScheduleType.TimesPerWeek;
+            schedule.TimesPerWeek = Math.Clamp(TimesPerWeek, 1, 7);
         }
-        else
+        else if (IsSpecificDays)
         {
             var days = Weekdays.Where(w => w.IsSelected).Select(w => w.DayOfWeek).OrderBy(x => x).ToList();
             if (days.Count == 0)
@@ -145,6 +181,10 @@ public partial class HabitEditorViewModel : BaseViewModel
             }
             schedule.Type = HabitScheduleType.SpecificDays;
             schedule.DaysOfWeek = days;
+        }
+        else
+        {
+            schedule.Type = HabitScheduleType.Daily;
         }
 
         if (IsExisting)

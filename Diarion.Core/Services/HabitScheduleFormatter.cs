@@ -11,6 +11,12 @@ public static class HabitScheduleFormatter
     public static string Describe(HabitSchedule? schedule)
     {
         var s = schedule ?? new HabitSchedule();
+
+        if (s.Type == HabitScheduleType.TimesPerWeek)
+        {
+            return string.Format(AppResources.HabitScheduleTimesPerWeekFormat, System.Math.Max(1, s.TimesPerWeek));
+        }
+
         if (s.Type == HabitScheduleType.Daily || s.DaysOfWeek == null || s.DaysOfWeek.Count == 0)
         {
             return AppResources.HabitScheduleDaily;

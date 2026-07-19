@@ -96,4 +96,33 @@ public class HabitStrengthCalculatorTests
 
         HabitStrengthCalculator.CurrentStreak(set, Today, schedule).Should().Be(3);
     }
+
+    [Fact]
+    public void Strength_TimesPerWeek_MeetingTargetEveryWeek_IsHigh()
+    {
+        var schedule = new HabitSchedule { Type = HabitScheduleType.TimesPerWeek, TimesPerWeek = 3 };
+        var from = Today.AddDays(-181); // ~26 weeks
+
+        var set = new HashSet<DateTime>();
+        for (var d = from; d <= Today; d = d.AddDays(1))
+        {
+            if (d.DayOfWeek is DayOfWeek.Monday or DayOfWeek.Tuesday or DayOfWeek.Wednesday) set.Add(d); // 3/week
+        }
+
+        HabitStrengthCalculator.Strength(set, from, Today, schedule).Should().BeGreaterThan(90);
+    }
+
+    [Fact]
+    public void CurrentStreak_TimesPerWeek_CountsConsecutiveWeeksMeetingTarget()
+    {
+        var schedule = new HabitSchedule { Type = HabitScheduleType.TimesPerWeek, TimesPerWeek = 2 };
+        var set = new HashSet<DateTime>
+        {
+            new(2026, 6, 29), new(2026, 6, 30), // current week (Mon Jun29–): 2 -> meets
+            new(2026, 6, 22), new(2026, 6, 24), // previous week: 2 -> meets
+            new(2026, 6, 15)                     // week before: 1 -> misses, streak stops
+        };
+
+        HabitStrengthCalculator.CurrentStreak(set, Today, schedule).Should().Be(2);
+    }
 }

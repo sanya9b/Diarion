@@ -214,6 +214,15 @@
   <data name="HabitEditorDaysRequired" xml:space="preserve">
     <value>Оберіть хоча б один день.</value>
   </data>
+  <data name="HabitScheduleTimesPerWeek" xml:space="preserve">
+    <value>Щотижня</value>
+  </data>
+  <data name="HabitScheduleTimesPerWeekFormat" xml:space="preserve">
+    <value>{0}× на тиждень</value>
+  </data>
+  <data name="HabitStreakWeeksSuffix" xml:space="preserve">
+    <value>тиж</value>
+  </data>
   <data name="NoTasks" xml:space="preserve">
     <value>Немає завдань на цей день</value>
   </data>
