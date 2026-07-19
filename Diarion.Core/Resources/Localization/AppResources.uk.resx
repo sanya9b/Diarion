@@ -796,6 +796,18 @@
   <data name="BudgetOverspentFormat" xml:space="preserve">
     <value>Перевитрата {0}</value>
   </data>
+  <data name="BudgetNoExpenses" xml:space="preserve">
+    <value>Немає витрат у цій категорії цього місяця.</value>
+  </data>
+  <data name="BudgetEditButton" xml:space="preserve">
+    <value>Редагувати</value>
+  </data>
+  <data name="BudgetDeleteButton" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="SettingsBudgetsToggle" xml:space="preserve">
+    <value>Показувати бюджети у Фінансах</value>
+  </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Недостатньо даних за цей період.</value>
   </data>

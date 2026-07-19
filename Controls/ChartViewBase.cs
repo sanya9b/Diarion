@@ -57,6 +57,11 @@ public abstract class ChartViewBase : GraphicsView, IDrawable
     {
         Drawable = this;
         BackgroundColor = Colors.Transparent;
+
+        // A GraphicsView bound before its platform view exists / before it has a size can miss its first
+        // (and only) draw and render blank. Re-invalidate once it's realized and whenever it's resized.
+        Loaded += (_, _) => Invalidate();
+        SizeChanged += (_, _) => Invalidate();
     }
 
     protected static void OnVisualChanged(BindableObject bindable, object oldValue, object newValue)

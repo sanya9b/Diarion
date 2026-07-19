@@ -12,12 +12,35 @@ namespace Diarion.ViewModels;
 public partial class FinanceViewModel : BaseViewModel
 {
     private readonly IFinanceService _financeService;
+    private readonly IProfileService _profileService;
 
     public ObservableCollection<FinanceTransaction> Transactions { get; } = new();
     public ObservableCollection<BudgetItemViewModel> Budgets { get; } = new();
 
     [ObservableProperty]
     private bool _hasBudgets;
+
+    /// <summary>Whether the budgets feature is enabled in settings.</summary>
+    [ObservableProperty]
+    private bool _showBudgets = true;
+
+    // --- Category detail (tap a budget widget) ---
+    public ObservableCollection<FinanceTransaction> CategoryTransactions { get; } = new();
+
+    [ObservableProperty]
+    private bool _isCategoryDetailVisible;
+
+    [ObservableProperty]
+    private string _categoryDetailTitle = string.Empty;
+
+    [ObservableProperty]
+    private string _categoryDetailSummary = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasCategoryTransactions;
+
+    [ObservableProperty]
+    private BudgetItemViewModel? _selectedBudget;
 
     [ObservableProperty]
     private bool _isBudgetFormVisible;
@@ -75,10 +98,11 @@ public partial class FinanceViewModel : BaseViewModel
 
     private readonly IDialogService _dialogService;
 
-    public FinanceViewModel(IFinanceService financeService, IDialogService dialogService)
+    public FinanceViewModel(IFinanceService financeService, IDialogService dialogService, IProfileService profileService)
     {
         _financeService = financeService;
         _dialogService = dialogService;
+        _profileService = profileService;
         Title = Diarion.Resources.Localization.AppResources.FinanceTitle ?? "Income/Expenses";
     }
 
@@ -159,12 +183,49 @@ public partial class FinanceViewModel : BaseViewModel
             }
 
             CalculateBalances(transactions);
+
+            var profile = await _profileService.GetUserProfileAsync();
+            ShowBudgets = profile?.IsBudgetsEnabled ?? true;
+
             await LoadBudgetsAsync(transactions);
         }
         finally
         {
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private void ShowCategoryDetail(BudgetItemViewModel item)
+    {
+        if (item == null) return;
+
+        var today = DateTime.Today;
+        var expenses = Transactions
+            .Where(t => t.Type == TransactionType.Expense
+                        && t.Date.Year == today.Year && t.Date.Month == today.Month
+                        && string.Equals(t.Category ?? string.Empty, item.Category ?? string.Empty, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(t => t.Date)
+            .ToList();
+
+        CategoryTransactions.Clear();
+        foreach (var t in expenses)
+        {
+            CategoryTransactions.Add(t);
+        }
+
+        HasCategoryTransactions = CategoryTransactions.Count > 0;
+        SelectedBudget = item;
+        CategoryDetailTitle = item.Category;
+        CategoryDetailSummary = item.AmountText;
+        IsCategoryDetailVisible = true;
+    }
+
+    [RelayCommand]
+    private void HideCategoryDetail()
+    {
+        IsCategoryDetailVisible = false;
+        CategoryTransactions.Clear();
     }
 
     private async Task LoadBudgetsAsync(System.Collections.Generic.List<FinanceTransaction> transactions)
@@ -324,6 +385,8 @@ public partial class FinanceViewModel : BaseViewModel
     {
         if (item == null) return;
 
+        IsCategoryDetailVisible = false;
+
         var budget = (await _financeService.GetBudgetsAsync()).FirstOrDefault(x => x.Id == item.Id);
         if (budget == null) return;
 
@@ -359,6 +422,8 @@ public partial class FinanceViewModel : BaseViewModel
     private async Task DeleteBudgetAsync(BudgetItemViewModel item)
     {
         if (item == null) return;
+
+        IsCategoryDetailVisible = false;
 
         bool confirm = await _dialogService.ShowConfirmationAsync(
             Diarion.Resources.Localization.AppResources.DeleteConfirmTitle ?? "Delete",

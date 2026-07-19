@@ -796,6 +796,18 @@
   <data name="BudgetOverspentFormat" xml:space="preserve">
     <value>Over by {0}</value>
   </data>
+  <data name="BudgetNoExpenses" xml:space="preserve">
+    <value>No expenses in this category this month.</value>
+  </data>
+  <data name="BudgetEditButton" xml:space="preserve">
+    <value>Edit budget</value>
+  </data>
+  <data name="BudgetDeleteButton" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="SettingsBudgetsToggle" xml:space="preserve">
+    <value>Show budgets in Finance</value>
+  </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Not enough data for this period.</value>
   </data>

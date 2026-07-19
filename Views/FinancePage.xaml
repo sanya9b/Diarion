@@ -80,8 +80,8 @@
                             TextColor="{DynamicResource Theme_Snow_Midnight}"
                             FontAttributes="Bold" />
 
-                    <!-- Бюджети -->
-                    <VerticalStackLayout Spacing="10">
+                    <!-- Бюджети (горизонтальна смуга віджетів) -->
+                    <VerticalStackLayout Spacing="10" IsVisible="{Binding ShowBudgets}">
                         <Grid ColumnDefinitions="*,Auto">
                             <Label Grid.Column="0" Text="{localization:Translate Key=BudgetsLabel}" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{localization:Translate Key=AddBudgetButton}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}">
@@ -91,57 +91,45 @@
                             </Label>
                         </Grid>
 
-                        <VerticalStackLayout Spacing="10" IsVisible="{Binding HasBudgets}" BindableLayout.ItemsSource="{Binding Budgets}">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="viewModels:BudgetItemViewModel">
-                                    <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" StrokeShape="RoundRectangle 16" Padding="14,12">
-                                        <VerticalStackLayout Spacing="8">
-                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
-                                                <Label Grid.Column="0" Text="{Binding Category}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" VerticalOptions="Center" />
-                                                <Label Grid.Column="1" Text="{Binding AmountText}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                                                <Grid Grid.Column="2" Padding="6,0" BackgroundColor="Transparent">
-                                                    <Grid.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.EditBudgetCommand}" CommandParameter="{Binding .}" />
-                                                    </Grid.GestureRecognizers>
-                                                    <Label Text="✏️" FontSize="13" InputTransparent="True" />
-                                                </Grid>
-                                                <Grid Grid.Column="3" Padding="6,0" BackgroundColor="Transparent">
-                                                    <Grid.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteBudgetCommand}" CommandParameter="{Binding .}" />
-                                                    </Grid.GestureRecognizers>
-                                                    <Label Text="✕" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" InputTransparent="True" />
-                                                </Grid>
-                                            </Grid>
-
-                                            <ProgressBar Progress="{Binding Progress}">
-                                                <ProgressBar.Triggers>
-                                                    <DataTrigger TargetType="ProgressBar" Binding="{Binding IsOverspent}" Value="True">
-                                                        <Setter Property="ProgressColor" Value="{DynamicResource Theme_Coral}" />
-                                                    </DataTrigger>
-                                                    <DataTrigger TargetType="ProgressBar" Binding="{Binding IsOverspent}" Value="False">
-                                                        <Setter Property="ProgressColor" Value="{DynamicResource Theme_Sage}" />
-                                                    </DataTrigger>
-                                                </ProgressBar.Triggers>
-                                            </ProgressBar>
-
-                                            <Grid ColumnDefinitions="*,Auto">
-                                                <Label Grid.Column="0" Text="{Binding RemainingText}" FontSize="11" VerticalOptions="Center">
-                                                    <Label.Triggers>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding IsOverspent}" Value="True">
-                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" IsVisible="{Binding HasBudgets}">
+                            <HorizontalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Budgets}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:BudgetItemViewModel">
+                                        <Border WidthRequest="140" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" StrokeShape="RoundRectangle 16" Padding="12,10">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ShowCategoryDetailCommand}" CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <VerticalStackLayout Spacing="6">
+                                                <Label Text="{Binding Category}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                                <ProgressBar Progress="{Binding Progress}">
+                                                    <ProgressBar.Triggers>
+                                                        <DataTrigger TargetType="ProgressBar" Binding="{Binding IsOverspent}" Value="True">
+                                                            <Setter Property="ProgressColor" Value="{DynamicResource Theme_Coral}" />
                                                         </DataTrigger>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding IsOverspent}" Value="False">
-                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                                        <DataTrigger TargetType="ProgressBar" Binding="{Binding IsOverspent}" Value="False">
+                                                            <Setter Property="ProgressColor" Value="{DynamicResource Theme_Sage}" />
                                                         </DataTrigger>
-                                                    </Label.Triggers>
-                                                </Label>
-                                                <Label Grid.Column="1" Text="{Binding ProgressPercentText}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                            </Grid>
-                                        </VerticalStackLayout>
-                                    </Border>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
+                                                    </ProgressBar.Triggers>
+                                                </ProgressBar>
+                                                <Grid ColumnDefinitions="Auto,*">
+                                                    <Label Grid.Column="0" Text="{Binding ProgressPercentText}" FontSize="12" FontAttributes="Bold">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsOverspent}" Value="True">
+                                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsOverspent}" Value="False">
+                                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                    <Label Grid.Column="1" Text="{Binding AmountText}" FontSize="9" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                                                </Grid>
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+                        </ScrollView>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </CollectionView.Header>
@@ -395,6 +383,77 @@
                             BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
                             TextColor="{DynamicResource Theme_Snow_Midnight}"
                             FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Category detail overlay (tap a budget widget) -->
+        <Grid Grid.RowSpan="2"
+              BackgroundColor="{DynamicResource Theme_Val_99000000_B3000000}"
+              IsVisible="{Binding IsCategoryDetailVisible}"
+              InputTransparent="False">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding HideCategoryDetailCommand}" />
+            </Grid.GestureRecognizers>
+
+            <Border StrokeShape="RoundRectangle 24"
+                    StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    Padding="20,16"
+                    Margin="24"
+                    VerticalOptions="Center">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                </Border.Shadow>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer />
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="{Binding CategoryDetailTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                            <Label Text="{Binding CategoryDetailSummary}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </VerticalStackLayout>
+                        <Grid Grid.Column="1" Padding="8,0,0,8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding HideCategoryDetailCommand}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✕" FontSize="20" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </Grid>
+                    </Grid>
+
+                    <Label Text="{localization:Translate Key=BudgetNoExpenses}"
+                           FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}"
+                           IsVisible="{Binding HasCategoryTransactions, Converter={toolkit:InvertedBoolConverter}}" />
+
+                    <ScrollView MaximumHeightRequest="260" IsVisible="{Binding HasCategoryTransactions}">
+                        <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding CategoryTransactions}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:FinanceTransaction">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding Note}" FontSize="13" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" IsVisible="{Binding Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
+                                            <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding Amount, StringFormat='-{0:N2}'}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </ScrollView>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,4,0,0">
+                        <Button Grid.Column="0" Text="{localization:Translate Key=BudgetEditButton}"
+                                Command="{Binding EditBudgetCommand}" CommandParameter="{Binding SelectedBudget}"
+                                BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                BorderColor="{DynamicResource Theme_Dust_Ocean}" BorderWidth="1" CornerRadius="12" FontSize="13" />
+                        <Button Grid.Column="1" Text="{localization:Translate Key=BudgetDeleteButton}"
+                                Command="{Binding DeleteBudgetCommand}" CommandParameter="{Binding SelectedBudget}"
+                                BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Coral}"
+                                BorderColor="{DynamicResource Theme_Coral}" BorderWidth="1" CornerRadius="12" FontSize="13" />
+                    </Grid>
                 </VerticalStackLayout>
             </Border>
         </Grid>

@@ -1277,6 +1277,10 @@ public static string ClearAllDataSuccessMsg {
         public static string BudgetOverspentFormat {
             get { return ResourceManager.GetString("BudgetOverspentFormat", resourceCulture) ?? "Over by {0}"; }
         }
+
+        public static string SettingsBudgetsToggle {
+            get { return ResourceManager.GetString("SettingsBudgetsToggle", resourceCulture) ?? "Show budgets in Finance"; }
+        }
     }
 }
 

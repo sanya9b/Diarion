@@ -35,7 +35,7 @@ public class FinanceViewModelTests
                 new() { Type = TransactionType.Expense, Amount = 100m, Date = new DateTime(currentYear, currentMonth, 1).AddMonths(-1) }
             });
 
-        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object);
+        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
 
         // Act
         await viewModel.LoadAsync();
@@ -71,7 +71,7 @@ public class FinanceViewModelTests
                 return Task.CompletedTask;
             });
 
-        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object);
+        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         await viewModel.LoadAsync();
 
         viewModel.NewTransactionType = TransactionType.Expense;
@@ -99,7 +99,7 @@ public class FinanceViewModelTests
     {
         // Arrange
         var diaryServiceMock = new Mock<IFinanceService>();
-        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object);
+        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         
         viewModel.NewAmountText = "invalid_number";
 
@@ -115,7 +115,7 @@ public class FinanceViewModelTests
     {
         // Arrange
         var diaryServiceMock = new Mock<IFinanceService>();
-        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object);
+        var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         
         viewModel.NewAmountText = "-50";
 
@@ -135,7 +135,7 @@ public class FinanceViewModelTests
             .Setup(s => s.GetCategoriesAsync(TransactionType.Expense))
             .ReturnsAsync(new List<string> { "Groceries", "Transport", "Entertainment" });
             
-        var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object);
+        var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         
         // Act - Open the add dialog
         await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null);
@@ -159,7 +159,7 @@ public class FinanceViewModelTests
             .Setup(s => s.GetCategoriesAsync(TransactionType.Income))
             .ReturnsAsync(new List<string> { "Salary", "Bonus" });
             
-        var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object);
+        var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null); // Defaults to Expense
         
         // Act
@@ -181,7 +181,7 @@ public class FinanceViewModelTests
             .Setup(s => s.GetCategoriesAsync(It.IsAny<TransactionType>()))
             .ReturnsAsync(new List<string> { "Groceries" });
             
-        var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object);
+        var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null);
         
         // Ensure suggestions are initially populated
@@ -208,7 +208,7 @@ public class FinanceViewModelTests
             new() { Category = "Food", MonthlyLimit = 100m }
         });
 
-        var viewModel = new FinanceViewModel(financeMock.Object, new Mock<IDialogService>().Object);
+        var viewModel = new FinanceViewModel(financeMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         await viewModel.LoadAsync();
 
         viewModel.HasBudgets.Should().BeTrue();
@@ -225,7 +225,7 @@ public class FinanceViewModelTests
         financeMock.Setup(s => s.GetFinanceTransactionsAsync()).ReturnsAsync(new List<FinanceTransaction>());
         financeMock.Setup(s => s.GetBudgetsAsync()).ReturnsAsync(new List<Budget>());
 
-        var viewModel = new FinanceViewModel(financeMock.Object, new Mock<IDialogService>().Object);
+        var viewModel = new FinanceViewModel(financeMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         viewModel.NewBudgetCategory = "Food";
         viewModel.NewBudgetLimitText = "150";
 
@@ -233,5 +233,46 @@ public class FinanceViewModelTests
 
         financeMock.Verify(s => s.SaveBudgetAsync(It.Is<Budget>(b => b.Category == "Food" && b.MonthlyLimit == 150m)), Times.Once);
         viewModel.IsBudgetFormVisible.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task LoadAsync_ShowBudgets_ReflectsProfileFlag()
+    {
+        var financeMock = new Mock<IFinanceService>();
+        financeMock.Setup(s => s.GetFinanceTransactionsAsync()).ReturnsAsync(new List<FinanceTransaction>());
+        financeMock.Setup(s => s.GetBudgetsAsync()).ReturnsAsync(new List<Budget>());
+        var profileMock = new Mock<IProfileService>();
+        profileMock.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile { IsBudgetsEnabled = false });
+
+        var viewModel = new FinanceViewModel(financeMock.Object, new Mock<IDialogService>().Object, profileMock.Object);
+        await viewModel.LoadAsync();
+
+        viewModel.ShowBudgets.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ShowCategoryDetail_FiltersCurrentMonthExpensesForCategory()
+    {
+        var today = DateTime.Today;
+        var financeMock = new Mock<IFinanceService>();
+        financeMock.Setup(s => s.GetFinanceTransactionsAsync()).ReturnsAsync(new List<FinanceTransaction>
+        {
+            new() { Type = TransactionType.Expense, Category = "Food", Amount = 10m, Date = today },
+            new() { Type = TransactionType.Expense, Category = "Food", Amount = 20m, Date = today.AddMonths(-1) }, // other month
+            new() { Type = TransactionType.Income, Category = "Food", Amount = 99m, Date = today },                // income
+            new() { Type = TransactionType.Expense, Category = "Transport", Amount = 5m, Date = today }            // other category
+        });
+        financeMock.Setup(s => s.GetBudgetsAsync()).ReturnsAsync(new List<Budget> { new() { Category = "Food", MonthlyLimit = 100m } });
+
+        var viewModel = new FinanceViewModel(financeMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
+        await viewModel.LoadAsync();
+
+        var foodBudget = viewModel.Budgets.First(b => b.Category == "Food");
+        viewModel.ShowCategoryDetailCommand.Execute(foodBudget);
+
+        viewModel.IsCategoryDetailVisible.Should().BeTrue();
+        viewModel.CategoryDetailTitle.Should().Be("Food");
+        viewModel.HasCategoryTransactions.Should().BeTrue();
+        viewModel.CategoryTransactions.Should().ContainSingle(t => t.Amount == 10m);
     }
 }
