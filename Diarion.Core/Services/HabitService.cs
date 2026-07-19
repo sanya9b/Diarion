@@ -81,6 +81,11 @@ public class HabitService : IHabitService
         return Task.Run(() => HarmfulHabitTrackersCollection.Query().OrderByDescending(x => x.CreatedAt).ToList());
     }
 
+    public Task<HarmfulHabitTracker?> GetHarmfulHabitTrackerByIdAsync(Guid id)
+    {
+        return Task.Run(() => (HarmfulHabitTracker?)HarmfulHabitTrackersCollection.FindById(id));
+    }
+
     public Task SaveHarmfulHabitTrackerAsync(HarmfulHabitTracker tracker)
     {
         return Task.Run(() =>

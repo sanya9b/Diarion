@@ -161,6 +161,14 @@
 
                             <!-- Quit-tracker stats -->
                             <VerticalStackLayout Spacing="12">
+                                <!-- Edit tracker (name / start / cost / units) -->
+                                <Label Text="✎" FontSize="16" HorizontalOptions="End" TextColor="{DynamicResource Theme_Ocean_Dust}"
+                                       SemanticProperties.Description="{localization:Translate Key=HabitTrackerEditTitle}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding EditTrackerCommand}" CommandParameter="{Binding SelectedTracker}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+
                                 <!-- Live clean-time hero -->
                                 <Border StrokeThickness="0" StrokeShape="RoundRectangle 18"
                                         BackgroundColor="{DynamicResource Theme_Val_1AC26D53_26FFFFFF}" Padding="16">
@@ -296,7 +304,7 @@
                 <VerticalStackLayout Spacing="16">
                     <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
                         <VerticalStackLayout VerticalOptions="Center" Spacing="4">
-                            <Label Text="{localization:Translate Key=HabitTrackerSetupTitle}"
+                            <Label Text="{Binding FormTitleText}"
                                    FontSize="18"
                                    FontAttributes="Bold"
                                    TextColor="{DynamicResource Theme_Midnight_Snow}" />
@@ -327,12 +335,23 @@
                                 MaximumDate="{Binding MaxTrackerStartDate}"
                                 TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="{localization:Translate Key=HabitTrackerCostLabel}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Entry Text="{Binding NewTrackerCost}" Keyboard="Numeric" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Dust_Ocean}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="{localization:Translate Key=HabitTrackerUnitsLabel}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Entry Text="{Binding NewTrackerUnits}" Keyboard="Numeric" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Dust_Ocean}" />
+                        </VerticalStackLayout>
+                    </Grid>
+
                     <Label Text="{Binding ValidationMessage}"
                            IsVisible="{Binding HasValidationMessage}"
                            FontSize="12"
                            TextColor="{DynamicResource Theme_Coral}" />
 
-                    <Button Text="{localization:Translate Key=HabitTrackerAddButton}"
+                    <Button Text="{Binding FormButtonText}"
                             Command="{Binding AddTrackerCommand}"
                             CornerRadius="18"
                             Padding="18,12"

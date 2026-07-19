@@ -220,6 +220,18 @@
   <data name="QuitRelapseConfirmMessage" xml:space="preserve">
     <value>Це скине лічильник чистого часу.</value>
   </data>
+  <data name="HabitTrackerSaveButton" xml:space="preserve">
+    <value>Зберегти</value>
+  </data>
+  <data name="HabitTrackerEditTitle" xml:space="preserve">
+    <value>Редагувати трекер</value>
+  </data>
+  <data name="HabitTrackerCostLabel" xml:space="preserve">
+    <value>Ціна за одиницю</value>
+  </data>
+  <data name="HabitTrackerUnitsLabel" xml:space="preserve">
+    <value>Одиниць на день</value>
+  </data>
   <data name="HabitTrackerSubtitle" xml:space="preserve">
     <value>Створи окремий трекер для кожної звички та відмічай кожен чистий день.</value>
   </data>

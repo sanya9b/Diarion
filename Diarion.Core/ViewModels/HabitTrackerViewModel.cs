@@ -26,6 +26,22 @@ public partial class HabitTrackerViewModel : BaseViewModel
     private DateTime _newTrackerStartDate = DateTime.Today;
 
     [ObservableProperty]
+    private string _newTrackerCost = string.Empty;
+
+    [ObservableProperty]
+    private string _newTrackerUnits = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FormTitleText))]
+    [NotifyPropertyChangedFor(nameof(FormButtonText))]
+    private bool _isEditingTracker;
+
+    private Guid _editingTrackerId;
+
+    public string FormTitleText => IsEditingTracker ? AppResources.HabitTrackerEditTitle : AppResources.HabitTrackerSetupTitle;
+    public string FormButtonText => IsEditingTracker ? AppResources.HabitTrackerSaveButton : AppResources.HabitTrackerAddButton;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelectedTracker))]
     private HarmfulHabitTrackerItemViewModel? _selectedTracker;
 
@@ -59,6 +75,29 @@ public partial class HabitTrackerViewModel : BaseViewModel
     [RelayCommand]
     private void ShowAddTrackerForm()
     {
+        IsEditingTracker = false;
+        _editingTrackerId = Guid.Empty;
+        NewTrackerName = string.Empty;
+        NewTrackerStartDate = DateTime.Today;
+        NewTrackerCost = string.Empty;
+        NewTrackerUnits = string.Empty;
+        ValidationMessage = string.Empty;
+        IsAddTrackerFormVisible = true;
+    }
+
+    [RelayCommand]
+    private void EditTracker(HarmfulHabitTrackerItemViewModel? tracker)
+    {
+        var target = tracker ?? SelectedTracker;
+        if (target == null) return;
+
+        IsEditingTracker = true;
+        _editingTrackerId = target.Id;
+        NewTrackerName = target.HarmfulHabitName;
+        NewTrackerStartDate = target.StartDate;
+        NewTrackerCost = target.CostPerUnit > 0 ? target.CostPerUnit.ToString(CultureInfo.CurrentCulture) : string.Empty;
+        NewTrackerUnits = target.UnitsPerDay > 0 ? target.UnitsPerDay.ToString(CultureInfo.CurrentCulture) : string.Empty;
+        ValidationMessage = string.Empty;
         IsAddTrackerFormVisible = true;
     }
 
@@ -66,9 +105,13 @@ public partial class HabitTrackerViewModel : BaseViewModel
     private void HideAddTrackerForm()
     {
         IsAddTrackerFormVisible = false;
+        IsEditingTracker = false;
+        _editingTrackerId = Guid.Empty;
         ValidationMessage = string.Empty;
         NewTrackerName = string.Empty;
         NewTrackerStartDate = DateTime.Today;
+        NewTrackerCost = string.Empty;
+        NewTrackerUnits = string.Empty;
     }
 
     [RelayCommand]
@@ -83,22 +126,38 @@ public partial class HabitTrackerViewModel : BaseViewModel
             return;
         }
 
-        if (Trackers.Any(x => string.Equals(x.HarmfulHabitName, normalizedName, StringComparison.OrdinalIgnoreCase)))
+        if (Trackers.Any(x => x.Id != _editingTrackerId
+                              && string.Equals(x.HarmfulHabitName, normalizedName, StringComparison.OrdinalIgnoreCase)))
         {
             ValidationMessage = AppResources.HabitTrackerDuplicateMessage;
             return;
         }
 
-        var tracker = new HarmfulHabitTracker
+        decimal cost = decimal.TryParse(NewTrackerCost, NumberStyles.Number, CultureInfo.CurrentCulture, out var c) && c > 0 ? c : 0m;
+        double units = double.TryParse(NewTrackerUnits, NumberStyles.Number, CultureInfo.CurrentCulture, out var u) && u > 0 ? u : 0;
+
+        HarmfulHabitTracker tracker;
+        if (IsEditingTracker)
         {
-            HarmfulHabitName = normalizedName,
-            StartDate = NewTrackerStartDate.Date
-        };
+            // Load the full tracker so marked days and relapses are preserved.
+            tracker = await _habitService.GetHarmfulHabitTrackerByIdAsync(_editingTrackerId)
+                      ?? new HarmfulHabitTracker { Id = _editingTrackerId };
+        }
+        else
+        {
+            tracker = new HarmfulHabitTracker();
+        }
+
+        tracker.HarmfulHabitName = normalizedName;
+        tracker.StartDate = NewTrackerStartDate.Date;
+        tracker.CostPerUnit = cost;
+        tracker.UnitsPerDay = units;
 
         await _habitService.SaveHarmfulHabitTrackerAsync(tracker);
 
+        var savedId = tracker.Id;
         HideAddTrackerForm();
-        await LoadAsync(tracker.Id);
+        await LoadAsync(savedId);
     }
 
     [RelayCommand]

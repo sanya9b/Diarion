@@ -220,6 +220,18 @@
   <data name="QuitRelapseConfirmMessage" xml:space="preserve">
     <value>This resets your clean-time counter.</value>
   </data>
+  <data name="HabitTrackerSaveButton" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="HabitTrackerEditTitle" xml:space="preserve">
+    <value>Edit tracker</value>
+  </data>
+  <data name="HabitTrackerCostLabel" xml:space="preserve">
+    <value>Cost per unit</value>
+  </data>
+  <data name="HabitTrackerUnitsLabel" xml:space="preserve">
+    <value>Units per day</value>
+  </data>
   <data name="HabitTrackerSubtitle" xml:space="preserve">
     <value>Create a separate tracker for each habit and mark every clean day.</value>
   </data>

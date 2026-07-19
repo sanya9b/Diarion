@@ -1207,6 +1207,14 @@ public static string ClearAllDataSuccessMsg {
         public static string QuitRelapseConfirmMessage {
             get { return ResourceManager.GetString("QuitRelapseConfirmMessage", resourceCulture) ?? "This resets your clean-time counter."; }
         }
+
+        public static string HabitTrackerSaveButton {
+            get { return ResourceManager.GetString("HabitTrackerSaveButton", resourceCulture) ?? "Save"; }
+        }
+
+        public static string HabitTrackerEditTitle {
+            get { return ResourceManager.GetString("HabitTrackerEditTitle", resourceCulture) ?? "Edit tracker"; }
+        }
     }
 }
 

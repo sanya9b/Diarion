@@ -45,6 +45,39 @@ public class QuitTrackerViewModelTests
     }
 
     [Fact]
+    public async Task Edit_SetsCostAndUnits_PreservingRelapses()
+    {
+        var tracker = new HarmfulHabitTracker
+        {
+            Id = Guid.NewGuid(),
+            HarmfulHabitName = "Smoking",
+            StartDate = DateTime.Today.AddDays(-10),
+            Relapses = new List<RelapseEvent> { new() { Date = DateTime.Today.AddDays(-2) } }
+        };
+
+        var habit = new Mock<IHabitService>();
+        habit.Setup(s => s.GetHarmfulHabitTrackersAsync()).ReturnsAsync(new List<HarmfulHabitTracker> { tracker });
+        habit.Setup(s => s.GetHarmfulHabitTrackerByIdAsync(tracker.Id)).ReturnsAsync(tracker);
+
+        HarmfulHabitTracker? saved = null;
+        habit.Setup(s => s.SaveHarmfulHabitTrackerAsync(It.IsAny<HarmfulHabitTracker>()))
+            .Returns<HarmfulHabitTracker>(t => { saved = t; return Task.CompletedTask; });
+
+        var vm = new HabitTrackerViewModel(habit.Object, new Mock<IDialogService>().Object);
+        await vm.LoadAsync();
+
+        vm.EditTrackerCommand.Execute(vm.SelectedTracker);
+        vm.NewTrackerCost = "2";
+        vm.NewTrackerUnits = "20";
+        await vm.AddTrackerCommand.ExecuteAsync(null);
+
+        saved.Should().NotBeNull();
+        saved!.CostPerUnit.Should().Be(2m);
+        saved.UnitsPerDay.Should().Be(20);
+        saved.Relapses.Should().ContainSingle(); // preserved through edit
+    }
+
+    [Fact]
     public async Task Relapse_Declined_DoesNothing()
     {
         var tracker = new HarmfulHabitTracker { Id = Guid.NewGuid(), HarmfulHabitName = "Smoking", StartDate = DateTime.Today.AddDays(-3) };

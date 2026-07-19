@@ -13,6 +13,7 @@ public interface IHabitService
     Task UpdateHabitDefinitionsOrderAsync(List<Guid> orderedIds);
     
     Task<List<HarmfulHabitTracker>> GetHarmfulHabitTrackersAsync();
+    Task<HarmfulHabitTracker?> GetHarmfulHabitTrackerByIdAsync(Guid id);
     Task SaveHarmfulHabitTrackerAsync(HarmfulHabitTracker tracker);
     Task SetHarmfulHabitDayMarkedAsync(Guid trackerId, DateTime date, bool isMarked);
     Task DeleteHarmfulHabitTrackerAsync(Guid id);
