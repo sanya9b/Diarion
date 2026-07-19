@@ -168,6 +168,15 @@
                     </Grid>
                 </VerticalStackLayout>
 
+                <!-- Reminder -->
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="{localization:Translate Key=HabitReminderLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Sage}" VerticalOptions="Center" />
+                        <Switch Grid.Column="1" IsToggled="{Binding ReminderEnabled}" VerticalOptions="Center" />
+                    </Grid>
+                    <TimePicker Time="{Binding ReminderTime}" Format="HH:mm" IsVisible="{Binding ReminderEnabled}" HorizontalOptions="Start" />
+                </VerticalStackLayout>
+
                 <Label Text="{Binding ValidationMessage}" IsVisible="{Binding HasValidationMessage}"
                        FontSize="13" TextColor="{DynamicResource Theme_Coral}" />
 

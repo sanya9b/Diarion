@@ -22,6 +22,9 @@ public class HabitDefinition
     /// deserialize to this default too.</summary>
     public HabitSchedule Schedule { get; set; } = new();
 
+    /// <summary>Optional daily reminder time-of-day. Null means no reminder.</summary>
+    public TimeSpan? ReminderTime { get; set; }
+
     /// <summary>Whether the habit is expected on <paramref name="date"/> (null-safe over <see cref="Schedule"/>).</summary>
     public bool IsScheduledOn(DateTime date) => (Schedule ?? new HabitSchedule()).IsScheduledOn(date);
 }

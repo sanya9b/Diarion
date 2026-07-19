@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
@@ -14,8 +16,9 @@ public class HabitEditorViewModelTests
     private readonly Mock<IHabitService> _habitService = new();
     private readonly Mock<INavigationService> _navigation = new();
     private readonly Mock<IDialogService> _dialog = new();
+    private readonly Mock<INotificationService> _notification = new();
 
-    private HabitEditorViewModel CreateVm() => new(_habitService.Object, _navigation.Object, _dialog.Object);
+    private HabitEditorViewModel CreateVm() => new(_habitService.Object, _navigation.Object, _dialog.Object, _notification.Object);
 
     [Fact]
     public async Task Save_NewHabitWithSpecificDays_AddsWithSchedule_AndNavigatesBack()
@@ -64,6 +67,32 @@ public class HabitEditorViewModelTests
             h.Schedule.Type == HabitScheduleType.TimesPerWeek &&
             h.Schedule.TimesPerWeek == 4)), Times.Once);
         _navigation.Verify(n => n.NavigateBackAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task Save_WithReminderEnabled_SchedulesReminder()
+    {
+        var vm = CreateVm();
+        vm.Name = "Water";
+        vm.ReminderEnabled = true;
+        vm.ReminderTime = new TimeSpan(8, 30, 0);
+
+        await vm.SaveCommand.ExecuteAsync(null);
+
+        _notification.Verify(n => n.ScheduleHabitReminder(
+            It.IsAny<Guid>(), "Water", new TimeSpan(8, 30, 0), It.IsAny<IReadOnlyList<int>>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Save_WithReminderDisabled_CancelsReminder()
+    {
+        var vm = CreateVm();
+        vm.Name = "Water";
+        vm.ReminderEnabled = false;
+
+        await vm.SaveCommand.ExecuteAsync(null);
+
+        _notification.Verify(n => n.CancelHabitReminder(It.IsAny<Guid>()), Times.Once);
     }
 
     [Fact]

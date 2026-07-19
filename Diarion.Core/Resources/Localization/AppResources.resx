@@ -223,6 +223,12 @@
   <data name="HabitStreakWeeksSuffix" xml:space="preserve">
     <value>w</value>
   </data>
+  <data name="HabitReminderLabel" xml:space="preserve">
+    <value>Reminder</value>
+  </data>
+  <data name="HabitReminderMessage" xml:space="preserve">
+    <value>Time for your habit</value>
+  </data>
   <data name="NoTasks" xml:space="preserve">
     <value>No tasks for this day</value>
   </data>

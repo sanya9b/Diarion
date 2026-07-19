@@ -27,6 +27,7 @@ public partial class HabitEditorViewModel : BaseViewModel
     private readonly IHabitService _habitService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly INotificationService _notificationService;
 
     [ObservableProperty]
     private string? _habitId;
@@ -50,6 +51,12 @@ public partial class HabitEditorViewModel : BaseViewModel
     public string TimesPerWeekText => string.Format(AppResources.HabitScheduleTimesPerWeekFormat, TimesPerWeek);
 
     [ObservableProperty]
+    private bool _reminderEnabled;
+
+    [ObservableProperty]
+    private TimeSpan _reminderTime = new(9, 0, 0);
+
+    [ObservableProperty]
     private bool _isExisting;
 
     [ObservableProperty]
@@ -64,11 +71,16 @@ public partial class HabitEditorViewModel : BaseViewModel
     private DateTime _createdAt = DateTime.Today;
     private int _order = int.MaxValue;
 
-    public HabitEditorViewModel(IHabitService habitService, INavigationService navigationService, IDialogService dialogService)
+    public HabitEditorViewModel(
+        IHabitService habitService,
+        INavigationService navigationService,
+        IDialogService dialogService,
+        INotificationService notificationService)
     {
         _habitService = habitService;
         _navigationService = navigationService;
         _dialogService = dialogService;
+        _notificationService = notificationService;
         Title = AppResources.HabitEditorTitle;
         BuildWeekdays();
     }
@@ -109,6 +121,9 @@ public partial class HabitEditorViewModel : BaseViewModel
         IsSpecificDays = schedule.Type == HabitScheduleType.SpecificDays;
         IsTimesPerWeek = schedule.Type == HabitScheduleType.TimesPerWeek;
         if (schedule.TimesPerWeek is >= 1 and <= 7) TimesPerWeek = schedule.TimesPerWeek;
+
+        ReminderEnabled = def.ReminderTime.HasValue;
+        if (def.ReminderTime.HasValue) ReminderTime = def.ReminderTime.Value;
 
         var selected = new HashSet<int>(schedule.DaysOfWeek ?? new List<int>());
         foreach (var day in Weekdays)
@@ -187,28 +202,55 @@ public partial class HabitEditorViewModel : BaseViewModel
             schedule.Type = HabitScheduleType.Daily;
         }
 
+        TimeSpan? reminder = ReminderEnabled ? ReminderTime : null;
+        Guid savedId;
+
         if (IsExisting)
         {
             var def = await _habitService.GetHabitDefinitionByIdAsync(_editingId);
-            if (def != null)
+            if (def == null)
             {
-                def.Name = name;
-                def.ResourceKey = string.Empty; // an edited name overrides any built-in localization key
-                def.Schedule = schedule;
-                await _habitService.UpdateHabitDefinitionAsync(def);
+                await _navigationService.NavigateBackAsync();
+                return;
             }
+
+            def.Name = name;
+            def.ResourceKey = string.Empty; // an edited name overrides any built-in localization key
+            def.Schedule = schedule;
+            def.ReminderTime = reminder;
+            await _habitService.UpdateHabitDefinitionAsync(def);
+            savedId = def.Id;
         }
         else
         {
-            await _habitService.AddHabitDefinitionAsync(new HabitDefinition
+            var def = new HabitDefinition
             {
                 Name = name,
                 Schedule = schedule,
+                ReminderTime = reminder,
                 CreatedAt = DateTime.Today
-            });
+            };
+            await _habitService.AddHabitDefinitionAsync(def);
+            savedId = def.Id;
         }
 
+        await ApplyReminderAsync(savedId, name, reminder, schedule);
+
         await _navigationService.NavigateBackAsync();
+    }
+
+    private async Task ApplyReminderAsync(Guid habitId, string name, TimeSpan? reminder, HabitSchedule schedule)
+    {
+        if (reminder.HasValue)
+        {
+            await _notificationService.RequestPermissionsAsync();
+            var weekdays = schedule.Type == HabitScheduleType.SpecificDays ? schedule.DaysOfWeek : null;
+            _notificationService.ScheduleHabitReminder(habitId, name, reminder.Value, weekdays);
+        }
+        else
+        {
+            _notificationService.CancelHabitReminder(habitId);
+        }
     }
 
     [RelayCommand]
@@ -229,6 +271,7 @@ public partial class HabitEditorViewModel : BaseViewModel
         if (!confirm) return;
 
         await _habitService.DeleteHabitDefinitionAsync(_editingId, DateTime.Today);
+        _notificationService.CancelHabitReminder(_editingId);
         await _navigationService.NavigateBackAsync();
     }
 

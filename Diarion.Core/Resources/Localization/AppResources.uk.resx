@@ -223,6 +223,12 @@
   <data name="HabitStreakWeeksSuffix" xml:space="preserve">
     <value>тиж</value>
   </data>
+  <data name="HabitReminderLabel" xml:space="preserve">
+    <value>Нагадування</value>
+  </data>
+  <data name="HabitReminderMessage" xml:space="preserve">
+    <value>Час для вашої звички</value>
+  </data>
   <data name="NoTasks" xml:space="preserve">
     <value>Немає завдань на цей день</value>
   </data>

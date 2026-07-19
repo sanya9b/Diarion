@@ -804,6 +804,12 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string HabitReminderMessage {
+            get {
+                return ResourceManager.GetString("HabitReminderMessage", resourceCulture);
+            }
+        }
+
         public static string StatsMoodTrend {
             get {
                 return ResourceManager.GetString("StatsMoodTrend", resourceCulture);
