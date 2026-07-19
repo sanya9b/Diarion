@@ -35,7 +35,7 @@
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
                     BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="4" Margin="0,4,0,0" HorizontalOptions="Fill">
-                <CollectionView ItemsSource="{Binding Tabs}" ItemsLayout="HorizontalList" HeightRequest="38" HorizontalScrollBarVisibility="Never">
+                <CollectionView ItemsSource="{Binding Tabs}" BackgroundColor="Transparent" ItemsLayout="HorizontalList" HeightRequest="38" HorizontalScrollBarVisibility="Never">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:StatisticsTabItem">
                             <Border Padding="14,0" Margin="1,0" HeightRequest="38" StrokeThickness="0"
@@ -72,7 +72,7 @@
                 <Label Grid.Column="0" Text="{x:Static localization:AppResources.StatsPeriod}"
                        FontSize="11" FontAttributes="Bold" CharacterSpacing="1" TextTransform="Uppercase"
                        TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                <CollectionView Grid.Column="1" ItemsSource="{Binding TimeRanges}" ItemsLayout="HorizontalList" HeightRequest="34" HorizontalScrollBarVisibility="Never">
+                <CollectionView Grid.Column="1" ItemsSource="{Binding TimeRanges}" BackgroundColor="Transparent" ItemsLayout="HorizontalList" HeightRequest="34" HorizontalScrollBarVisibility="Never">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:TimeRangeItem">
                             <Border Padding="12,0" Margin="0,0,6,0" HeightRequest="32" StrokeThickness="1"
@@ -157,7 +157,7 @@
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="viewmodels:EmotionChartItem">
                                         <Grid ColumnDefinitions="16, *, Auto" ColumnSpacing="8">
-                                            <BoxView Grid.Column="0" Color="{Binding Color}" CornerRadius="8" WidthRequest="12" HeightRequest="12" VerticalOptions="Center" />
+                                            <Border Grid.Column="0" BackgroundColor="{Binding Color}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="12" HeightRequest="12" VerticalOptions="Center" HorizontalOptions="Start" />
                                             <Label Grid.Column="1" Text="{Binding Name}" FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                                             <Label Grid.Column="2" Text="{Binding Percentage, StringFormat='{0:P0}'}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                                         </Grid>
@@ -165,13 +165,15 @@
                                 </BindableLayout.ItemTemplate>
                             </VerticalStackLayout>
 
-                            <controls:EmotionDonutChart Grid.Column="1" WidthRequest="110" HeightRequest="110"
-                                                        Items="{Binding MoodStats.EmotionChartData}"
-                                                        CenterText="{Binding MoodStats.TopEmotionShareText}"
-                                                        SurfaceColor="{DynamicResource Theme_Snow_Black}"
-                                                        TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                                        MutedColor="{DynamicResource Theme_Ocean_Dust}"
-                                                        VerticalOptions="Center" HorizontalOptions="Center" />
+                            <!-- Fixed-size parent: a GraphicsView that self-sizes + centers can collapse to
+                                 zero width on Android and render blank; letting it Fill a sized cell fixes it. -->
+                            <Grid Grid.Column="1" WidthRequest="110" HeightRequest="110" VerticalOptions="Center" HorizontalOptions="Center">
+                                <controls:EmotionDonutChart Items="{Binding MoodStats.EmotionChartData}"
+                                                            CenterText="{Binding MoodStats.TopEmotionShareText}"
+                                                            SurfaceColor="{DynamicResource Theme_Snow_Black}"
+                                                            TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                                            MutedColor="{DynamicResource Theme_Ocean_Dust}" />
+                            </Grid>
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
@@ -279,14 +281,14 @@
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="16">
                         <Label Text="{x:Static localization:AppResources.StatsProductivity}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Sage}" />
-                        <controls:ProgressDonutChart HeightRequest="140" WidthRequest="140"
-                                                     Progress="{Binding ProductivityStats.TaskCompletionPercentage}"
-                                                     ProgressColor="{DynamicResource Theme_Sage}"
-                                                     CenterText="{Binding ProductivityStats.TaskCompletionText}"
-                                                     SurfaceColor="{DynamicResource Theme_Snow_Black}"
-                                                     TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                                     MutedColor="{DynamicResource Theme_Ocean_Dust}"
-                                                     HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Grid HeightRequest="140" WidthRequest="140" HorizontalOptions="Center" VerticalOptions="Center">
+                            <controls:ProgressDonutChart Progress="{Binding ProductivityStats.TaskCompletionPercentage}"
+                                                         ProgressColor="{DynamicResource Theme_Sage}"
+                                                         CenterText="{Binding ProductivityStats.TaskCompletionText}"
+                                                         SurfaceColor="{DynamicResource Theme_Snow_Black}"
+                                                         TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                                         MutedColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </Grid>
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>
@@ -328,7 +330,7 @@
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="models:CategoryStatItem">
                                         <Grid ColumnDefinitions="12, *, Auto" ColumnSpacing="8">
-                                            <BoxView Grid.Column="0" Color="{Binding ColorHex}" CornerRadius="6" WidthRequest="12" HeightRequest="12" VerticalOptions="Center" />
+                                            <Border Grid.Column="0" BackgroundColor="{Binding ColorHex}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="12" HeightRequest="12" VerticalOptions="Center" HorizontalOptions="Start" />
                                             <Label Grid.Column="1" Text="{Binding Category}" FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
                                             <Label Grid.Column="2" Text="{Binding Percentage, StringFormat='{0:P0}'}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                                         </Grid>
@@ -336,12 +338,12 @@
                                 </BindableLayout.ItemTemplate>
                             </VerticalStackLayout>
 
-                            <controls:CategoryDonutChart Grid.Column="1" WidthRequest="120" HeightRequest="120"
-                                                         Items="{Binding FinanceStats.ExpenseByCategory}"
-                                                         SurfaceColor="{DynamicResource Theme_Snow_Black}"
-                                                         TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                                         MutedColor="{DynamicResource Theme_Ocean_Dust}"
-                                                         VerticalOptions="Center" HorizontalOptions="Center" />
+                            <Grid Grid.Column="1" WidthRequest="120" HeightRequest="120" VerticalOptions="Center" HorizontalOptions="Center">
+                                <controls:CategoryDonutChart Items="{Binding FinanceStats.ExpenseByCategory}"
+                                                             SurfaceColor="{DynamicResource Theme_Snow_Black}"
+                                                             TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                                             MutedColor="{DynamicResource Theme_Ocean_Dust}" />
+                            </Grid>
                         </Grid>
                     </VerticalStackLayout>
                 </Border>

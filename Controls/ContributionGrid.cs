@@ -15,7 +15,7 @@ public class ContributionGrid : ChartViewBase
 {
     public static readonly BindableProperty CompletedDatesProperty =
         BindableProperty.Create(nameof(CompletedDates), typeof(IEnumerable<DateTime>), typeof(ContributionGrid), null,
-            propertyChanged: OnVisualChanged);
+            propertyChanged: OnItemsChanged);
 
     public IEnumerable<DateTime>? CompletedDates
     {

@@ -15,7 +15,7 @@ public class Sparkline : ChartViewBase
 {
     public static readonly BindableProperty ValuesProperty =
         BindableProperty.Create(nameof(Values), typeof(IEnumerable<double?>), typeof(Sparkline), null,
-            propertyChanged: OnVisualChanged);
+            propertyChanged: OnItemsChanged);
 
     public IEnumerable<double?>? Values
     {

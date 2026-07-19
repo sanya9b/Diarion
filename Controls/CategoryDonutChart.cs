@@ -9,7 +9,7 @@ public class CategoryDonutChart : ChartViewBase
 {
     public static readonly BindableProperty ItemsProperty =
         BindableProperty.Create(nameof(Items), typeof(IEnumerable<Diarion.Models.CategoryStatItem>), typeof(CategoryDonutChart), null,
-            propertyChanged: OnVisualChanged);
+            propertyChanged: OnItemsChanged);
 
     public IEnumerable<Diarion.Models.CategoryStatItem>? Items
     {

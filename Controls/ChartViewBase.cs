@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 
@@ -66,6 +67,28 @@ public abstract class ChartViewBase : GraphicsView, IDrawable
 
     protected static void OnVisualChanged(BindableObject bindable, object oldValue, object newValue)
         => ((ChartViewBase)bindable).Invalidate();
+
+    /// <summary>
+    /// <c>propertyChanged</c> handler for collection-typed bindable properties (the various <c>Items</c> /
+    /// <c>Values</c> / <c>CompletedDates</c>). A plain <see cref="IEnumerable{T}"/> bindable property is set
+    /// once at bind time and does NOT react to in-place mutation of the bound <c>ObservableCollection</c>
+    /// (the view models <c>Clear()</c> then <c>Add()</c> the same instance), so a chart bound before its data
+    /// loads asynchronously would draw empty and never repaint. This subscribes to
+    /// <see cref="INotifyCollectionChanged"/> on the bound collection — unsubscribing the previous one — so
+    /// the chart repaints whenever its data arrives or changes. Reassigning the collection still repaints via
+    /// the trailing <see cref="Invalidate"/>.
+    /// </summary>
+    protected static void OnItemsChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var chart = (ChartViewBase)bindable;
+        if (oldValue is INotifyCollectionChanged oldCollection)
+            oldCollection.CollectionChanged -= chart.OnItemsCollectionChanged;
+        if (newValue is INotifyCollectionChanged newCollection)
+            newCollection.CollectionChanged += chart.OnItemsCollectionChanged;
+        chart.Invalidate();
+    }
+
+    private void OnItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => Invalidate();
 
     public abstract void Draw(ICanvas canvas, RectF dirtyRect);
 

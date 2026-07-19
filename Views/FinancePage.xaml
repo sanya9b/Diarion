@@ -35,7 +35,7 @@
         </Grid>
 
         <!-- Virtualized list: balance summary + add button in the header, transactions recycled -->
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Transactions}">
+        <CollectionView Grid.Row="1" BackgroundColor="Transparent" ItemsSource="{Binding Transactions}">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
             </CollectionView.ItemsLayout>
@@ -136,31 +136,33 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:FinanceTransaction">
-                    <Border Padding="16"
+                    <Border Padding="14,8"
                             Margin="24,0"
                             StrokeThickness="1"
                             Stroke="{DynamicResource Theme_Dust_Ocean}"
                             BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                            StrokeShape="RoundRectangle 16">
+                            StrokeShape="RoundRectangle 14">
                         <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="12" VerticalOptions="Center">
-                                    <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                        <Label Text="{Binding Category}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Label Text="{Binding Note}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
-                                        <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                    <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Category}" FontSize="15" FontAttributes="Bold" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Text="{Binding Note}" FontSize="12" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
                                     </VerticalStackLayout>
 
-                                    <Label Grid.Column="1" FontSize="16" FontAttributes="Bold" VerticalOptions="Center">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Income">
-                                                <Setter Property="Text" Value="{Binding Amount, StringFormat='+{0:N2}'}" />
-                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Expense">
-                                                <Setter Property="Text" Value="{Binding Amount, StringFormat='-{0:N2}'}" />
-                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center" HorizontalOptions="End">
+                                        <Label FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="End">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Income">
+                                                    <Setter Property="Text" Value="{Binding Amount, StringFormat='+{0:N2}'}" />
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Expense">
+                                                    <Setter Property="Text" Value="{Binding Amount, StringFormat='-{0:N2}'}" />
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                        <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="10" HorizontalTextAlignment="End" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                    </VerticalStackLayout>
 
                                     <Grid Grid.Column="2" ColumnDefinitions="Auto, Auto" ColumnSpacing="12" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
                                         <Grid Grid.Column="0">
@@ -437,7 +439,7 @@
                                             <Label Text="{Binding Note}" FontSize="13" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" IsVisible="{Binding Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
                                             <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                                         </VerticalStackLayout>
-                                        <Label Grid.Column="1" Text="{Binding Amount, StringFormat='-{0:N2}'}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding Amount, StringFormat='-{0:N2}'}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
                                     </Grid>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>

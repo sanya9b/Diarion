@@ -35,7 +35,7 @@
         </Grid>
 
         <!-- Virtualized list: summary/add-button in the header, entries recycled by CollectionView -->
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Entries}">
+        <CollectionView Grid.Row="1" BackgroundColor="Transparent" ItemsSource="{Binding Entries}">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
             </CollectionView.ItemsLayout>

@@ -16,7 +16,7 @@ public class YearInPixelsView : ChartViewBase
 {
     public static readonly BindableProperty ItemsProperty =
         BindableProperty.Create(nameof(Items), typeof(IEnumerable<Diarion.Models.MoodHeatDay>), typeof(YearInPixelsView), null,
-            propertyChanged: OnVisualChanged);
+            propertyChanged: OnItemsChanged);
 
     public IEnumerable<Diarion.Models.MoodHeatDay>? Items
     {
