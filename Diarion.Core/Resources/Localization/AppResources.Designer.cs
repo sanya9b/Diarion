@@ -1187,6 +1187,26 @@ public static string ClearAllDataSuccessMsg {
         public static string CloseButtonLabel {
             get { return ResourceManager.GetString("CloseButtonLabel", resourceCulture) ?? "Close"; }
         }
+
+        public static string QuitLiveTimeFormat {
+            get { return ResourceManager.GetString("QuitLiveTimeFormat", resourceCulture) ?? "{0}d {1:D2}:{2:D2}:{3:D2}"; }
+        }
+
+        public static string QuitNextMilestoneFormat {
+            get { return ResourceManager.GetString("QuitNextMilestoneFormat", resourceCulture) ?? "Next milestone: {0} days"; }
+        }
+
+        public static string QuitAllMilestones {
+            get { return ResourceManager.GetString("QuitAllMilestones", resourceCulture) ?? "All milestones reached"; }
+        }
+
+        public static string QuitRelapseConfirmTitle {
+            get { return ResourceManager.GetString("QuitRelapseConfirmTitle", resourceCulture) ?? "Log a relapse?"; }
+        }
+
+        public static string QuitRelapseConfirmMessage {
+            get { return ResourceManager.GetString("QuitRelapseConfirmMessage", resourceCulture) ?? "This resets your clean-time counter."; }
+        }
     }
 }
 

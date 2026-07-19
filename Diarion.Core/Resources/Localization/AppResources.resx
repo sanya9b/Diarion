@@ -193,6 +193,33 @@
   <data name="HabitTrackerTitle" xml:space="preserve">
     <value>Habit Tracker</value>
   </data>
+  <data name="QuitCleanTimeLabel" xml:space="preserve">
+    <value>Clean time</value>
+  </data>
+  <data name="QuitMoneySavedLabel" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="QuitRelapseButton" xml:space="preserve">
+    <value>I relapsed</value>
+  </data>
+  <data name="QuitRelapsesLabel" xml:space="preserve">
+    <value>Relapses</value>
+  </data>
+  <data name="QuitLiveTimeFormat" xml:space="preserve">
+    <value>{0}d {1:D2}:{2:D2}:{3:D2}</value>
+  </data>
+  <data name="QuitNextMilestoneFormat" xml:space="preserve">
+    <value>Next milestone: {0} days</value>
+  </data>
+  <data name="QuitAllMilestones" xml:space="preserve">
+    <value>All milestones reached 🎉</value>
+  </data>
+  <data name="QuitRelapseConfirmTitle" xml:space="preserve">
+    <value>Log a relapse?</value>
+  </data>
+  <data name="QuitRelapseConfirmMessage" xml:space="preserve">
+    <value>This resets your clean-time counter.</value>
+  </data>
   <data name="HabitTrackerSubtitle" xml:space="preserve">
     <value>Create a separate tracker for each habit and mark every clean day.</value>
   </data>
