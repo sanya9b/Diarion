@@ -17,7 +17,7 @@ public static class PromptSelector
         IReadOnlyList<HourMood>? hourlyMood,
         bool gratitudeWritten)
     {
-        var valence = AverageValence(emotion, hourlyMood);
+        var valence = MoodAggregate.Valence(emotion, hourlyMood);
 
         if (valence <= -1) return PromptCategory.CbtReframe;
         if (valence >= 1) return gratitudeWritten ? PromptCategory.Savouring : PromptCategory.EveningGratitude;
@@ -38,19 +38,5 @@ public static class PromptSelector
         var seed = date.Year * 366 + date.DayOfYear + (int)category * 7919;
         var index = ((seed % keys.Count) + keys.Count) % keys.Count;
         return keys[index];
-    }
-
-    /// <summary>
-    /// The hourly scale wins when it has entries; the single day-level <see cref="Emotion"/> is the
-    /// fallback. Same rule everything else reading mood applies.
-    /// </summary>
-    private static double AverageValence(Emotion emotion, IReadOnlyList<HourMood>? hourlyMood)
-    {
-        if (hourlyMood is { Count: > 0 })
-        {
-            return hourlyMood.Average(h => h.Mood.ToValence());
-        }
-
-        return emotion.ToValence();
     }
 }
