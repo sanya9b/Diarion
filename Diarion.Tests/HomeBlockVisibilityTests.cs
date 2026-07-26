@@ -21,6 +21,7 @@ public class HomeBlockVisibilityTests
         profile.IsHealthBlockVisible.Should().BeTrue();
         profile.IsFoodBlockVisible.Should().BeTrue();
         profile.IsHabitsBlockVisible.Should().BeTrue();
+        profile.IsGuidedPromptBlockVisible.Should().BeTrue();
         profile.IsReflectionBlockVisible.Should().BeTrue();
     }
 
@@ -46,6 +47,7 @@ public class HomeBlockVisibilityTests
         profile.IsHealthBlockVisible.Should().BeTrue();
         profile.IsFoodBlockVisible.Should().BeTrue();
         profile.IsHabitsBlockVisible.Should().BeTrue();
+        profile.IsGuidedPromptBlockVisible.Should().BeTrue();
         profile.IsReflectionBlockVisible.Should().BeTrue();
     }
 }

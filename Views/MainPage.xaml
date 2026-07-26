@@ -109,7 +109,7 @@
                                                       IsVisible="{Binding BindingContext.Profile.IsHabitsBlockVisible, Source={x:Reference PageRoot}}" />
 
                         <controls:GuidedPromptSection BindingContext="{Binding}"
-                                                      IsVisible="{Binding BindingContext.Profile.IsReflectionBlockVisible, Source={x:Reference PageRoot}}" />
+                                                      IsVisible="{Binding BindingContext.Profile.IsGuidedPromptBlockVisible, Source={x:Reference PageRoot}}" />
 
                         <controls:ReflectionSection BindingContext="{Binding}"
                                                     IsVisible="{Binding BindingContext.Profile.IsReflectionBlockVisible, Source={x:Reference PageRoot}}" />

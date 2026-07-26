@@ -529,6 +529,9 @@
   <data name="BlockHabitsLabel" xml:space="preserve">
     <value>Habits</value>
   </data>
+  <data name="BlockGuidedPromptLabel" xml:space="preserve">
+    <value>Question of the day</value>
+  </data>
   <data name="BlockReflectionLabel" xml:space="preserve">
     <value>Reflection</value>
   </data>

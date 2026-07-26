@@ -81,6 +81,7 @@ namespace Diarion.Resources.Localization {
         public static string BlockHealthLabel => ResourceManager.GetString("BlockHealthLabel", resourceCulture) ?? "Health";
         public static string BlockFoodLabel => ResourceManager.GetString("BlockFoodLabel", resourceCulture) ?? "Food";
         public static string BlockHabitsLabel => ResourceManager.GetString("BlockHabitsLabel", resourceCulture) ?? "Habits";
+        public static string BlockGuidedPromptLabel => ResourceManager.GetString("BlockGuidedPromptLabel", resourceCulture) ?? "Question of the day";
         public static string BlockReflectionLabel => ResourceManager.GetString("BlockReflectionLabel", resourceCulture) ?? "Reflection";
         public static string SettingsTabProfile => ResourceManager.GetString("SettingsTabProfile", resourceCulture) ?? "Profile";
         public static string SettingsTabScreen => ResourceManager.GetString("SettingsTabScreen", resourceCulture) ?? "Screen";
