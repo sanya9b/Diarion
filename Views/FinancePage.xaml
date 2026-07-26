@@ -42,6 +42,110 @@
 
             <CollectionView.Header>
                 <VerticalStackLayout Padding="24,10,24,4" Spacing="18">
+                    <!-- Рахунки (селектор + керування) -->
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" BackgroundColor="Transparent">
+                        <HorizontalStackLayout Spacing="8">
+                            <!-- Всі -->
+                            <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectAllAccountsCommand}" />
+                                </Border.GestureRecognizers>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsAllAccountsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label Text="{localization:Translate Key=AllAccounts}" FontSize="13" FontAttributes="Bold">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsAllAccountsSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsAllAccountsSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+
+                            <!-- Рахунки -->
+                            <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Accounts}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:AccountItemViewModel">
+                                        <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectAccountCommand}" CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsArchived}" Value="True">
+                                                    <Setter Property="Opacity" Value="0.55" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="{Binding Icon}" FontSize="13" VerticalOptions="Center" />
+                                                <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" LineBreakMode="TailTruncation">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+
+                            <!-- Редагувати обраний -->
+                            <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                    IsVisible="{Binding IsAllAccountsSelected, Converter={toolkit:InvertedBoolConverter}}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding EditSelectedAccountCommand}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="✎" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            </Border>
+
+                            <!-- Додати рахунок -->
+                            <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Sage}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ShowAccountFormCommand}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="＋" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}"
+                                       SemanticProperties.Description="{x:Static localization:AppResources.AddAccountButton}" />
+                            </Border>
+
+                            <!-- Показати архівні -->
+                            <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ToggleShowArchivedAccountsCommand}" />
+                                </Border.GestureRecognizers>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding ShowArchivedAccounts}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label Text="{localization:Translate Key=ShowArchivedAccountsButton}" FontSize="13">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding ShowArchivedAccounts}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding ShowArchivedAccounts}" Value="False">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
                     <!-- Картка балансу -->
                     <Border Padding="20"
                             StrokeThickness="0"
@@ -130,6 +234,53 @@
                                 </BindableLayout.ItemTemplate>
                             </HorizontalStackLayout>
                         </ScrollView>
+                    </VerticalStackLayout>
+
+                    <!-- Перекази між рахунками -->
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="{localization:Translate Key=TransfersLabel}" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{localization:Translate Key=AddTransferButton}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ShowTransferFormCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+
+                        <VerticalStackLayout Spacing="8" IsVisible="{Binding HasTransfers}" BindableLayout.ItemsSource="{Binding TransferItems}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:TransferItemViewModel">
+                                    <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" StrokeShape="RoundRectangle 14" Padding="14,8">
+                                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
+                                                <Label FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation">
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <Span Text="{Binding FromName}" />
+                                                            <Span Text=" → " />
+                                                            <Span Text="{Binding ToName}" />
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+                                                <Label Text="{Binding Note}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" IsVisible="{Binding Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
+                                            </VerticalStackLayout>
+
+                                            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center" HorizontalOptions="End">
+                                                <Label Text="{Binding AmountText}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" />
+                                                <Label Text="{Binding DateText}" FontSize="10" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" />
+                                            </VerticalStackLayout>
+
+                                            <Grid Grid.Column="2" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
+                                                <Grid.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteTransferCommand}" CommandParameter="{Binding .}" />
+                                                </Grid.GestureRecognizers>
+                                                <Label Text="✕" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" InputTransparent="True" />
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </CollectionView.Header>
@@ -318,6 +469,41 @@
 
                     <Editor Text="{Binding NewNote}" Placeholder="{localization:Translate Key=NotePlaceholder}" AutoSize="TextChanges" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" MinimumHeightRequest="36" />
 
+                    <!-- Вибір рахунку -->
+                    <Label Text="{localization:Translate Key=SelectAccountLabel}" FontSize="11" FontAttributes="Bold" TextTransform="Uppercase" CharacterSpacing="1" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,4,0,0" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" BackgroundColor="Transparent">
+                        <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Accounts}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:AccountItemViewModel">
+                                    <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectNewAccountCommand}" CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
+                                            <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
                     <Button Command="{Binding SaveTransactionCommand}"
                             CornerRadius="12"
                             Padding="16,10"
@@ -456,6 +642,280 @@
                                 BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Coral}"
                                 BorderColor="{DynamicResource Theme_Coral}" BorderWidth="1" CornerRadius="12" FontSize="13" />
                     </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Account form overlay -->
+        <Grid Grid.RowSpan="2"
+              BackgroundColor="{DynamicResource Theme_Val_99000000_B3000000}"
+              IsVisible="{Binding IsAccountFormVisible}"
+              InputTransparent="False">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding HideAccountFormCommand}" />
+            </Grid.GestureRecognizers>
+
+            <Border StrokeShape="RoundRectangle 24"
+                    StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    Padding="20,16"
+                    Margin="24"
+                    VerticalOptions="Center">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                </Border.Shadow>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer />
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="{localization:Translate Key=AccountFormTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                        <Grid Grid.Column="1" Padding="8,0,0,8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding HideAccountFormCommand}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✕" FontSize="20" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </Grid>
+                    </Grid>
+
+                    <Entry Text="{Binding NewAccountName}" Placeholder="{localization:Translate Key=AccountNamePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    <BoxView HeightRequest="1" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" />
+                    <Entry Text="{Binding NewAccountInitialBalanceText}" Keyboard="Numeric" Placeholder="{localization:Translate Key=InitialBalancePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                    <Label Text="{localization:Translate Key=AccountIconLabel}" FontSize="11" FontAttributes="Bold" TextTransform="Uppercase" CharacterSpacing="1" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,4,0,0" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" BackgroundColor="Transparent">
+                        <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding AvailableIcons}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:SelectableOptionViewModel">
+                                    <Border WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectAccountIconCommand}" CommandParameter="{Binding Value}" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                <Setter Property="StrokeThickness" Value="3" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Label Text="{Binding Value}" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <Label Text="{localization:Translate Key=AccountColorLabel}" FontSize="11" FontAttributes="Bold" TextTransform="Uppercase" CharacterSpacing="1" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,4,0,0" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" BackgroundColor="Transparent">
+                        <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding AvailableColors}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:SelectableOptionViewModel">
+                                    <Border WidthRequest="32" HeightRequest="32" StrokeShape="RoundRectangle 16" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{Binding Value}">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectAccountColorCommand}" CommandParameter="{Binding Value}" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                <Setter Property="StrokeThickness" Value="3" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <!-- Куди перенести транзакції при видаленні -->
+                    <VerticalStackLayout Spacing="6" IsVisible="{Binding HasReassignTargets}">
+                        <Label Text="{localization:Translate Key=ReassignToLabel}" FontSize="11" FontAttributes="Bold" TextTransform="Uppercase" CharacterSpacing="1" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,4,0,0" />
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" BackgroundColor="Transparent">
+                            <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding ReassignTargets}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:AccountItemViewModel">
+                                        <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectReassignTargetCommand}" CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
+                                                <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+                        </ScrollView>
+                    </VerticalStackLayout>
+
+                    <Button Text="{localization:Translate Key=SaveButton}"
+                            Command="{Binding SaveAccountCommand}"
+                            CornerRadius="12"
+                            Padding="16,10"
+                            Margin="0,4,0,0"
+                            BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
+                            TextColor="{DynamicResource Theme_Snow_Midnight}"
+                            FontAttributes="Bold" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding IsEditingAccount}">
+                        <Button Grid.Column="0"
+                                Command="{Binding ToggleArchiveAccountCommand}"
+                                BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                BorderColor="{DynamicResource Theme_Dust_Ocean}" BorderWidth="1" CornerRadius="12" FontSize="13">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsEditingArchivedAccount}" Value="True">
+                                    <Setter Property="Text" Value="{localization:Translate Key=UnarchiveAccountButton}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsEditingArchivedAccount}" Value="False">
+                                    <Setter Property="Text" Value="{localization:Translate Key=ArchiveAccountButton}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                        <Button Grid.Column="1" Text="{localization:Translate Key=DeleteAccountButton}"
+                                Command="{Binding DeleteAccountCommand}"
+                                BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Coral}"
+                                BorderColor="{DynamicResource Theme_Coral}" BorderWidth="1" CornerRadius="12" FontSize="13" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Transfer form overlay -->
+        <Grid Grid.RowSpan="2"
+              BackgroundColor="{DynamicResource Theme_Val_99000000_B3000000}"
+              IsVisible="{Binding IsTransferFormVisible}"
+              InputTransparent="False">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding HideTransferFormCommand}" />
+            </Grid.GestureRecognizers>
+
+            <Border StrokeShape="RoundRectangle 24"
+                    StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    Padding="20,16"
+                    Margin="24"
+                    VerticalOptions="Center">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                </Border.Shadow>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer />
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="{localization:Translate Key=TransferFormTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                        <Grid Grid.Column="1" Padding="8,0,0,8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding HideTransferFormCommand}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✕" FontSize="20" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </Grid>
+                    </Grid>
+
+                    <Entry Text="{Binding NewTransferAmountText}" Keyboard="Numeric" Placeholder="{localization:Translate Key=AmountPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                    <BoxView HeightRequest="1" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" />
+
+                    <Label Text="{localization:Translate Key=TransferFromLabel}" FontSize="11" FontAttributes="Bold" TextTransform="Uppercase" CharacterSpacing="1" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,4,0,0" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" BackgroundColor="Transparent">
+                        <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding TransferFromOptions}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:AccountItemViewModel">
+                                    <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectTransferFromCommand}" CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
+                                            <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <Label Text="{localization:Translate Key=TransferToLabel}" FontSize="11" FontAttributes="Bold" TextTransform="Uppercase" CharacterSpacing="1" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,4,0,0" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" BackgroundColor="Transparent">
+                        <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding TransferToOptions}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:AccountItemViewModel">
+                                    <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectTransferToCommand}" CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
+                                            <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,4,0,0">
+                        <Entry Grid.Column="0" Text="{Binding NewTransferNote}" Placeholder="{localization:Translate Key=NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" VerticalOptions="Center" />
+                        <DatePicker Grid.Column="1" Date="{Binding NewTransferDate}" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" Format="dd.MM.yyyy" />
+                    </Grid>
+
+                    <Label Text="{Binding TransferError}" IsVisible="{Binding HasTransferError}" FontSize="12" TextColor="{DynamicResource Theme_Coral}" />
+
+                    <Button Text="{localization:Translate Key=SaveButton}"
+                            Command="{Binding SaveTransferCommand}"
+                            CornerRadius="12"
+                            Padding="16,10"
+                            Margin="0,4,0,0"
+                            BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
+                            TextColor="{DynamicResource Theme_Snow_Midnight}"
+                            FontAttributes="Bold" />
                 </VerticalStackLayout>
             </Border>
         </Grid>

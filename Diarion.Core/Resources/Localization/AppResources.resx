@@ -808,6 +808,81 @@
   <data name="SettingsBudgetsToggle" xml:space="preserve">
     <value>Show budgets in Finance</value>
   </data>
+  <data name="DefaultAccountName" xml:space="preserve">
+    <value>Main</value>
+  </data>
+  <data name="AllAccounts" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="AccountsLabel" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
+  <data name="AddAccountButton" xml:space="preserve">
+    <value>+ Account</value>
+  </data>
+  <data name="AccountFormTitle" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="AccountNamePlaceholder" xml:space="preserve">
+    <value>Account name</value>
+  </data>
+  <data name="InitialBalancePlaceholder" xml:space="preserve">
+    <value>Initial balance</value>
+  </data>
+  <data name="SelectAccountLabel" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="DeleteAccountConfirm" xml:space="preserve">
+    <value>Delete this account? Its transactions move to another account.</value>
+  </data>
+  <data name="DeleteAccountLastError" xml:space="preserve">
+    <value>You need at least one account.</value>
+  </data>
+  <data name="AccountIconLabel" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="AccountColorLabel" xml:space="preserve">
+    <value>Colour</value>
+  </data>
+  <data name="DeleteAccountButton" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ArchiveAccountButton" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="UnarchiveAccountButton" xml:space="preserve">
+    <value>Unarchive</value>
+  </data>
+  <data name="ArchiveAccountLastError" xml:space="preserve">
+    <value>You need at least one active account.</value>
+  </data>
+  <data name="ShowArchivedAccountsButton" xml:space="preserve">
+    <value>Archived</value>
+  </data>
+  <data name="ReassignToLabel" xml:space="preserve">
+    <value>Move transactions to</value>
+  </data>
+  <data name="TransfersLabel" xml:space="preserve">
+    <value>Transfers</value>
+  </data>
+  <data name="AddTransferButton" xml:space="preserve">
+    <value>+ Transfer</value>
+  </data>
+  <data name="TransferFormTitle" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="TransferFromLabel" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="TransferToLabel" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="TransferAmountError" xml:space="preserve">
+    <value>Enter an amount greater than zero.</value>
+  </data>
+  <data name="TransferSameAccountError" xml:space="preserve">
+    <value>Choose two different accounts.</value>
+  </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Not enough data for this period.</value>
   </data>

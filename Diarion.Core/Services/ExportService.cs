@@ -31,6 +31,10 @@ public class ExportService : IExportService
         DatabaseConstants.ProfileCollection,
         DatabaseConstants.WishlistCollection,
         DatabaseConstants.FinanceCollection,
+        DatabaseConstants.NotesCollection,
+        DatabaseConstants.BudgetsCollection,
+        DatabaseConstants.AccountsCollection,
+        DatabaseConstants.TransfersCollection,
     };
 
     private readonly IDatabaseContext _dbContext;
@@ -99,8 +103,12 @@ public class ExportService : IExportService
 
     private string BuildFinanceCsv()
     {
+        var accountNames = _dbContext.GetCollection<Account>(DatabaseConstants.AccountsCollection)
+            .FindAll()
+            .ToDictionary(a => a.Id, AccountLocalization.ResolveName);
+
         var sb = new StringBuilder();
-        sb.Append("Date,Type,Category,Amount,Note\n");
+        sb.Append("Date,Type,Account,Category,Amount,Note\n");
 
         var rows = _dbContext.GetCollection<FinanceTransaction>(DatabaseConstants.FinanceCollection)
             .FindAll()
@@ -110,13 +118,37 @@ public class ExportService : IExportService
         {
             sb.Append(t.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)).Append(',')
               .Append(t.Type).Append(',')
+              .Append(Csv(AccountName(accountNames, t.AccountId))).Append(',')
               .Append(Csv(t.Category)).Append(',')
               .Append(t.Amount.ToString(CultureInfo.InvariantCulture)).Append(',')
               .Append(Csv(t.Note)).Append('\n');
         }
 
+        var transfers = _dbContext.GetCollection<Transfer>(DatabaseConstants.TransfersCollection)
+            .FindAll()
+            .OrderBy(t => t.Date)
+            .ToList();
+
+        if (transfers.Count > 0)
+        {
+            // Transfers are neither income nor expense, so they get their own block rather than a
+            // third Type value that would break anything summing the first table.
+            sb.Append("\nDate,From,To,Amount,Note\n");
+            foreach (var t in transfers)
+            {
+                sb.Append(t.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)).Append(',')
+                  .Append(Csv(AccountName(accountNames, t.FromAccountId))).Append(',')
+                  .Append(Csv(AccountName(accountNames, t.ToAccountId))).Append(',')
+                  .Append(t.Amount.ToString(CultureInfo.InvariantCulture)).Append(',')
+                  .Append(Csv(t.Note)).Append('\n');
+            }
+        }
+
         return sb.ToString();
     }
+
+    private static string AccountName(Dictionary<Guid, string> names, Guid? id) =>
+        id is Guid key && names.TryGetValue(key, out var name) ? name : string.Empty;
 
     private string BuildDiaryMarkdown()
     {

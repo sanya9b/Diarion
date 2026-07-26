@@ -11,12 +11,13 @@ namespace Diarion.Services.Database;
 /// </summary>
 public static class MigrationRunner
 {
-    public const int CurrentVersion = 2;
+    public const int CurrentVersion = 3;
 
     private static readonly IMigration[] Migrations =
     {
         new M001_NormalizeDiaryDates(),
         new M002_BackfillNoteTagsAndLinks(),
+        new M003_BackfillDefaultAccount(),
     };
 
     public static void Run(LiteDatabase db)

@@ -54,10 +54,12 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         var profileCollection = _db.GetCollection<UserProfile>(DatabaseConstants.ProfileCollection);
         var wishlistCollection = _db.GetCollection<WishlistEntry>(DatabaseConstants.WishlistCollection);
         var financeCollection = _db.GetCollection<FinanceTransaction>(DatabaseConstants.FinanceCollection);
+        var transfersCollection = _db.GetCollection<Transfer>(DatabaseConstants.TransfersCollection);
 
         entriesCollection.EnsureIndex(x => x.Date);
         wishlistCollection.EnsureIndex(x => x.Date);
         financeCollection.EnsureIndex(x => x.Date);
+        transfersCollection.EnsureIndex(x => x.Date);
         todosCollection.EnsureIndex(x => x.TargetDate);
         harmfulHabitTrackersCollection.EnsureIndex(x => x.StartDate);
         readingTrackerBooksCollection.EnsureIndex(x => x.SlotNumber, true);

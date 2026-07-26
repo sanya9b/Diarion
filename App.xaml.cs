@@ -32,6 +32,12 @@ public partial class App : Application
             System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
             Diarion.Resources.Localization.AppResources.Culture = culture;
         }
+        else
+        {
+            // Without this a fresh install never sets Culture, and anything resolved through
+            // AppResources during database init would be frozen in the fallback language.
+            Diarion.Resources.Localization.AppResources.Culture = System.Globalization.CultureInfo.CurrentUICulture;
+        }
 
         InitializeComponent();
 

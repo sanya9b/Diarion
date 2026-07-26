@@ -1281,6 +1281,106 @@ public static string ClearAllDataSuccessMsg {
         public static string SettingsBudgetsToggle {
             get { return ResourceManager.GetString("SettingsBudgetsToggle", resourceCulture) ?? "Show budgets in Finance"; }
         }
+
+        public static string DefaultAccountName {
+            get { return ResourceManager.GetString("DefaultAccountName", resourceCulture) ?? "Main"; }
+        }
+
+        public static string AllAccounts {
+            get { return ResourceManager.GetString("AllAccounts", resourceCulture) ?? "All"; }
+        }
+
+        public static string AccountsLabel {
+            get { return ResourceManager.GetString("AccountsLabel", resourceCulture) ?? "Accounts"; }
+        }
+
+        public static string AddAccountButton {
+            get { return ResourceManager.GetString("AddAccountButton", resourceCulture) ?? "+ Account"; }
+        }
+
+        public static string AccountFormTitle {
+            get { return ResourceManager.GetString("AccountFormTitle", resourceCulture) ?? "Account"; }
+        }
+
+        public static string AccountNamePlaceholder {
+            get { return ResourceManager.GetString("AccountNamePlaceholder", resourceCulture) ?? "Account name"; }
+        }
+
+        public static string InitialBalancePlaceholder {
+            get { return ResourceManager.GetString("InitialBalancePlaceholder", resourceCulture) ?? "Initial balance"; }
+        }
+
+        public static string SelectAccountLabel {
+            get { return ResourceManager.GetString("SelectAccountLabel", resourceCulture) ?? "Account"; }
+        }
+
+        public static string DeleteAccountConfirm {
+            get { return ResourceManager.GetString("DeleteAccountConfirm", resourceCulture) ?? "Delete this account? Its transactions move to another account."; }
+        }
+
+        public static string DeleteAccountLastError {
+            get { return ResourceManager.GetString("DeleteAccountLastError", resourceCulture) ?? "You need at least one account."; }
+        }
+
+        public static string AccountIconLabel {
+            get { return ResourceManager.GetString("AccountIconLabel", resourceCulture) ?? "Icon"; }
+        }
+
+        public static string AccountColorLabel {
+            get { return ResourceManager.GetString("AccountColorLabel", resourceCulture) ?? "Colour"; }
+        }
+
+        public static string DeleteAccountButton {
+            get { return ResourceManager.GetString("DeleteAccountButton", resourceCulture) ?? "Delete"; }
+        }
+
+        public static string ArchiveAccountButton {
+            get { return ResourceManager.GetString("ArchiveAccountButton", resourceCulture) ?? "Archive"; }
+        }
+
+        public static string UnarchiveAccountButton {
+            get { return ResourceManager.GetString("UnarchiveAccountButton", resourceCulture) ?? "Unarchive"; }
+        }
+
+        public static string ArchiveAccountLastError {
+            get { return ResourceManager.GetString("ArchiveAccountLastError", resourceCulture) ?? "You need at least one active account."; }
+        }
+
+        public static string ShowArchivedAccountsButton {
+            get { return ResourceManager.GetString("ShowArchivedAccountsButton", resourceCulture) ?? "Archived"; }
+        }
+
+        public static string ReassignToLabel {
+            get { return ResourceManager.GetString("ReassignToLabel", resourceCulture) ?? "Move transactions to"; }
+        }
+
+        public static string TransfersLabel {
+            get { return ResourceManager.GetString("TransfersLabel", resourceCulture) ?? "Transfers"; }
+        }
+
+        public static string AddTransferButton {
+            get { return ResourceManager.GetString("AddTransferButton", resourceCulture) ?? "+ Transfer"; }
+        }
+
+        public static string TransferFormTitle {
+            get { return ResourceManager.GetString("TransferFormTitle", resourceCulture) ?? "Transfer"; }
+        }
+
+        public static string TransferFromLabel {
+            get { return ResourceManager.GetString("TransferFromLabel", resourceCulture) ?? "From"; }
+        }
+
+        public static string TransferToLabel {
+            get { return ResourceManager.GetString("TransferToLabel", resourceCulture) ?? "To"; }
+        }
+
+        public static string TransferAmountError {
+            get { return ResourceManager.GetString("TransferAmountError", resourceCulture) ?? "Enter an amount greater than zero."; }
+        }
+
+        public static string TransferSameAccountError {
+            get { return ResourceManager.GetString("TransferSameAccountError", resourceCulture) ?? "Choose two different accounts."; }
+        }
     }
 }
 
