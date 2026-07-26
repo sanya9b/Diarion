@@ -52,8 +52,9 @@ public class DiaryEntry
     // List used for DB persistence
     public List<HabitItem> HabitsList { get; set; } = new();
 
-    // Шкала настрою (Mood Scale) - hours 7 to 23
-    public Dictionary<int, Emotion> MoodScale { get; set; } = new();
+    // Шкала настрою по годинах (hours 7 to 23). Порожній список = настрій за день задано лише
+    // скаляром нижче. Обидва живуть паралельно: скаляр — явний підсумок дня від користувача.
+    public List<HourMood> HourlyMood { get; set; } = new();
 
     // Рефлексія та Текстові блоки (Reflection & Text Blocks)
     public string Triggers { get; set; } = string.Empty;

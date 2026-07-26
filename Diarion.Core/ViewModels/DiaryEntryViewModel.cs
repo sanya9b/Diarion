@@ -264,11 +264,11 @@ public partial class DiaryEntryViewModel : ObservableObject
     {
         if (!string.IsNullOrWhiteSpace(PromptAnswer)) return;
 
-        var wanted = PromptSelector.SelectCategory(Emotion, Model.MoodScale, !string.IsNullOrWhiteSpace(Gratitude));
+        var wanted = PromptSelector.SelectCategory(Emotion, Model.HourlyMood, !string.IsNullOrWhiteSpace(Gratitude));
         if (PromptCatalog.CategoryOf(PromptResourceKey) == wanted) return;
 
         PromptResourceKey = PromptSelector.SelectKey(
-            Date, Emotion, Model.MoodScale, !string.IsNullOrWhiteSpace(Gratitude));
+            Date, Emotion, Model.HourlyMood, !string.IsNullOrWhiteSpace(Gratitude));
     }
 
     [RelayCommand]
@@ -339,7 +339,7 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.CreatedAt = CreatedAt;
         Model.Emotion = Emotion;
         Model.AiSummary = AiSummary;
-        
+
         UpdateModelHabits();
     }
 }

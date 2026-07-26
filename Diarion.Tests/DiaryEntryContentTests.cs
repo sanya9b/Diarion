@@ -57,7 +57,7 @@ public class DiaryEntryContentTests
     public static IEnumerable<object[]> ContentfulEntries() => new List<object[]>
     {
         new object[] { new DiaryEntry { Emotion = Emotion.Happy } },
-        new object[] { new DiaryEntry { MoodScale = new Dictionary<int, Emotion> { [9] = Emotion.Calm } } },
+        new object[] { new DiaryEntry { HourlyMood = { new HourMood { Hour = 9, Mood = Emotion.Calm } } } },
         new object[] { new DiaryEntry { Triggers = "deadline" } },
         new object[] { new DiaryEntry { Gratitude = "sun" } },
         new object[] { new DiaryEntry { SoulFood = "music" } },

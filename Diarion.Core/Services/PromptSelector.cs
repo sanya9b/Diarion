@@ -14,10 +14,10 @@ public static class PromptSelector
 {
     public static PromptCategory SelectCategory(
         Emotion emotion,
-        IReadOnlyDictionary<int, Emotion>? moodScale,
+        IReadOnlyList<HourMood>? hourlyMood,
         bool gratitudeWritten)
     {
-        var valence = AverageValence(emotion, moodScale);
+        var valence = AverageValence(emotion, hourlyMood);
 
         if (valence <= -1) return PromptCategory.CbtReframe;
         if (valence >= 1) return gratitudeWritten ? PromptCategory.Savouring : PromptCategory.EveningGratitude;
@@ -27,10 +27,10 @@ public static class PromptSelector
     public static string SelectKey(
         DateTime date,
         Emotion emotion,
-        IReadOnlyDictionary<int, Emotion>? moodScale,
+        IReadOnlyList<HourMood>? hourlyMood,
         bool gratitudeWritten)
     {
-        var category = SelectCategory(emotion, moodScale, gratitudeWritten);
+        var category = SelectCategory(emotion, hourlyMood, gratitudeWritten);
         var keys = PromptCatalog.KeysFor(category);
 
         // Seeded by the date so the prompt is stable for the day, and by the category so two categories
@@ -41,14 +41,14 @@ public static class PromptSelector
     }
 
     /// <summary>
-    /// The hourly mood scale wins when it has entries; the single legacy <see cref="Emotion"/> is the
-    /// fallback for days recorded before the scale existed.
+    /// The hourly scale wins when it has entries; the single day-level <see cref="Emotion"/> is the
+    /// fallback. Same rule everything else reading mood applies.
     /// </summary>
-    private static double AverageValence(Emotion emotion, IReadOnlyDictionary<int, Emotion>? moodScale)
+    private static double AverageValence(Emotion emotion, IReadOnlyList<HourMood>? hourlyMood)
     {
-        if (moodScale is { Count: > 0 })
+        if (hourlyMood is { Count: > 0 })
         {
-            return moodScale.Values.Average(e => e.ToValence());
+            return hourlyMood.Average(h => h.Mood.ToValence());
         }
 
         return emotion.ToValence();

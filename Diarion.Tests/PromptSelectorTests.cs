@@ -36,30 +36,33 @@ public class PromptSelectorTests
             .Should().Be(PromptCategory.Savouring);
     }
 
-    [Fact]
-    public void SelectCategory_MoodScaleOverridesTheLegacyScalar()
-    {
-        var scale = new Dictionary<int, Emotion> { [9] = Emotion.Sad, [14] = Emotion.Sad };
+    private static List<HourMood> Hours(params (int Hour, Emotion Mood)[] entries) =>
+        entries.Select(e => new HourMood { Hour = e.Hour, Mood = e.Mood }).ToList();
 
-        // The scalar says the day was great; the hourly scale says otherwise and must win.
-        PromptSelector.SelectCategory(Emotion.Happy, scale, gratitudeWritten: false)
+    [Fact]
+    public void SelectCategory_HourlyMoodOverridesTheDayLevelScalar()
+    {
+        var hourly = Hours((9, Emotion.Sad), (14, Emotion.Sad));
+
+        // The scalar says the day was great; the hours say otherwise and must win.
+        PromptSelector.SelectCategory(Emotion.Happy, hourly, gratitudeWritten: false)
             .Should().Be(PromptCategory.CbtReframe);
     }
 
     [Fact]
-    public void SelectCategory_EmptyMoodScale_FallsBackToTheScalar()
+    public void SelectCategory_NoHourlyMood_FallsBackToTheScalar()
     {
-        PromptSelector.SelectCategory(Emotion.Sad, new Dictionary<int, Emotion>(), gratitudeWritten: false)
+        PromptSelector.SelectCategory(Emotion.Sad, new List<HourMood>(), gratitudeWritten: false)
             .Should().Be(PromptCategory.CbtReframe);
     }
 
     [Fact]
-    public void SelectCategory_MixedMoodScaleAveragesOut()
+    public void SelectCategory_MixedHourlyMoodAveragesOut()
     {
-        var scale = new Dictionary<int, Emotion> { [9] = Emotion.Happy, [14] = Emotion.Sad };
+        var hourly = Hours((9, Emotion.Happy), (14, Emotion.Sad));
 
         // +2 and -2 average to 0 — neither celebration nor reframing fits.
-        PromptSelector.SelectCategory(Emotion.None, scale, gratitudeWritten: false)
+        PromptSelector.SelectCategory(Emotion.None, hourly, gratitudeWritten: false)
             .Should().Be(PromptCategory.OpenReflection);
     }
 
