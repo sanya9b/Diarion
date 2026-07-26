@@ -1,6 +1,6 @@
 # 08 — Доступність та адаптивний UI
 
-- **Priority:** P1 · **Effort:** M/L · **Status:** Proposed · **Depends on:** — · **Blocks:** —
+- **Priority:** P1 · **Effort:** M/L · **Status:** Done · **Depends on:** — · **Blocks:** —
 
 ## Продукт
 

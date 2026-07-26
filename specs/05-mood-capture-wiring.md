@@ -1,6 +1,6 @@
 # 05 — Підключення захоплення настрою
 
-- **Priority:** P0 · **Effort:** M · **Status:** Proposed · **Depends on:** — · **Blocks:** 06
+- **Priority:** P0 · **Effort:** M · **Status:** Done · **Depends on:** — · **Blocks:** 06
 
 ## Продукт
 
