@@ -445,15 +445,19 @@ public class DiaryServiceTests : IDisposable
         reopened.Should().NotContain(t => t.TaskDescription == "Stretch");
     }
 
+    /// <summary>A day only counts towards the streak if the user put something in it.</summary>
+    private static DiaryEntry JournaledOn(DateTime date) =>
+        new() { Date = date, Emotion = Emotion.Calm };
+
     [Fact]
     public async Task GetCurrentStreak_WithConsecutiveDays_ReturnsCorrectStreak()
     {
         await ClearDatabaseAsync();
         var today = DateTime.Today;
-        
-        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today });
-        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-1) });
-        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-2) });
+
+        await _diaryService.SaveEntryAsync(JournaledOn(today));
+        await _diaryService.SaveEntryAsync(JournaledOn(today.AddDays(-1)));
+        await _diaryService.SaveEntryAsync(JournaledOn(today.AddDays(-2)));
 
         var streak = await _diaryService.GetCurrentStreakAsync();
         streak.Should().Be(3);
@@ -464,9 +468,9 @@ public class DiaryServiceTests : IDisposable
     {
         await ClearDatabaseAsync();
         var today = DateTime.Today;
-        
-        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today });
-        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-2) });
+
+        await _diaryService.SaveEntryAsync(JournaledOn(today));
+        await _diaryService.SaveEntryAsync(JournaledOn(today.AddDays(-2)));
 
         var streak = await _diaryService.GetCurrentStreakAsync();
         streak.Should().Be(1);
@@ -477,9 +481,9 @@ public class DiaryServiceTests : IDisposable
     {
         await ClearDatabaseAsync();
         var today = DateTime.Today;
-        
-        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-1) });
-        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-2) });
+
+        await _diaryService.SaveEntryAsync(JournaledOn(today.AddDays(-1)));
+        await _diaryService.SaveEntryAsync(JournaledOn(today.AddDays(-2)));
 
         var allEntries = await _diaryService.GetAllEntriesAsync();
         var streak = await _diaryService.GetCurrentStreakAsync();
@@ -487,15 +491,40 @@ public class DiaryServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task GetCurrentStreak_WhenLastEntryWasOlderThanYesterday_ReturnsOne()
+    public async Task GetCurrentStreak_WhenLastEntryWasOlderThanYesterday_ReturnsZero()
     {
         await ClearDatabaseAsync();
         var today = DateTime.Today;
-        
-        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-2) });
+
+        await _diaryService.SaveEntryAsync(JournaledOn(today.AddDays(-2)));
+
+        // The streak really is broken. It used to report 1 ("opening the app means day 1"), which made
+        // IsStreakVisible => CurrentStreak > 0 permanently true in the ViewModels.
+        var streak = await _diaryService.GetCurrentStreakAsync();
+        streak.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetCurrentStreak_EmptyDatabase_ReturnsZero()
+    {
+        await ClearDatabaseAsync();
 
         var streak = await _diaryService.GetCurrentStreakAsync();
-        streak.Should().Be(1);
+        streak.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetCurrentStreak_IgnoresRowsCreatedByMerelyBrowsingADay()
+    {
+        await ClearDatabaseAsync();
+        var today = DateTime.Today;
+
+        // What the day screen persists when cycle tracking is on and the user types nothing.
+        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today, CycleDay = "14" });
+        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-1), CycleDay = "13" });
+
+        var streak = await _diaryService.GetCurrentStreakAsync();
+        streak.Should().Be(0);
     }
 
     [Fact]
