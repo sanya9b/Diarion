@@ -127,6 +127,24 @@ public class MainViewModelTests
     }
 
     [Fact]
+    public async Task LoadEntries_WithCycleTrackingOn_DoesNotPersistAnUntouchedDay()
+    {
+        // Regression: LoadEntriesForDateAsync used to clear IsBusy before LoadDayContentAsync assigned
+        // CurrentEntry.CycleDay, so the autosave guard was already down and browsing any day wrote a row
+        // containing nothing but Date and CycleDay. Those rows then counted towards the diary streak.
+        _menstrualCycleServiceMock
+            .Setup(s => s.GetCycleInfoForDate(It.IsAny<DateTime>(), It.IsAny<UserProfile>()))
+            .Returns(new CycleDayInfo { IsTrackingEnabled = true, DayOfCycle = 14 });
+
+        var viewModel = CreateViewModel();
+
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+        await viewModel.FlushAutoSaveAsync();
+
+        _diaryServiceMock.Verify(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()), Times.Never);
+    }
+
+    [Fact]
     public async Task FlushAutoSaveAsync_PersistsPendingEditsOfCurrentEntry()
     {
         // Arrange

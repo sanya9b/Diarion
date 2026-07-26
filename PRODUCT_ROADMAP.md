@@ -41,8 +41,8 @@
 | `[x]` | Quit-tracker: money-saved, live-годинник, milestones, лог зривів | I Am Sober, Quitzilla, QuitNic | `CostPerUnit/UnitsPerDay`, `List<RelapseEvent>`, milestone-рушій |
 | `[x]` | Нотатки: backlinks `[[…]]`, теги, full-text пошук, quick-capture inbox | Obsidian, Notion, Amplenote, Todoist | `links`/`inbox` колекції LiteDB, share-target, глобальний екран пошуку |
 | `[~]` | **Фінанси: бюджети, рахунки, планові транзакції, звіти** | Money Manager, Wallet, Spendee | див. розбивку нижче |
-| `[~]` | М'яка гейміфікація (прощаючі streaks) + Year in Pixels | Daylio, Finch | Year in Pixels готовий (`Controls/YearInPixelsView`); `StreakService` не починався |
-| `[ ]` | Керовані промпти + CBT + вечірній ритуал вдячності | Stoic, Reflectly, Finch, Intellect | `PromptService` (seed .resx UK/EN), rules-based вибір за настроєм |
+| `[x]` | Керовані промпти + CBT + вечірній ритуал вдячності | Stoic, Reflectly, Finch, Intellect | `PromptCatalog` (40 промптів у .resx UK/EN) + чистий `PromptSelector` за валентністю настрою; `Controls/GuidedPromptSection` |
+| `[~]` | М'яка гейміфікація (прощаючі streaks) + Year in Pixels | Daylio, Finch | Year in Pixels готовий (`Controls/YearInPixelsView`); лічильник серії полагоджено (`StreakCalculator`), але дні-поблажки й спільний `StreakService` не починались |
 | `[ ]` | Адаптивний прогноз циклу + лог симптомів | Clue, Flo, Natural Cycles | `CycleLog` колекція, rolling mean/SD, індикатор варіативності |
 | `[ ]` | HealthKit / Health Connect (read) | Bearable, Apple Journal, Journey | Розширити `HealthDataService`, per-metric consent, лише локальний імпорт |
 | `[ ]` | Home/lock-screen віджети | Streaks, HabitKit, Loop | WidgetKit (iOS) / Glance-RemoteViews (Android) через нативний embedding |
@@ -59,8 +59,19 @@
 
 ---
 
+### Промпти — що далі
+
+- [ ] **Власні промпти користувача.** Розширення протоптане: вбудовані тримають `ResourceKey`, створені користувачем — літеральний текст, точно як `HabitDefinition`. Знадобиться колекція LiteDB і міграція.
+- [ ] Історія відповідей окремим екраном (зараз відповідь живе лише в записі дня).
+- [ ] Погодинна шкала настрою (`DiaryEntry.MoodScale`) досі не підключена в UI — `PromptSelector` її вже читає й віддає їй пріоритет, тож щойно з'явиться введення, вибір промпта стане точнішим без змін у коді.
+
+---
+
 ## Технічний борг і відомі обмеження
 
 - Статистика (`StatisticsService.GetFinanceStatisticsAsync`) агрегує по всіх рахунках. Фільтр по рахунку не додано свідомо — на сторінці статистики немає селектора рахунку, тож параметр був би мертвим кодом. Додати разом із Phase D.
 - Перекази рендеряться окремою секцією над стрічкою транзакцій: `CollectionView.ItemTemplate` у `FinancePage.xaml` жорстко типізований під `FinanceTransaction`. Об'єднати стрічку — через `DataTemplateSelector`, коли з'являться планові транзакції (Phase C).
 - Тести виконуються послідовно: паралелізацію xUnit вимкнено через гонки глобального маппера LiteDB.
+- `DiaryEntry.SupportForOthers` є в моделі, але не має UI від самого початку. Перетинається з GoodDeeds — вирішити, чи це окрема просоціальна фіча, чи поле під видалення.
+- `DailyReminderTitle`/`DailyReminderMessage` існують лише в українському resx; англійська тримається на фолбеку `?? "..."` у `AppResources.Designer.cs`. Працює, але єдине таке місце в проєкті.
+- Порожні записи, створені старим багом автозбереження, лишились у базах користувачів. Серія їх ігнорує (`HasContent`), але самі рядки ніхто не прибирає — за потреби це разова міграція.

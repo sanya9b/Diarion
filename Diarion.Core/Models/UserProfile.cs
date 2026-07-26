@@ -29,6 +29,7 @@ public partial class UserProfile : ObservableObject
     [ObservableProperty] private bool _isHealthBlockVisible = true;
     [ObservableProperty] private bool _isFoodBlockVisible = true;
     [ObservableProperty] private bool _isHabitsBlockVisible = true;
+    [ObservableProperty] private bool _isGuidedPromptBlockVisible = true;
     [ObservableProperty] private bool _isReflectionBlockVisible = true;
 
     // Фінанси: показувати бюджети (за замовчуванням увімкнено)

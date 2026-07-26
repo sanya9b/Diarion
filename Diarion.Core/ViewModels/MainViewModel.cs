@@ -157,6 +157,10 @@ public partial class MainViewModel : BaseViewModel
         {
             foreach (HabitItemViewModel item in e.NewItems) item.PropertyChanged += OnEntryPropertyChanged;
         }
+
+        // Subscriptions above must always be rebuilt; only the save is skipped while loading, matching
+        // OnEntryPropertyChanged. Repopulating the list on load is not a user edit.
+        if (IsBusy) return;
         ScheduleAutoSave();
     }
 
@@ -198,11 +202,24 @@ public partial class MainViewModel : BaseViewModel
         // debounced save would still be pending and the previous day's edits could be lost.
         await FlushAutoSaveAsync();
 
-        await LoadEntriesForDateAsync(date);
-        await CycleStatusSection.UpdateForDateAsync(date);
+        // Own the busy scope for the whole load. CycleDay below is written by us, not by the user, so
+        // autosave must stay suppressed until it is set — otherwise merely browsing a day persists an
+        // otherwise-empty entry, which then counts as a journaled day in the streak.
+        var wasBusy = IsBusy;
+        IsBusy = true;
+        try
+        {
+            await LoadEntriesForDateAsync(date);
+            await CycleStatusSection.UpdateForDateAsync(date);
 
-        if (CurrentEntry != null && CycleStatusSection.IsVisible) {
-            CurrentEntry.CycleDay = CycleStatusSection.CycleDay;
+            if (CurrentEntry != null && CycleStatusSection.IsVisible)
+            {
+                CurrentEntry.CycleDay = CycleStatusSection.CycleDay;
+            }
+        }
+        finally
+        {
+            IsBusy = wasBusy;
         }
 
         if (IsPlannerMode)
@@ -217,11 +234,9 @@ public partial class MainViewModel : BaseViewModel
     private async Task LoadEntriesForDateAsync(DateTime date)
     {
         using var _ = StartupTrace.Measure("MainViewModel.LoadEntriesForDateAsync");
-        IsBusy = true;
         var entry = await _diaryService.GetEntryForDateAsync(date.Date);
         await _diaryHabitSyncService.SyncHabitsForEntryAsync(entry);
         CurrentEntry = new DiaryEntryViewModel(entry);
-        IsBusy = false;
     }
 
     [RelayCommand]

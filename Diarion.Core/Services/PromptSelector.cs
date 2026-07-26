@@ -1,0 +1,56 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Diarion.Models;
+
+namespace Diarion.Services;
+
+/// <summary>
+/// Picks the day's guided prompt from the mood already recorded for that day. Pure and deterministic:
+/// the same day yields the same prompt every time the screen is rebuilt, which is why the date is a
+/// parameter and neither <see cref="DateTime.Now"/> nor <see cref="Random"/> appears here.
+/// </summary>
+public static class PromptSelector
+{
+    public static PromptCategory SelectCategory(
+        Emotion emotion,
+        IReadOnlyDictionary<int, Emotion>? moodScale,
+        bool gratitudeWritten)
+    {
+        var valence = AverageValence(emotion, moodScale);
+
+        if (valence <= -1) return PromptCategory.CbtReframe;
+        if (valence >= 1) return gratitudeWritten ? PromptCategory.Savouring : PromptCategory.EveningGratitude;
+        return PromptCategory.OpenReflection;
+    }
+
+    public static string SelectKey(
+        DateTime date,
+        Emotion emotion,
+        IReadOnlyDictionary<int, Emotion>? moodScale,
+        bool gratitudeWritten)
+    {
+        var category = SelectCategory(emotion, moodScale, gratitudeWritten);
+        var keys = PromptCatalog.KeysFor(category);
+
+        // Seeded by the date so the prompt is stable for the day, and by the category so two categories
+        // don't march through their lists in lockstep.
+        var seed = date.Year * 366 + date.DayOfYear + (int)category * 7919;
+        var index = ((seed % keys.Count) + keys.Count) % keys.Count;
+        return keys[index];
+    }
+
+    /// <summary>
+    /// The hourly mood scale wins when it has entries; the single legacy <see cref="Emotion"/> is the
+    /// fallback for days recorded before the scale existed.
+    /// </summary>
+    private static double AverageValence(Emotion emotion, IReadOnlyDictionary<int, Emotion>? moodScale)
+    {
+        if (moodScale is { Count: > 0 })
+        {
+            return moodScale.Values.Average(e => e.ToValence());
+        }
+
+        return emotion.ToValence();
+    }
+}

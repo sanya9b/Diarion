@@ -63,7 +63,16 @@ public class DiaryEntry
     public string SoulFood { get; set; } = string.Empty;
     
     public string SupportForOthers { get; set; } = string.Empty;
-    
+
+    // Керований промпт (Guided prompt)
+    /// <summary>
+    /// Resource key of the prompt shown for this day. Stored rather than recomputed so the question
+    /// stays put once the user has started answering it, even if their mood changes later.
+    /// </summary>
+    public string PromptResourceKey { get; set; } = string.Empty;
+
+    public string PromptAnswer { get; set; } = string.Empty;
+
     // Legacy fields (optional to keep for backward compatibility or general note)
     public string Title { get; set; } = string.Empty;
     

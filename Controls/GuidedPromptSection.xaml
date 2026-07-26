@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             x:Class="Diarion.Controls.GuidedPromptSection"
+             x:DataType="viewmodels:DiaryEntryViewModel">
+
+    <Border StrokeShape="RoundRectangle 16"
+            StrokeThickness="1"
+            Stroke="{DynamicResource Theme_Dust_Ocean}"
+            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+            Padding="16">
+        <VerticalStackLayout Spacing="10">
+
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0"
+                       Text="{localization:Translate Key=GuidedPromptLabel}"
+                       FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                <Label Grid.Column="1"
+                       Text="{localization:Translate Key=GuidedPromptShuffle}"
+                       FontAttributes="Bold" FontSize="12"
+                       TextColor="{DynamicResource Theme_Sage}" VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShufflePromptCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Grid>
+
+            <Label Text="{Binding PromptText}"
+                   FontSize="15"
+                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+            <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" Padding="12,8">
+                <Editor Text="{Binding PromptAnswer}"
+                        Placeholder="{localization:Translate Key=GuidedPromptPlaceholder}"
+                        PlaceholderColor="{DynamicResource Theme_Ocean_Dust}"
+                        BackgroundColor="Transparent"
+                        TextColor="{DynamicResource Theme_Midnight_Snow}"
+                        FontSize="13" MinimumHeightRequest="60" AutoSize="TextChanges" />
+            </Border>
+
+        </VerticalStackLayout>
+    </Border>
+
+</ContentView>

@@ -529,6 +529,9 @@
   <data name="BlockHabitsLabel" xml:space="preserve">
     <value>Звички</value>
   </data>
+  <data name="BlockGuidedPromptLabel" xml:space="preserve">
+    <value>Питання дня</value>
+  </data>
   <data name="BlockReflectionLabel" xml:space="preserve">
     <value>Рефлексія</value>
   </data>
@@ -882,6 +885,135 @@
   </data>
   <data name="TransferSameAccountError" xml:space="preserve">
     <value>Оберіть два різні рахунки.</value>
+  </data>
+  <data name="GuidedPromptLabel" xml:space="preserve">
+    <value>Питання дня</value>
+  </data>
+  <data name="GuidedPromptPlaceholder" xml:space="preserve">
+    <value>Пиши як думається</value>
+  </data>
+  <data name="GuidedPromptShuffle" xml:space="preserve">
+    <value>Інше питання</value>
+  </data>
+  <data name="PromptCbt01" xml:space="preserve">
+    <value>Яка думка сьогодні крутилася найчастіше? Запиши її дослівно, як вона звучить у голові.</value>
+  </data>
+  <data name="PromptCbt02" xml:space="preserve">
+    <value>Що насправді свідчить, що ця думка правдива? А що свідчить проти?</value>
+  </data>
+  <data name="PromptCbt03" xml:space="preserve">
+    <value>Якби це саме розповів тобі друг — що б ти йому відповів?</value>
+  </data>
+  <data name="PromptCbt04" xml:space="preserve">
+    <value>Найгірше, що може статися. Найкраще. А тепер — найімовірніше.</value>
+  </data>
+  <data name="PromptCbt05" xml:space="preserve">
+    <value>Ти вирішив, що це про тебе. Яке ще пояснення тут можливе?</value>
+  </data>
+  <data name="PromptCbt06" xml:space="preserve">
+    <value>Що з сьогоднішнього справді в твоїй зоні впливу, а що ти просто тягнеш на собі дарма?</value>
+  </data>
+  <data name="PromptCbt07" xml:space="preserve">
+    <value>Скільки з того, через що ти сьогодні переживав, залежало від тебе хоч трохи?</value>
+  </data>
+  <data name="PromptCbt08" xml:space="preserve">
+    <value>Через рік це матиме значення? А через тиждень?</value>
+  </data>
+  <data name="PromptCbt09" xml:space="preserve">
+    <value>Ти сказав собі сьогодні щось таке, чого не сказав би нікому іншому. Що саме?</value>
+  </data>
+  <data name="PromptCbt10" xml:space="preserve">
+    <value>Опиши ситуацію без жодного оцінного слова — тільки те, що сталося.</value>
+  </data>
+  <data name="PromptSavour01" xml:space="preserve">
+    <value>Що сьогодні вийшло добре — і не смій казати «та то дрібниця».</value>
+  </data>
+  <data name="PromptSavour02" xml:space="preserve">
+    <value>Був момент, коли тобі було просто нормально. Впіймай його й опиши.</value>
+  </data>
+  <data name="PromptSavour03" xml:space="preserve">
+    <value>Кому ти сьогодні винен «дякую» і досі не сказав?</value>
+  </data>
+  <data name="PromptSavour04" xml:space="preserve">
+    <value>Що з сьогоднішнього ти б із задоволенням прожив ще раз?</value>
+  </data>
+  <data name="PromptSavour05" xml:space="preserve">
+    <value>За що сьогодні можна себе похвалити, навіть якщо трохи соромно?</value>
+  </data>
+  <data name="PromptSavour06" xml:space="preserve">
+    <value>Що тебе сьогодні розсмішило?</value>
+  </data>
+  <data name="PromptSavour07" xml:space="preserve">
+    <value>Опиши сьогоднішній день так, щоб через рік захотілося його перечитати.</value>
+  </data>
+  <data name="PromptSavour08" xml:space="preserve">
+    <value>Яка дрібниця зробила день кращим, ніж він мав бути?</value>
+  </data>
+  <data name="PromptSavour09" xml:space="preserve">
+    <value>Ти сьогодні щось зробив краще, ніж місяць тому. Що саме?</value>
+  </data>
+  <data name="PromptSavour10" xml:space="preserve">
+    <value>Що б ти сьогодні порадив собі торішньому?</value>
+  </data>
+  <data name="PromptOpen01" xml:space="preserve">
+    <value>Що сьогодні забрало найбільше сил — і чи воно було того варте?</value>
+  </data>
+  <data name="PromptOpen02" xml:space="preserve">
+    <value>Про що ти думав сьогодні найдовше?</value>
+  </data>
+  <data name="PromptOpen03" xml:space="preserve">
+    <value>Що ти сьогодні відкладав? І чому саме це.</value>
+  </data>
+  <data name="PromptOpen04" xml:space="preserve">
+    <value>Чого тобі сьогодні бракувало?</value>
+  </data>
+  <data name="PromptOpen05" xml:space="preserve">
+    <value>Який момент дня ти хотів би переграти?</value>
+  </data>
+  <data name="PromptOpen06" xml:space="preserve">
+    <value>Що ти сьогодні дізнався — про себе або про когось?</value>
+  </data>
+  <data name="PromptOpen07" xml:space="preserve">
+    <value>На що ти витратив час, про який шкода?</value>
+  </data>
+  <data name="PromptOpen08" xml:space="preserve">
+    <value>Що завтра має статися, щоб день вийшов вдалим?</value>
+  </data>
+  <data name="PromptOpen09" xml:space="preserve">
+    <value>Ти сьогодні комусь сказав, що все гаразд, хоч це було не так? Кому й навіщо?</value>
+  </data>
+  <data name="PromptOpen10" xml:space="preserve">
+    <value>Що ти зараз відчуваєш у тілі — і про що це може бути?</value>
+  </data>
+  <data name="PromptGratitude01" xml:space="preserve">
+    <value>Три речі, за які сьогодні дякуєш. Хоч найменші.</value>
+  </data>
+  <data name="PromptGratitude02" xml:space="preserve">
+    <value>Хто сьогодні полегшив тобі день, навіть не помітивши цього?</value>
+  </data>
+  <data name="PromptGratitude03" xml:space="preserve">
+    <value>За що сьогодні можеш подякувати самому собі?</value>
+  </data>
+  <data name="PromptGratitude04" xml:space="preserve">
+    <value>Що сьогодні було на своєму місці?</value>
+  </data>
+  <data name="PromptGratitude05" xml:space="preserve">
+    <value>Яка дрібниця виявилася сьогодні дуже доречною?</value>
+  </data>
+  <data name="PromptGratitude06" xml:space="preserve">
+    <value>Що з того, що ти маєш зараз, торік здавалося недосяжним?</value>
+  </data>
+  <data name="PromptGratitude07" xml:space="preserve">
+    <value>Кому варто сказати це вголос — не в щоденник, а людині?</value>
+  </data>
+  <data name="PromptGratitude08" xml:space="preserve">
+    <value>За що ти вдячний своєму тілу сьогодні?</value>
+  </data>
+  <data name="PromptGratitude09" xml:space="preserve">
+    <value>Що сьогодні минуло легше, ніж ти боявся?</value>
+  </data>
+  <data name="PromptGratitude10" xml:space="preserve">
+    <value>Заверши день однією фразою, за яку йому дякуєш.</value>
   </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Недостатньо даних за цей період.</value>

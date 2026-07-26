@@ -254,6 +254,11 @@
                         </Grid>
 
                         <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsGuidedPromptBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockGuidedPromptLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
                             <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsReflectionBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockReflectionLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
