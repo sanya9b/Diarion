@@ -38,6 +38,8 @@ public partial class DiaryEntryViewModel : ObservableObject
         _gratitude = model.Gratitude;
         _soulFood = model.SoulFood;
         _supportForOthers = model.SupportForOthers;
+        _promptResourceKey = model.PromptResourceKey;
+        _promptAnswer = model.PromptAnswer;
         _title = model.Title;
         _content = model.Content;
         _createdAt = model.CreatedAt;
@@ -234,6 +236,16 @@ public partial class DiaryEntryViewModel : ObservableObject
     partial void OnSupportForOthersChanged(string value) => Model.SupportForOthers = value;
 
     [ObservableProperty]
+    private string _promptResourceKey = string.Empty;
+
+    partial void OnPromptResourceKeyChanged(string value) => Model.PromptResourceKey = value;
+
+    [ObservableProperty]
+    private string _promptAnswer = string.Empty;
+
+    partial void OnPromptAnswerChanged(string value) => Model.PromptAnswer = value;
+
+    [ObservableProperty]
     private string _title = string.Empty;
 
     partial void OnTitleChanged(string value) => Model.Title = value;
@@ -286,6 +298,8 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.Triggers = Triggers;
         Model.Gratitude = Gratitude;
         Model.SoulFood = SoulFood;
+        Model.PromptResourceKey = PromptResourceKey;
+        Model.PromptAnswer = PromptAnswer;
         Model.SupportForOthers = SupportForOthers;
         Model.Title = Title;
         Model.Content = Content;

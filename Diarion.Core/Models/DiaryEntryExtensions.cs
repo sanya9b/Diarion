@@ -21,6 +21,7 @@ public static class DiaryEntryExtensions
             || HasText(entry.Gratitude)
             || HasText(entry.SoulFood)
             || HasText(entry.SupportForOthers)
+            || HasText(entry.PromptAnswer)
             || HasText(entry.Title)
             || HasText(entry.Content)
             || HasText(entry.SleepNotes)

@@ -71,6 +71,23 @@ public class DiaryEntryViewModelTests
         model.Emotion.Should().Be(Emotion.Sad);
     }
 
+    [Fact]
+    public void PromptFields_RoundTripThroughTheModel()
+    {
+        var model = new DiaryEntry { PromptResourceKey = "PromptCbt03", PromptAnswer = "stored answer" };
+
+        var viewModel = new DiaryEntryViewModel(model);
+        viewModel.PromptResourceKey.Should().Be("PromptCbt03");
+        viewModel.PromptAnswer.Should().Be("stored answer");
+
+        viewModel.PromptResourceKey = "PromptOpen07";
+        viewModel.PromptAnswer = "edited";
+        viewModel.SyncToModel();
+
+        model.PromptResourceKey.Should().Be("PromptOpen07");
+        model.PromptAnswer.Should().Be("edited");
+    }
+
     [Theory]
     [InlineData(Emotion.Happy, 2)]
     [InlineData(Emotion.Calm, 1)]

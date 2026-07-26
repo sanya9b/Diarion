@@ -883,6 +883,135 @@
   <data name="TransferSameAccountError" xml:space="preserve">
     <value>Choose two different accounts.</value>
   </data>
+  <data name="GuidedPromptLabel" xml:space="preserve">
+    <value>Question of the day</value>
+  </data>
+  <data name="GuidedPromptPlaceholder" xml:space="preserve">
+    <value>Write it however it comes</value>
+  </data>
+  <data name="GuidedPromptShuffle" xml:space="preserve">
+    <value>Another question</value>
+  </data>
+  <data name="PromptCbt01" xml:space="preserve">
+    <value>Which thought kept coming back today? Write it down word for word, the way it sounds in your head.</value>
+  </data>
+  <data name="PromptCbt02" xml:space="preserve">
+    <value>What actually shows that this thought is true? And what argues against it?</value>
+  </data>
+  <data name="PromptCbt03" xml:space="preserve">
+    <value>If a friend told you exactly this — what would you say back?</value>
+  </data>
+  <data name="PromptCbt04" xml:space="preserve">
+    <value>The worst that could happen. The best. Now the most likely.</value>
+  </data>
+  <data name="PromptCbt05" xml:space="preserve">
+    <value>You decided this was about you. What other explanation would fit?</value>
+  </data>
+  <data name="PromptCbt06" xml:space="preserve">
+    <value>What part of today was genuinely yours to influence, and what are you carrying for nothing?</value>
+  </data>
+  <data name="PromptCbt07" xml:space="preserve">
+    <value>How much of what you worried about today was even slightly up to you?</value>
+  </data>
+  <data name="PromptCbt08" xml:space="preserve">
+    <value>Will this matter in a year? Will it matter in a week?</value>
+  </data>
+  <data name="PromptCbt09" xml:space="preserve">
+    <value>You said something to yourself today that you would never say to anyone else. What was it?</value>
+  </data>
+  <data name="PromptCbt10" xml:space="preserve">
+    <value>Describe what happened without a single judging word — just the facts.</value>
+  </data>
+  <data name="PromptSavour01" xml:space="preserve">
+    <value>What went well today — and don't you dare call it nothing.</value>
+  </data>
+  <data name="PromptSavour02" xml:space="preserve">
+    <value>There was a moment when you simply felt fine. Catch it and describe it.</value>
+  </data>
+  <data name="PromptSavour03" xml:space="preserve">
+    <value>Who are you owing a thank-you to, and still haven't said it?</value>
+  </data>
+  <data name="PromptSavour04" xml:space="preserve">
+    <value>What part of today would you gladly live through again?</value>
+  </data>
+  <data name="PromptSavour05" xml:space="preserve">
+    <value>What can you credit yourself for today, even if it feels a bit awkward?</value>
+  </data>
+  <data name="PromptSavour06" xml:space="preserve">
+    <value>What made you laugh today?</value>
+  </data>
+  <data name="PromptSavour07" xml:space="preserve">
+    <value>Describe today so that a year from now you'll want to read it again.</value>
+  </data>
+  <data name="PromptSavour08" xml:space="preserve">
+    <value>Which small thing made the day better than it had any right to be?</value>
+  </data>
+  <data name="PromptSavour09" xml:space="preserve">
+    <value>You did something better today than you would have a month ago. What was it?</value>
+  </data>
+  <data name="PromptSavour10" xml:space="preserve">
+    <value>What would you tell yourself of a year ago about today?</value>
+  </data>
+  <data name="PromptOpen01" xml:space="preserve">
+    <value>What took the most out of you today — and was it worth it?</value>
+  </data>
+  <data name="PromptOpen02" xml:space="preserve">
+    <value>What did you think about the longest today?</value>
+  </data>
+  <data name="PromptOpen03" xml:space="preserve">
+    <value>What did you put off today? And why that in particular.</value>
+  </data>
+  <data name="PromptOpen04" xml:space="preserve">
+    <value>What were you missing today?</value>
+  </data>
+  <data name="PromptOpen05" xml:space="preserve">
+    <value>Which moment of the day would you replay differently?</value>
+  </data>
+  <data name="PromptOpen06" xml:space="preserve">
+    <value>What did you learn today — about yourself or about someone else?</value>
+  </data>
+  <data name="PromptOpen07" xml:space="preserve">
+    <value>What did you spend time on that you now regret?</value>
+  </data>
+  <data name="PromptOpen08" xml:space="preserve">
+    <value>What has to happen tomorrow for the day to count as a good one?</value>
+  </data>
+  <data name="PromptOpen09" xml:space="preserve">
+    <value>Did you tell someone you were fine today when you weren't? Who, and why?</value>
+  </data>
+  <data name="PromptOpen10" xml:space="preserve">
+    <value>What are you feeling in your body right now — and what might it be about?</value>
+  </data>
+  <data name="PromptGratitude01" xml:space="preserve">
+    <value>Three things you're thankful for today. The smallest ones count.</value>
+  </data>
+  <data name="PromptGratitude02" xml:space="preserve">
+    <value>Who made your day easier today without even noticing?</value>
+  </data>
+  <data name="PromptGratitude03" xml:space="preserve">
+    <value>What can you thank yourself for today?</value>
+  </data>
+  <data name="PromptGratitude04" xml:space="preserve">
+    <value>What was exactly where it should be today?</value>
+  </data>
+  <data name="PromptGratitude05" xml:space="preserve">
+    <value>Which small thing turned out to be exactly what you needed today?</value>
+  </data>
+  <data name="PromptGratitude06" xml:space="preserve">
+    <value>What do you have now that felt out of reach a year ago?</value>
+  </data>
+  <data name="PromptGratitude07" xml:space="preserve">
+    <value>Who should hear this out loud — not the journal, the person?</value>
+  </data>
+  <data name="PromptGratitude08" xml:space="preserve">
+    <value>What are you grateful to your body for today?</value>
+  </data>
+  <data name="PromptGratitude09" xml:space="preserve">
+    <value>What went easier today than you feared it would?</value>
+  </data>
+  <data name="PromptGratitude10" xml:space="preserve">
+    <value>Close the day with one sentence you'd thank it for.</value>
+  </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Not enough data for this period.</value>
   </data>
