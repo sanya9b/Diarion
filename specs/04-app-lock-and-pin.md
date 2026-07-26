@@ -1,6 +1,6 @@
 # 04 — Справжнє блокування + PIN
 
-- **Priority:** P0 · **Effort:** M · **Status:** Proposed · **Depends on:** 01 · **Blocks:** —
+- **Priority:** P0 · **Effort:** M · **Status:** Done · **Depends on:** 01 · **Blocks:** —
 
 ## Продукт
 

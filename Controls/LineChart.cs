@@ -16,7 +16,7 @@ public class LineChart : ChartViewBase
 {
     public static readonly BindableProperty ItemsProperty =
         BindableProperty.Create(nameof(Items), typeof(IEnumerable<Diarion.Models.MoodTrendPoint>), typeof(LineChart), null,
-            propertyChanged: OnVisualChanged);
+            propertyChanged: OnItemsChanged);
 
     public IEnumerable<Diarion.Models.MoodTrendPoint>? Items
     {

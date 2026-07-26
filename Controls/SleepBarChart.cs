@@ -11,7 +11,7 @@ public class SleepBarChart : ChartViewBase
 {
     public static readonly BindableProperty ItemsProperty =
         BindableProperty.Create(nameof(Items), typeof(IEnumerable<Diarion.ViewModels.SleepBarChartItem>), typeof(SleepBarChart), null,
-            propertyChanged: OnVisualChanged);
+            propertyChanged: OnItemsChanged);
 
     public IEnumerable<Diarion.ViewModels.SleepBarChartItem>? Items
     {

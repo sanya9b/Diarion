@@ -55,9 +55,50 @@ public class ExportServiceTests : IDisposable
     {
         var csv = await _service.BuildAsync(ExportFormat.Csv);
 
-        csv.Should().StartWith("Date,Type,Category,Amount,Note");
-        csv.Should().Contain("2026-01-10,Expense,Food,12.50,");
+        csv.Should().StartWith("Date,Type,Account,Category,Amount,Note");
+        csv.Should().Contain("2026-01-10,Expense,,Food,12.50,");
         csv.Should().Contain("\"Lunch, with a comma\""); // comma-bearing field is quoted
+    }
+
+    [Fact]
+    public async Task Csv_NamesTheOwningAccount_AndAppendsTransferBlock()
+    {
+        var cash = new Account { Name = "Cash" };
+        var card = new Account { Name = "Card" };
+        _dbContext.GetCollection<Account>(DatabaseConstants.AccountsCollection).InsertBulk(new[] { cash, card });
+
+        _dbContext.GetCollection<FinanceTransaction>(DatabaseConstants.FinanceCollection).Insert(new FinanceTransaction
+        {
+            Date = new DateTime(2026, 2, 1),
+            Type = TransactionType.Income,
+            Category = "Salary",
+            Amount = 900m,
+            AccountId = card.Id
+        });
+
+        _dbContext.GetCollection<Transfer>(DatabaseConstants.TransfersCollection).Insert(new Transfer
+        {
+            Date = new DateTime(2026, 2, 2),
+            FromAccountId = card.Id,
+            ToAccountId = cash.Id,
+            Amount = 300m,
+            Note = "Withdrawal"
+        });
+
+        var csv = await _service.BuildAsync(ExportFormat.Csv);
+
+        csv.Should().Contain("2026-02-01,Income,Card,Salary,900,");
+        csv.Should().Contain("Date,From,To,Amount,Note");
+        csv.Should().Contain("2026-02-02,Card,Cash,300,Withdrawal");
+    }
+
+    [Fact]
+    public async Task Json_IncludesAccountsAndTransfers()
+    {
+        var json = await _service.BuildAsync(ExportFormat.Json);
+
+        json.Should().Contain("\"finance_accounts\"");
+        json.Should().Contain("\"finance_transfers\"");
     }
 
     [Fact]

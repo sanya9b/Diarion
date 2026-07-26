@@ -57,6 +57,60 @@ public class MigrationRunnerTests
     }
 
     [Fact]
+    public void Run_CreatesDefaultAccount_AndBackfillsTransactionAccountId()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        var transactions = db.GetCollection<FinanceTransaction>(DatabaseConstants.FinanceCollection);
+        var tx = new FinanceTransaction { Amount = 10m, Date = new DateTime(2026, 1, 10) };
+        transactions.Insert(tx);
+
+        MigrationRunner.Run(db);
+
+        var account = db.GetCollection<Account>(DatabaseConstants.AccountsCollection).FindAll().Should().ContainSingle().Subject;
+        // The name is stored as a resource key so it follows the UI language rather than whatever
+        // culture happened to be active when the database was first migrated.
+        account.ResourceKey.Should().Be("DefaultAccountName");
+        transactions.FindById(tx.Id).AccountId.Should().Be(account.Id);
+        db.UserVersion.Should().Be(MigrationRunner.CurrentVersion);
+    }
+
+    [Fact]
+    public void Run_WithExistingAccount_ReusesItInsteadOfCreatingAnother()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        var accounts = db.GetCollection<Account>(DatabaseConstants.AccountsCollection);
+        var existing = new Account { Name = "Cash", CreatedAt = new DateTime(2025, 1, 1) };
+        accounts.Insert(existing);
+
+        var transactions = db.GetCollection<FinanceTransaction>(DatabaseConstants.FinanceCollection);
+        var tx = new FinanceTransaction { Amount = 10m, Date = new DateTime(2026, 1, 10) };
+        transactions.Insert(tx);
+
+        MigrationRunner.Run(db);
+
+        accounts.FindAll().Should().ContainSingle().Which.Id.Should().Be(existing.Id);
+        transactions.FindById(tx.Id).AccountId.Should().Be(existing.Id);
+    }
+
+    [Fact]
+    public void Run_DoesNotReassignTransactionsThatAlreadyHaveAnAccount()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        var accounts = db.GetCollection<Account>(DatabaseConstants.AccountsCollection);
+        var first = new Account { Name = "First", CreatedAt = new DateTime(2025, 1, 1) };
+        var second = new Account { Name = "Second", CreatedAt = new DateTime(2025, 6, 1) };
+        accounts.InsertBulk(new[] { first, second });
+
+        var transactions = db.GetCollection<FinanceTransaction>(DatabaseConstants.FinanceCollection);
+        var tx = new FinanceTransaction { Amount = 10m, Date = new DateTime(2026, 1, 10), AccountId = second.Id };
+        transactions.Insert(tx);
+
+        MigrationRunner.Run(db);
+
+        transactions.FindById(tx.Id).AccountId.Should().Be(second.Id);
+    }
+
+    [Fact]
     public void Run_IsIdempotent()
     {
         using var db = new LiteDatabase(new MemoryStream());

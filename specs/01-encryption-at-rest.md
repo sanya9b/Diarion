@@ -1,6 +1,6 @@
 # 01 — Шифрування даних at rest
 
-- **Priority:** P0 · **Effort:** M · **Status:** Proposed · **Depends on:** — · **Blocks:** 03, 04
+- **Priority:** P0 · **Effort:** M · **Status:** Done · **Depends on:** — · **Blocks:** 03, 04
 
 ## Продукт
 

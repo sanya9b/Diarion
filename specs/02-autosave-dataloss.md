@@ -1,6 +1,6 @@
 # 02 — Втрата даних автозбереження
 
-- **Priority:** P0 · **Effort:** S · **Status:** Proposed · **Depends on:** — · **Blocks:** —
+- **Priority:** P0 · **Effort:** S · **Status:** Done · **Depends on:** — · **Blocks:** —
 
 ## Продукт
 

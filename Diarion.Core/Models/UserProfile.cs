@@ -31,6 +31,9 @@ public partial class UserProfile : ObservableObject
     [ObservableProperty] private bool _isHabitsBlockVisible = true;
     [ObservableProperty] private bool _isReflectionBlockVisible = true;
 
+    // Фінанси: показувати бюджети (за замовчуванням увімкнено)
+    [ObservableProperty] private bool _isBudgetsEnabled = true;
+
     // Менструальний календар
     [ObservableProperty] private bool _isMenstrualTrackingEnabled;
     [ObservableProperty] private int _cycleLength = DefaultCycleLength;

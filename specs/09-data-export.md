@@ -1,6 +1,6 @@
 # 09 — Портативний експорт даних
 
-- **Priority:** P1 · **Effort:** M · **Status:** Proposed · **Depends on:** — · **Blocks:** —
+- **Priority:** P1 · **Effort:** M · **Status:** Done · **Depends on:** — · **Blocks:** —
 
 ## Продукт
 

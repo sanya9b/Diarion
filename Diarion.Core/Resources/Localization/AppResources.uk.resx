@@ -778,6 +778,111 @@
   <data name="AddTransactionButton" xml:space="preserve">
     <value>Додати транзакцію</value>
   </data>
+  <data name="BudgetsLabel" xml:space="preserve">
+    <value>Бюджети</value>
+  </data>
+  <data name="AddBudgetButton" xml:space="preserve">
+    <value>Додати бюджет</value>
+  </data>
+  <data name="BudgetFormTitle" xml:space="preserve">
+    <value>Бюджет</value>
+  </data>
+  <data name="BudgetLimitPlaceholder" xml:space="preserve">
+    <value>Місячний ліміт</value>
+  </data>
+  <data name="BudgetRemainingFormat" xml:space="preserve">
+    <value>Залишок {0}</value>
+  </data>
+  <data name="BudgetOverspentFormat" xml:space="preserve">
+    <value>Перевитрата {0}</value>
+  </data>
+  <data name="BudgetNoExpenses" xml:space="preserve">
+    <value>Немає витрат у цій категорії цього місяця.</value>
+  </data>
+  <data name="BudgetEditButton" xml:space="preserve">
+    <value>Редагувати</value>
+  </data>
+  <data name="BudgetDeleteButton" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="SettingsBudgetsToggle" xml:space="preserve">
+    <value>Показувати бюджети у Фінансах</value>
+  </data>
+  <data name="DefaultAccountName" xml:space="preserve">
+    <value>Основний</value>
+  </data>
+  <data name="AllAccounts" xml:space="preserve">
+    <value>Всі</value>
+  </data>
+  <data name="AccountsLabel" xml:space="preserve">
+    <value>Рахунки</value>
+  </data>
+  <data name="AddAccountButton" xml:space="preserve">
+    <value>+ Рахунок</value>
+  </data>
+  <data name="AccountFormTitle" xml:space="preserve">
+    <value>Рахунок</value>
+  </data>
+  <data name="AccountNamePlaceholder" xml:space="preserve">
+    <value>Назва рахунку</value>
+  </data>
+  <data name="InitialBalancePlaceholder" xml:space="preserve">
+    <value>Початковий баланс</value>
+  </data>
+  <data name="SelectAccountLabel" xml:space="preserve">
+    <value>Рахунок</value>
+  </data>
+  <data name="DeleteAccountConfirm" xml:space="preserve">
+    <value>Видалити цей рахунок? Його транзакції перейдуть на інший рахунок.</value>
+  </data>
+  <data name="DeleteAccountLastError" xml:space="preserve">
+    <value>Потрібен щонайменше один рахунок.</value>
+  </data>
+  <data name="AccountIconLabel" xml:space="preserve">
+    <value>Іконка</value>
+  </data>
+  <data name="AccountColorLabel" xml:space="preserve">
+    <value>Колір</value>
+  </data>
+  <data name="DeleteAccountButton" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="ArchiveAccountButton" xml:space="preserve">
+    <value>Архівувати</value>
+  </data>
+  <data name="UnarchiveAccountButton" xml:space="preserve">
+    <value>Розархівувати</value>
+  </data>
+  <data name="ArchiveAccountLastError" xml:space="preserve">
+    <value>Потрібен щонайменше один активний рахунок.</value>
+  </data>
+  <data name="ShowArchivedAccountsButton" xml:space="preserve">
+    <value>Архів</value>
+  </data>
+  <data name="ReassignToLabel" xml:space="preserve">
+    <value>Перенести транзакції на</value>
+  </data>
+  <data name="TransfersLabel" xml:space="preserve">
+    <value>Перекази</value>
+  </data>
+  <data name="AddTransferButton" xml:space="preserve">
+    <value>+ Переказ</value>
+  </data>
+  <data name="TransferFormTitle" xml:space="preserve">
+    <value>Переказ</value>
+  </data>
+  <data name="TransferFromLabel" xml:space="preserve">
+    <value>Звідки</value>
+  </data>
+  <data name="TransferToLabel" xml:space="preserve">
+    <value>Куди</value>
+  </data>
+  <data name="TransferAmountError" xml:space="preserve">
+    <value>Введіть суму більшу за нуль.</value>
+  </data>
+  <data name="TransferSameAccountError" xml:space="preserve">
+    <value>Оберіть два різні рахунки.</value>
+  </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Недостатньо даних за цей період.</value>
   </data>

@@ -12,6 +12,9 @@ public class FinanceTransaction
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public TransactionType Type { get; set; }
+    /// <summary>Owning account. Nullable so legacy rows (pre-accounts) deserialize to null; the M003
+    /// migration backfills a default account for existing transactions.</summary>
+    public Guid? AccountId { get; set; }
     public decimal Amount { get; set; }
     public string Category { get; set; } = string.Empty;
     public string Note { get; set; } = string.Empty;

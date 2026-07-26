@@ -9,7 +9,7 @@ public class EmotionDonutChart : ChartViewBase
 {
     public static readonly BindableProperty ItemsProperty =
         BindableProperty.Create(nameof(Items), typeof(IEnumerable<Diarion.ViewModels.EmotionChartItem>), typeof(EmotionDonutChart), null,
-            propertyChanged: OnVisualChanged);
+            propertyChanged: OnItemsChanged);
 
     public IEnumerable<Diarion.ViewModels.EmotionChartItem>? Items
     {

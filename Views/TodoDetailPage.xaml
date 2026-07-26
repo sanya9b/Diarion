@@ -99,7 +99,7 @@
                         <VerticalStackLayout Spacing="8">
                             <Label Text="{x:Static localization:AppResources.TaskPriorityLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                             
-                            <CollectionView ItemsSource="{Binding PrioritiesList}"
+                            <CollectionView BackgroundColor="Transparent" ItemsSource="{Binding PrioritiesList}"
                                             HeightRequest="48"
                                             HorizontalScrollBarVisibility="Never">
                                 <CollectionView.ItemsLayout>

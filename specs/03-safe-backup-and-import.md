@@ -1,6 +1,6 @@
 # 03 — Безпечний бекап та імпорт
 
-- **Priority:** P0 · **Effort:** M · **Status:** Proposed · **Depends on:** 01 · **Blocks:** 12
+- **Priority:** P0 · **Effort:** M · **Status:** Done · **Depends on:** 01 · **Blocks:** 12
 
 ## Продукт
 

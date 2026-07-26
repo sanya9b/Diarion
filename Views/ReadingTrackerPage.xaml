@@ -35,7 +35,7 @@
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="24,10,24,32" Spacing="16">
-                <CollectionView ItemsSource="{Binding Slots}"
+                <CollectionView BackgroundColor="Transparent" ItemsSource="{Binding Slots}"
                                 SelectionMode="None"
                                 VerticalOptions="Start">
                     <CollectionView.ItemsLayout>

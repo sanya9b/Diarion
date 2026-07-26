@@ -1,6 +1,6 @@
 # 12 — Версіонування схеми та міграції
 
-- **Priority:** P1 · **Effort:** L · **Status:** Proposed · **Depends on:** 03 · **Blocks:** —
+- **Priority:** P1 · **Effort:** L · **Status:** Done · **Depends on:** 03 · **Blocks:** —
 
 ## Продукт
 

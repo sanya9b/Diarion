@@ -257,6 +257,13 @@
                             <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsReflectionBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockReflectionLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
+
+                        <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" Margin="0,2" />
+
+                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsBudgetsEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.SettingsBudgetsToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Grid>
                     </VerticalStackLayout>
                 </Border>
 

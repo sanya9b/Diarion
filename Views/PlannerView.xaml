@@ -34,7 +34,7 @@
             </Grid>
         </Grid>
 
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Todos}" ItemSizingStrategy="MeasureFirstItem">
+        <CollectionView Grid.Row="1" BackgroundColor="Transparent" ItemsSource="{Binding Todos}" ItemSizingStrategy="MeasureFirstItem">
             <CollectionView.EmptyView>
                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="32" Spacing="12">
                     <Label Text="{x:Static localization:AppResources.NoTasks}" FontAttributes="Bold" FontSize="18" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />

@@ -1,6 +1,6 @@
 # 06 — Кореляційний рушій інсайтів
 
-- **Priority:** P1 · **Effort:** L · **Status:** Proposed · **Depends on:** 05 · **Blocks:** —
+- **Priority:** P1 · **Effort:** L · **Status:** Done · **Depends on:** 05 · **Blocks:** —
 
 ## Продукт
 
