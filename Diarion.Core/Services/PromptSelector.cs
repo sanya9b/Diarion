@@ -28,15 +28,14 @@ public static class PromptSelector
         DateTime date,
         Emotion emotion,
         IReadOnlyDictionary<int, Emotion>? moodScale,
-        bool gratitudeWritten,
-        int shuffleOffset = 0)
+        bool gratitudeWritten)
     {
         var category = SelectCategory(emotion, moodScale, gratitudeWritten);
         var keys = PromptCatalog.KeysFor(category);
 
         // Seeded by the date so the prompt is stable for the day, and by the category so two categories
         // don't march through their lists in lockstep.
-        var seed = date.Year * 366 + date.DayOfYear + (int)category * 7919 + shuffleOffset;
+        var seed = date.Year * 366 + date.DayOfYear + (int)category * 7919;
         var index = ((seed % keys.Count) + keys.Count) % keys.Count;
         return keys[index];
     }

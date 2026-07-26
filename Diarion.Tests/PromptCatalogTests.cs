@@ -68,6 +68,58 @@ public class PromptCatalogTests : IDisposable
         ukrainian.Should().NotBe(english);
     }
 
+    [Theory]
+    [InlineData(PromptCategory.CbtReframe)]
+    [InlineData(PromptCategory.Savouring)]
+    [InlineData(PromptCategory.OpenReflection)]
+    [InlineData(PromptCategory.EveningGratitude)]
+    public void CategoryOf_RecognisesItsOwnKeys(PromptCategory category)
+    {
+        foreach (var key in PromptCatalog.KeysFor(category))
+        {
+            PromptCatalog.CategoryOf(key).Should().Be(category);
+        }
+    }
+
+    [Fact]
+    public void CategoryOf_UnknownOrEmptyKey_IsNull()
+    {
+        PromptCatalog.CategoryOf("nope").Should().BeNull();
+        PromptCatalog.CategoryOf(null).Should().BeNull();
+    }
+
+    [Fact]
+    public void Next_AdvancesWithinTheCategoryAndWrapsAround()
+    {
+        var keys = PromptCatalog.KeysFor(PromptCategory.Savouring);
+
+        PromptCatalog.Next(keys[0]).Should().Be(keys[1]);
+        PromptCatalog.Next(keys[^1]).Should().Be(keys[0]);
+    }
+
+    [Fact]
+    public void Next_VisitsEveryPromptBeforeRepeating()
+    {
+        var keys = PromptCatalog.KeysFor(PromptCategory.OpenReflection);
+        var visited = new System.Collections.Generic.List<string>();
+
+        var current = keys[0];
+        for (var i = 0; i < keys.Count; i++)
+        {
+            visited.Add(current);
+            current = PromptCatalog.Next(current);
+        }
+
+        visited.Should().BeEquivalentTo(keys);
+        current.Should().Be(keys[0]);
+    }
+
+    [Fact]
+    public void Next_UnknownKey_IsReturnedUnchanged()
+    {
+        PromptCatalog.Next("nope").Should().Be("nope");
+    }
+
     [Fact]
     public void ResolveText_UnknownKey_ReturnsTheKey()
     {

@@ -1,4 +1,6 @@
+using System;
 using Diarion.Models;
+using Diarion.Services;
 using Diarion.ViewModels;
 using FluentAssertions;
 using Xunit;
@@ -86,6 +88,66 @@ public class DiaryEntryViewModelTests
 
         model.PromptResourceKey.Should().Be("PromptOpen07");
         model.PromptAnswer.Should().Be("edited");
+    }
+
+    [Fact]
+    public void NewEntry_GetsAPromptImmediately()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15) });
+
+        viewModel.PromptResourceKey.Should().NotBeNullOrEmpty();
+        viewModel.PromptText.Should().NotBe(viewModel.PromptResourceKey, "the key must resolve to real text");
+    }
+
+    [Fact]
+    public void RecordingALowMood_SwitchesThePromptToReframing()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15) });
+        PromptCatalog.CategoryOf(viewModel.PromptResourceKey).Should().Be(PromptCategory.OpenReflection);
+
+        // Mood is normally recorded after the day screen has already opened.
+        viewModel.Emotion = Emotion.Sad;
+
+        PromptCatalog.CategoryOf(viewModel.PromptResourceKey).Should().Be(PromptCategory.CbtReframe);
+    }
+
+    [Fact]
+    public void OnceAnswered_ThePromptStopsChanging()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15) });
+        viewModel.PromptAnswer = "half-written thought";
+        var answering = viewModel.PromptResourceKey;
+
+        viewModel.Emotion = Emotion.Sad;
+
+        viewModel.PromptResourceKey.Should().Be(answering,
+            "the question must not change under someone who is already answering it");
+    }
+
+    [Fact]
+    public void StoredPromptSurvivesReload_WhenItStillSuitsTheMood()
+    {
+        var model = new DiaryEntry { Date = new DateTime(2026, 7, 15), Emotion = Emotion.Sad };
+        var first = new DiaryEntryViewModel(model);
+        first.ShufflePromptCommand.Execute(null);
+        var shuffled = first.PromptResourceKey;
+        first.SyncToModel();
+
+        var reloaded = new DiaryEntryViewModel(model);
+
+        reloaded.PromptResourceKey.Should().Be(shuffled);
+    }
+
+    [Fact]
+    public void ShufflePrompt_MovesWithinTheSameCategory()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15), Emotion = Emotion.Sad });
+        var before = viewModel.PromptResourceKey;
+
+        viewModel.ShufflePromptCommand.Execute(null);
+
+        viewModel.PromptResourceKey.Should().NotBe(before);
+        PromptCatalog.CategoryOf(viewModel.PromptResourceKey).Should().Be(PromptCategory.CbtReframe);
     }
 
     [Theory]

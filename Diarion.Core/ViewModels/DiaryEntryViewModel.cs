@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
+using Diarion.Services;
 
 namespace Diarion.ViewModels;
 
@@ -55,6 +56,8 @@ public partial class DiaryEntryViewModel : ObservableObject
         }
 
         Habits.CollectionChanged += (s, e) => UpdateModelHabits();
+
+        RefreshPrompt();
     }
 
     private void UpdateModelHabits()
@@ -238,12 +241,38 @@ public partial class DiaryEntryViewModel : ObservableObject
     [ObservableProperty]
     private string _promptResourceKey = string.Empty;
 
-    partial void OnPromptResourceKeyChanged(string value) => Model.PromptResourceKey = value;
+    partial void OnPromptResourceKeyChanged(string value)
+    {
+        Model.PromptResourceKey = value;
+        OnPropertyChanged(nameof(PromptText));
+    }
 
     [ObservableProperty]
     private string _promptAnswer = string.Empty;
 
     partial void OnPromptAnswerChanged(string value) => Model.PromptAnswer = value;
+
+    /// <summary>The day's question, resolved from resources so it follows the UI language.</summary>
+    public string PromptText => PromptCatalog.ResolveText(PromptResourceKey);
+
+    /// <summary>
+    /// Picks the question that fits the day's mood. Re-picks while the answer is still empty — the mood
+    /// is usually recorded after the day screen first opens — but never once the user has written
+    /// something, so the question they are answering cannot change under them.
+    /// </summary>
+    public void RefreshPrompt()
+    {
+        if (!string.IsNullOrWhiteSpace(PromptAnswer)) return;
+
+        var wanted = PromptSelector.SelectCategory(Emotion, Model.MoodScale, !string.IsNullOrWhiteSpace(Gratitude));
+        if (PromptCatalog.CategoryOf(PromptResourceKey) == wanted) return;
+
+        PromptResourceKey = PromptSelector.SelectKey(
+            Date, Emotion, Model.MoodScale, !string.IsNullOrWhiteSpace(Gratitude));
+    }
+
+    [RelayCommand]
+    private void ShufflePrompt() => PromptResourceKey = PromptCatalog.Next(PromptResourceKey);
 
     [ObservableProperty]
     private string _title = string.Empty;
@@ -263,7 +292,11 @@ public partial class DiaryEntryViewModel : ObservableObject
     [ObservableProperty]
     private Emotion _emotion;
 
-    partial void OnEmotionChanged(Emotion value) => Model.Emotion = value;
+    partial void OnEmotionChanged(Emotion value)
+    {
+        Model.Emotion = value;
+        RefreshPrompt();
+    }
 
     [ObservableProperty]
     private string _aiSummary = string.Empty;

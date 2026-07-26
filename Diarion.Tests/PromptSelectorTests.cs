@@ -91,25 +91,6 @@ public class PromptSelectorTests
     }
 
     [Fact]
-    public void SelectKey_ShuffleOffsetAdvancesAndWrapsAround()
-    {
-        var baseline = PromptSelector.SelectKey(Day, Emotion.None, null, false);
-        var shuffled = PromptSelector.SelectKey(Day, Emotion.None, null, false, shuffleOffset: 1);
-        var wrapped = PromptSelector.SelectKey(Day, Emotion.None, null, false, shuffleOffset: 10);
-
-        shuffled.Should().NotBe(baseline);
-        wrapped.Should().Be(baseline, "ten prompts per category means offset 10 comes full circle");
-    }
-
-    [Fact]
-    public void SelectKey_NegativeOffsetStaysInRange()
-    {
-        var key = PromptSelector.SelectKey(Day, Emotion.None, null, false, shuffleOffset: -3);
-
-        PromptCatalog.KeysFor(PromptCategory.OpenReflection).Should().Contain(key);
-    }
-
-    [Fact]
     public void SelectKey_CoversEveryPromptInACategoryAcrossAYear()
     {
         var seen = Enumerable.Range(0, 365)

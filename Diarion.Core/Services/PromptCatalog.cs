@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -27,6 +28,32 @@ public static class PromptCatalog
     public static IEnumerable<PromptCategory> Categories => Keys.Keys;
 
     public static IEnumerable<string> AllKeys => Keys.Values.SelectMany(k => k);
+
+    /// <summary>
+    /// Which category a stored key belongs to, or null if the key is unknown. Lets callers tell whether
+    /// a prompt already on an entry still suits the day's mood without re-deriving it.
+    /// </summary>
+    public static PromptCategory? CategoryOf(string? key)
+    {
+        if (string.IsNullOrEmpty(key)) return null;
+
+        foreach (var (category, keys) in Keys)
+        {
+            if (keys.Contains(key)) return category;
+        }
+        return null;
+    }
+
+    /// <summary>The next prompt in the same category, wrapping around; used by the shuffle affordance.</summary>
+    public static string Next(string key)
+    {
+        var category = CategoryOf(key);
+        if (category is null) return key;
+
+        var keys = Keys[category.Value];
+        var index = Array.IndexOf(keys, key);
+        return keys[(index + 1) % keys.Length];
+    }
 
     /// <summary>
     /// Resolves a prompt key to display text in the current UI language. Falls back to the key itself
