@@ -532,6 +532,21 @@
   <data name="BlockGuidedPromptLabel" xml:space="preserve">
     <value>Питання дня</value>
   </data>
+  <data name="MoodHourlyLabel" xml:space="preserve">
+    <value>По годинах</value>
+  </data>
+  <data name="MoodHourlyHint" xml:space="preserve">
+    <value>Оберіть годину, тоді натисніть настрій вище</value>
+  </data>
+  <data name="MoodHourlyDayHint" xml:space="preserve">
+    <value>Натисніть настрій вище, щоб задати весь день</value>
+  </data>
+  <data name="MoodHourAccessibility" xml:space="preserve">
+    <value>{0}:00 — {1}</value>
+  </data>
+  <data name="MoodHourEmpty" xml:space="preserve">
+    <value>не задано</value>
+  </data>
   <data name="BlockReflectionLabel" xml:space="preserve">
     <value>Рефлексія</value>
   </data>

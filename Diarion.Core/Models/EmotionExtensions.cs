@@ -1,3 +1,5 @@
+using Diarion.Resources.Localization;
+
 namespace Diarion.Models;
 
 /// <summary>
@@ -21,6 +23,17 @@ public static class EmotionExtensions
     /// Brand color (hex) for each emotion, shared by the emotion donut, the Year-in-Pixels heatmap and
     /// anywhere else emotions are color-coded. These are fixed brand hues, not theme-dependent.
     /// </summary>
+    /// <summary>Display name in the current UI language, for legends, chart labels and screen readers.</summary>
+    public static string ToLocalizedName(this Emotion emotion) => emotion switch
+    {
+        Emotion.Happy => AppResources.EmotionHappy,
+        Emotion.Calm => AppResources.EmotionCalm,
+        Emotion.Anxious => AppResources.EmotionAnxious,
+        Emotion.Sad => AppResources.EmotionSad,
+        Emotion.Angry => AppResources.EmotionAngry,
+        _ => AppResources.EmotionNone
+    };
+
     public static string ToColorHex(this Emotion emotion) => emotion switch
     {
         Emotion.Happy => "#C26D53",   // Coral

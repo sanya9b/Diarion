@@ -90,6 +90,122 @@ public class DiaryEntryViewModelTests
         model.PromptAnswer.Should().Be("edited");
     }
 
+    // --- Hourly mood ---
+
+    [Fact]
+    public void HourlyMood_MaterialisesEveryWakingHour_AndSeedsFromTheModel()
+    {
+        var model = new DiaryEntry
+        {
+            HourlyMood = { new HourMood { Hour = 14, Mood = Emotion.Sad } }
+        };
+
+        var viewModel = new DiaryEntryViewModel(model);
+
+        viewModel.HourlyMood.Should().HaveCount(DiaryEntryViewModel.LastHour - DiaryEntryViewModel.FirstHour + 1);
+        viewModel.HourlyMood.First().Hour.Should().Be(DiaryEntryViewModel.FirstHour);
+        viewModel.HourlyMood.Last().Hour.Should().Be(DiaryEntryViewModel.LastHour);
+        viewModel.HourlyMood.Single(h => h.Hour == 14).Mood.Should().Be(Emotion.Sad);
+        viewModel.HourlyMood.Single(h => h.Hour == 9).Mood.Should().Be(Emotion.None);
+    }
+
+    [Fact]
+    public void SelectEmotion_WithNoHourSelected_SetsTheDayScalar()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry());
+
+        viewModel.SelectEmotionCommand.Execute(Emotion.Happy);
+
+        viewModel.Emotion.Should().Be(Emotion.Happy);
+        viewModel.HourlyMood.Should().OnlyContain(h => h.Mood == Emotion.None);
+    }
+
+    [Fact]
+    public void SelectEmotion_WithAnHourSelected_WritesThatHourAndLeavesTheScalar()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Emotion = Emotion.Calm });
+
+        viewModel.SelectHourCommand.Execute(viewModel.HourlyMood.Single(h => h.Hour == 14));
+        viewModel.SelectEmotionCommand.Execute(Emotion.Sad);
+
+        viewModel.HourlyMood.Single(h => h.Hour == 14).Mood.Should().Be(Emotion.Sad);
+        viewModel.Emotion.Should().Be(Emotion.Calm, "the day-level summary stays the user's own");
+        viewModel.Model.HourlyMood.Should().ContainSingle(h => h.Hour == 14 && h.Mood == Emotion.Sad);
+    }
+
+    [Fact]
+    public void SelectEmotion_SameEmotionTwiceOnAnHour_ClearsIt()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry());
+        viewModel.SelectHourCommand.Execute(viewModel.HourlyMood.Single(h => h.Hour == 9));
+
+        viewModel.SelectEmotionCommand.Execute(Emotion.Angry);
+        viewModel.SelectEmotionCommand.Execute(Emotion.Angry);
+
+        viewModel.HourlyMood.Single(h => h.Hour == 9).Mood.Should().Be(Emotion.None);
+        viewModel.Model.HourlyMood.Should().BeEmpty("cleared hours are not stored");
+    }
+
+    [Fact]
+    public void SelectHour_TappingTheSameHourAgain_ReturnsToDayLevel()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry());
+        var slot = viewModel.HourlyMood.Single(h => h.Hour == 11);
+
+        viewModel.SelectHourCommand.Execute(slot);
+        viewModel.IsHourSelected.Should().BeTrue();
+
+        viewModel.SelectHourCommand.Execute(slot);
+
+        viewModel.IsHourSelected.Should().BeFalse();
+        viewModel.HourlyMood.Should().OnlyContain(h => !h.IsSelected);
+    }
+
+    [Fact]
+    public void CurrentMood_FollowsTheSelectedHour_ThenReturnsToTheDay()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Emotion = Emotion.Happy });
+        var slot = viewModel.HourlyMood.Single(h => h.Hour == 20);
+
+        viewModel.CurrentMood.Should().Be(Emotion.Happy);
+
+        viewModel.SelectHourCommand.Execute(slot);
+        viewModel.CurrentMood.Should().Be(Emotion.None, "that hour has nothing logged yet");
+
+        viewModel.SelectEmotionCommand.Execute(Emotion.Anxious);
+        viewModel.CurrentMood.Should().Be(Emotion.Anxious);
+
+        viewModel.SelectHourCommand.Execute(slot);
+        viewModel.CurrentMood.Should().Be(Emotion.Happy);
+    }
+
+    [Fact]
+    public void SyncToModel_CopiesHourlyMood()
+    {
+        // The original defect: hourly mood was modelled and read, but SyncToModel never copied it,
+        // so nothing the user could do would ever persist a value.
+        var model = new DiaryEntry();
+        var viewModel = new DiaryEntryViewModel(model);
+        viewModel.HourlyMood.Single(h => h.Hour == 8).Mood = Emotion.Calm;
+
+        viewModel.SyncToModel();
+
+        model.HourlyMood.Should().ContainSingle(h => h.Hour == 8 && h.Mood == Emotion.Calm);
+    }
+
+    [Fact]
+    public void HourlyMood_DrivesThePromptCategory()
+    {
+        // PromptSelector has always preferred the hourly scale; until now that branch was unreachable.
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15), Emotion = Emotion.Happy });
+        PromptCatalog.CategoryOf(viewModel.PromptResourceKey).Should().NotBe(PromptCategory.CbtReframe);
+
+        viewModel.SelectHourCommand.Execute(viewModel.HourlyMood.Single(h => h.Hour == 10));
+        viewModel.SelectEmotionCommand.Execute(Emotion.Sad);
+
+        PromptCatalog.CategoryOf(viewModel.PromptResourceKey).Should().Be(PromptCategory.CbtReframe);
+    }
+
     [Fact]
     public void NewEntry_GetsAPromptImmediately()
     {
