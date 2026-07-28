@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Diarion.Models;
 using Diarion.Services.Database;
+using Diarion.Services.Database.Migrations;
 using FluentAssertions;
 using LiteDB;
 using Xunit;
@@ -108,6 +109,57 @@ public class MigrationRunnerTests
         MigrationRunner.Run(db);
 
         transactions.FindById(tx.Id).AccountId.Should().Be(second.Id);
+    }
+
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(3, 3)]
+    [InlineData(5, 5)]   // already on the new scale — ambiguous, so left alone
+    [InlineData(6, 3)]
+    [InlineData(7, 4)]   // midpoint rounds up
+    [InlineData(8, 4)]
+    [InlineData(9, 5)]   // midpoint rounds up
+    [InlineData(10, 5)]
+    public void Rescale_HalvesOnlyValuesAboveTheNewMaximum(int stored, int expected)
+    {
+        M004_NormalizeRatingScales.Rescale(stored).Should().Be(expected);
+    }
+
+    [Fact]
+    public void Run_NormalizesOutOfTenRatings_AndLeavesValidOnesAlone()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        var entries = db.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
+
+        var legacy = new DiaryEntry { Date = new DateTime(2026, 1, 10), SleepQuality = 9, HealthStatus = 7 };
+        var current = new DiaryEntry { Date = new DateTime(2026, 1, 11), SleepQuality = 4, HealthStatus = 5 };
+        entries.Insert(legacy);
+        entries.Insert(current);
+
+        MigrationRunner.Run(db);
+
+        var migrated = entries.FindById(legacy.Id);
+        migrated.SleepQuality.Should().Be(5);
+        migrated.HealthStatus.Should().Be(4);
+
+        var untouched = entries.FindById(current.Id);
+        untouched.SleepQuality.Should().Be(4);
+        untouched.HealthStatus.Should().Be(5);
+    }
+
+    [Fact]
+    public void Run_RatingNormalization_IsIdempotent()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        var entries = db.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
+        var entry = new DiaryEntry { Date = new DateTime(2026, 1, 10), SleepQuality = 10 };
+        entries.Insert(entry);
+
+        MigrationRunner.Run(db);
+        MigrationRunner.Run(db);
+
+        // A second pass must not halve the already-halved value down to 3.
+        entries.FindById(entry.Id).SleepQuality.Should().Be(5);
     }
 
     [Fact]

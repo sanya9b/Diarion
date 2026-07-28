@@ -97,8 +97,8 @@ public class DatabaseSeeder : IDatabaseSeeder
                 CreatedAt = date.AddHours(20),
                 SleepStart = new TimeSpan(22, random.Next(0, 59), 0),
                 SleepEnd = new TimeSpan(7, random.Next(0, 59), 0),
-                SleepQuality = random.Next(4, 11),
-                HealthStatus = random.Next(5, 11),
+                SleepQuality = random.Next(2, DiaryEntry.MaxRating + 1),
+                HealthStatus = random.Next(3, DiaryEntry.MaxRating + 1),
                 CycleDay = random.Next(1, 28).ToString(),
                 IntimateLife = random.NextDouble() > 0.7 ? "Yes" : "No",
                 // Left blank so the localized reflection placeholders are visible in mock data.

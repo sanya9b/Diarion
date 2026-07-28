@@ -5,6 +5,12 @@ namespace Diarion.Models;
 
 public class DiaryEntry
 {
+    /// <summary>
+    /// Top of the star scale used by <c>SleepQuality</c> and <c>HealthStatus</c>. It used to be 10;
+    /// anything still reporting out of 10 is a leftover, so read this instead of writing a literal.
+    /// </summary>
+    public const int MaxRating = 5;
+
     public Guid Id { get; set; } = Guid.NewGuid();
     
     public DateTime Date { get; set; } = DateTime.Today;

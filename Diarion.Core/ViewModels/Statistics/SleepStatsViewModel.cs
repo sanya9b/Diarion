@@ -55,7 +55,7 @@ public partial class SleepStatsViewModel : ObservableObject
             {
                 IsEmpty = true;
                 AverageSleepDurationText = "0h 0m";
-                AverageSleepQualityText = "0 / 10";
+                AverageSleepQualityText = $"0 / {DiaryEntry.MaxRating}";
                 SleepChartData.Clear();
                 DurationSparkline = new System.Collections.ObjectModel.ObservableCollection<double?>();
                 QualitySparkline = new System.Collections.ObjectModel.ObservableCollection<double?>();
@@ -64,7 +64,7 @@ public partial class SleepStatsViewModel : ObservableObject
 
             IsEmpty = false;
             AverageSleepDurationText = $"{sleepStats.AverageSleepDuration.Hours}h {sleepStats.AverageSleepDuration.Minutes}m";
-            AverageSleepQualityText = $"{sleepStats.AverageSleepQuality:F1} / 10";
+            AverageSleepQualityText = $"{sleepStats.AverageSleepQuality:F1} / {DiaryEntry.MaxRating}";
 
             DurationSparkline = new System.Collections.ObjectModel.ObservableCollection<double?>(
                 sleepStats.DailyData.Select(d => d.Duration.TotalHours > 0 ? (double?)d.Duration.TotalHours : null));

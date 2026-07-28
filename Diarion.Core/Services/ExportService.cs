@@ -176,7 +176,7 @@ public class ExportService : IExportService
             }
             if (e.SleepQuality > 0)
             {
-                sb.Append("- Sleep quality: ").Append(e.SleepQuality).Append("/10\n");
+                sb.Append("- Sleep quality: ").Append(e.SleepQuality).Append('/').Append(DiaryEntry.MaxRating).Append('\n');
             }
             AppendField(sb, "Gratitude", e.Gratitude);
             AppendField(sb, "Triggers", e.Triggers);
