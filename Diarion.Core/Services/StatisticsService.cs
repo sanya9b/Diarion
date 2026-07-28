@@ -98,17 +98,22 @@ public class StatisticsService : IStatisticsService
             }
         }
 
+        // One observation per DAY, not per hour: the donut reads as "share of your days", and
+        // hour-weighting would silently turn it into "share of your time" and let one heavily-logged
+        // day outweigh a month. For days with no hourly data Dominant returns the scalar, so this is
+        // identical to the previous behaviour.
         foreach (var entry in entriesList)
         {
-            if (entry.Emotion != Emotion.None)
+            var dominant = MoodAggregate.Dominant(entry.Emotion, entry.HourlyMood);
+            if (dominant != Emotion.None)
             {
-                if (counts.ContainsKey(entry.Emotion))
+                if (counts.ContainsKey(dominant))
                 {
-                    counts[entry.Emotion]++;
+                    counts[dominant]++;
                 }
                 else
                 {
-                    counts[entry.Emotion] = 1;
+                    counts[dominant] = 1;
                 }
             }
         }
@@ -127,16 +132,17 @@ public class StatisticsService : IStatisticsService
         // Daily mood series (gap-filled so it spans exactly N days): average valence for the trend line
         // plus the day's dominant emotion (mode, deterministic tie-break) for the Year-in-Pixels heatmap.
         var moodByDate = entriesList
-            .Where(e => e.Emotion != Emotion.None)
+            .Where(e => MoodAggregate.HasAny(e.Emotion, e.HourlyMood))
             .GroupBy(e => e.Date.Date)
             .ToDictionary(
                 g => g.Key,
                 g => (
-                    Valence: g.Average(e => e.Emotion.ToValence()),
-                    Dominant: g.GroupBy(e => e.Emotion)
-                               .OrderByDescending(x => x.Count())
-                               .ThenBy(x => (int)x.Key)
-                               .First().Key));
+                    // Averaged across every logged hour, so the trend line reflects the whole day
+                    // rather than whichever moment happened to be captured.
+                    Valence: g.Average(e => MoodAggregate.Valence(e.Emotion, e.HourlyMood)),
+                    Dominant: MoodAggregate.Dominant(
+                        g.First().Emotion,
+                        g.SelectMany(e => e.HourlyMood).ToList())));
 
         var dailyTrend = new List<MoodTrendPoint>();
         for (var d = startDate.Date; d <= DateTime.Today; d = d.AddDays(1))

@@ -40,9 +40,11 @@ public class CorrelationService : ICorrelationService
         foreach (var e in entries)
         {
             var d = e.Date.Date;
-            if (e.Emotion != Emotion.None)
+            // Day-keyed, so this does not add samples — it makes each day's value the mean of the
+            // hours actually logged instead of a single snapshot.
+            if (MoodAggregate.HasAny(e.Emotion, e.HourlyMood))
             {
-                moodByDate[d] = e.Emotion.ToValence();
+                moodByDate[d] = MoodAggregate.Valence(e.Emotion, e.HourlyMood);
             }
             if (e.HasSleepStart && e.HasSleepEnd)
             {

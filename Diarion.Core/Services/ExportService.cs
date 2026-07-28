@@ -166,6 +166,14 @@ public class ExportService : IExportService
             {
                 sb.Append("- Mood: ").Append(e.Emotion).Append('\n');
             }
+            if (e.HourlyMood.Count > 0)
+            {
+                var hours = e.HourlyMood
+                    .Where(h => h.Mood != Emotion.None)
+                    .OrderBy(h => h.Hour)
+                    .Select(h => $"{h.Hour:00}:00 {h.Mood}");
+                sb.Append("- Mood by hour: ").Append(string.Join(", ", hours)).Append('\n');
+            }
             if (e.SleepQuality > 0)
             {
                 sb.Append("- Sleep quality: ").Append(e.SleepQuality).Append("/10\n");
