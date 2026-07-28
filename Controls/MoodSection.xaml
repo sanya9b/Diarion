@@ -41,7 +41,7 @@
                             <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Happy}" />
                         </Border.GestureRecognizers>
                         <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="{x:Static models:Emotion.Happy}">
+                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Happy}">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
@@ -58,7 +58,7 @@
                             <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Calm}" />
                         </Border.GestureRecognizers>
                         <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="{x:Static models:Emotion.Calm}">
+                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Calm}">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
@@ -75,7 +75,7 @@
                             <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Anxious}" />
                         </Border.GestureRecognizers>
                         <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="{x:Static models:Emotion.Anxious}">
+                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Anxious}">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
@@ -92,7 +92,7 @@
                             <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Sad}" />
                         </Border.GestureRecognizers>
                         <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="{x:Static models:Emotion.Sad}">
+                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Sad}">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
@@ -109,7 +109,7 @@
                             <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Angry}" />
                         </Border.GestureRecognizers>
                         <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding Emotion}" Value="{x:Static models:Emotion.Angry}">
+                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Angry}">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
@@ -119,6 +119,75 @@
                     <Label Text="{x:Static localization:AppResources.EmotionAngry}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 </VerticalStackLayout>
             </Grid>
+
+            <!-- Настрій по годинах (згорнуто за замовчуванням) -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleHourlyCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Grid.Column="0"
+                       Text="{localization:Translate Key=MoodHourlyLabel}"
+                       FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextTransform="Uppercase"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                <Label Grid.Column="1" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding IsHourlyExpanded}" Value="True">
+                            <Setter Property="Text" Value="⌃" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Label" Binding="{Binding IsHourlyExpanded}" Value="False">
+                            <Setter Property="Text" Value="⌄" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </Grid>
+
+            <VerticalStackLayout Spacing="8" IsVisible="{Binding IsHourlyExpanded}">
+                <Label FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding IsHourSelected}" Value="True">
+                            <Setter Property="Text" Value="{localization:Translate Key=MoodHourlyHint}" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Label" Binding="{Binding IsHourSelected}" Value="False">
+                            <Setter Property="Text" Value="{localization:Translate Key=MoodHourlyDayHint}" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+
+                <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Center"
+                            BindableLayout.ItemsSource="{Binding HourlyMood}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:HourMoodViewModel">
+                            <Border WidthRequest="42" HeightRequest="34" Margin="0,0,6,6"
+                                    StrokeShape="RoundRectangle 10" StrokeThickness="1"
+                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                    BackgroundColor="{Binding ColorHex}"
+                                    SemanticProperties.Description="{Binding AccessibilityText}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryEntryViewModel}}, Path=SelectHourCommand}" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Setter Property="StrokeThickness" Value="3" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label Text="{Binding HourLabel}" FontSize="12" InputTransparent="True"
+                                       HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding HasMood}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                            <Setter Property="FontAttributes" Value="Bold" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding HasMood}" Value="False">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </Border>
 </ContentView>

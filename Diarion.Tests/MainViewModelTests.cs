@@ -145,6 +145,35 @@ public class MainViewModelTests
     }
 
     [Fact]
+    public async Task ChangingAnHourlyMood_IsPersisted()
+    {
+        // The hour slots are their own view-models, so MainViewModel has to subscribe to each of them
+        // the way it does for habits — otherwise editing an hour never reaches autosave.
+        var saved = new List<DiaryEntry>();
+        _diaryServiceMock
+            .Setup(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()))
+            .Callback<DiaryEntry>(e => saved.Add(e))
+            .Returns(Task.CompletedTask);
+
+        var viewModel = CreateViewModel();
+        // Sad day scalar and an Angry hour are both negative, so the guided prompt keeps its category
+        // and does not fire a property change of its own — the hour edit is the only thing that can
+        // reach autosave here.
+        var entry = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 1, 10), Emotion = Emotion.Sad });
+        viewModel.CurrentEntry = entry;
+        var promptBefore = entry.PromptResourceKey;
+
+        entry.SelectHourCommand.Execute(entry.HourlyMood.Single(h => h.Hour == 14));
+        entry.SelectEmotionCommand.Execute(Emotion.Angry);
+        await viewModel.FlushAutoSaveAsync();
+
+        entry.PromptResourceKey.Should().Be(promptBefore, "guard: this test must not be saved by a prompt change");
+
+        saved.Should().ContainSingle();
+        saved[0].HourlyMood.Should().ContainSingle(h => h.Hour == 14 && h.Mood == Emotion.Angry);
+    }
+
+    [Fact]
     public async Task FlushAutoSaveAsync_PersistsPendingEditsOfCurrentEntry()
     {
         // Arrange

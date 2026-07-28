@@ -102,6 +102,33 @@ public class ExportServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Markdown_IncludesHourlyMoodWhenLogged()
+    {
+        _dbContext.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection).Insert(new DiaryEntry
+        {
+            Date = new DateTime(2026, 3, 4),
+            Emotion = Emotion.Calm,
+            HourlyMood =
+            {
+                new HourMood { Hour = 9, Mood = Emotion.Anxious },
+                new HourMood { Hour = 21, Mood = Emotion.Happy }
+            }
+        });
+
+        var md = await _service.BuildAsync(ExportFormat.Markdown);
+
+        md.Should().Contain("- Mood by hour: 09:00 Anxious, 21:00 Happy");
+    }
+
+    [Fact]
+    public async Task Markdown_OmitsHourlyMoodLineWhenNoneLogged()
+    {
+        var md = await _service.BuildAsync(ExportFormat.Markdown);
+
+        md.Should().NotContain("Mood by hour");
+    }
+
+    [Fact]
     public async Task Markdown_HasDatedSectionAndFields()
     {
         var md = await _service.BuildAsync(ExportFormat.Markdown);

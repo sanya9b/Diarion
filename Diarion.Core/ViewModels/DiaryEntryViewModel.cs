@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
@@ -57,6 +58,7 @@ public partial class DiaryEntryViewModel : ObservableObject
 
         Habits.CollectionChanged += (s, e) => UpdateModelHabits();
 
+        BuildHourlyMood(model);
         RefreshPrompt();
     }
 
@@ -70,10 +72,90 @@ public partial class DiaryEntryViewModel : ObservableObject
         }
     }
 
-    // Day-level mood selection (2-tap). Setting Emotion raises PropertyChanged, which the main
-    // ViewModel observes to trigger the debounced auto-save.
+    // --- Hourly mood ---
+
+    public const int FirstHour = 7;
+    public const int LastHour = 23;
+
+    /// <summary>
+    /// One slot per waking hour, always materialised so the grid has a stable shape. Slots left at
+    /// <see cref="Emotion.None"/> are dropped on the way back to the model rather than stored.
+    /// </summary>
+    public ObservableCollection<HourMoodViewModel> HourlyMood { get; } = new();
+
+    /// <summary>Which hour the emotion row writes to; null means the day-level scalar.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentMood))]
+    [NotifyPropertyChangedFor(nameof(IsHourSelected))]
+    private int? _selectedHour;
+
+    public bool IsHourSelected => SelectedHour != null;
+
+    /// <summary>
+    /// What the emotion row should show as selected: the chosen hour's mood while an hour is picked,
+    /// otherwise the day-level scalar. Without this the row would keep highlighting the day's mood
+    /// while the user edits an hour.
+    /// </summary>
+    public Emotion CurrentMood => SelectedHour is int hour
+        ? HourlyMood.FirstOrDefault(h => h.Hour == hour)?.Mood ?? Emotion.None
+        : Emotion;
+
+    /// <summary>Collapsed by default — the day screen already stacks several cards.</summary>
+    [ObservableProperty]
+    private bool _isHourlyExpanded;
+
+    private void BuildHourlyMood(DiaryEntry model)
+    {
+        for (var hour = FirstHour; hour <= LastHour; hour++)
+        {
+            var stored = model.HourlyMood?.FirstOrDefault(h => h.Hour == hour);
+            HourlyMood.Add(new HourMoodViewModel(hour, stored?.Mood ?? Emotion.None));
+        }
+    }
+
+    private void UpdateModelHourlyMood()
+    {
+        Model.HourlyMood.Clear();
+        foreach (var h in HourlyMood.Where(h => h.Mood != Emotion.None))
+        {
+            Model.HourlyMood.Add(new HourMood { Hour = h.Hour, Mood = h.Mood });
+        }
+    }
+
     [RelayCommand]
-    private void SelectEmotion(Emotion emotion) => Emotion = emotion;
+    private void ToggleHourly() => IsHourlyExpanded = !IsHourlyExpanded;
+
+    [RelayCommand]
+    private void SelectHour(HourMoodViewModel item)
+    {
+        if (item == null) return;
+
+        // Tapping the selected hour again returns the emotion row to day level.
+        SelectedHour = SelectedHour == item.Hour ? null : item.Hour;
+        foreach (var h in HourlyMood) h.IsSelected = h.Hour == SelectedHour;
+    }
+
+    // Mood selection is 2-tap. With no hour selected it sets the day-level scalar, exactly as before;
+    // with an hour selected it writes that hour instead. Either way PropertyChanged reaches the main
+    // ViewModel, which triggers the debounced auto-save.
+    [RelayCommand]
+    private void SelectEmotion(Emotion emotion)
+    {
+        if (SelectedHour is not int hour)
+        {
+            Emotion = emotion;
+            return;
+        }
+
+        var slot = HourlyMood.FirstOrDefault(h => h.Hour == hour);
+        if (slot == null) return;
+
+        // Re-picking the same emotion clears the hour — otherwise there would be no way to undo it.
+        slot.Mood = slot.Mood == emotion ? Emotion.None : emotion;
+        OnPropertyChanged(nameof(CurrentMood));
+        UpdateModelHourlyMood();
+        RefreshPrompt();
+    }
 
     [ObservableProperty]
     private Guid _id;
@@ -264,11 +346,11 @@ public partial class DiaryEntryViewModel : ObservableObject
     {
         if (!string.IsNullOrWhiteSpace(PromptAnswer)) return;
 
-        var wanted = PromptSelector.SelectCategory(Emotion, Model.MoodScale, !string.IsNullOrWhiteSpace(Gratitude));
+        var wanted = PromptSelector.SelectCategory(Emotion, Model.HourlyMood, !string.IsNullOrWhiteSpace(Gratitude));
         if (PromptCatalog.CategoryOf(PromptResourceKey) == wanted) return;
 
         PromptResourceKey = PromptSelector.SelectKey(
-            Date, Emotion, Model.MoodScale, !string.IsNullOrWhiteSpace(Gratitude));
+            Date, Emotion, Model.HourlyMood, !string.IsNullOrWhiteSpace(Gratitude));
     }
 
     [RelayCommand]
@@ -295,6 +377,7 @@ public partial class DiaryEntryViewModel : ObservableObject
     partial void OnEmotionChanged(Emotion value)
     {
         Model.Emotion = value;
+        OnPropertyChanged(nameof(CurrentMood));
         RefreshPrompt();
     }
 
@@ -339,7 +422,44 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.CreatedAt = CreatedAt;
         Model.Emotion = Emotion;
         Model.AiSummary = AiSummary;
-        
+
         UpdateModelHabits();
+        UpdateModelHourlyMood();
     }
+}
+
+/// <summary>One hour slot in the mood grid.</summary>
+public partial class HourMoodViewModel : ObservableObject
+{
+    public HourMoodViewModel(int hour, Emotion mood)
+    {
+        Hour = hour;
+        _mood = mood;
+    }
+
+    public int Hour { get; }
+
+    public string HourLabel => Hour.ToString("00");
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ColorHex))]
+    [NotifyPropertyChangedFor(nameof(HasMood))]
+    [NotifyPropertyChangedFor(nameof(AccessibilityText))]
+    private Emotion _mood;
+
+    /// <summary>Selected in the grid, so the emotion row writes here instead of the day.</summary>
+    [ObservableProperty]
+    private bool _isSelected;
+
+    /// <summary>Transparent while unset; MAUI parses the hex straight into BackgroundColor.</summary>
+    public string ColorHex => Mood == Emotion.None ? "#00000000" : Mood.ToColorHex();
+
+    public bool HasMood => Mood != Emotion.None;
+
+    public string AccessibilityText => string.Format(
+        Diarion.Resources.Localization.AppResources.MoodHourAccessibility,
+        Hour,
+        Mood == Emotion.None
+            ? Diarion.Resources.Localization.AppResources.MoodHourEmpty
+            : Mood.ToLocalizedName());
 }

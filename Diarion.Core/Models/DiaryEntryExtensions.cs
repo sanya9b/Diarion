@@ -16,7 +16,7 @@ public static class DiaryEntryExtensions
         if (entry is null) return false;
 
         return entry.Emotion != Emotion.None
-            || entry.MoodScale.Count > 0
+            || entry.HourlyMood.Any(h => h.Mood != Emotion.None)
             || HasText(entry.Triggers)
             || HasText(entry.Gratitude)
             || HasText(entry.SoulFood)

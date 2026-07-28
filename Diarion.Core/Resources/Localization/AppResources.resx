@@ -532,6 +532,21 @@
   <data name="BlockGuidedPromptLabel" xml:space="preserve">
     <value>Question of the day</value>
   </data>
+  <data name="MoodHourlyLabel" xml:space="preserve">
+    <value>By the hour</value>
+  </data>
+  <data name="MoodHourlyHint" xml:space="preserve">
+    <value>Pick an hour, then tap a mood above</value>
+  </data>
+  <data name="MoodHourlyDayHint" xml:space="preserve">
+    <value>Tap a mood above to set the whole day</value>
+  </data>
+  <data name="MoodHourAccessibility" xml:space="preserve">
+    <value>{0}:00 — {1}</value>
+  </data>
+  <data name="MoodHourEmpty" xml:space="preserve">
+    <value>not set</value>
+  </data>
   <data name="BlockReflectionLabel" xml:space="preserve">
     <value>Reflection</value>
   </data>

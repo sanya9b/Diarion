@@ -97,7 +97,8 @@ public class DiaryService : IDiaryService
                 SleepStart = x.SleepStart,
                 SleepEnd = x.SleepEnd,
                 SleepQuality = x.SleepQuality,
-                Emotion = x.Emotion
+                Emotion = x.Emotion,
+                HourlyMood = x.HourlyMood
             }).ToList();
             
             return (IEnumerable<DiaryEntryStatsDto>)result;

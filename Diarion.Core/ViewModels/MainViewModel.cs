@@ -132,6 +132,11 @@ public partial class MainViewModel : BaseViewModel
             {
                 h.PropertyChanged -= OnEntryPropertyChanged;
             }
+            // Fixed 17 slots, never added or removed, so no CollectionChanged handling is needed.
+            foreach (var h in oldValue.HourlyMood)
+            {
+                h.PropertyChanged -= OnEntryPropertyChanged;
+            }
         }
 
         if (newValue != null)
@@ -139,6 +144,10 @@ public partial class MainViewModel : BaseViewModel
             newValue.PropertyChanged += OnEntryPropertyChanged;
             newValue.Habits.CollectionChanged += OnHabitsCollectionChanged;
             foreach (var h in newValue.Habits)
+            {
+                h.PropertyChanged += OnEntryPropertyChanged;
+            }
+            foreach (var h in newValue.HourlyMood)
             {
                 h.PropertyChanged += OnEntryPropertyChanged;
             }
@@ -164,9 +173,25 @@ public partial class MainViewModel : BaseViewModel
         ScheduleAutoSave();
     }
 
+    /// <summary>
+    /// Presentation-only state that lives on the entry view-models but is not part of the entry.
+    /// Saving on these would persist a blank row just because the user expanded a panel or highlighted
+    /// an hour — the same way browsing a day used to create entries.
+    /// </summary>
+    private static readonly HashSet<string> NonPersistedProperties = new()
+    {
+        nameof(IsBusy),
+        nameof(DiaryEntryViewModel.SelectedHour),
+        nameof(DiaryEntryViewModel.IsHourSelected),
+        nameof(DiaryEntryViewModel.IsHourlyExpanded),
+        nameof(DiaryEntryViewModel.CurrentMood),
+        nameof(HourMoodViewModel.IsSelected),
+    };
+
     private void OnEntryPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (IsBusy || CurrentEntry == null || e.PropertyName == "IsBusy") return;
+        if (IsBusy || CurrentEntry == null) return;
+        if (e.PropertyName != null && NonPersistedProperties.Contains(e.PropertyName)) return;
         ScheduleAutoSave();
     }
 

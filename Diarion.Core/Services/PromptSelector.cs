@@ -14,10 +14,10 @@ public static class PromptSelector
 {
     public static PromptCategory SelectCategory(
         Emotion emotion,
-        IReadOnlyDictionary<int, Emotion>? moodScale,
+        IReadOnlyList<HourMood>? hourlyMood,
         bool gratitudeWritten)
     {
-        var valence = AverageValence(emotion, moodScale);
+        var valence = MoodAggregate.Valence(emotion, hourlyMood);
 
         if (valence <= -1) return PromptCategory.CbtReframe;
         if (valence >= 1) return gratitudeWritten ? PromptCategory.Savouring : PromptCategory.EveningGratitude;
@@ -27,10 +27,10 @@ public static class PromptSelector
     public static string SelectKey(
         DateTime date,
         Emotion emotion,
-        IReadOnlyDictionary<int, Emotion>? moodScale,
+        IReadOnlyList<HourMood>? hourlyMood,
         bool gratitudeWritten)
     {
-        var category = SelectCategory(emotion, moodScale, gratitudeWritten);
+        var category = SelectCategory(emotion, hourlyMood, gratitudeWritten);
         var keys = PromptCatalog.KeysFor(category);
 
         // Seeded by the date so the prompt is stable for the day, and by the category so two categories
@@ -38,19 +38,5 @@ public static class PromptSelector
         var seed = date.Year * 366 + date.DayOfYear + (int)category * 7919;
         var index = ((seed % keys.Count) + keys.Count) % keys.Count;
         return keys[index];
-    }
-
-    /// <summary>
-    /// The hourly mood scale wins when it has entries; the single legacy <see cref="Emotion"/> is the
-    /// fallback for days recorded before the scale existed.
-    /// </summary>
-    private static double AverageValence(Emotion emotion, IReadOnlyDictionary<int, Emotion>? moodScale)
-    {
-        if (moodScale is { Count: > 0 })
-        {
-            return moodScale.Values.Average(e => e.ToValence());
-        }
-
-        return emotion.ToValence();
     }
 }

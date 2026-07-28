@@ -10,7 +10,12 @@ public class DiaryEntryStatsDto
     public int SleepQuality { get; set; }
     public bool HasSleepStart => SleepStart.HasValue;
     public bool HasSleepEnd => SleepEnd.HasValue;
+
+    /// <summary>Day-level summary; the fallback when no hours were logged.</summary>
     public Emotion Emotion { get; set; }
+
+    /// <summary>Per-hour moods. Read through <c>MoodAggregate</c>, never directly.</summary>
+    public List<HourMood> HourlyMood { get; set; } = new();
 }
 
 public class TodoStatsDto

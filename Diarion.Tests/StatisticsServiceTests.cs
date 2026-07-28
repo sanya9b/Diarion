@@ -182,4 +182,85 @@ public class StatisticsServiceTests
         result.CompletedCount.Should().Be(2);
         result.CompletionPercentage.Should().BeApproximately(0.666, 0.01);
     }
+
+    // --- Hourly mood ---
+
+    private static StatisticsService MoodStatsServiceOver(List<DiaryEntryStatsDto> entries)
+    {
+        var diary = new Mock<IDiaryService>();
+        diary.Setup(s => s.GetDiaryEntriesForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+             .ReturnsAsync(entries);
+
+        return new StatisticsService(diary.Object, new Mock<ITodoService>().Object, new Mock<IFinanceService>().Object);
+    }
+
+    private static List<HourMood> Hours(params (int Hour, Emotion Mood)[] entries) =>
+        entries.Select(e => new HourMood { Hour = e.Hour, Mood = e.Mood }).ToList();
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_ValenceAveragesTheLoggedHours()
+    {
+        var today = DateTime.Today;
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new()
+            {
+                Date = today,
+                Emotion = Emotion.Happy,                                  // +2, must be overridden
+                HourlyMood = Hours((9, Emotion.Sad), (18, Emotion.Calm))  // -2 and +1 → -0.5
+            }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        result.DailyTrend.Single(p => p.Date == today).Valence.Should().Be(-0.5);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_CountsOneObservationPerDay_NotPerHour()
+    {
+        var today = DateTime.Today;
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            // A heavily logged day must not outweigh a plain one in the donut.
+            new() { Date = today.AddDays(-1), HourlyMood = Hours((8, Emotion.Sad), (9, Emotion.Sad), (10, Emotion.Sad)) },
+            new() { Date = today, Emotion = Emotion.Happy }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        result.EmotionCounts[Emotion.Sad].Should().Be(1);
+        result.EmotionCounts[Emotion.Happy].Should().Be(1);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_ScalarOnlyDays_BehaveExactlyAsBefore()
+    {
+        var today = DateTime.Today;
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = today.AddDays(-1), Emotion = Emotion.Calm },
+            new() { Date = today, Emotion = Emotion.Calm }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        result.EmotionCounts[Emotion.Calm].Should().Be(2);
+        result.TopEmotion.Should().Be(Emotion.Calm);
+        result.DailyTrend.Single(p => p.Date == today).Valence.Should().Be(Emotion.Calm.ToValence());
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_DayWithNoMoodAtAll_IsNotCounted()
+    {
+        var today = DateTime.Today;
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = today, Emotion = Emotion.None }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        result.DailyTrend.Single(p => p.Date == today).HasData.Should().BeFalse();
+    }
 }

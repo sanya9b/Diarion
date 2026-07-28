@@ -118,15 +118,7 @@ public partial class MoodStatsViewModel : ObservableObject
 
             IsEmpty = false;
             EntriesCountText = totalEmotions.ToString(System.Globalization.CultureInfo.CurrentCulture);
-            TopEmotionText = moodStats.TopEmotion switch
-            {
-                Emotion.Happy => AppResources.EmotionHappy,
-                Emotion.Calm => AppResources.EmotionCalm,
-                Emotion.Anxious => AppResources.EmotionAnxious,
-                Emotion.Sad => AppResources.EmotionSad,
-                Emotion.Angry => AppResources.EmotionAngry,
-                _ => AppResources.EmotionNone
-            };
+            TopEmotionText = moodStats.TopEmotion.ToLocalizedName();
 
             var newEmotionData = new System.Collections.ObjectModel.ObservableCollection<EmotionChartItem>();
             foreach (var kvp in moodStats.EmotionCounts.OrderByDescending(x => x.Value))
@@ -135,19 +127,9 @@ public partial class MoodStatsViewModel : ObservableObject
                 {
                     var colorHex = kvp.Key.ToColorHex();
 
-                    var name = kvp.Key switch
-                    {
-                        Emotion.Happy => AppResources.EmotionHappy,
-                        Emotion.Calm => AppResources.EmotionCalm,
-                        Emotion.Anxious => AppResources.EmotionAnxious,
-                        Emotion.Sad => AppResources.EmotionSad,
-                        Emotion.Angry => AppResources.EmotionAngry,
-                        _ => AppResources.EmotionNone
-                    };
-
                     newEmotionData.Add(new EmotionChartItem
                     {
-                        Name = name,
+                        Name = kvp.Key.ToLocalizedName(),
                         Percentage = (double)kvp.Value / totalEmotions,
                         Color = Microsoft.Maui.Graphics.Color.FromArgb(colorHex)
                     });
