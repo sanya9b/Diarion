@@ -351,6 +351,9 @@
     </Style>
 
     <Style TargetType="TimePicker">
+        <!-- 24-hour everywhere. Without this the picker follows the device locale, so the same app
+             shows 14:30 for one user and 2:30 PM for another. -->
+        <Setter Property="Format" Value="HH:mm" />
         <Setter Property="TextColor" Value="{DynamicResource Theme_Gray900_White}" />
         <Setter Property="BackgroundColor" Value="Transparent"/>
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
