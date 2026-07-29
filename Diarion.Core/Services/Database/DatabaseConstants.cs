@@ -16,4 +16,5 @@ public static class DatabaseConstants
     public const string BudgetsCollection = "budgets";
     public const string AccountsCollection = "finance_accounts";
     public const string TransfersCollection = "finance_transfers";
+    public const string GuidedPromptsCollection = "guided_prompts";
 }

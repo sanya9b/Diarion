@@ -23,6 +23,10 @@ public partial class MainViewModel : BaseViewModel
     private readonly IDialogService _dialogService;
     private readonly IHealthDataService _healthDataService;
     private readonly IProfileService _profileService;
+    private readonly IGuidedPromptService _guidedPromptService;
+
+    // Read once and reused across day loads; the library only changes when the user edits it.
+    private PromptLibrary? _promptLibrary;
 
     public CalendarSectionViewModel CalendarSection { get; }
     public PlannerSectionViewModel PlannerSection { get; }
@@ -68,6 +72,7 @@ public partial class MainViewModel : BaseViewModel
         IDialogService dialogService,
         IHealthDataService healthDataService,
         IProfileService profileService,
+        IGuidedPromptService guidedPromptService,
         CalendarSectionViewModel calendarSection,
         PlannerSectionViewModel plannerSection,
         QuickMenuViewModel quickMenuSection,
@@ -81,7 +86,8 @@ public partial class MainViewModel : BaseViewModel
         _dialogService = dialogService;
         _healthDataService = healthDataService;
         _profileService = profileService;
-        
+        _guidedPromptService = guidedPromptService;
+
         CalendarSection = calendarSection;
         PlannerSection = plannerSection;
         QuickMenuSection = quickMenuSection;
@@ -98,6 +104,11 @@ public partial class MainViewModel : BaseViewModel
         WeakReferenceMessenger.Default.Register<TodoChangedMessage>(this, (r, m) =>
         {
             _ = CalendarSection.UpdateCalendarTasksForDayAsync(m.Date);
+        });
+
+        WeakReferenceMessenger.Default.Register<PromptLibraryChangedMessage>(this, (r, m) =>
+        {
+            _promptLibrary = null;
         });
 
         CalendarSection.Initialize();
@@ -261,8 +272,14 @@ public partial class MainViewModel : BaseViewModel
         using var _ = StartupTrace.Measure("MainViewModel.LoadEntriesForDateAsync");
         var entry = await _diaryService.GetEntryForDateAsync(date.Date);
         await _diaryHabitSyncService.SyncHabitsForEntryAsync(entry);
-        CurrentEntry = new DiaryEntryViewModel(entry);
+        CurrentEntry = new DiaryEntryViewModel(entry, await EnsurePromptLibraryAsync());
     }
+
+    private async Task<PromptLibrary> EnsurePromptLibraryAsync()
+        => _promptLibrary ??= await _guidedPromptService.GetLibraryAsync();
+
+    [RelayCommand]
+    public async Task OpenPromptLibraryAsync() => await _navigationService.NavigateToAsync("PromptLibrary");
 
     [RelayCommand]
     public async Task ImportSleepDataAsync()

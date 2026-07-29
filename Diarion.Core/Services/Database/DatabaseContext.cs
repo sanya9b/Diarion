@@ -55,6 +55,8 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         var wishlistCollection = _db.GetCollection<WishlistEntry>(DatabaseConstants.WishlistCollection);
         var financeCollection = _db.GetCollection<FinanceTransaction>(DatabaseConstants.FinanceCollection);
         var transfersCollection = _db.GetCollection<Transfer>(DatabaseConstants.TransfersCollection);
+        // No index: a few dozen rows, read once per day-load, and every write would have to maintain it.
+        _db.GetCollection<GuidedPrompt>(DatabaseConstants.GuidedPromptsCollection);
 
         entriesCollection.EnsureIndex(x => x.Date);
         wishlistCollection.EnsureIndex(x => x.Date);

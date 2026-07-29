@@ -730,6 +730,51 @@
   <data name="StreaksTitle" xml:space="preserve">
     <value>STREAKS</value>
   </data>
+  <data name="PromptLibraryTitle" xml:space="preserve">
+    <value>Prompt library</value>
+  </data>
+  <data name="PromptLibraryManage" xml:space="preserve">
+    <value>Manage prompts</value>
+  </data>
+  <data name="PromptLibraryEmptyCategory" xml:space="preserve">
+    <value>No prompts in this category yet</value>
+  </data>
+  <data name="PromptEditorTitle" xml:space="preserve">
+    <value>Prompt</value>
+  </data>
+  <data name="PromptEditorTextUkLabel" xml:space="preserve">
+    <value>Text (Ukrainian)</value>
+  </data>
+  <data name="PromptEditorTextEnLabel" xml:space="preserve">
+    <value>Text (English)</value>
+  </data>
+  <data name="PromptEditorCategoryLabel" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="PromptEditorTextRequired" xml:space="preserve">
+    <value>Enter the prompt in at least one language</value>
+  </data>
+  <data name="PromptEditorTextTooLong" xml:space="preserve">
+    <value>The prompt is too long (max 300 characters)</value>
+  </data>
+  <data name="DeletePromptConfirmTitle" xml:space="preserve">
+    <value>Delete prompt?</value>
+  </data>
+  <data name="DeletePromptConfirmMessage" xml:space="preserve">
+    <value>"{0}" will no longer be offered. Answers you already wrote are kept.</value>
+  </data>
+  <data name="PromptCategoryCbtReframe" xml:space="preserve">
+    <value>Reframing</value>
+  </data>
+  <data name="PromptCategorySavouring" xml:space="preserve">
+    <value>Savouring</value>
+  </data>
+  <data name="PromptCategoryOpenReflection" xml:space="preserve">
+    <value>Open reflection</value>
+  </data>
+  <data name="PromptCategoryEveningGratitude" xml:space="preserve">
+    <value>Evening gratitude</value>
+  </data>
   <data name="StreakForgivingLabel" xml:space="preserve">
     <value>Forgiving streaks</value>
   </data>

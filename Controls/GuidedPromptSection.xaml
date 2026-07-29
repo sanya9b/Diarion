@@ -4,16 +4,20 @@
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              x:Class="Diarion.Controls.GuidedPromptSection"
+             x:Name="SectionRoot"
              x:DataType="viewmodels:DiaryEntryViewModel">
 
+    <!-- Hidden outright when the user has emptied the category this day would draw from: a card with a
+         blank question reads as a bug, not as an empty state. -->
     <Border StrokeShape="RoundRectangle 16"
             StrokeThickness="1"
             Stroke="{DynamicResource Theme_Dust_Ocean}"
             BackgroundColor="{DynamicResource Theme_Snow_Black}"
+            IsVisible="{Binding HasPrompt}"
             Padding="16">
         <VerticalStackLayout Spacing="10">
 
-            <Grid ColumnDefinitions="*,Auto">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
                 <Label Grid.Column="0"
                        Text="{localization:Translate Key=GuidedPromptLabel}"
                        FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase"
@@ -24,6 +28,14 @@
                        TextColor="{DynamicResource Theme_Sage}" VerticalOptions="Center">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ShufflePromptCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <!-- Supplied by the host page so the entry view model stays free of navigation. -->
+                <Label Grid.Column="2"
+                       Text="✎" FontSize="14"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Source={x:Reference SectionRoot}, Path=ManageCommand}" />
                     </Label.GestureRecognizers>
                 </Label>
             </Grid>

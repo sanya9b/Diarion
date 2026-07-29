@@ -66,41 +66,138 @@ public class PromptSelectorTests
             .Should().Be(PromptCategory.OpenReflection);
     }
 
-    [Fact]
-    public void SelectKey_IsStableForTheSameDay()
+    /// <summary>A pool of <paramref name="perCategory"/> prompts in every category, created long ago.</summary>
+    private static PromptLibrary Pool(int perCategory)
     {
-        var keys = Enumerable.Range(0, 100)
-            .Select(_ => PromptSelector.SelectKey(Day, Emotion.Sad, null, false))
+        var prompts = new List<GuidedPrompt>();
+        foreach (var category in PromptCatalog.SeedKeys.Keys)
+        {
+            for (int i = 0; i < perCategory; i++)
+            {
+                prompts.Add(new GuidedPrompt
+                {
+                    Category = category,
+                    TextEn = $"{category}-{i}",
+                    CreatedAt = new DateTime(2020, 1, 1).AddDays(i)
+                });
+            }
+        }
+
+        return new PromptLibrary(prompts);
+    }
+
+    [Fact]
+    public void Select_IsStableForTheSameDay()
+    {
+        var library = Pool(10);
+
+        var picked = Enumerable.Range(0, 100)
+            .Select(_ => PromptSelector.Select(Day, Emotion.Sad, null, false, library)?.Id)
             .Distinct();
 
-        keys.Should().ContainSingle("the question must not reshuffle every time the screen rebuilds");
+        picked.Should().ContainSingle("the question must not reshuffle every time the screen rebuilds");
     }
 
     [Fact]
-    public void SelectKey_ReturnsAKeyFromTheChosenCategory()
+    public void Select_ReturnsAPromptFromTheChosenCategory()
     {
-        var key = PromptSelector.SelectKey(Day, Emotion.Sad, null, false);
+        var picked = PromptSelector.Select(Day, Emotion.Sad, null, false, Pool(10));
 
-        PromptCatalog.KeysFor(PromptCategory.CbtReframe).Should().Contain(key);
+        picked!.Category.Should().Be(PromptCategory.CbtReframe);
     }
 
     [Fact]
-    public void SelectKey_DiffersAcrossConsecutiveDays()
+    public void Select_DiffersAcrossConsecutiveDays()
     {
-        var first = PromptSelector.SelectKey(Day, Emotion.None, null, false);
-        var second = PromptSelector.SelectKey(Day.AddDays(1), Emotion.None, null, false);
+        var library = Pool(10);
 
-        second.Should().NotBe(first);
+        var first = PromptSelector.Select(Day, Emotion.None, null, false, library);
+        var second = PromptSelector.Select(Day.AddDays(1), Emotion.None, null, false, library);
+
+        second!.Id.Should().NotBe(first!.Id);
     }
 
-    [Fact]
-    public void SelectKey_CoversEveryPromptInACategoryAcrossAYear()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(10)]
+    [InlineData(13)]
+    public void Select_CoversEveryPromptInACategoryAcrossAYear(int perCategory)
     {
+        var library = Pool(perCategory);
+
         var seen = Enumerable.Range(0, 365)
-            .Select(i => PromptSelector.SelectKey(Day.AddDays(i), Emotion.None, null, false))
+            .Select(i => PromptSelector.Select(Day.AddDays(i), Emotion.None, null, false, library)!.Id)
             .Distinct();
 
-        // A date-seeded index must not collapse onto a handful of prompts.
-        seen.Should().BeEquivalentTo(PromptCatalog.KeysFor(PromptCategory.OpenReflection));
+        // A date-seeded index must not collapse onto a handful of prompts, whatever the pool size.
+        seen.Should().HaveCount(perCategory);
+    }
+
+    [Fact]
+    public void Select_EmptyCategory_ReturnsNull()
+    {
+        var library = new PromptLibrary(new[]
+        {
+            new GuidedPrompt { Category = PromptCategory.Savouring, TextEn = "only savouring" }
+        });
+
+        PromptSelector.Select(Day, Emotion.Sad, null, false, library).Should().BeNull();
+    }
+
+    [Fact]
+    public void Select_IgnoresPromptsCreatedAfterTheDay()
+    {
+        var library = new PromptLibrary(new[]
+        {
+            new GuidedPrompt { Category = PromptCategory.CbtReframe, TextEn = "old", CreatedAt = Day.AddDays(-1) },
+            new GuidedPrompt { Category = PromptCategory.CbtReframe, TextEn = "new", CreatedAt = Day.AddDays(1) }
+        });
+
+        // A prompt written tomorrow cannot be the question a past day asked.
+        PromptSelector.Select(Day, Emotion.Sad, null, false, library)!.TextEn.Should().Be("old");
+    }
+
+    [Fact]
+    public void Select_IgnoresDeletedPrompts()
+    {
+        var library = new PromptLibrary(new[]
+        {
+            new GuidedPrompt { Category = PromptCategory.CbtReframe, TextEn = "kept", CreatedAt = new DateTime(2020, 1, 1) },
+            new GuidedPrompt { Category = PromptCategory.CbtReframe, TextEn = "gone", CreatedAt = new DateTime(2020, 1, 2), DeletedAt = Day }
+        });
+
+        Enumerable.Range(0, 30)
+            .Select(i => PromptSelector.Select(Day.AddDays(i), Emotion.Sad, null, false, library)!.TextEn)
+            .Should().OnlyContain(text => text == "kept");
+    }
+
+    [Fact]
+    public void Select_IsUnaffectedByTheOrderTheLibraryWasBuiltIn()
+    {
+        var a = new GuidedPrompt { Category = PromptCategory.CbtReframe, TextEn = "a", CreatedAt = new DateTime(2020, 1, 1) };
+        var b = new GuidedPrompt { Category = PromptCategory.CbtReframe, TextEn = "b", CreatedAt = new DateTime(2020, 1, 2) };
+
+        var forwards = PromptSelector.Select(Day, Emotion.Sad, null, false, new PromptLibrary(new[] { a, b }));
+        var backwards = PromptSelector.Select(Day, Emotion.Sad, null, false, new PromptLibrary(new[] { b, a }));
+
+        backwards!.Id.Should().Be(forwards!.Id);
+    }
+
+    [Fact]
+    public void Next_WrapsWithinTheCategory()
+    {
+        var library = Pool(3);
+        var start = PromptSelector.Select(Day, Emotion.Sad, null, false, library)!;
+
+        var seen = new List<Guid>();
+        var cursor = start;
+        for (int i = 0; i < 3; i++)
+        {
+            cursor = PromptSelector.Next(cursor, Day, library)!;
+            seen.Add(cursor.Id);
+        }
+
+        seen.Should().HaveCount(3).And.OnlyHaveUniqueItems();
+        cursor.Id.Should().Be(start.Id, "three steps through three prompts returns to the start");
     }
 }

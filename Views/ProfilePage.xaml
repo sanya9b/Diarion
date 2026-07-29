@@ -258,6 +258,14 @@
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockGuidedPromptLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
 
+                        <Label Text="{x:Static localization:AppResources.PromptLibraryManage}"
+                               IsVisible="{Binding Profile.IsGuidedPromptBlockVisible}"
+                               Margin="36,0,0,0" FontSize="13" TextColor="{DynamicResource Theme_Sage}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenPromptLibraryCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+
                         <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
                             <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsReflectionBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockReflectionLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />

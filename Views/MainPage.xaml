@@ -109,6 +109,7 @@
                                                       IsVisible="{Binding BindingContext.Profile.IsHabitsBlockVisible, Source={x:Reference PageRoot}}" />
 
                         <controls:GuidedPromptSection BindingContext="{Binding}"
+                                                      ManageCommand="{Binding BindingContext.OpenPromptLibraryCommand, Source={x:Reference PageRoot}}"
                                                       IsVisible="{Binding BindingContext.Profile.IsGuidedPromptBlockVisible, Source={x:Reference PageRoot}}" />
 
                         <controls:ReflectionSection BindingContext="{Binding}"

@@ -138,4 +138,49 @@ public class ExportServiceTests : IDisposable
         md.Should().Contain("Mood: Happy");
         md.Should().Contain("Gratitude: Sunny morning");
     }
+
+    [Fact]
+    public async Task Markdown_IncludesTheAnsweredPromptAndItsQuestion()
+    {
+        var prompt = new GuidedPrompt { TextEn = "What went well?", TextUk = "Що вдалося?" };
+        _dbContext.GetCollection<GuidedPrompt>(DatabaseConstants.GuidedPromptsCollection).Insert(prompt);
+
+        var entries = _dbContext.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
+        var entry = entries.FindAll().First();
+        entry.PromptResourceKey = prompt.Id.ToString();
+        entry.PromptAnswer = "Finished the chapter";
+        entries.Update(entry);
+
+        var md = await _service.BuildAsync(ExportFormat.Markdown);
+
+        // The answer is the user's own writing; exporting it without the question loses its meaning.
+        md.Should().Contain("Finished the chapter");
+        md.Should().MatchRegex("Prompt: (What went well\\?|Що вдалося\\?)");
+    }
+
+    [Fact]
+    public async Task Markdown_OmitsAnUnansweredPrompt()
+    {
+        var entries = _dbContext.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
+        var entry = entries.FindAll().First();
+        entry.PromptResourceKey = Guid.NewGuid().ToString();
+        entries.Update(entry);
+
+        var md = await _service.BuildAsync(ExportFormat.Markdown);
+
+        // An unanswered question was picked by the app, not written by the user.
+        md.Should().NotContain("Prompt:");
+    }
+
+    [Fact]
+    public async Task Json_IncludesThePromptCollection()
+    {
+        _dbContext.GetCollection<GuidedPrompt>(DatabaseConstants.GuidedPromptsCollection)
+            .Insert(new GuidedPrompt { TextEn = "my own question" });
+
+        var json = await _service.BuildAsync(ExportFormat.Json);
+
+        json.Should().Contain(DatabaseConstants.GuidedPromptsCollection);
+        json.Should().Contain("my own question");
+    }
 }

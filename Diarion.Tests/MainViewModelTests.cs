@@ -19,6 +19,7 @@ public class MainViewModelTests
     private readonly Mock<ITodoService> _todoServiceMock;
     private readonly Mock<IHabitService> _habitServiceMock;
     private readonly Mock<IProfileService> _profileServiceMock;
+    private readonly Mock<IGuidedPromptService> _guidedPromptServiceMock;
     private readonly Mock<IMenstrualCycleService> _menstrualCycleServiceMock;
     private readonly Mock<INavigationService> _navigationServiceMock;
     private readonly Mock<IDialogService> _dialogServiceMock;
@@ -36,6 +37,8 @@ public class MainViewModelTests
         _todoServiceMock = new Mock<ITodoService>();
         _habitServiceMock = new Mock<IHabitService>();
         _profileServiceMock = new Mock<IProfileService>();
+        _guidedPromptServiceMock = new Mock<IGuidedPromptService>();
+        _guidedPromptServiceMock.Setup(s => s.GetLibraryAsync()).ReturnsAsync(Diarion.Models.PromptLibrary.Empty);
         _menstrualCycleServiceMock = new Mock<IMenstrualCycleService>();
         _navigationServiceMock = new Mock<INavigationService>();
         _dialogServiceMock = new Mock<IDialogService>();
@@ -98,6 +101,7 @@ public class MainViewModelTests
             _dialogServiceMock.Object,
             new Mock<IHealthDataService>().Object,
             _profileServiceMock.Object,
+            _guidedPromptServiceMock.Object,
             _calendarSection,
             _plannerSection,
             _quickMenuSection,
