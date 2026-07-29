@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vms="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
@@ -15,17 +15,6 @@
         <VerticalStackLayout Spacing="10">
             <Label Text="{x:Static localization:AppResources.HealthLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Midnight_Snow}" Margin="0,0,0,4" />
             
-            <Grid ColumnDefinitions="100, *" ColumnSpacing="12" IsVisible="{Binding BindingContext.CycleStatusSection.IsVisible, Source={RelativeSource AncestorType={x:Type ContentPage}}}">
-                <Label Grid.Column="0" Text="{x:Static localization:AppResources.CycleDayLabel}" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0">
-                    <Label Text="{Binding BindingContext.CycleStatusSection.CycleDayText, Source={RelativeSource AncestorType={x:Type ContentPage}}}" FontAttributes="Bold" FontSize="13" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                    <HorizontalStackLayout Spacing="4">
-                        <Label Text="{x:Static localization:AppResources.PregnancyProbabilityLabel}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                        <Label Text="{Binding BindingContext.CycleStatusSection.PregnancyProbabilityText, Source={RelativeSource AncestorType={x:Type ContentPage}}}" FontSize="11" FontAttributes="Bold" TextColor="{Binding BindingContext.CycleStatusSection.PregnancyProbabilityColor, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Grid>
-
             <Grid ColumnDefinitions="100, *" ColumnSpacing="12">
                 <Label Grid.Column="0" Text="{x:Static localization:AppResources.HealthStatusLabel}" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 <controls:RatingView Grid.Column="1" Value="{Binding HealthStatus}" MaxValue="5" VerticalOptions="Center" HorizontalOptions="Start" />

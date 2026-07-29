@@ -63,8 +63,12 @@
                             </Border.GestureRecognizers>
                             
                             <Border.Triggers>
+                                <!-- Predicted days are outlined, logged days filled: now that one is a
+                                     record and the other a guess, they must not look identical. -->
                                 <DataTrigger TargetType="Border" Binding="{Binding IsPredictedCycleDay}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_BerryTransparent}" />
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Berry}" />
+                                    <Setter Property="StrokeThickness" Value="1" />
+                                    <Setter Property="StrokeDashArray" Value="2,2" />
                                 </DataTrigger>
                                 <DataTrigger TargetType="Border" Binding="{Binding IsCycleDay}" Value="True">
                                     <Setter Property="BackgroundColor" Value="{DynamicResource Theme_BerryTransparent}" />

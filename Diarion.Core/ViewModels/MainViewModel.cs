@@ -111,6 +111,12 @@ public partial class MainViewModel : BaseViewModel
             _promptLibrary = null;
         });
 
+        WeakReferenceMessenger.Default.Register<CycleLogChangedMessage>(this, (r, m) =>
+        {
+            // Marking one day moves every later prediction, so the whole grid is repainted, not that cell.
+            _ = CalendarSection.UpdateCalendarTasksCompletionAsync();
+        });
+
         CalendarSection.Initialize();
         QuickMenuSection.Initialize();
     }

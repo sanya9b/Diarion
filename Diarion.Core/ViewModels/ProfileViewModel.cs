@@ -143,6 +143,12 @@ public partial class ProfileViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    public async Task OpenCycleAsync()
+    {
+        await _navigationService.NavigateToAsync("Cycle");
+    }
+
+    [RelayCommand]
     public async Task RemovePinAsync()
     {
         var confirm = await _dialogService.ShowConfirmationAsync(
@@ -170,7 +176,7 @@ public partial class ProfileViewModel : BaseViewModel
         {
             Profile.Gender = value.Value;
             // Автоматично пропонуємо увімкнути календар, якщо вибрано "Жіноча", а він ще не активований
-            if (value.Value == GenderType.Female && !Profile.IsMenstrualTrackingEnabled && Profile.LastPeriodStartDate == null)
+            if (value.Value == GenderType.Female && !Profile.IsMenstrualTrackingEnabled)
             {
                 Profile.IsMenstrualTrackingEnabled = true;
             }

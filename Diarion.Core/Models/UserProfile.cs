@@ -18,7 +18,10 @@ public partial class UserProfile : ObservableObject
     [ObservableProperty] private int? _age;
     [ObservableProperty] private double? _weight;
     [ObservableProperty] private int? _height;
-    [ObservableProperty] private GenderType _gender = GenderType.NotSpecified;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsCycleFeatureAvailable))]
+    [NotifyPropertyChangedFor(nameof(IsCycleTrackingActive))]
+    private GenderType _gender = GenderType.NotSpecified;
 
     // Налаштування завдань
     [ObservableProperty] private bool _autoMigrateUncompletedTasksEnabled = true;
@@ -38,7 +41,9 @@ public partial class UserProfile : ObservableObject
     [ObservableProperty] private bool _isBudgetsEnabled = true;
 
     // Менструальний календар
-    [ObservableProperty] private bool _isMenstrualTrackingEnabled;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsCycleTrackingActive))]
+    private bool _isMenstrualTrackingEnabled;
     [ObservableProperty] private int _cycleLength = DefaultCycleLength;
     [ObservableProperty] private int _periodLength = DefaultPeriodLength;
     [ObservableProperty] private DateTime? _lastPeriodStartDate;
@@ -58,6 +63,14 @@ public partial class UserProfile : ObservableObject
 
     // Сортування меню
     [ObservableProperty] private System.Collections.Generic.List<string>? _quickMenuOrder;
+
+    /// <summary>Whether the cycle feature is offered at all. Hidden for men rather than merely switched
+    /// off, so it never has to be dismissed; the stored flag and logged days survive untouched, and a
+    /// mis-set gender is fully reversible.</summary>
+    public bool IsCycleFeatureAvailable => Gender != GenderType.Male;
+
+    /// <summary>The one flag every consumer should read — availability and the user's choice together.</summary>
+    public bool IsCycleTrackingActive => IsCycleFeatureAvailable && IsMenstrualTrackingEnabled;
 
     public int GetNormalizedCycleLength()
     {

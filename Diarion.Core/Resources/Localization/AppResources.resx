@@ -619,29 +619,77 @@
   <data name="PeriodLengthLabel" xml:space="preserve">
     <value>Average period length (days):</value>
   </data>
-  <data name="LastPeriodDateLabel" xml:space="preserve">
-    <value>Last period start date:</value>
-  </data>
   <data name="SaveProfileButton" xml:space="preserve">
     <value>SAVE SETTINGS</value>
   </data>
   <data name="ProfileSavedMessage" xml:space="preserve">
     <value>Settings successfully saved!</value>
   </data>
-  <data name="PregnancyProbabilityLabel" xml:space="preserve">
-    <value>Pregnancy probability:</value>
-  </data>
-  <data name="ProbLow" xml:space="preserve">
-    <value>Low</value>
-  </data>
-  <data name="ProbMedium" xml:space="preserve">
-    <value>Medium</value>
-  </data>
-  <data name="ProbHigh" xml:space="preserve">
-    <value>High</value>
-  </data>
   <data name="CycleDayFormat" xml:space="preserve">
     <value>Day {0}</value>
+  </data>
+  <data name="CycleTitle" xml:space="preserve">
+    <value>Cycle</value>
+  </data>
+  <data name="CycleOpenLink" xml:space="preserve">
+    <value>Recorded periods and forecast</value>
+  </data>
+  <data name="CycleForecastTitle" xml:space="preserve">
+    <value>Forecast</value>
+  </data>
+  <data name="CycleAddTitle" xml:space="preserve">
+    <value>Record a period</value>
+  </data>
+  <data name="CycleAddButton" xml:space="preserve">
+    <value>ADD</value>
+  </data>
+  <data name="CycleAddHint" xml:space="preserve">
+    <value>Pick the first day. Each period you record makes the forecast more accurate.</value>
+  </data>
+  <data name="CycleHistoryTitle" xml:space="preserve">
+    <value>Recorded periods</value>
+  </data>
+  <data name="CycleHistoryEmpty" xml:space="preserve">
+    <value>Nothing recorded yet</value>
+  </data>
+  <data name="CycleIntervalFormat" xml:space="preserve">
+    <value>{0} days to the next</value>
+  </data>
+  <data name="CycleDeleteConfirmTitle" xml:space="preserve">
+    <value>Delete this record?</value>
+  </data>
+  <data name="CycleDeleteConfirmMessage" xml:space="preserve">
+    <value>"{0}" will be removed and the forecast recalculated.</value>
+  </data>
+  <data name="CycleNextPeriodFormat" xml:space="preserve">
+    <value>Next period ~{0}</value>
+  </data>
+  <data name="CycleUncertaintyFormat" xml:space="preserve">
+    <value>±{0} days</value>
+  </data>
+  <data name="CycleFertileWindowLabel" xml:space="preserve">
+    <value>Fertile window (estimate)</value>
+  </data>
+  <data name="CycleBasisProfileDefaultFormat" xml:space="preserve">
+    <value>Based on your settings ({0} days) — log more periods for a personal forecast</value>
+  </data>
+  <data name="CycleBasisSingleCycle" xml:space="preserve">
+    <value>Based on 1 recorded cycle</value>
+  </data>
+  <data name="CycleBasisAveragedFormat" xml:space="preserve">
+    <value>Based on {0} recorded cycles (avg {1} days)</value>
+  </data>
+  <data name="CycleNoDataHint" xml:space="preserve">
+    <value>Mark the first day of your period to start the forecast</value>
+  </data>
+  <data name="CycleLateFormat" xml:space="preserve">
+    <value>Expected {0} days ago</value>
+  </data>
+  <data name="CycleHighVariabilityNote" xml:space="preserve">
+    <value>Your cycles vary a lot, so this estimate is rough</value>
+  </data>
+  <data name="CycleDisclaimer" xml:space="preserve">
+    <value>A statistical estimate from your own records — not medical advice and not a method of contraception.</value>
   </data>
   <data name="HabitPhysicalActivity" xml:space="preserve">
     <value>Physical Activity</value>

@@ -26,3 +26,14 @@ public class TodoChangedMessage
 public class PromptLibraryChangedMessage
 {
 }
+
+/// <summary>Sent when a period day is marked or unmarked, so the calendar repaints its cycle shading.</summary>
+public class CycleLogChangedMessage
+{
+    public DateTime Date { get; }
+
+    public CycleLogChangedMessage(DateTime date)
+    {
+        Date = date;
+    }
+}

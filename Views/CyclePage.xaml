@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             x:Class="Diarion.Views.CyclePage"
+             x:Name="RootPage"
+             x:DataType="viewModels:CycleViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{Binding Title}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CloseCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </Grid>
+            <Label Grid.Column="1" Text="{Binding Title}" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalOptions="Center" Margin="0,0,44,0" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+        </Grid>
+
+        <ScrollView Grid.Row="1" Padding="24,10,24,32">
+            <VerticalStackLayout Spacing="20">
+
+                <!-- Forecast -->
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{x:Static localization:AppResources.CycleForecastTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Coral}" Margin="0,0,0,4" />
+
+                        <Label Text="{x:Static localization:AppResources.CycleNoDataHint}"
+                               IsVisible="{Binding HasNoData}"
+                               FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <VerticalStackLayout Spacing="3" IsVisible="{Binding HasData}">
+                            <Label Text="{Binding CycleDayText}" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                            <Label Text="{x:Static localization:AppResources.CycleFertileWindowLabel}"
+                                   IsVisible="{Binding IsFertileWindowEstimate}"
+                                   FontSize="13" TextColor="{DynamicResource Theme_Sage}" />
+
+                            <Label Text="{Binding NextPeriodText}"
+                                   IsVisible="{Binding HasForecast}"
+                                   FontSize="13" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                            <Label Text="{Binding BasisText}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                            <Label Text="{Binding VariabilityNote}"
+                                   IsVisible="{Binding HasVariabilityNote}"
+                                   FontSize="11" TextColor="{DynamicResource Theme_Amber}" />
+                        </VerticalStackLayout>
+
+                        <Label Text="{x:Static localization:AppResources.CycleDisclaimer}" FontSize="10" Margin="0,8,0,0" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Record a period -->
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{x:Static localization:AppResources.CycleAddTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Coral}" />
+
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <DatePicker Grid.Column="0" Date="{Binding NewEpisodeStart}" MaximumDate="{Binding MaximumDate}" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" VerticalOptions="Center" />
+                            <Border Grid.Column="1" StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Coral}" Padding="18,10">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding AddEpisodeCommand}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="{x:Static localization:AppResources.CycleAddButton}" InputTransparent="True" FontAttributes="Bold" FontSize="13" TextColor="{DynamicResource Theme_Snow}" />
+                            </Border>
+                        </Grid>
+
+                        <Label Text="{x:Static localization:AppResources.CycleAddHint}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Recorded history -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{x:Static localization:AppResources.CycleHistoryTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Coral}" />
+
+                    <Label Text="{x:Static localization:AppResources.CycleHistoryEmpty}"
+                           IsVisible="{Binding HasNoData}"
+                           FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Episodes}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:CycleEpisodeItemViewModel">
+                                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                        StrokeShape="RoundRectangle 14" Padding="14,12">
+                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="12">
+                                        <Label Grid.Column="0" Text="{Binding RangeText}" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Grid.Column="1" Text="{Binding IntervalText}" FontSize="11" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                        <Label Grid.Column="2" Text="✕" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}">
+                                            <Label.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteEpisodeCommand}" CommandParameter="{Binding .}" />
+                                            </Label.GestureRecognizers>
+                                        </Label>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>
