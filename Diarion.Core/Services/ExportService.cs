@@ -35,6 +35,7 @@ public class ExportService : IExportService
         DatabaseConstants.BudgetsCollection,
         DatabaseConstants.AccountsCollection,
         DatabaseConstants.TransfersCollection,
+        DatabaseConstants.GuidedPromptsCollection,
     };
 
     private readonly IDatabaseContext _dbContext;
@@ -159,6 +160,9 @@ public class ExportService : IExportService
             .FindAll()
             .OrderBy(e => e.Date);
 
+        var prompts = new PromptLibrary(
+            _dbContext.GetCollection<GuidedPrompt>(DatabaseConstants.GuidedPromptsCollection).FindAll());
+
         foreach (var e in entries)
         {
             sb.Append("## ").Append(e.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)).Append('\n');
@@ -182,6 +186,12 @@ public class ExportService : IExportService
             AppendField(sb, "Triggers", e.Triggers);
             AppendField(sb, "Soul food", e.SoulFood);
             AppendField(sb, "Support for others", e.SupportForOthers);
+            // Only when answered: an unanswered question was picked by the app, not written by the user.
+            if (!string.IsNullOrWhiteSpace(e.PromptAnswer))
+            {
+                AppendField(sb, "Prompt", PromptLocalization.ResolveText(prompts.Find(e.PromptResourceKey)));
+                AppendField(sb, "Answer", e.PromptAnswer);
+            }
             if (!string.IsNullOrWhiteSpace(e.Content))
             {
                 sb.Append('\n').Append(e.Content.Trim()).Append('\n');

@@ -13,9 +13,16 @@ public partial class DiaryEntryViewModel : ObservableObject
 {
     public DiaryEntry Model { get; }
 
-    public DiaryEntryViewModel(DiaryEntry model)
+    private readonly PromptLibrary? _promptLibrary;
+
+    /// <summary>
+    /// The library is optional so the view model stays constructible from a bare entry. Without it the
+    /// guided prompt simply does not render — there is nothing to resolve a stored reference against.
+    /// </summary>
+    public DiaryEntryViewModel(DiaryEntry model, PromptLibrary? promptLibrary = null)
     {
         Model = model;
+        _promptLibrary = promptLibrary;
         _id = model.Id;
         _date = model.Date;
         _sleepStart = model.SleepStart;
@@ -60,6 +67,7 @@ public partial class DiaryEntryViewModel : ObservableObject
 
         BuildHourlyMood(model);
         RefreshPrompt();
+        RefreshPromptText();
     }
 
     private void UpdateModelHabits()
@@ -326,7 +334,7 @@ public partial class DiaryEntryViewModel : ObservableObject
     partial void OnPromptResourceKeyChanged(string value)
     {
         Model.PromptResourceKey = value;
-        OnPropertyChanged(nameof(PromptText));
+        RefreshPromptText();
     }
 
     [ObservableProperty]
@@ -334,8 +342,17 @@ public partial class DiaryEntryViewModel : ObservableObject
 
     partial void OnPromptAnswerChanged(string value) => Model.PromptAnswer = value;
 
-    /// <summary>The day's question, resolved from resources so it follows the UI language.</summary>
-    public string PromptText => PromptCatalog.ResolveText(PromptResourceKey);
+    /// <summary>The day's question in the current UI language, empty when there is nothing to show.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPrompt))]
+    private string _promptText = string.Empty;
+
+    /// <summary>False when the user has emptied the category the day would draw from — the card hides
+    /// rather than rendering a blank question.</summary>
+    public bool HasPrompt => !string.IsNullOrWhiteSpace(PromptText);
+
+    private void RefreshPromptText() =>
+        PromptText = PromptLocalization.ResolveText(_promptLibrary?.Find(PromptResourceKey));
 
     /// <summary>
     /// Picks the question that fits the day's mood. Re-picks while the answer is still empty — the mood
@@ -344,17 +361,26 @@ public partial class DiaryEntryViewModel : ObservableObject
     /// </summary>
     public void RefreshPrompt()
     {
+        if (_promptLibrary is null) return;
         if (!string.IsNullOrWhiteSpace(PromptAnswer)) return;
 
         var wanted = PromptSelector.SelectCategory(Emotion, Model.HourlyMood, !string.IsNullOrWhiteSpace(Gratitude));
-        if (PromptCatalog.CategoryOf(PromptResourceKey) == wanted) return;
+        if (_promptLibrary.Find(PromptResourceKey)?.Category == wanted) return;
 
-        PromptResourceKey = PromptSelector.SelectKey(
-            Date, Emotion, Model.HourlyMood, !string.IsNullOrWhiteSpace(Gratitude));
+        var picked = PromptSelector.Select(
+            Date, Emotion, Model.HourlyMood, !string.IsNullOrWhiteSpace(Gratitude), _promptLibrary);
+
+        PromptResourceKey = PromptLibrary.ReferenceFor(picked);
     }
 
     [RelayCommand]
-    private void ShufflePrompt() => PromptResourceKey = PromptCatalog.Next(PromptResourceKey);
+    private void ShufflePrompt()
+    {
+        if (_promptLibrary is null) return;
+
+        var next = PromptSelector.Next(_promptLibrary.Find(PromptResourceKey), Date, _promptLibrary);
+        PromptResourceKey = PromptLibrary.ReferenceFor(next);
+    }
 
     [ObservableProperty]
     private string _title = string.Empty;

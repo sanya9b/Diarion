@@ -137,6 +137,12 @@ public partial class ProfileViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    public async Task OpenPromptLibraryAsync()
+    {
+        await _navigationService.NavigateToAsync("PromptLibrary");
+    }
+
+    [RelayCommand]
     public async Task RemovePinAsync()
     {
         var confirm = await _dialogService.ShowConfirmationAsync(

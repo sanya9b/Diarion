@@ -41,7 +41,7 @@
 | `[x]` | Quit-tracker: money-saved, live-годинник, milestones, лог зривів | I Am Sober, Quitzilla, QuitNic | `CostPerUnit/UnitsPerDay`, `List<RelapseEvent>`, milestone-рушій |
 | `[x]` | Нотатки: backlinks `[[…]]`, теги, full-text пошук, quick-capture inbox | Obsidian, Notion, Amplenote, Todoist | `links`/`inbox` колекції LiteDB, share-target, глобальний екран пошуку |
 | `[~]` | **Фінанси: бюджети, рахунки, планові транзакції, звіти** | Money Manager, Wallet, Spendee | див. розбивку нижче |
-| `[x]` | Керовані промпти + CBT + вечірній ритуал вдячності | Stoic, Reflectly, Finch, Intellect | `PromptCatalog` (40 промптів у .resx UK/EN) + чистий `PromptSelector` за валентністю настрою; `Controls/GuidedPromptSection` |
+| `[x]` | Керовані промпти + CBT + вечірній ритуал вдячності + власні питання | Stoic, Reflectly, Finch, Intellect | Колекція `guided_prompts` (40 вбудованих засіяно з .resx UK/EN + користувацькі) + чистий `PromptSelector` за валентністю настрою; `Controls/GuidedPromptSection`, `Views/PromptLibraryPage` |
 | `[x]` | М'яка гейміфікація (прощаючі streaks) + Year in Pixels | Daylio, Finch | Year in Pixels (`Controls/YearInPixelsView`); один спільний walker `StreakWalker` під щоденником і звичками, квота поблажок на забіг у `UserProfile` |
 | `[ ]` | Адаптивний прогноз циклу + лог симптомів | Clue, Flo, Natural Cycles | `CycleLog` колекція, rolling mean/SD, індикатор варіативності |
 | `[ ]` | HealthKit / Health Connect (read) | Bearable, Apple Journal, Journey | Розширити `HealthDataService`, per-metric consent, лише локальний імпорт |
@@ -66,7 +66,9 @@
 
 ### Промпти — що далі
 
-- [ ] **Власні промпти користувача.** Розширення протоптане: вбудовані тримають `ResourceKey`, створені користувачем — літеральний текст, точно як `HabitDefinition`. Знадобиться колекція LiteDB і міграція.
+- [x] **Власні промпти користувача.** Колекція `guided_prompts`: усі промпти — рядки, з літеральним текстом у двох полях `TextUk`/`TextEn`. Сорок вбудованих засіваються з resx один раз (`DatabaseSeeder`, обидві культури читаються явно). Бібліотека з редактором (`Views/PromptLibraryPage`, `PromptEditorPage`), вхід із налаштувань і з картки питання дня. `PromptSelector` лишився чистим — пул кандидатів передається аргументом, а `PromptLibrary` його складає. Міграції не знадобилось: колекція суто адитивна, наявні бази наповнює guard сідера.
+  - **Свідомий компроміс:** текст вбудованих тепер живе в базі кожного користувача й сам не оновиться — виправлення формулювання чи третя мова вимагатимуть міграції по `ResourceKey`. Ключ на засіяних рядках лишено саме для цього, а ще тому, що записи щоденника, зроблені до цієї зміни, посилаються на промпт саме ним.
+  - Заодно: Markdown-експорт нарешті віддає питання й відповідь (у JSON вони були завжди).
 - [ ] Історія відповідей окремим екраном (зараз відповідь живе лише в записі дня).
 - [x] Погодинна шкала настрою підключена (див. розділ «Настрій» вище) — гілка `PromptSelector`, що віддає їй пріоритет, тепер жива.
 

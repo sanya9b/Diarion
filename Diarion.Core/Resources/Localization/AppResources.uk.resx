@@ -730,6 +730,51 @@
   <data name="StreaksTitle" xml:space="preserve">
     <value>СЕРІЇ</value>
   </data>
+  <data name="PromptLibraryTitle" xml:space="preserve">
+    <value>Бібліотека промптів</value>
+  </data>
+  <data name="PromptLibraryManage" xml:space="preserve">
+    <value>Керувати промптами</value>
+  </data>
+  <data name="PromptLibraryEmptyCategory" xml:space="preserve">
+    <value>У цій категорії ще немає промптів</value>
+  </data>
+  <data name="PromptEditorTitle" xml:space="preserve">
+    <value>Промпт</value>
+  </data>
+  <data name="PromptEditorTextUkLabel" xml:space="preserve">
+    <value>Текст (українською)</value>
+  </data>
+  <data name="PromptEditorTextEnLabel" xml:space="preserve">
+    <value>Текст (англійською)</value>
+  </data>
+  <data name="PromptEditorCategoryLabel" xml:space="preserve">
+    <value>Категорія</value>
+  </data>
+  <data name="PromptEditorTextRequired" xml:space="preserve">
+    <value>Введіть промпт хоча б однією мовою</value>
+  </data>
+  <data name="PromptEditorTextTooLong" xml:space="preserve">
+    <value>Промпт задовгий (максимум 300 символів)</value>
+  </data>
+  <data name="DeletePromptConfirmTitle" xml:space="preserve">
+    <value>Видалити промпт?</value>
+  </data>
+  <data name="DeletePromptConfirmMessage" xml:space="preserve">
+    <value>«{0}» більше не пропонуватиметься. Уже написані відповіді збережуться.</value>
+  </data>
+  <data name="PromptCategoryCbtReframe" xml:space="preserve">
+    <value>Переосмислення</value>
+  </data>
+  <data name="PromptCategorySavouring" xml:space="preserve">
+    <value>Смакування</value>
+  </data>
+  <data name="PromptCategoryOpenReflection" xml:space="preserve">
+    <value>Вільна рефлексія</value>
+  </data>
+  <data name="PromptCategoryEveningGratitude" xml:space="preserve">
+    <value>Вечірня вдячність</value>
+  </data>
   <data name="StreakForgivingLabel" xml:space="preserve">
     <value>Прощаючі серії</value>
   </data>

@@ -193,44 +193,104 @@ public class DiaryEntryViewModelTests
         model.HourlyMood.Should().ContainSingle(h => h.Hour == 8 && h.Mood == Emotion.Calm);
     }
 
+    /// <summary>
+    /// A stand-in for the seeded collection: ten prompts per category, all long-standing. Held as one
+    /// instance per test — prompts are referenced by id, so a rebuilt library would resolve to nothing.
+    /// Both languages carry the same text so assertions do not depend on the ambient culture.
+    /// </summary>
+    private readonly PromptLibrary _library = BuildLibrary();
+
+    private static PromptLibrary BuildLibrary()
+    {
+        var prompts = new List<GuidedPrompt>();
+        foreach (var (category, keys) in PromptCatalog.SeedKeys)
+        {
+            foreach (var key in keys)
+            {
+                prompts.Add(new GuidedPrompt
+                {
+                    ResourceKey = key,
+                    Category = category,
+                    TextEn = $"question {key}",
+                    TextUk = $"question {key}",
+                    CreatedAt = DateTime.MinValue
+                });
+            }
+        }
+
+        return new PromptLibrary(prompts);
+    }
+
+    private PromptCategory? CategoryOf(DiaryEntryViewModel vm) =>
+        _library.Find(vm.PromptResourceKey)?.Category;
+
     [Fact]
     public void HourlyMood_DrivesThePromptCategory()
     {
         // PromptSelector has always preferred the hourly scale; until now that branch was unreachable.
-        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15), Emotion = Emotion.Happy });
-        PromptCatalog.CategoryOf(viewModel.PromptResourceKey).Should().NotBe(PromptCategory.CbtReframe);
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15), Emotion = Emotion.Happy }, _library);
+        CategoryOf(viewModel).Should().NotBe(PromptCategory.CbtReframe);
 
         viewModel.SelectHourCommand.Execute(viewModel.HourlyMood.Single(h => h.Hour == 10));
         viewModel.SelectEmotionCommand.Execute(Emotion.Sad);
 
-        PromptCatalog.CategoryOf(viewModel.PromptResourceKey).Should().Be(PromptCategory.CbtReframe);
+        CategoryOf(viewModel).Should().Be(PromptCategory.CbtReframe);
     }
 
     [Fact]
     public void NewEntry_GetsAPromptImmediately()
     {
-        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15) });
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15) }, _library);
 
         viewModel.PromptResourceKey.Should().NotBeNullOrEmpty();
-        viewModel.PromptText.Should().NotBe(viewModel.PromptResourceKey, "the key must resolve to real text");
+        viewModel.PromptText.Should().NotBeNullOrWhiteSpace();
+        viewModel.HasPrompt.Should().BeTrue();
+    }
+
+    [Fact]
+    public void WithoutALibrary_ThereIsNoPromptToShow()
+    {
+        // Constructible from a bare entry, e.g. in tests and any screen that has no prompt service.
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15) });
+
+        viewModel.PromptResourceKey.Should().BeEmpty();
+        viewModel.HasPrompt.Should().BeFalse();
+    }
+
+    [Fact]
+    public void LegacyResourceKeyOnAnEntry_StillResolves()
+    {
+        // Entries written before prompts moved into the database reference a built-in by resource key.
+        var model = new DiaryEntry
+        {
+            Date = new DateTime(2026, 7, 15),
+            Emotion = Emotion.Sad,
+            PromptResourceKey = "PromptCbt03",
+            PromptAnswer = "already answered"
+        };
+
+        var viewModel = new DiaryEntryViewModel(model, _library);
+
+        viewModel.PromptResourceKey.Should().Be("PromptCbt03");
+        viewModel.PromptText.Should().Be("question PromptCbt03");
     }
 
     [Fact]
     public void RecordingALowMood_SwitchesThePromptToReframing()
     {
-        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15) });
-        PromptCatalog.CategoryOf(viewModel.PromptResourceKey).Should().Be(PromptCategory.OpenReflection);
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15) }, _library);
+        CategoryOf(viewModel).Should().Be(PromptCategory.OpenReflection);
 
         // Mood is normally recorded after the day screen has already opened.
         viewModel.Emotion = Emotion.Sad;
 
-        PromptCatalog.CategoryOf(viewModel.PromptResourceKey).Should().Be(PromptCategory.CbtReframe);
+        CategoryOf(viewModel).Should().Be(PromptCategory.CbtReframe);
     }
 
     [Fact]
     public void OnceAnswered_ThePromptStopsChanging()
     {
-        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15) });
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15) }, _library);
         viewModel.PromptAnswer = "half-written thought";
         var answering = viewModel.PromptResourceKey;
 
@@ -243,13 +303,14 @@ public class DiaryEntryViewModelTests
     [Fact]
     public void StoredPromptSurvivesReload_WhenItStillSuitsTheMood()
     {
+        var library = _library;
         var model = new DiaryEntry { Date = new DateTime(2026, 7, 15), Emotion = Emotion.Sad };
-        var first = new DiaryEntryViewModel(model);
+        var first = new DiaryEntryViewModel(model, library);
         first.ShufflePromptCommand.Execute(null);
         var shuffled = first.PromptResourceKey;
         first.SyncToModel();
 
-        var reloaded = new DiaryEntryViewModel(model);
+        var reloaded = new DiaryEntryViewModel(model, library);
 
         reloaded.PromptResourceKey.Should().Be(shuffled);
     }
@@ -257,13 +318,13 @@ public class DiaryEntryViewModelTests
     [Fact]
     public void ShufflePrompt_MovesWithinTheSameCategory()
     {
-        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15), Emotion = Emotion.Sad });
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15), Emotion = Emotion.Sad }, _library);
         var before = viewModel.PromptResourceKey;
 
         viewModel.ShufflePromptCommand.Execute(null);
 
         viewModel.PromptResourceKey.Should().NotBe(before);
-        PromptCatalog.CategoryOf(viewModel.PromptResourceKey).Should().Be(PromptCategory.CbtReframe);
+        CategoryOf(viewModel).Should().Be(PromptCategory.CbtReframe);
     }
 
     [Theory]

@@ -873,6 +873,96 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string PromptLibraryTitle {
+            get {
+                return ResourceManager.GetString("PromptLibraryTitle", resourceCulture);
+            }
+        }
+
+        public static string PromptLibraryManage {
+            get {
+                return ResourceManager.GetString("PromptLibraryManage", resourceCulture);
+            }
+        }
+
+        public static string PromptLibraryEmptyCategory {
+            get {
+                return ResourceManager.GetString("PromptLibraryEmptyCategory", resourceCulture);
+            }
+        }
+
+        public static string PromptEditorTitle {
+            get {
+                return ResourceManager.GetString("PromptEditorTitle", resourceCulture);
+            }
+        }
+
+        public static string PromptEditorTextUkLabel {
+            get {
+                return ResourceManager.GetString("PromptEditorTextUkLabel", resourceCulture);
+            }
+        }
+
+        public static string PromptEditorTextEnLabel {
+            get {
+                return ResourceManager.GetString("PromptEditorTextEnLabel", resourceCulture);
+            }
+        }
+
+        public static string PromptEditorCategoryLabel {
+            get {
+                return ResourceManager.GetString("PromptEditorCategoryLabel", resourceCulture);
+            }
+        }
+
+        public static string PromptEditorTextRequired {
+            get {
+                return ResourceManager.GetString("PromptEditorTextRequired", resourceCulture);
+            }
+        }
+
+        public static string PromptEditorTextTooLong {
+            get {
+                return ResourceManager.GetString("PromptEditorTextTooLong", resourceCulture);
+            }
+        }
+
+        public static string DeletePromptConfirmTitle {
+            get {
+                return ResourceManager.GetString("DeletePromptConfirmTitle", resourceCulture);
+            }
+        }
+
+        public static string DeletePromptConfirmMessage {
+            get {
+                return ResourceManager.GetString("DeletePromptConfirmMessage", resourceCulture);
+            }
+        }
+
+        public static string PromptCategoryCbtReframe {
+            get {
+                return ResourceManager.GetString("PromptCategoryCbtReframe", resourceCulture);
+            }
+        }
+
+        public static string PromptCategorySavouring {
+            get {
+                return ResourceManager.GetString("PromptCategorySavouring", resourceCulture);
+            }
+        }
+
+        public static string PromptCategoryOpenReflection {
+            get {
+                return ResourceManager.GetString("PromptCategoryOpenReflection", resourceCulture);
+            }
+        }
+
+        public static string PromptCategoryEveningGratitude {
+            get {
+                return ResourceManager.GetString("PromptCategoryEveningGratitude", resourceCulture);
+            }
+        }
+
         public static string StreakForgivingLabel {
             get {
                 return ResourceManager.GetString("StreakForgivingLabel", resourceCulture);

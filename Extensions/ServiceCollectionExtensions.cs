@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<INotificationService, LocalNotificationService>();
         services.AddSingleton<ITodoService, TodoService>();
         services.AddSingleton<IHabitService, HabitService>();
+        services.AddSingleton<IGuidedPromptService, GuidedPromptService>();
         services.AddSingleton<IDiaryHabitSyncService, DiaryHabitSyncService>();
         services.AddSingleton<IFinanceService, FinanceService>();
         services.AddSingleton<IWishlistService, WishlistService>();
@@ -76,6 +77,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<NotesViewModel>();
         services.AddTransient<NoteDetailViewModel>();
         services.AddTransient<HabitEditorViewModel>();
+        services.AddTransient<PromptLibraryViewModel>();
+        services.AddTransient<PromptEditorViewModel>();
 
         return services;
     }
@@ -99,6 +102,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<NotesPage>();
         services.AddTransient<NoteDetailPage>();
         services.AddTransient<HabitEditorPage>();
+        services.AddTransient<PromptLibraryPage>();
+        services.AddTransient<PromptEditorPage>();
 
         return services;
     }

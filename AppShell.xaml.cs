@@ -25,5 +25,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("NoteDetail", typeof(Views.NoteDetailPage));
         Routing.RegisterRoute("HabitEditor", typeof(Views.HabitEditorPage));
         Routing.RegisterRoute("PinSetup", typeof(Views.PinSetupPage));
+        Routing.RegisterRoute("PromptLibrary", typeof(Views.PromptLibraryPage));
+        Routing.RegisterRoute("PromptEditor", typeof(Views.PromptEditorPage));
     }
 }

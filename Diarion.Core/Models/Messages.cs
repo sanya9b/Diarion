@@ -21,3 +21,8 @@ public class TodoChangedMessage
         Date = date;
     }
 }
+
+/// <summary>Sent when the prompt library is edited, so screens holding a cached snapshot re-read it.</summary>
+public class PromptLibraryChangedMessage
+{
+}

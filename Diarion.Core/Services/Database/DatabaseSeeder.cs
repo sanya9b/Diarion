@@ -36,9 +36,46 @@ public class DatabaseSeeder : IDatabaseSeeder
         // (stored with a single-language literal name) also become bilingual.
         BackfillDefaultHabitResourceKeys(habitsCollection);
 
+        SeedGuidedPrompts(database.GetCollection<GuidedPrompt>(DatabaseConstants.GuidedPromptsCollection));
+
 #if DEBUG
         SeedMockDataIfEmpty(entriesCollection, todosCollection, habitsCollection);
 #endif
+    }
+
+    /// <summary>
+    /// Copies the built-in prompts out of the resource files into the collection, once. Both languages
+    /// are read by explicit culture rather than the ambient one: seeding runs during database init,
+    /// which can precede culture setup, and whatever landed here would be the text forever.
+    ///
+    /// Deleting a prompt only sets DeletedAt, so the row survives and this guard cannot re-seed behind
+    /// a user who cleared the library — unlike the habits above, where a full delete brings them back.
+    /// </summary>
+    private static void SeedGuidedPrompts(ILiteCollection<GuidedPrompt> promptsCollection)
+    {
+        if (promptsCollection.Count() > 0) return;
+
+        var ukrainian = new CultureInfo("uk");
+        var order = 0;
+        var seeded = new List<GuidedPrompt>();
+
+        foreach (var (category, keys) in PromptCatalog.SeedKeys)
+        {
+            foreach (var key in keys)
+            {
+                seeded.Add(new GuidedPrompt
+                {
+                    ResourceKey = key,
+                    Category = category,
+                    TextEn = AppResources.ResourceManager.GetString(key, CultureInfo.InvariantCulture) ?? string.Empty,
+                    TextUk = AppResources.ResourceManager.GetString(key, ukrainian) ?? string.Empty,
+                    Order = order++,
+                    CreatedAt = DateTime.MinValue
+                });
+            }
+        }
+
+        promptsCollection.InsertBulk(seeded);
     }
 
     private static void BackfillDefaultHabitResourceKeys(ILiteCollection<HabitDefinition> habitsCollection)
