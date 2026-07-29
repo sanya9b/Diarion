@@ -47,13 +47,18 @@ public static class HabitStrengthCalculator
     }
 
     public static int CurrentStreak(ISet<DateTime> completedDates, DateTime today)
-        => CurrentStreak(completedDates, today, DailySchedule);
+        => CurrentStreak(completedDates, today, DailySchedule, graceDays: 0);
+
+    public static int CurrentStreak(ISet<DateTime> completedDates, DateTime today, HabitSchedule? schedule)
+        => CurrentStreak(completedDates, today, schedule, graceDays: 0);
 
     /// <summary>
     /// Consecutive completed <b>scheduled</b> days ending at the latest scheduled day on/before today.
-    /// An unfinished today (its scheduled slot not yet done) doesn't break the streak; returns 0 otherwise.
+    /// An unfinished today (its scheduled slot not yet done) doesn't break the streak. Up to
+    /// <paramref name="graceDays"/> missed scheduled days are forgiven across the run; days the habit was
+    /// never due on cost nothing. TimesPerWeek counts whole weeks, so grace does not apply to it.
     /// </summary>
-    public static int CurrentStreak(ISet<DateTime> completedDates, DateTime today, HabitSchedule? schedule)
+    public static int CurrentStreak(ISet<DateTime> completedDates, DateTime today, HabitSchedule? schedule, int graceDays)
     {
         if (completedDates == null || completedDates.Count == 0) return 0;
 
@@ -64,45 +69,7 @@ public static class HabitStrengthCalculator
             return WeeklyStreak(completedDates, today.Date, Math.Max(1, sched.TimesPerWeek));
         }
 
-        var recent = MostRecentScheduledOnOrBefore(today.Date, sched);
-        if (recent == null) return 0;
-        var cursor = recent.Value;
-
-        if (!completedDates.Contains(cursor))
-        {
-            // The latest scheduled day isn't done. If that's today, don't break the streak — start from
-            // the previous scheduled day instead.
-            if (cursor == today.Date)
-            {
-                var prev = MostRecentScheduledOnOrBefore(cursor.AddDays(-1), sched);
-                if (prev == null) return 0;
-                cursor = prev.Value;
-            }
-
-            if (!completedDates.Contains(cursor)) return 0;
-        }
-
-        int streak = 0;
-        while (completedDates.Contains(cursor))
-        {
-            streak++;
-            var prev = MostRecentScheduledOnOrBefore(cursor.AddDays(-1), sched);
-            if (prev == null) break;
-            cursor = prev.Value;
-        }
-
-        return streak;
-    }
-
-    // Walks back from `day` to the nearest scheduled day; bounded so a degenerate empty schedule terminates.
-    private static DateTime? MostRecentScheduledOnOrBefore(DateTime day, HabitSchedule sched)
-    {
-        for (int i = 0; i < 3660; i++)
-        {
-            if (sched.IsScheduledOn(day)) return day;
-            day = day.AddDays(-1);
-        }
-        return null;
+        return StreakWalker.Walk(completedDates, today, graceDays, sched.IsScheduledOn).Length;
     }
 
     // --- TimesPerWeek (weekly granularity) ---

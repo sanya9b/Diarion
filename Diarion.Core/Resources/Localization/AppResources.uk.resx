@@ -706,6 +706,39 @@
   <data name="StatsYearInPixels" xml:space="preserve">
     <value>Рік у пікселях</value>
   </data>
+  <data name="StatsMoodByHour" xml:space="preserve">
+    <value>Настрій за годинами</value>
+  </data>
+  <data name="StatsMoodByHourSubtitle" xml:space="preserve">
+    <value>Середній настрій у різні години дня</value>
+  </data>
+  <data name="StatsMoodByHourPositive" xml:space="preserve">
+    <value>Позитивний</value>
+  </data>
+  <data name="StatsMoodByHourNegative" xml:space="preserve">
+    <value>Негативний</value>
+  </data>
+  <data name="StatsMoodByHourNeutral" xml:space="preserve">
+    <value>У середньому нейтральний</value>
+  </data>
+  <data name="StatsMoodByHourSparse" xml:space="preserve">
+    <value>Мало днів (1–2)</value>
+  </data>
+  <data name="StatsMoodByHourNoHourlyData" xml:space="preserve">
+    <value>Ви позначали настрій лише для всього дня. Відмічайте настрій погодинно у щоденнику, щоб побачити цей графік.</value>
+  </data>
+  <data name="StreaksTitle" xml:space="preserve">
+    <value>СЕРІЇ</value>
+  </data>
+  <data name="StreakForgivingLabel" xml:space="preserve">
+    <value>Прощаючі серії</value>
+  </data>
+  <data name="StreakGraceDaysLabel" xml:space="preserve">
+    <value>Дозволено пропусків</value>
+  </data>
+  <data name="StreakForgivingHint" xml:space="preserve">
+    <value>Серія витримує стільки пропущених днів, перш ніж обнулиться.</value>
+  </data>
   <data name="StatsPeriod" xml:space="preserve">
     <value>Період</value>
   </data>

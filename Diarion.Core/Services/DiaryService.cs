@@ -14,11 +14,13 @@ public class DiaryService : IDiaryService
 {
     private readonly IDatabaseContext _dbContext;
     private readonly ITodoService _todoService;
+    private readonly IProfileService _profileService;
 
-    public DiaryService(IDatabaseContext dbContext, ITodoService todoService)
+    public DiaryService(IDatabaseContext dbContext, ITodoService todoService, IProfileService profileService)
     {
         _dbContext = dbContext;
         _todoService = todoService;
+        _profileService = profileService;
     }
 
     private ILiteCollection<DiaryEntry> EntriesCollection => _dbContext.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
@@ -66,9 +68,12 @@ public class DiaryService : IDiaryService
         await _todoService.DeleteTodosByDiaryEntryAsync(id);
     }
 
-    public Task<int> GetCurrentStreakAsync()
+    public async Task<StreakResult> GetCurrentStreakAsync()
     {
-        return Task.Run(() =>
+        var profile = await _profileService.GetUserProfileAsync();
+        var grace = profile?.GetEffectiveStreakGrace() ?? 0;
+
+        return await Task.Run(() =>
         {
             // Note: LiteDB's Query().Select() can sometimes fail to map simple properties correctly in all scenarios.
             // Using FindAll() to project in memory. For a user's local diary, the number of entries is small enough.
@@ -78,7 +83,7 @@ public class DiaryService : IDiaryService
                 .Where(e => e.HasContent())
                 .Select(e => e.Date.Date);
 
-            return StreakCalculator.Calculate(dates, DateTime.Today);
+            return StreakWalker.Walk(dates, DateTime.Today, grace);
         });
     }
 

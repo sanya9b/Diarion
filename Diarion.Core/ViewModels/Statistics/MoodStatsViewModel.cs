@@ -19,6 +19,7 @@ public partial class MoodStatsViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNotEmpty))]
+    [NotifyPropertyChangedFor(nameof(ShowHourlyMoodHint))]
     private bool _isEmpty = true;
 
     public bool IsNotEmpty => !IsEmpty;
@@ -49,6 +50,17 @@ public partial class MoodStatsViewModel : ObservableObject
 
     /// <summary>True when at least two days have logged mood, so a trend line is meaningful.</summary>
     public bool HasMoodTrend => MoodTrend.Count(p => p.HasData) >= 2;
+
+    /// <summary>Average valence per hour of day, always 17 slots (7..23).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasHourlyMood))]
+    [NotifyPropertyChangedFor(nameof(ShowHourlyMoodHint))]
+    private System.Collections.ObjectModel.ObservableCollection<MoodHourPoint> _hourlyMoodProfile = new();
+
+    public bool HasHourlyMood => HourlyMoodProfile.Any(p => p.HasData);
+
+    /// <summary>Mood was logged, but only ever with the day-level picker — prompt instead of an empty chart.</summary>
+    public bool ShowHourlyMoodHint => !IsEmpty && !HasHourlyMood;
 
     /// <summary>Daily valence for the KPI-tile sparkline; null marks a day with no logged mood.</summary>
     [ObservableProperty]
@@ -111,6 +123,7 @@ public partial class MoodStatsViewModel : ObservableObject
                 TopEmotionShareText = string.Empty;
                 EntriesCountText = "0";
                 MoodTrend = new System.Collections.ObjectModel.ObservableCollection<MoodTrendPoint>();
+                HourlyMoodProfile = new System.Collections.ObjectModel.ObservableCollection<MoodHourPoint>();
                 MoodSparkline = new System.Collections.ObjectModel.ObservableCollection<double?>();
                 MoodCalendar = new System.Collections.ObjectModel.ObservableCollection<MoodHeatDay>();
                 return;
@@ -141,6 +154,7 @@ public partial class MoodStatsViewModel : ObservableObject
             TopEmotionShareText = topShare.ToString("P0", System.Globalization.CultureInfo.CurrentCulture);
 
             MoodTrend = new System.Collections.ObjectModel.ObservableCollection<MoodTrendPoint>(moodStats.DailyTrend);
+            HourlyMoodProfile = new System.Collections.ObjectModel.ObservableCollection<MoodHourPoint>(moodStats.HourlyProfile);
             MoodSparkline = new System.Collections.ObjectModel.ObservableCollection<double?>(
                 moodStats.DailyTrend.Select(p => p.HasData ? (double?)p.Valence : null));
             MoodCalendar = new System.Collections.ObjectModel.ObservableCollection<MoodHeatDay>(

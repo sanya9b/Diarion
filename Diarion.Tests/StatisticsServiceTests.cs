@@ -263,4 +263,180 @@ public class StatisticsServiceTests
 
         result.DailyTrend.Single(p => p.Date == today).HasData.Should().BeFalse();
     }
+
+    // --- Hour-of-day profile ---
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_HasSeventeenSlotsFrom7To23()
+    {
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.Calm)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        result.HourlyProfile.Should().HaveCount(17);
+        result.HourlyProfile.Select(p => p.Hour).Should().BeInAscendingOrder();
+        result.HourlyProfile.First().Hour.Should().Be(7);
+        result.HourlyProfile.Last().Hour.Should().Be(23);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_ScalarOnlyDay_ContributesNothing()
+    {
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = DateTime.Today, Emotion = Emotion.Happy }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        result.HourlyProfile.Should().OnlyContain(p => !p.HasData && p.Count == 0);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_AveragesMixedEmotionsAtSameHour()
+    {
+        var today = DateTime.Today;
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = today.AddDays(-1), HourlyMood = Hours((9, Emotion.Happy)) }, // +2
+            new() { Date = today, HourlyMood = Hours((9, Emotion.Sad)) }                // -2
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        var hour9 = result.HourlyProfile.Single(p => p.Hour == 9);
+        hour9.Valence.Should().Be(0);
+        hour9.Count.Should().Be(2);
+        hour9.HasData.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_CountsObservationsPerHour()
+    {
+        var today = DateTime.Today;
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = today.AddDays(-2), HourlyMood = Hours((21, Emotion.Angry)) },
+            new() { Date = today.AddDays(-1), HourlyMood = Hours((21, Emotion.Angry)) },
+            new() { Date = today, HourlyMood = Hours((21, Emotion.Angry)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        var hour21 = result.HourlyProfile.Single(p => p.Hour == 21);
+        hour21.Count.Should().Be(3);
+        hour21.Valence.Should().Be(-2);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_UnloggedHour_IsFlaggedWithoutData()
+    {
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.Calm)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        var hour14 = result.HourlyProfile.Single(p => p.Hour == 14);
+        hour14.HasData.Should().BeFalse();
+        hour14.Count.Should().Be(0);
+        hour14.Valence.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_IgnoresNoneAndOutOfRangeHours()
+    {
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            // Hour 3 predates the 7..23 scale and can only come from imported or legacy data.
+            new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.None), (3, Emotion.Happy), (9, Emotion.Happy)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        result.HourlyProfile.Single(p => p.Hour == 9).Count.Should().Be(1);
+        result.HourlyProfile.Should().NotContain(p => p.Hour == 3);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_IsWeightedByObservation_NotByDay()
+    {
+        var today = DateTime.Today;
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = today.AddDays(-1), HourlyMood = Hours((9, Emotion.Happy), (9, Emotion.Happy)) }, // +2, +2
+            new() { Date = today, HourlyMood = Hours((9, Emotion.Sad)) }                                    // -2
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        var hour9 = result.HourlyProfile.Single(p => p.Hour == 9);
+        hour9.Count.Should().Be(3);
+        hour9.Valence.Should().BeApproximately(0.667, 0.001);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_DayCountCountsDistinctDates()
+    {
+        var today = DateTime.Today;
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = today.AddDays(-1), HourlyMood = Hours((9, Emotion.Calm), (9, Emotion.Happy)) },
+            new() { Date = today, HourlyMood = Hours((9, Emotion.Calm)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        var hour9 = result.HourlyProfile.Single(p => p.Hour == 9);
+        hour9.Count.Should().Be(3);
+        hour9.DayCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_DayCountCollapsesRowsSharingADate()
+    {
+        var today = DateTime.Today;
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = today, HourlyMood = Hours((9, Emotion.Calm)) },
+            new() { Date = today, HourlyMood = Hours((9, Emotion.Sad)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        var hour9 = result.HourlyProfile.Single(p => p.Hour == 9);
+        hour9.Count.Should().Be(2);
+        hour9.DayCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_EmptyHour_HasZeroDayCount()
+    {
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.Calm)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        result.HourlyProfile.Single(p => p.Hour == 14).DayCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_DayCountIsPerHour()
+    {
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.Calm), (10, Emotion.Happy)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        result.HourlyProfile.Single(p => p.Hour == 9).DayCount.Should().Be(1);
+        result.HourlyProfile.Single(p => p.Hour == 10).DayCount.Should().Be(1);
+    }
 }

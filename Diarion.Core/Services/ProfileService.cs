@@ -26,11 +26,16 @@ public class ProfileService : IProfileService
             {
                 profile = new UserProfile();
                 profile.NormalizeCycleSettings();
+                profile.NormalizeStreakSettings();
                 ProfileCollection.Insert(profile);
             }
-            else if (profile.NormalizeCycleSettings())
+            else
             {
-                ProfileCollection.Update(profile);
+                // Both must run, so no short-circuiting: a fixed cycle length must not hide a bad quota.
+                var changed = profile.NormalizeCycleSettings();
+                changed |= profile.NormalizeStreakSettings();
+
+                if (changed) ProfileCollection.Update(profile);
             }
 
             return profile;
@@ -42,6 +47,7 @@ public class ProfileService : IProfileService
         return Task.Run(() =>
         {
             profile.NormalizeCycleSettings();
+            profile.NormalizeStreakSettings();
             ProfileCollection.Upsert(profile);
         });
     }

@@ -11,6 +11,12 @@ namespace Diarion.Services;
 /// </summary>
 public static class MoodAggregate
 {
+    /// <summary>First hour of the day the hourly mood scale covers.</summary>
+    public const int FirstHour = 7;
+
+    /// <summary>Last hour of the day the hourly mood scale covers.</summary>
+    public const int LastHour = 23;
+
     /// <summary>
     /// The mood observations for a day. <see cref="Emotion.None"/> means "not recorded" and never
     /// becomes an observation, so a day with nothing logged yields an empty sequence rather than a
@@ -25,6 +31,22 @@ public static class MoodAggregate
         }
 
         return scalar == Emotion.None ? System.Array.Empty<Emotion>() : new[] { scalar };
+    }
+
+    /// <summary>
+    /// The day's hour-stamped observations, for readings that need to know <em>when</em>. Unlike
+    /// <see cref="Observations"/> this deliberately has no scalar fallback: the day-level scalar has no
+    /// hour, so a scalar-only day contributes nothing rather than being smeared across the clock. Hours
+    /// outside <see cref="FirstHour"/>..<see cref="LastHour"/> are dropped — the scale never produced
+    /// them, so they can only come from imported or legacy data.
+    /// </summary>
+    public static IReadOnlyList<HourMood> HourlyObservations(IReadOnlyList<HourMood>? hourly)
+    {
+        if (hourly is not { Count: > 0 }) return System.Array.Empty<HourMood>();
+
+        return hourly
+            .Where(h => h.Mood != Emotion.None && h.Hour >= FirstHour && h.Hour <= LastHour)
+            .ToList();
     }
 
     public static bool HasAny(Emotion scalar, IReadOnlyList<HourMood>? hourly) =>
