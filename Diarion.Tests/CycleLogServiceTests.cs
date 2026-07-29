@@ -21,50 +21,93 @@ public class CycleLogServiceTests : IDisposable
     public void Dispose() => _dbContext.Dispose();
 
     [Fact]
-    public async Task ToggleAsync_MarksThenUnmarks()
+    public async Task AddEpisodeAsync_RecordsConsecutiveDays()
     {
-        var day = DateTime.Today;
+        var start = DateTime.Today.AddDays(-10);
 
-        (await _service.ToggleAsync(day)).Should().BeTrue();
-        (await _service.GetMarkedDatesAsync()).Should().Equal(day);
+        await _service.AddEpisodeAsync(start, 4);
 
-        (await _service.ToggleAsync(day)).Should().BeFalse();
+        (await _service.GetMarkedDatesAsync())
+            .Should().Equal(start, start.AddDays(1), start.AddDays(2), start.AddDays(3));
+    }
+
+    [Fact]
+    public async Task AddEpisodeAsync_IgnoresTheTimeOfDay()
+    {
+        await _service.AddEpisodeAsync(DateTime.Today.AddDays(-3).AddHours(21), 1);
+
+        (await _service.GetMarkedDatesAsync()).Should().Equal(DateTime.Today.AddDays(-3));
+    }
+
+    [Fact]
+    public async Task AddEpisodeAsync_OverlappingRange_DoesNotDuplicateDays()
+    {
+        var start = DateTime.Today.AddDays(-10);
+        await _service.AddEpisodeAsync(start, 4);
+
+        await _service.AddEpisodeAsync(start.AddDays(2), 4);
+
+        (await _service.GetMarkedDatesAsync()).Should().HaveCount(6).And.OnlyHaveUniqueItems();
+    }
+
+    [Fact]
+    public async Task AddEpisodeAsync_TrimsDaysInTheFuture()
+    {
+        // Recording a period that started yesterday must not claim days that have not happened.
+        await _service.AddEpisodeAsync(DateTime.Today.AddDays(-1), 5);
+
+        (await _service.GetMarkedDatesAsync()).Should().Equal(DateTime.Today.AddDays(-1), DateTime.Today);
+    }
+
+    [Fact]
+    public async Task AddEpisodeAsync_EntirelyInTheFuture_RecordsNothing()
+    {
+        await _service.AddEpisodeAsync(DateTime.Today.AddDays(3), 5);
+
         (await _service.GetMarkedDatesAsync()).Should().BeEmpty();
     }
 
     [Fact]
-    public async Task ToggleAsync_IgnoresTheTimeOfDay()
+    public async Task RemoveEpisodeAsync_DeletesThatEpisodeOnly()
     {
-        await _service.ToggleAsync(DateTime.Today.AddHours(9));
+        var older = DateTime.Today.AddDays(-40);
+        var newer = DateTime.Today.AddDays(-10);
+        await _service.AddEpisodeAsync(older, 4);
+        await _service.AddEpisodeAsync(newer, 4);
 
-        var marked = await _service.GetMarkedDatesAsync();
+        await _service.RemoveEpisodeAsync(newer);
 
-        marked.Should().Equal(DateTime.Today);
+        (await _service.GetMarkedDatesAsync())
+            .Should().Equal(older, older.AddDays(1), older.AddDays(2), older.AddDays(3));
     }
 
     [Fact]
-    public async Task ToggleAsync_RetroactiveDay_IsAccepted()
+    public async Task RemoveEpisodeAsync_FromAnyDayInside_RemovesTheWholeEpisode()
     {
-        var pastDay = DateTime.Today.AddDays(-20);
+        var start = DateTime.Today.AddDays(-10);
+        await _service.AddEpisodeAsync(start, 5);
 
-        (await _service.ToggleAsync(pastDay)).Should().BeTrue();
-        (await _service.GetMarkedDatesAsync()).Should().Contain(pastDay);
-    }
+        await _service.RemoveEpisodeAsync(start.AddDays(3));
 
-    [Fact]
-    public async Task ToggleAsync_FutureDay_IsRejected()
-    {
-        // A period cannot be reported before it happens, and the forecast anchors on the newest episode.
-        (await _service.ToggleAsync(DateTime.Today.AddDays(1))).Should().BeFalse();
         (await _service.GetMarkedDatesAsync()).Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task RemoveEpisodeAsync_UnknownDay_ChangesNothing()
+    {
+        var start = DateTime.Today.AddDays(-10);
+        await _service.AddEpisodeAsync(start, 3);
+
+        await _service.RemoveEpisodeAsync(DateTime.Today.AddDays(-100));
+
+        (await _service.GetMarkedDatesAsync()).Should().HaveCount(3);
     }
 
     [Fact]
     public async Task GetMarkedDatesAsync_ReturnsAscendingDates()
     {
-        await _service.ToggleAsync(DateTime.Today);
-        await _service.ToggleAsync(DateTime.Today.AddDays(-30));
-        await _service.ToggleAsync(DateTime.Today.AddDays(-2));
+        await _service.AddEpisodeAsync(DateTime.Today.AddDays(-2), 2);
+        await _service.AddEpisodeAsync(DateTime.Today.AddDays(-40), 2);
 
         (await _service.GetMarkedDatesAsync()).Should().BeInAscendingOrder();
     }

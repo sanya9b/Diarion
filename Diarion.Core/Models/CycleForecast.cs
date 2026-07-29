@@ -20,10 +20,12 @@ public enum CycleForecastBasis
     Averaged
 }
 
-/// <summary>One period: the day it started and how many logged days it ran.</summary>
+/// <summary>One period: when it started, the last day logged for it, and how many days were marked.
+/// <see cref="Length"/> can be smaller than the span when a day inside the period went unlogged.</summary>
 public class CycleEpisode
 {
     public DateTime Start { get; set; }
+    public DateTime End { get; set; }
     public int Length { get; set; }
 }
 

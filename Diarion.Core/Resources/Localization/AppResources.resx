@@ -628,8 +628,38 @@
   <data name="CycleDayFormat" xml:space="preserve">
     <value>Day {0}</value>
   </data>
-  <data name="PeriodTodayLabel" xml:space="preserve">
-    <value>Period today</value>
+  <data name="CycleTitle" xml:space="preserve">
+    <value>Cycle</value>
+  </data>
+  <data name="CycleOpenLink" xml:space="preserve">
+    <value>Recorded periods and forecast</value>
+  </data>
+  <data name="CycleForecastTitle" xml:space="preserve">
+    <value>Forecast</value>
+  </data>
+  <data name="CycleAddTitle" xml:space="preserve">
+    <value>Record a period</value>
+  </data>
+  <data name="CycleAddButton" xml:space="preserve">
+    <value>ADD</value>
+  </data>
+  <data name="CycleAddHint" xml:space="preserve">
+    <value>Pick the first day. Each period you record makes the forecast more accurate.</value>
+  </data>
+  <data name="CycleHistoryTitle" xml:space="preserve">
+    <value>Recorded periods</value>
+  </data>
+  <data name="CycleHistoryEmpty" xml:space="preserve">
+    <value>Nothing recorded yet</value>
+  </data>
+  <data name="CycleIntervalFormat" xml:space="preserve">
+    <value>{0} days to the next</value>
+  </data>
+  <data name="CycleDeleteConfirmTitle" xml:space="preserve">
+    <value>Delete this record?</value>
+  </data>
+  <data name="CycleDeleteConfirmMessage" xml:space="preserve">
+    <value>"{0}" will be removed and the forecast recalculated.</value>
   </data>
   <data name="CycleNextPeriodFormat" xml:space="preserve">
     <value>Next period ~{0}</value>
@@ -660,9 +690,6 @@
   </data>
   <data name="CycleDisclaimer" xml:space="preserve">
     <value>A statistical estimate from your own records — not medical advice and not a method of contraception.</value>
-  </data>
-  <data name="CycleMarkOnDayHint" xml:space="preserve">
-    <value>Mark period days on the day screen — the forecast learns from them.</value>
   </data>
   <data name="HabitPhysicalActivity" xml:space="preserve">
     <value>Physical Activity</value>

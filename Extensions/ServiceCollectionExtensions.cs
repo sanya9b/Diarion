@@ -79,6 +79,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<HabitEditorViewModel>();
         services.AddTransient<PromptLibraryViewModel>();
         services.AddTransient<PromptEditorViewModel>();
+        services.AddTransient<CycleViewModel>();
 
         return services;
     }
@@ -104,6 +105,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<HabitEditorPage>();
         services.AddTransient<PromptLibraryPage>();
         services.AddTransient<PromptEditorPage>();
+        services.AddTransient<CyclePage>();
 
         return services;
     }

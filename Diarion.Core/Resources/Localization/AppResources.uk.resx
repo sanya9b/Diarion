@@ -628,8 +628,38 @@
   <data name="CycleDayFormat" xml:space="preserve">
     <value>День {0}</value>
   </data>
-  <data name="PeriodTodayLabel" xml:space="preserve">
-    <value>Місячні сьогодні</value>
+  <data name="CycleTitle" xml:space="preserve">
+    <value>Цикл</value>
+  </data>
+  <data name="CycleOpenLink" xml:space="preserve">
+    <value>Записані місячні та прогноз</value>
+  </data>
+  <data name="CycleForecastTitle" xml:space="preserve">
+    <value>Прогноз</value>
+  </data>
+  <data name="CycleAddTitle" xml:space="preserve">
+    <value>Записати місячні</value>
+  </data>
+  <data name="CycleAddButton" xml:space="preserve">
+    <value>ДОДАТИ</value>
+  </data>
+  <data name="CycleAddHint" xml:space="preserve">
+    <value>Оберіть перший день. Кожні записані місячні роблять прогноз точнішим.</value>
+  </data>
+  <data name="CycleHistoryTitle" xml:space="preserve">
+    <value>Записані місячні</value>
+  </data>
+  <data name="CycleHistoryEmpty" xml:space="preserve">
+    <value>Поки нічого не записано</value>
+  </data>
+  <data name="CycleIntervalFormat" xml:space="preserve">
+    <value>{0} дн. до наступних</value>
+  </data>
+  <data name="CycleDeleteConfirmTitle" xml:space="preserve">
+    <value>Видалити цей запис?</value>
+  </data>
+  <data name="CycleDeleteConfirmMessage" xml:space="preserve">
+    <value>«{0}» буде видалено, прогноз перерахується.</value>
   </data>
   <data name="CycleNextPeriodFormat" xml:space="preserve">
     <value>Наступні ~{0}</value>
@@ -660,9 +690,6 @@
   </data>
   <data name="CycleDisclaimer" xml:space="preserve">
     <value>Статистична оцінка на основі ваших записів — не медична порада і не метод контрацепції.</value>
-  </data>
-  <data name="CycleMarkOnDayHint" xml:space="preserve">
-    <value>Позначайте дні місячних на екрані дня — прогноз навчається з них.</value>
   </data>
   <data name="HabitPhysicalActivity" xml:space="preserve">
     <value>Фізична активність</value>

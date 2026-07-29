@@ -109,7 +109,17 @@ namespace Diarion.Resources.Localization {
         public static string CycleLengthLabel => ResourceManager.GetString("CycleLengthLabel", resourceCulture) ?? "Average cycle length (days):";
         public static string PeriodLengthLabel => ResourceManager.GetString("PeriodLengthLabel", resourceCulture) ?? "Average period length (days):";
         public static string CycleDayFormat => ResourceManager.GetString("CycleDayFormat", resourceCulture) ?? "Day {0}";
-        public static string PeriodTodayLabel => ResourceManager.GetString("PeriodTodayLabel", resourceCulture);
+        public static string CycleTitle => ResourceManager.GetString("CycleTitle", resourceCulture);
+        public static string CycleOpenLink => ResourceManager.GetString("CycleOpenLink", resourceCulture);
+        public static string CycleForecastTitle => ResourceManager.GetString("CycleForecastTitle", resourceCulture);
+        public static string CycleAddTitle => ResourceManager.GetString("CycleAddTitle", resourceCulture);
+        public static string CycleAddButton => ResourceManager.GetString("CycleAddButton", resourceCulture);
+        public static string CycleAddHint => ResourceManager.GetString("CycleAddHint", resourceCulture);
+        public static string CycleHistoryTitle => ResourceManager.GetString("CycleHistoryTitle", resourceCulture);
+        public static string CycleHistoryEmpty => ResourceManager.GetString("CycleHistoryEmpty", resourceCulture);
+        public static string CycleIntervalFormat => ResourceManager.GetString("CycleIntervalFormat", resourceCulture);
+        public static string CycleDeleteConfirmTitle => ResourceManager.GetString("CycleDeleteConfirmTitle", resourceCulture);
+        public static string CycleDeleteConfirmMessage => ResourceManager.GetString("CycleDeleteConfirmMessage", resourceCulture);
         public static string CycleNextPeriodFormat => ResourceManager.GetString("CycleNextPeriodFormat", resourceCulture);
         public static string CycleUncertaintyFormat => ResourceManager.GetString("CycleUncertaintyFormat", resourceCulture);
         public static string CycleFertileWindowLabel => ResourceManager.GetString("CycleFertileWindowLabel", resourceCulture);
@@ -120,7 +130,6 @@ namespace Diarion.Resources.Localization {
         public static string CycleLateFormat => ResourceManager.GetString("CycleLateFormat", resourceCulture);
         public static string CycleHighVariabilityNote => ResourceManager.GetString("CycleHighVariabilityNote", resourceCulture);
         public static string CycleDisclaimer => ResourceManager.GetString("CycleDisclaimer", resourceCulture);
-        public static string CycleMarkOnDayHint => ResourceManager.GetString("CycleMarkOnDayHint", resourceCulture);
         public static string SaveProfileButton => ResourceManager.GetString("SaveProfileButton", resourceCulture) ?? "SAVE SETTINGS";
         public static string ProfileSavedMessage => ResourceManager.GetString("ProfileSavedMessage", resourceCulture) ?? "Settings successfully saved!";
         public static string DeleteButton => ResourceManager.GetString("DeleteButton", resourceCulture) ?? "Delete Entry";

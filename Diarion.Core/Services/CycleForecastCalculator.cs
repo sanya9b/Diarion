@@ -60,7 +60,7 @@ public static class CycleForecastCalculator
             }
             else
             {
-                episodes.Add(new CycleEpisode { Start = start, Length = length });
+                episodes.Add(new CycleEpisode { Start = start, End = previous, Length = length });
                 start = day;
                 length = 1;
             }
@@ -68,7 +68,7 @@ public static class CycleForecastCalculator
             previous = day;
         }
 
-        episodes.Add(new CycleEpisode { Start = start, Length = length });
+        episodes.Add(new CycleEpisode { Start = start, End = previous, Length = length });
 
         var intervals = new List<int>();
         for (int i = 1; i < episodes.Count; i++)

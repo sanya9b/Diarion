@@ -205,9 +205,13 @@
 
                             <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
 
-                            <!-- The start date is no longer typed here: it comes from the days marked on
-                                 the day screen, which is what makes the forecast adapt. -->
-                            <Label Text="{x:Static localization:AppResources.CycleMarkOnDayHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <!-- Recording and correcting periods lives on its own page: it is a handful of
+                                 days a month, so it has no business occupying the daily screen. -->
+                            <Label Text="{x:Static localization:AppResources.CycleOpenLink}" FontSize="13" TextColor="{DynamicResource Theme_Sage}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenCycleCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>

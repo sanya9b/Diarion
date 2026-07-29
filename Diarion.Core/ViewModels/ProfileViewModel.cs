@@ -143,6 +143,12 @@ public partial class ProfileViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    public async Task OpenCycleAsync()
+    {
+        await _navigationService.NavigateToAsync("Cycle");
+    }
+
+    [RelayCommand]
     public async Task RemovePinAsync()
     {
         var confirm = await _dialogService.ShowConfirmationAsync(
