@@ -29,6 +29,22 @@ public class MoodTrendPoint
     public Emotion DominantEmotion { get; set; } = Emotion.None;
 }
 
+/// <summary>One hour slot of the day on the hour-of-day mood profile. <see cref="HasData"/> is false for
+/// hours never logged in the window, so the chart can leave the slot empty instead of drawing a bar at
+/// zero — which would read as "neutral" rather than "nothing recorded".</summary>
+public class MoodHourPoint
+{
+    public int Hour { get; set; }
+
+    /// <summary>Mean valence (-2..+2) of every observation logged at this hour; 0 when there are none.</summary>
+    public double Valence { get; set; }
+
+    /// <summary>Observations at this hour across the whole window, not days.</summary>
+    public int Count { get; set; }
+
+    public bool HasData { get; set; }
+}
+
 /// <summary>One cell of the Year-in-Pixels heatmap: a calendar day with a resolved color.</summary>
 public class MoodHeatDay
 {
@@ -44,6 +60,9 @@ public class MoodStatistics
 
     /// <summary>Daily average mood valence (-2..+2), one point per calendar day in the window.</summary>
     public List<MoodTrendPoint> DailyTrend { get; set; } = new();
+
+    /// <summary>Average mood valence per hour of day, always one point per hour 7..23.</summary>
+    public List<MoodHourPoint> HourlyProfile { get; set; } = new();
 }
 
 public class TodoStatistics

@@ -706,6 +706,27 @@
   <data name="StatsYearInPixels" xml:space="preserve">
     <value>Year in pixels</value>
   </data>
+  <data name="StatsMoodByHour" xml:space="preserve">
+    <value>Mood by hour</value>
+  </data>
+  <data name="StatsMoodByHourSubtitle" xml:space="preserve">
+    <value>Average mood at each time of day</value>
+  </data>
+  <data name="StatsMoodByHourPositive" xml:space="preserve">
+    <value>Positive</value>
+  </data>
+  <data name="StatsMoodByHourNegative" xml:space="preserve">
+    <value>Negative</value>
+  </data>
+  <data name="StatsMoodByHourNeutral" xml:space="preserve">
+    <value>Neutral on average</value>
+  </data>
+  <data name="StatsMoodByHourSparse" xml:space="preserve">
+    <value>Few entries (1–2)</value>
+  </data>
+  <data name="StatsMoodByHourNoHourlyData" xml:space="preserve">
+    <value>You've only logged mood for the whole day. Mark mood by hour in your diary to see this chart.</value>
+  </data>
   <data name="StatsPeriod" xml:space="preserve">
     <value>Period</value>
   </data>

@@ -825,6 +825,48 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string StatsMoodByHour {
+            get {
+                return ResourceManager.GetString("StatsMoodByHour", resourceCulture);
+            }
+        }
+
+        public static string StatsMoodByHourSubtitle {
+            get {
+                return ResourceManager.GetString("StatsMoodByHourSubtitle", resourceCulture);
+            }
+        }
+
+        public static string StatsMoodByHourPositive {
+            get {
+                return ResourceManager.GetString("StatsMoodByHourPositive", resourceCulture);
+            }
+        }
+
+        public static string StatsMoodByHourNegative {
+            get {
+                return ResourceManager.GetString("StatsMoodByHourNegative", resourceCulture);
+            }
+        }
+
+        public static string StatsMoodByHourNeutral {
+            get {
+                return ResourceManager.GetString("StatsMoodByHourNeutral", resourceCulture);
+            }
+        }
+
+        public static string StatsMoodByHourSparse {
+            get {
+                return ResourceManager.GetString("StatsMoodByHourSparse", resourceCulture);
+            }
+        }
+
+        public static string StatsMoodByHourNoHourlyData {
+            get {
+                return ResourceManager.GetString("StatsMoodByHourNoHourlyData", resourceCulture);
+            }
+        }
+
         public static string StatsPeriod {
             get {
                 return ResourceManager.GetString("StatsPeriod", resourceCulture);

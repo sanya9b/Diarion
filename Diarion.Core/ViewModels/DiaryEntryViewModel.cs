@@ -74,8 +74,8 @@ public partial class DiaryEntryViewModel : ObservableObject
 
     // --- Hourly mood ---
 
-    public const int FirstHour = 7;
-    public const int LastHour = 23;
+    public const int FirstHour = MoodAggregate.FirstHour;
+    public const int LastHour = MoodAggregate.LastHour;
 
     /// <summary>
     /// One slot per waking hour, always materialised so the grid has a stable shape. Slots left at

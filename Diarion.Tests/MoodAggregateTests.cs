@@ -105,4 +105,21 @@ public class MoodAggregateTests
     {
         MoodAggregate.Dominant(Emotion.None, null).Should().Be(Emotion.None);
     }
+
+    [Fact]
+    public void HourlyObservations_ScalarOnly_ReturnsEmpty()
+    {
+        MoodAggregate.HourlyObservations(new List<HourMood>()).Should().BeEmpty();
+        MoodAggregate.HourlyObservations(null).Should().BeEmpty();
+    }
+
+    [Fact]
+    public void HourlyObservations_DropsNoneSlots_AndKeepsHours()
+    {
+        var hourly = Hours((9, Emotion.None), (3, Emotion.Happy), (14, Emotion.Calm));
+
+        MoodAggregate.HourlyObservations(hourly)
+            .Should().ContainSingle()
+            .Which.Should().BeEquivalentTo(new { Hour = 14, Mood = Emotion.Calm });
+    }
 }
