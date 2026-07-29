@@ -16,7 +16,7 @@ namespace Diarion.ViewModels;
 public partial class CalendarSectionViewModel : ObservableObject
 {
     private readonly ICalendarService _calendarService;
-    private readonly IMenstrualCycleService _menstrualCycleService;
+    private readonly ICycleLogService _cycleLogService;
     private readonly IProfileService _profileService;
     private readonly ITodoService _todoService;
     private readonly IDispatcherService _dispatcher;
@@ -49,13 +49,13 @@ public partial class CalendarSectionViewModel : ObservableObject
 
     public CalendarSectionViewModel(
         ICalendarService calendarService,
-        IMenstrualCycleService menstrualCycleService,
+        ICycleLogService cycleLogService,
         IProfileService profileService,
         ITodoService todoService,
         IDispatcherService dispatcher)
     {
         _calendarService = calendarService;
-        _menstrualCycleService = menstrualCycleService;
+        _cycleLogService = cycleLogService;
         _profileService = profileService;
         _todoService = todoService;
         _dispatcher = dispatcher;
@@ -149,12 +149,13 @@ public partial class CalendarSectionViewModel : ObservableObject
         var allTodos = await _todoService.GetTodosForDateRangeAsync(firstDay, lastDay);
         var grouped = allTodos.GroupBy(t => t.TargetDate.Date).ToDictionary(g => g.Key, g => g.ToList());
         var profile = await _profileService.GetUserProfileAsync();
+        var history = await BuildCycleHistoryAsync(profile);
 
         _dispatcher.InvokeOnMainThread(() =>
         {
             foreach (var day in CalendarDays)
             {
-                UpdateDayTasksCompletion(day, grouped.GetValueOrDefault(day.Date.Date), profile);
+                UpdateDayTasksCompletion(day, grouped.GetValueOrDefault(day.Date.Date), profile, history);
             }
         });
     }
@@ -167,19 +168,31 @@ public partial class CalendarSectionViewModel : ObservableObject
 
         var dayTodos = await _todoService.GetTodosForDateAsync(targetDate);
         var profile = await _profileService.GetUserProfileAsync();
+        var history = await BuildCycleHistoryAsync(profile);
 
         _dispatcher.InvokeOnMainThread(() =>
         {
-            UpdateDayTasksCompletion(dayToUpdate, dayTodos, profile);
+            UpdateDayTasksCompletion(dayToUpdate, dayTodos, profile, history);
         });
     }
 
-    private void UpdateDayTasksCompletion(CalendarDay day, List<TodoItem>? dayTodos, UserProfile profile)
+    /// <summary>
+    /// Read and derived once per repaint. The per-day method below runs forty-two times, and rebuilding
+    /// the episode history inside it would redo the same work for every cell in the grid.
+    /// </summary>
+    private async Task<CycleHistory> BuildCycleHistoryAsync(UserProfile? profile)
     {
-        var cycleInfo = _menstrualCycleService.GetCycleInfoForDate(day.Date, profile);
-        day.IsCycleDay = cycleInfo.IsPeriodDay;
-        day.IsPredictedCycleDay = cycleInfo.IsPredictedPeriodDay;
-        day.IsFertileWindow = cycleInfo.IsFertileWindow;
+        if (profile?.IsCycleTrackingActive != true) return CycleHistory.Empty;
+
+        return CycleForecastCalculator.BuildHistory(await _cycleLogService.GetMarkedDatesAsync());
+    }
+
+    private void UpdateDayTasksCompletion(CalendarDay day, List<TodoItem>? dayTodos, UserProfile profile, CycleHistory cycleHistory)
+    {
+        var forecast = CycleForecastCalculator.Describe(cycleHistory, profile, day.Date, DateTime.Today);
+        day.IsCycleDay = forecast.IsPeriodDay;
+        day.IsPredictedCycleDay = forecast.IsPredictedPeriodDay;
+        day.IsFertileWindow = forecast.IsFertileWindowEstimate;
 
         if (dayTodos != null && dayTodos.Count > 0)
         {

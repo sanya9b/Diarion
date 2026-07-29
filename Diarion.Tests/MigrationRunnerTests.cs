@@ -185,4 +185,50 @@ public class MigrationRunnerTests
 
         db.UserVersion.Should().Be(MigrationRunner.CurrentVersion + 5);
     }
+
+    [Fact]
+    public void Run_MovesTheLastPeriodDateIntoTheCycleLog()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        var start = new DateTime(2026, 6, 10);
+        db.GetCollection<UserProfile>(DatabaseConstants.ProfileCollection)
+          .Insert(new UserProfile { LastPeriodStartDate = start, PeriodLength = 4 });
+
+        MigrationRunner.Run(db);
+
+        var logs = db.GetCollection<CycleLog>(DatabaseConstants.CycleLogsCollection).FindAll().ToList();
+        logs.Select(l => l.Date).Should().BeEquivalentTo(
+            new[] { start, start.AddDays(1), start.AddDays(2), start.AddDays(3) });
+
+        // Cleared so the log is the only source of cycle history from here on.
+        db.GetCollection<UserProfile>(DatabaseConstants.ProfileCollection)
+          .FindAll().First().LastPeriodStartDate.Should().BeNull();
+    }
+
+    [Fact]
+    public void Run_LeavesAnExistingCycleLogAlone()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        db.GetCollection<UserProfile>(DatabaseConstants.ProfileCollection)
+          .Insert(new UserProfile { LastPeriodStartDate = new DateTime(2026, 6, 10) });
+        db.GetCollection<CycleLog>(DatabaseConstants.CycleLogsCollection)
+          .Insert(new CycleLog { Date = new DateTime(2026, 6, 20) });
+
+        MigrationRunner.Run(db);
+        MigrationRunner.Run(db);
+
+        // Real logging supersedes the anchor; pouring it back in would invent an episode.
+        db.GetCollection<CycleLog>(DatabaseConstants.CycleLogsCollection).Count().Should().Be(1);
+    }
+
+    [Fact]
+    public void Run_WithNoAnchorDate_AddsNothing()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        db.GetCollection<UserProfile>(DatabaseConstants.ProfileCollection).Insert(new UserProfile());
+
+        MigrationRunner.Run(db);
+
+        db.GetCollection<CycleLog>(DatabaseConstants.CycleLogsCollection).Count().Should().Be(0);
+    }
 }

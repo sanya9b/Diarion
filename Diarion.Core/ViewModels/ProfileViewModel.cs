@@ -170,7 +170,7 @@ public partial class ProfileViewModel : BaseViewModel
         {
             Profile.Gender = value.Value;
             // Автоматично пропонуємо увімкнути календар, якщо вибрано "Жіноча", а він ще не активований
-            if (value.Value == GenderType.Female && !Profile.IsMenstrualTrackingEnabled && Profile.LastPeriodStartDate == null)
+            if (value.Value == GenderType.Female && !Profile.IsMenstrualTrackingEnabled)
             {
                 Profile.IsMenstrualTrackingEnabled = true;
             }

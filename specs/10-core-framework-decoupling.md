@@ -22,9 +22,10 @@
   `IDialogService`/`INavigationService`: `ProfileViewModel.cs` (9 місць: 91,116,128,151,161,173,183,194,204,219),
   `TodoDetailViewModel.cs:127,156,180`, `FinanceViewModel.cs:242`, `WishlistViewModel.cs:115`,
   `StatisticsViewModel.cs:204`, `MainViewModel.cs:283`.
-- Презентаційні концерни в Core: `CycleStatusViewModel.cs:24,49,53,58` (`Microsoft.Maui.Graphics.Color`),
-  `ChartItems.cs` (`Colors.Gray`), `MoodStatsViewModel.cs:92` (`Color.FromArgb`), `QuickMenuItem.cs:18-23`
-  (`Geometry` + `PathGeometryConverter`).
+- Презентаційні концерни в Core: `ChartItems.cs` (`Colors.Gray`), `MoodStatsViewModel.cs:92`
+  (`Color.FromArgb`), `QuickMenuItem.cs:18-23` (`Geometry` + `PathGeometryConverter`).
+  ~~`CycleStatusViewModel.cs`~~ — виправлено разом із адаптивним прогнозом циклу: колір ніс
+  «ймовірність вагітності», яку прибрали, тож зникло і саме поле, а не переїхало.
 - Платформа в Core: `BackupService.cs:6,31,34-37` (`FileSystem`, `Share`), `CalendarSectionViewModel.cs:150,168`
   (`MainThread.BeginInvokeOnMainThread`).
 - Неузгоджені простори імен: файли під `Diarion.Core` мають `Diarion.*` (той самий `Diarion.Services`, що й

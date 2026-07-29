@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAuxiliaryService, AuxiliaryService>();
         services.AddSingleton<IDiaryService, DiaryService>();
         services.AddSingleton<INoteService, NoteService>();
-        services.AddSingleton<IMenstrualCycleService, MenstrualCycleService>();
+        services.AddSingleton<ICycleLogService, CycleLogService>();
         services.AddSingleton<ICalendarService, CalendarService>();
         services.AddSingleton<IStatisticsService, StatisticsService>();
         services.AddSingleton<ICorrelationService, CorrelationService>();

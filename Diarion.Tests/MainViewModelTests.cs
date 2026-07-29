@@ -20,7 +20,7 @@ public class MainViewModelTests
     private readonly Mock<IHabitService> _habitServiceMock;
     private readonly Mock<IProfileService> _profileServiceMock;
     private readonly Mock<IGuidedPromptService> _guidedPromptServiceMock;
-    private readonly Mock<IMenstrualCycleService> _menstrualCycleServiceMock;
+    private readonly Mock<ICycleLogService> _cycleLogServiceMock;
     private readonly Mock<INavigationService> _navigationServiceMock;
     private readonly Mock<IDialogService> _dialogServiceMock;
     private readonly Mock<ICalendarService> _calendarServiceMock;
@@ -39,7 +39,7 @@ public class MainViewModelTests
         _profileServiceMock = new Mock<IProfileService>();
         _guidedPromptServiceMock = new Mock<IGuidedPromptService>();
         _guidedPromptServiceMock.Setup(s => s.GetLibraryAsync()).ReturnsAsync(Diarion.Models.PromptLibrary.Empty);
-        _menstrualCycleServiceMock = new Mock<IMenstrualCycleService>();
+        _cycleLogServiceMock = new Mock<ICycleLogService>();
         _navigationServiceMock = new Mock<INavigationService>();
         _dialogServiceMock = new Mock<IDialogService>();
         _calendarServiceMock = new Mock<ICalendarService>();
@@ -57,9 +57,9 @@ public class MainViewModelTests
             .Setup(s => s.GetEntryForDateAsync(It.IsAny<DateTime>()))
             .ReturnsAsync(new DiaryEntry());
 
-        _menstrualCycleServiceMock
-            .Setup(s => s.GetCycleInfoForDate(It.IsAny<DateTime>(), It.IsAny<UserProfile>()))
-            .Returns(new CycleDayInfo());
+        _cycleLogServiceMock
+            .Setup(s => s.GetMarkedDatesAsync())
+            .ReturnsAsync(new List<DateTime>());
 
         _calendarServiceMock
             .Setup(s => s.GenerateCalendarDays(It.IsAny<DateTime>()))
@@ -71,7 +71,7 @@ public class MainViewModelTests
 
         _calendarSection = new CalendarSectionViewModel(
             _calendarServiceMock.Object,
-            _menstrualCycleServiceMock.Object,
+            _cycleLogServiceMock.Object,
             _profileServiceMock.Object,
             _todoServiceMock.Object,
             new Mock<IDispatcherService>().Object);
@@ -106,7 +106,7 @@ public class MainViewModelTests
             _plannerSection,
             _quickMenuSection,
             _habitsSection,
-            new Mock<CycleStatusViewModel>(_menstrualCycleServiceMock.Object, _profileServiceMock.Object).Object);
+            new Mock<CycleStatusViewModel>(_cycleLogServiceMock.Object, _profileServiceMock.Object).Object);
     }
 
     [Fact]
@@ -136,9 +136,12 @@ public class MainViewModelTests
         // Regression: LoadEntriesForDateAsync used to clear IsBusy before LoadDayContentAsync assigned
         // CurrentEntry.CycleDay, so the autosave guard was already down and browsing any day wrote a row
         // containing nothing but Date and CycleDay. Those rows then counted towards the diary streak.
-        _menstrualCycleServiceMock
-            .Setup(s => s.GetCycleInfoForDate(It.IsAny<DateTime>(), It.IsAny<UserProfile>()))
-            .Returns(new CycleDayInfo { IsTrackingEnabled = true, DayOfCycle = 14 });
+        _profileServiceMock
+            .Setup(s => s.GetUserProfileAsync())
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true });
+        _cycleLogServiceMock
+            .Setup(s => s.GetMarkedDatesAsync())
+            .ReturnsAsync(new List<DateTime> { DateTime.Today.AddDays(-14) });
 
         var viewModel = CreateViewModel();
 

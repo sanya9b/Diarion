@@ -619,29 +619,50 @@
   <data name="PeriodLengthLabel" xml:space="preserve">
     <value>Середня тривалість менструації (днів):</value>
   </data>
-  <data name="LastPeriodDateLabel" xml:space="preserve">
-    <value>Дата початку останнього циклу:</value>
-  </data>
   <data name="SaveProfileButton" xml:space="preserve">
     <value>ЗБЕРЕГТИ НАЛАШТУВАННЯ</value>
   </data>
   <data name="ProfileSavedMessage" xml:space="preserve">
     <value>Налаштування успішно збережено!</value>
   </data>
-  <data name="PregnancyProbabilityLabel" xml:space="preserve">
-    <value>Вірогідність вагітності:</value>
-  </data>
-  <data name="ProbLow" xml:space="preserve">
-    <value>Низька</value>
-  </data>
-  <data name="ProbMedium" xml:space="preserve">
-    <value>Середня</value>
-  </data>
-  <data name="ProbHigh" xml:space="preserve">
-    <value>Висока</value>
-  </data>
   <data name="CycleDayFormat" xml:space="preserve">
     <value>День {0}</value>
+  </data>
+  <data name="PeriodTodayLabel" xml:space="preserve">
+    <value>Місячні сьогодні</value>
+  </data>
+  <data name="CycleNextPeriodFormat" xml:space="preserve">
+    <value>Наступні ~{0}</value>
+  </data>
+  <data name="CycleUncertaintyFormat" xml:space="preserve">
+    <value>±{0} дн.</value>
+  </data>
+  <data name="CycleFertileWindowLabel" xml:space="preserve">
+    <value>Фертильне вікно (оцінка)</value>
+  </data>
+  <data name="CycleBasisProfileDefaultFormat" xml:space="preserve">
+    <value>За вашими налаштуваннями ({0} дн.) — позначте більше циклів для персонального прогнозу</value>
+  </data>
+  <data name="CycleBasisSingleCycle" xml:space="preserve">
+    <value>На основі 1 записаного циклу</value>
+  </data>
+  <data name="CycleBasisAveragedFormat" xml:space="preserve">
+    <value>На основі {0} записаних циклів (у середньому {1} дн.)</value>
+  </data>
+  <data name="CycleNoDataHint" xml:space="preserve">
+    <value>Позначте перший день місячних, щоб почати прогноз</value>
+  </data>
+  <data name="CycleLateFormat" xml:space="preserve">
+    <value>Очікувались {0} дн. тому</value>
+  </data>
+  <data name="CycleHighVariabilityNote" xml:space="preserve">
+    <value>Ваші цикли дуже різняться, тож ця оцінка приблизна</value>
+  </data>
+  <data name="CycleDisclaimer" xml:space="preserve">
+    <value>Статистична оцінка на основі ваших записів — не медична порада і не метод контрацепції.</value>
+  </data>
+  <data name="CycleMarkOnDayHint" xml:space="preserve">
+    <value>Позначайте дні місячних на екрані дня — прогноз навчається з них.</value>
   </data>
   <data name="HabitPhysicalActivity" xml:space="preserve">
     <value>Фізична активність</value>

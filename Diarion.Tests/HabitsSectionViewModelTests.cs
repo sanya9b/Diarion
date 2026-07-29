@@ -15,7 +15,7 @@ public class HabitsSectionViewModelTests
     private readonly Mock<IHabitService> _habitServiceMock;
     private readonly Mock<IDialogService> _dialogServiceMock;
     private readonly Mock<ICalendarService> _calendarServiceMock;
-    private readonly Mock<IMenstrualCycleService> _menstrualCycleServiceMock;
+    private readonly Mock<ICycleLogService> _cycleLogServiceMock;
     private readonly Mock<IProfileService> _profileServiceMock;
     private readonly Mock<ITodoService> _todoServiceMock;
     private readonly Mock<INavigationService> _navigationServiceMock;
@@ -28,14 +28,14 @@ public class HabitsSectionViewModelTests
         _habitServiceMock = new Mock<IHabitService>();
         _dialogServiceMock = new Mock<IDialogService>();
         _calendarServiceMock = new Mock<ICalendarService>();
-        _menstrualCycleServiceMock = new Mock<IMenstrualCycleService>();
+        _cycleLogServiceMock = new Mock<ICycleLogService>();
         _profileServiceMock = new Mock<IProfileService>();
         _todoServiceMock = new Mock<ITodoService>();
         _navigationServiceMock = new Mock<INavigationService>();
 
         _calendarSection = new CalendarSectionViewModel(
             _calendarServiceMock.Object,
-            _menstrualCycleServiceMock.Object,
+            _cycleLogServiceMock.Object,
             _profileServiceMock.Object,
             _todoServiceMock.Object,
             new Mock<IDispatcherService>().Object);
