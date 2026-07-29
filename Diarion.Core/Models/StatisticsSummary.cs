@@ -42,6 +42,11 @@ public class MoodHourPoint
     /// <summary>Observations at this hour across the whole window, not days.</summary>
     public int Count { get; set; }
 
+    /// <summary>Distinct calendar days that contributed at least one observation at this hour. Lower than
+    /// <see cref="Count"/> whenever a single day was logged repeatedly, which is what tells a real pattern
+    /// apart from one thorough afternoon.</summary>
+    public int DayCount { get; set; }
+
     public bool HasData { get; set; }
 }
 

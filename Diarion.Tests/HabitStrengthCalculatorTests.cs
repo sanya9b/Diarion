@@ -125,4 +125,43 @@ public class HabitStrengthCalculatorTests
 
         HabitStrengthCalculator.CurrentStreak(set, Today, schedule).Should().Be(2);
     }
+
+    [Fact]
+    public void CurrentStreak_WithGrace_ForgivesMissedScheduledDay()
+    {
+        var set = new HashSet<DateTime> { Today, Today.AddDays(-2), Today.AddDays(-3) };
+
+        HabitStrengthCalculator.CurrentStreak(set, Today, null, graceDays: 0).Should().Be(1);
+        HabitStrengthCalculator.CurrentStreak(set, Today, null, graceDays: 1).Should().Be(3);
+    }
+
+    [Fact]
+    public void CurrentStreak_WithGrace_NonScheduledDaysDoNotConsumeQuota()
+    {
+        // Mon/Wed/Fri. Today is Wednesday; Mon and the previous Fri are done, so the run is unbroken and
+        // the quota must still be untouched when the Monday before that is missed.
+        var schedule = new HabitSchedule
+        {
+            Type = HabitScheduleType.SpecificDays,
+            DaysOfWeek = new List<int> { (int)DayOfWeek.Monday, (int)DayOfWeek.Wednesday, (int)DayOfWeek.Friday }
+        };
+        var set = new HashSet<DateTime> { Today, Today.AddDays(-2), Today.AddDays(-5) };
+
+        HabitStrengthCalculator.CurrentStreak(set, Today, schedule, graceDays: 0).Should().Be(3);
+    }
+
+    [Fact]
+    public void CurrentStreak_TimesPerWeek_IgnoresGrace()
+    {
+        var schedule = new HabitSchedule { Type = HabitScheduleType.TimesPerWeek, TimesPerWeek = 2 };
+        var set = new HashSet<DateTime>
+        {
+            new(2026, 6, 29), new(2026, 6, 30),
+            new(2026, 6, 22), new(2026, 6, 24),
+            new(2026, 6, 15)
+        };
+
+        // Weeks, not days — a day-granular quota has nothing to forgive here.
+        HabitStrengthCalculator.CurrentStreak(set, Today, schedule, graceDays: 3).Should().Be(2);
+    }
 }

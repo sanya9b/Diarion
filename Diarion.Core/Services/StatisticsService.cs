@@ -155,13 +155,20 @@ public class StatisticsService : IStatisticsService
         // Hour-of-day profile. Weighted per OBSERVATION, unlike the donut above: the question here is
         // "how do I usually feel at 14:00", which is about hours, not days. Scalar-only days carry no
         // hour and so contribute nothing.
-        var byHour = new Dictionary<int, (int Count, double Sum)>();
+        // Days are tracked as a set of dates, not a counter: several DTO rows can share one calendar day,
+        // and the whole point of the figure is how many different days back an hour up.
+        var byHour = new Dictionary<int, (int Count, double Sum, HashSet<DateTime> Days)>();
         foreach (var entry in entriesList)
         {
             foreach (var hourMood in MoodAggregate.HourlyObservations(entry.HourlyMood))
             {
-                var acc = byHour.TryGetValue(hourMood.Hour, out var a) ? a : (Count: 0, Sum: 0d);
-                byHour[hourMood.Hour] = (acc.Count + 1, acc.Sum + hourMood.Mood.ToValence());
+                if (!byHour.TryGetValue(hourMood.Hour, out var acc))
+                {
+                    acc = (0, 0d, new HashSet<DateTime>());
+                }
+
+                acc.Days.Add(entry.Date.Date);
+                byHour[hourMood.Hour] = (acc.Count + 1, acc.Sum + hourMood.Mood.ToValence(), acc.Days);
             }
         }
 
@@ -169,8 +176,8 @@ public class StatisticsService : IStatisticsService
         for (int hour = MoodAggregate.FirstHour; hour <= MoodAggregate.LastHour; hour++)
         {
             hourlyProfile.Add(byHour.TryGetValue(hour, out var slot)
-                ? new MoodHourPoint { Hour = hour, Valence = slot.Sum / slot.Count, Count = slot.Count, HasData = true }
-                : new MoodHourPoint { Hour = hour, Valence = 0, Count = 0, HasData = false });
+                ? new MoodHourPoint { Hour = hour, Valence = slot.Sum / slot.Count, Count = slot.Count, DayCount = slot.Days.Count, HasData = true }
+                : new MoodHourPoint { Hour = hour, Valence = 0, Count = 0, DayCount = 0, HasData = false });
         }
 
         return new MoodStatistics

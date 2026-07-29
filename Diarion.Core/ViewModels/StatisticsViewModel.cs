@@ -185,7 +185,7 @@ public partial class StatisticsViewModel : BaseViewModel
         
         try
         {
-            CurrentStreak = await _diaryService.GetCurrentStreakAsync();
+            CurrentStreak = (await _diaryService.GetCurrentStreakAsync()).Length;
             OnPropertyChanged(nameof(IsStreakVisible));
 
             int days = (int)(SelectedTimeRange?.Option ?? TimeRangeOption.Week);

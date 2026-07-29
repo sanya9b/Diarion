@@ -27,6 +27,8 @@ public partial class HabitStatsViewModel : ObservableObject
     private readonly IHabitService _habitService;
 
     // Strength is a 30-day-half-life EMA; ~180 days of history is enough for it to fully converge.
+    private readonly IProfileService _profileService;
+
     private const int StrengthLookbackDays = 180;
 
     [ObservableProperty]
@@ -40,9 +42,10 @@ public partial class HabitStatsViewModel : ObservableObject
 
     public ObservableCollection<HabitCardViewModel> Habits { get; } = new();
 
-    public HabitStatsViewModel(IHabitService habitService)
+    public HabitStatsViewModel(IHabitService habitService, IProfileService profileService)
     {
         _habitService = habitService;
+        _profileService = profileService;
     }
 
     public async Task LoadDataAsync(int days)
@@ -56,13 +59,14 @@ public partial class HabitStatsViewModel : ObservableObject
             var fetchStart = rangeStart < strengthStart ? rangeStart : strengthStart;
 
             var histories = await _habitService.GetHabitCompletionsAsync(fetchStart, today);
+            var grace = (await _profileService.GetUserProfileAsync())?.GetEffectiveStreakGrace() ?? 0;
 
             Habits.Clear();
             foreach (var h in histories)
             {
                 var from = h.CreatedAt > strengthStart ? h.CreatedAt : strengthStart;
                 var strength = HabitStrengthCalculator.Strength(h.CompletedDates, from, today, h.Schedule);
-                var streak = HabitStrengthCalculator.CurrentStreak(h.CompletedDates, today, h.Schedule);
+                var streak = HabitStrengthCalculator.CurrentStreak(h.CompletedDates, today, h.Schedule, grace);
 
                 // A TimesPerWeek streak counts weeks, not days — mark it so "🔥 5" isn't misread.
                 var isWeekly = h.Schedule?.Type == Diarion.Models.HabitScheduleType.TimesPerWeek;

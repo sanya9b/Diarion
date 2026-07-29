@@ -867,6 +867,30 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string StreaksTitle {
+            get {
+                return ResourceManager.GetString("StreaksTitle", resourceCulture);
+            }
+        }
+
+        public static string StreakForgivingLabel {
+            get {
+                return ResourceManager.GetString("StreakForgivingLabel", resourceCulture);
+            }
+        }
+
+        public static string StreakGraceDaysLabel {
+            get {
+                return ResourceManager.GetString("StreakGraceDaysLabel", resourceCulture);
+            }
+        }
+
+        public static string StreakForgivingHint {
+            get {
+                return ResourceManager.GetString("StreakForgivingHint", resourceCulture);
+            }
+        }
+
         public static string StatsPeriod {
             get {
                 return ResourceManager.GetString("StatsPeriod", resourceCulture);

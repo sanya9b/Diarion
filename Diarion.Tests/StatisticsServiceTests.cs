@@ -378,4 +378,65 @@ public class StatisticsServiceTests
         hour9.Count.Should().Be(3);
         hour9.Valence.Should().BeApproximately(0.667, 0.001);
     }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_DayCountCountsDistinctDates()
+    {
+        var today = DateTime.Today;
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = today.AddDays(-1), HourlyMood = Hours((9, Emotion.Calm), (9, Emotion.Happy)) },
+            new() { Date = today, HourlyMood = Hours((9, Emotion.Calm)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        var hour9 = result.HourlyProfile.Single(p => p.Hour == 9);
+        hour9.Count.Should().Be(3);
+        hour9.DayCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_DayCountCollapsesRowsSharingADate()
+    {
+        var today = DateTime.Today;
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = today, HourlyMood = Hours((9, Emotion.Calm)) },
+            new() { Date = today, HourlyMood = Hours((9, Emotion.Sad)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        var hour9 = result.HourlyProfile.Single(p => p.Hour == 9);
+        hour9.Count.Should().Be(2);
+        hour9.DayCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_EmptyHour_HasZeroDayCount()
+    {
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.Calm)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        result.HourlyProfile.Single(p => p.Hour == 14).DayCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetMoodStatisticsAsync_HourlyProfile_DayCountIsPerHour()
+    {
+        var service = MoodStatsServiceOver(new List<DiaryEntryStatsDto>
+        {
+            new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.Calm), (10, Emotion.Happy)) }
+        });
+
+        var result = await service.GetMoodStatisticsAsync(7);
+
+        result.HourlyProfile.Single(p => p.Hour == 9).DayCount.Should().Be(1);
+        result.HourlyProfile.Single(p => p.Hour == 10).DayCount.Should().Be(1);
+    }
 }

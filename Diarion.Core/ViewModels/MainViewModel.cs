@@ -338,7 +338,7 @@ public partial class MainViewModel : BaseViewModel
 
     private async Task UpdateStreakAsync()
     {
-        CurrentStreak = await _diaryService.GetCurrentStreakAsync();
+        CurrentStreak = (await _diaryService.GetCurrentStreakAsync()).Length;
         OnPropertyChanged(nameof(IsStreakVisible));
     }
 

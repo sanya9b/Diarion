@@ -55,7 +55,9 @@ public class MoodHourBarChart : ChartViewBase
         set => SetValue(MaxValueProperty, value);
     }
 
-    /// <summary>Below this many observations an hour is drawn faded, so a one-off entry cannot pass for a pattern.</summary>
+    /// <summary>An hour backed by fewer than this many <em>distinct days</em> is drawn faded. Days rather than
+    /// observations: five entries from one thorough afternoon are still one afternoon, and the fade is there to
+    /// stop that passing for a pattern.</summary>
     public static readonly BindableProperty SparseThresholdProperty =
         BindableProperty.Create(nameof(SparseThreshold), typeof(int), typeof(MoodHourBarChart), 3,
             propertyChanged: OnVisualChanged);
@@ -130,7 +132,7 @@ public class MoodHourBarChart : ChartViewBase
 
             double value = Math.Clamp(point.Valence, -max, max);
             var color = value > 0 ? PositiveColor : value < 0 ? NegativeColor : MutedColor;
-            if (point.Count < SparseThreshold) color = color.WithAlpha(SparseAlpha);
+            if (point.DayCount < SparseThreshold) color = color.WithAlpha(SparseAlpha);
 
             canvas.FillColor = color;
             float barLeft = centerX - barWidth / 2f;

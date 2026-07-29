@@ -9,6 +9,8 @@ public partial class UserProfile : ObservableObject
 {
     public const int DefaultCycleLength = 28;
     public const int DefaultPeriodLength = 5;
+    public const int DefaultStreakGraceDays = 1;
+    public const int MaxStreakGraceDays = 3;
 
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -48,6 +50,12 @@ public partial class UserProfile : ObservableObject
     [ObservableProperty] private bool _isDailyReminderEnabled;
     [ObservableProperty] private TimeSpan _dailyReminderTime = new(20, 0, 0);
 
+    // Прощаючі серії: скільки пропущених днів витримує серія, перш ніж обнулиться.
+    // Увімкнено за замовчуванням — вимкнена фіча нікому не трапиться на очі, а число серії
+    // від поблажок може лише зрости, тож наявним профілям це не шкодить.
+    [ObservableProperty] private bool _isForgivingStreaksEnabled = true;
+    [ObservableProperty] private int _streakGraceDays = DefaultStreakGraceDays;
+
     // Сортування меню
     [ObservableProperty] private System.Collections.Generic.List<string>? _quickMenuOrder;
 
@@ -61,6 +69,20 @@ public partial class UserProfile : ObservableObject
         var cycleLength = GetNormalizedCycleLength();
         var periodLength = PeriodLength > 0 ? PeriodLength : DefaultPeriodLength;
         return Math.Min(periodLength, cycleLength);
+    }
+
+    /// <summary>Missed days a streak may forgive; zero when the feature is off, so callers need no branch.</summary>
+    public int GetEffectiveStreakGrace()
+        => IsForgivingStreaksEnabled ? Math.Clamp(StreakGraceDays, 0, MaxStreakGraceDays) : 0;
+
+    public bool NormalizeStreakSettings()
+    {
+        var normalized = Math.Clamp(StreakGraceDays, 0, MaxStreakGraceDays);
+        var changed = StreakGraceDays != normalized;
+
+        StreakGraceDays = normalized;
+
+        return changed;
     }
 
     public bool NormalizeCycleSettings()

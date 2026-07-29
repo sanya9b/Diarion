@@ -722,10 +722,22 @@
     <value>У середньому нейтральний</value>
   </data>
   <data name="StatsMoodByHourSparse" xml:space="preserve">
-    <value>Мало записів (1–2)</value>
+    <value>Мало днів (1–2)</value>
   </data>
   <data name="StatsMoodByHourNoHourlyData" xml:space="preserve">
     <value>Ви позначали настрій лише для всього дня. Відмічайте настрій погодинно у щоденнику, щоб побачити цей графік.</value>
+  </data>
+  <data name="StreaksTitle" xml:space="preserve">
+    <value>СЕРІЇ</value>
+  </data>
+  <data name="StreakForgivingLabel" xml:space="preserve">
+    <value>Прощаючі серії</value>
+  </data>
+  <data name="StreakGraceDaysLabel" xml:space="preserve">
+    <value>Дозволено пропусків</value>
+  </data>
+  <data name="StreakForgivingHint" xml:space="preserve">
+    <value>Серія витримує стільки пропущених днів, перш ніж обнулиться.</value>
   </data>
   <data name="StatsPeriod" xml:space="preserve">
     <value>Період</value>

@@ -314,6 +314,32 @@
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
+
+                <!-- Серії (Streaks) -->
+                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{x:Static localization:AppResources.StreaksTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.StreakForgivingLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsForgivingStreaksEnabled}" OnColor="{DynamicResource Theme_Ocean_Ocean}" VerticalOptions="Center" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12" IsVisible="{Binding Profile.IsForgivingStreaksEnabled}">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.StreakGraceDaysLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Entry Grid.Column="1" Text="{Binding Profile.StreakGraceDays}" Keyboard="Numeric" WidthRequest="60" HorizontalTextAlignment="End" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" />
+                        </Grid>
+
+                        <Label Text="{x:Static localization:AppResources.StreakForgivingHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding Profile.IsForgivingStreaksEnabled}" />
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
 
             <!-- ============ DATA TAB ============ -->
