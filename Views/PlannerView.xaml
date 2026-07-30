@@ -8,6 +8,113 @@
              x:Name="PlannerViewRoot"
              x:DataType="viewmodels:PlannerSectionViewModel">
              
+    <ContentView.Resources>
+        <!-- One row shape, used by both the untimed tray and the hour grid. -->
+        <DataTemplate x:Key="TodoRow" x:DataType="viewmodels:TodoItemViewModel">
+            <Border Margin="0,3" StrokeShape="RoundRectangle 18" StrokeThickness="0"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding BindingContext.GoToTodoDetailsCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
+                </Border.GestureRecognizers>
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="{AppThemeBinding Light=0.05, Dark=0.2}" />
+                </Border.Shadow>
+                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" Padding="12,4" ColumnSpacing="10" VerticalOptions="Center">
+                    <Border Grid.Column="0" WidthRequest="22" HeightRequest="22" StrokeShape="RoundRectangle 6"
+                            StrokeThickness="2" VerticalOptions="Center">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="False">
+                                <Setter Property="BackgroundColor" Value="Transparent" />
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
+                            </DataTrigger>
+                            <MultiTrigger TargetType="Border">
+                                <MultiTrigger.Conditions>
+                                    <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
+                                    <BindingCondition Binding="{Binding Priority}" Value="Low" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                            </MultiTrigger>
+                            <MultiTrigger TargetType="Border">
+                                <MultiTrigger.Conditions>
+                                    <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
+                                    <BindingCondition Binding="{Binding Priority}" Value="Medium" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
+                            </MultiTrigger>
+                            <MultiTrigger TargetType="Border">
+                                <MultiTrigger.Conditions>
+                                    <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
+                                    <BindingCondition Binding="{Binding Priority}" Value="High" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                            </MultiTrigger>
+                        </Border.Triggers>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.ToggleTodoCompletionCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
+                    </Border>
+
+                    <Label Grid.Column="1" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="14" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
+                                <Setter Property="TextDecorations" Value="Strikethrough" />
+                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+
+                    <!-- The real time, because an 08:30 task sits in the 08 row and would otherwise be
+                         indistinguishable from one at 08:00. -->
+                    <Label Grid.Column="2" Text="{Binding TargetTime, StringFormat='{0:hh\\:mm}'}" IsVisible="{Binding HasTime}"
+                           InputTransparent="True" FontSize="11" FontAttributes="Bold" VerticalOptions="Center"
+                           TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                    <Border Grid.Column="3" StrokeShape="RoundRectangle 6" Padding="6,2" VerticalOptions="Center">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Low">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Medium">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="High">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label FontSize="10" FontAttributes="Bold" InputTransparent="True">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Low">
+                                    <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityLow}" />
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Medium">
+                                    <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityMedium}" />
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="High">
+                                    <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityHigh}" />
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Border>
+
+                    <ImageButton Grid.Column="4" WidthRequest="18" HeightRequest="18" VerticalOptions="Center" BackgroundColor="Transparent"
+                                 Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}"
+                                 CommandParameter="{Binding .}">
+                        <ImageButton.Source>
+                            <FontImageSource FontFamily="OpenSansRegular" Glyph="✕" Color="{DynamicResource Theme_Midnight_Dust}" Size="11" />
+                        </ImageButton.Source>
+                    </ImageButton>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </ContentView.Resources>
+
     <Grid RowDefinitions="Auto, *" Padding="20,2,20,20" RowSpacing="10">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalOptions="Center" ColumnSpacing="12">
             <Label Grid.Column="0" Text="{x:Static localization:AppResources.TodoListLabel}" FontAttributes="Bold" FontSize="16" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
@@ -34,113 +141,44 @@
             </Grid>
         </Grid>
 
-        <CollectionView Grid.Row="1" BackgroundColor="Transparent" ItemsSource="{Binding Todos}" ItemSizingStrategy="MeasureFirstItem">
-            <CollectionView.EmptyView>
-                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="32" Spacing="12">
-                    <Label Text="{x:Static localization:AppResources.NoTasks}" FontAttributes="Bold" FontSize="18" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+        <ScrollView Grid.Row="1" BackgroundColor="Transparent">
+            <VerticalStackLayout Spacing="10">
+
+                <!-- Untimed tasks. They keep behaving exactly as before; the grid is an addition,
+                     not a requirement to put a clock on everything. -->
+                <VerticalStackLayout Spacing="4" IsVisible="{Binding HasUntimedTodos}">
+                    <Label Text="{x:Static localization:AppResources.PlannerUntimedLabel}" FontSize="11" FontAttributes="Bold"
+                           CharacterSpacing="1.2" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding UntimedTodos}"
+                                         BindableLayout.ItemTemplate="{StaticResource TodoRow}" />
                 </VerticalStackLayout>
-            </CollectionView.EmptyView>
 
-                        <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="viewmodels:TodoItemViewModel">
-                    <Border Margin="0,3" StrokeShape="RoundRectangle 18" StrokeThickness="0"
-                            BackgroundColor="{DynamicResource Theme_Snow_Black}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.GoToTodoDetailsCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
-                        </Border.GestureRecognizers>
-                        <Border.Shadow>
-                            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="{AppThemeBinding Light=0.05, Dark=0.2}" />
-                        </Border.Shadow>
-                        <Grid ColumnDefinitions="Auto, *, Auto, Auto" Padding="12,4" ColumnSpacing="10" VerticalOptions="Center">
-                            <Border Grid.Column="0" WidthRequest="22" HeightRequest="22" StrokeShape="RoundRectangle 6"
-                                    StrokeThickness="2" VerticalOptions="Center">
-                                <Border.Triggers>
-                                    <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="False">
-                                        <Setter Property="BackgroundColor" Value="Transparent" />
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                    </DataTrigger>
-                                    <MultiTrigger TargetType="Border">
-                                        <MultiTrigger.Conditions>
-                                            <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
-                                            <BindingCondition Binding="{Binding Priority}" Value="Low" />
-                                        </MultiTrigger.Conditions>
-                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                                    </MultiTrigger>
-                                    <MultiTrigger TargetType="Border">
-                                        <MultiTrigger.Conditions>
-                                            <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
-                                            <BindingCondition Binding="{Binding Priority}" Value="Medium" />
-                                        </MultiTrigger.Conditions>
-                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
-                                    </MultiTrigger>
-                                    <MultiTrigger TargetType="Border">
-                                        <MultiTrigger.Conditions>
-                                            <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
-                                            <BindingCondition Binding="{Binding Priority}" Value="High" />
-                                        </MultiTrigger.Conditions>
-                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                                    </MultiTrigger>
-                                </Border.Triggers>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding BindingContext.ToggleTodoCompletionCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
+                <!-- Hour grid 7–23, the same window the hourly mood scale uses. -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding HourSlots}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:PlannerHourSlot">
+                            <Grid ColumnDefinitions="32,*" ColumnSpacing="8" MinimumHeightRequest="34">
+                                <Label Grid.Column="0" Text="{Binding Label}" FontSize="11" FontAttributes="Bold"
+                                       VerticalOptions="Start" Margin="0,10,0,0"
+                                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                                <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
-                            </Border>
+                                <!-- Empty row: a tap starts a task already scheduled at this hour. -->
+                                <Border Grid.Column="1" IsVisible="{Binding IsEmpty}" HeightRequest="30"
+                                        StrokeShape="RoundRectangle 10" StrokeThickness="1" StrokeDashArray="3,3"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.AddAtHourCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
 
-                            <Label Grid.Column="1" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
-                                        <Setter Property="TextDecorations" Value="Strikethrough" />
-                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                    </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
-
-                            <Border Grid.Column="2" StrokeShape="RoundRectangle 6" Padding="6,2" VerticalOptions="Center">
-                                <Border.Triggers>
-                                    <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Low">
-                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Medium">
-                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="High">
-                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                    </DataTrigger>
-                                </Border.Triggers>
-                                <Label FontSize="10" FontAttributes="Bold" InputTransparent="True">
-                                    <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Low">
-                                            <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityLow}" />
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
-                                        </DataTrigger>
-                                        <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Medium">
-                                            <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityMedium}" />
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
-                                        </DataTrigger>
-                                        <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="High">
-                                            <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityHigh}" />
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
-                                        </DataTrigger>
-                                    </Label.Triggers>
-                                </Label>
-                            </Border>
-
-                            <ImageButton Grid.Column="3" WidthRequest="18" HeightRequest="18" VerticalOptions="Center" BackgroundColor="Transparent"
-                                         Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}"
-                                         CommandParameter="{Binding .}">
-                                <ImageButton.Source>
-                                    <FontImageSource FontFamily="OpenSansRegular" Glyph="✕" Color="{DynamicResource Theme_Midnight_Dust}" Size="11" />
-                                </ImageButton.Source>
-                            </ImageButton>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                                <!-- Occupied row: grows with its tasks rather than squeezing them. -->
+                                <VerticalStackLayout Grid.Column="1" BindableLayout.ItemsSource="{Binding Items}"
+                                                     BindableLayout.ItemTemplate="{StaticResource TodoRow}" />
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
     </Grid>
 </ContentView>

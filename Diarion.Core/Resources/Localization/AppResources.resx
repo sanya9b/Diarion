@@ -1330,6 +1330,9 @@
   <data name="CycleSymptomsLabel" xml:space="preserve">
     <value>Symptoms</value>
   </data>
+  <data name="PlannerUntimedLabel" xml:space="preserve">
+    <value>No time set</value>
+  </data>
   <data name="CycleSymptomCramps" xml:space="preserve">
     <value>Cramps</value>
   </data>

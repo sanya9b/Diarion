@@ -9,6 +9,7 @@ namespace Diarion.ViewModels;
 
 [QueryProperty(nameof(TargetDateValue), "Date")]
 [QueryProperty(nameof(TodoId), "Id")]
+[QueryProperty(nameof(HourValue), "Hour")]
 public partial class TodoDetailViewModel : BaseViewModel
 {
     private readonly ITodoService _todoService;
@@ -32,6 +33,19 @@ public partial class TodoDetailViewModel : BaseViewModel
 
     [ObservableProperty]
     public partial string TodoId { get; set; } = string.Empty;
+
+    /// <summary>Set when the form is opened from an empty row of the hour grid, so it starts scheduled.</summary>
+    [ObservableProperty]
+    public partial string HourValue { get; set; } = string.Empty;
+
+    partial void OnHourValueChanged(string value)
+    {
+        if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var hour)) return;
+        if (hour is < 0 or > 23) return;
+
+        HasTime = true;
+        TargetTime = TimeSpan.FromHours(hour);
+    }
 
     [ObservableProperty]
     private string _targetDateDisplay = string.Empty;

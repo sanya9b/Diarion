@@ -1708,6 +1708,10 @@ public static string ClearAllDataSuccessMsg {
         public static string CycleSymptomsLabel {
             get { return ResourceManager.GetString("CycleSymptomsLabel", resourceCulture) ?? "Symptoms"; }
         }
+
+        public static string PlannerUntimedLabel {
+            get { return ResourceManager.GetString("PlannerUntimedLabel", resourceCulture) ?? "No time set"; }
+        }
     }
 }
 
