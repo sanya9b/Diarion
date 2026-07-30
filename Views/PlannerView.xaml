@@ -11,7 +11,7 @@
     <ContentView.Resources>
         <!-- One row shape, used by both the untimed tray and the hour grid. -->
         <DataTemplate x:Key="TodoRow" x:DataType="viewmodels:TodoItemViewModel">
-            <Border Margin="0,1.5" StrokeShape="RoundRectangle 12" StrokeThickness="0"
+            <Border Margin="0,1" StrokeShape="RoundRectangle 10" StrokeThickness="0" MinimumHeightRequest="0"
                     BackgroundColor="{DynamicResource Theme_Snow_Black}">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding BindingContext.GoToTodoDetailsCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
@@ -103,13 +103,15 @@
                         </Label>
                     </Border>
 
-                    <ImageButton Grid.Column="4" WidthRequest="15" HeightRequest="15" VerticalOptions="Center" BackgroundColor="Transparent"
-                                 Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}"
-                                 CommandParameter="{Binding .}">
-                        <ImageButton.Source>
-                            <FontImageSource FontFamily="OpenSansRegular" Glyph="✕" Color="{DynamicResource Theme_Midnight_Dust}" Size="9" />
-                        </ImageButton.Source>
-                    </ImageButton>
+                    <!-- A tapped Label, not an ImageButton: the button carries a platform minimum height
+                         that HeightRequest does not override, and it was setting the whole row's height. -->
+                    <Grid Grid.Column="4" BackgroundColor="Transparent" Padding="4,0" VerticalOptions="Center">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
+                        </Grid.GestureRecognizers>
+                        <Label Text="✕" FontSize="10" InputTransparent="True" VerticalOptions="Center"
+                               TextColor="{DynamicResource Theme_Midnight_Dust}" />
+                    </Grid>
                 </Grid>
             </Border>
         </DataTemplate>
