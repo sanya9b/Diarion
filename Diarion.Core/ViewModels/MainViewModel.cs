@@ -294,7 +294,9 @@ public partial class MainViewModel : BaseViewModel
 
         if (!await _healthDataService.IsSupportedAsync())
         {
-            await _dialogService.ShowAlertAsync("Error", "Health sync is not supported on this device.", "OK");
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.AlertError,
+                Diarion.Resources.Localization.AppResources.HealthSyncUnsupported);
             return;
         }
 

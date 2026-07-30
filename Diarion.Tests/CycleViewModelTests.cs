@@ -26,8 +26,16 @@ public class CycleViewModelTests
         MarkedDates();
     }
 
-    private void MarkedDates(params DateTime[] dates) =>
+    /// <summary>
+    /// LoadAsync also reads the symptom log; an unstubbed Moq member returns null there and every
+    /// loading test would fault on it, so both defaults live together.
+    /// </summary>
+    private void MarkedDates(params DateTime[] dates)
+    {
         _cycleLogService.Setup(s => s.GetMarkedDatesAsync()).ReturnsAsync(dates.ToList());
+        _cycleLogService.Setup(s => s.GetLogsAsync())
+            .ReturnsAsync(dates.Select(d => new Diarion.Models.CycleLog { Date = d }).ToList());
+    }
 
     /// <summary>Period days for episodes starting the given number of days before today.</summary>
     private static DateTime[] Episodes(int length, params int[] startsDaysAgo) =>

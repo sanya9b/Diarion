@@ -1696,6 +1696,18 @@ public static string ClearAllDataSuccessMsg {
         public static string CategoryOther {
             get { return ResourceManager.GetString("CategoryOther", resourceCulture) ?? "Other"; }
         }
+
+        public static string HealthSyncUnsupported {
+            get { return ResourceManager.GetString("HealthSyncUnsupported", resourceCulture) ?? "Health sync is not available on this device yet."; }
+        }
+
+        public static string StreakHeldByGraceHint {
+            get { return ResourceManager.GetString("StreakHeldByGraceHint", resourceCulture) ?? "A forgiven day is holding this streak."; }
+        }
+
+        public static string CycleSymptomsLabel {
+            get { return ResourceManager.GetString("CycleSymptomsLabel", resourceCulture) ?? "Symptoms"; }
+        }
     }
 }
 

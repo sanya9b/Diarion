@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
@@ -21,6 +22,16 @@ public class CycleEpisodeItemViewModel
 
     /// <summary>Days to the next period's start, or empty for the most recent one.</summary>
     public string IntervalText { get; init; } = string.Empty;
+}
+
+/// <summary>One symptom chip. Carries its own selection flag because the page highlights with DataTriggers.</summary>
+public partial class SymptomToggleViewModel : ObservableObject
+{
+    public string Key { get; init; } = string.Empty;
+    public string Label { get; init; } = string.Empty;
+
+    [ObservableProperty]
+    private bool _isSelected;
 }
 
 public partial class CycleViewModel : BaseViewModel
@@ -90,6 +101,46 @@ public partial class CycleViewModel : BaseViewModel
 
         BuildEpisodeList(history);
         ApplyForecast(forecast);
+        await LoadSymptomsAsync();
+    }
+
+    // --- Symptom log ---
+
+    public ObservableCollection<SymptomToggleViewModel> SymptomToggles { get; } = new();
+
+    [ObservableProperty]
+    private DateTime _symptomDate = DateTime.Today;
+
+    partial void OnSymptomDateChanged(DateTime value) => _ = LoadSymptomsAsync();
+
+    private async Task LoadSymptomsAsync()
+    {
+        var day = SymptomDate.Date;
+        var logged = (await _cycleLogService.GetLogsAsync())
+            .FirstOrDefault(l => l.Date.Date == day)?.Symptoms ?? new List<string>();
+
+        SymptomToggles.Clear();
+        foreach (var key in CycleSymptoms.All)
+        {
+            SymptomToggles.Add(new SymptomToggleViewModel
+            {
+                Key = key,
+                Label = Diarion.Resources.Localization.AppResources.ResourceManager
+                            .GetString(key, Diarion.Resources.Localization.AppResources.Culture
+                                            ?? System.Globalization.CultureInfo.CurrentUICulture) ?? key,
+                IsSelected = logged.Contains(key)
+            });
+        }
+    }
+
+    [RelayCommand]
+    private async Task ToggleSymptomAsync(SymptomToggleViewModel? toggle)
+    {
+        if (toggle == null) return;
+
+        toggle.IsSelected = !toggle.IsSelected;
+        await _cycleLogService.SetSymptomsAsync(
+            SymptomDate, SymptomToggles.Where(t => t.IsSelected).Select(t => t.Key));
     }
 
     private void BuildEpisodeList(CycleHistory history)

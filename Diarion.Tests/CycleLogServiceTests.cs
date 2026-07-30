@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Diarion.Models;
 using Diarion.Services;
 using Diarion.Services.Database;
 using FluentAssertions;
@@ -110,5 +112,105 @@ public class CycleLogServiceTests : IDisposable
         await _service.AddEpisodeAsync(DateTime.Today.AddDays(-40), 2);
 
         (await _service.GetMarkedDatesAsync()).Should().BeInAscendingOrder();
+    }
+
+    // --- Symptom log (Phase B) ---
+
+    private static readonly DateTime Day = new(2026, 7, 10);
+
+    [Fact]
+    public async Task SetSymptomsAsync_OnAnUnloggedDay_DoesNotCreateAPeriodDay()
+    {
+        // The trap the whole feature turns on: symptom rows share the collection with period rows, and
+        // counted as periods they would invent episodes and drag every forecast along with them.
+        await _service.SetSymptomsAsync(Day, new[] { CycleSymptoms.Cramps });
+
+        (await _service.GetMarkedDatesAsync()).Should().BeEmpty();
+        (await _service.GetLogsAsync()).Should().ContainSingle()
+            .Which.IsSymptomOnly.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task SetSymptomsAsync_OnAPeriodDay_KeepsItAPeriodDay()
+    {
+        await _service.AddEpisodeAsync(Day, 3);
+
+        await _service.SetSymptomsAsync(Day, new[] { CycleSymptoms.Headache });
+
+        (await _service.GetMarkedDatesAsync()).Should().HaveCount(3);
+        (await _service.GetLogsAsync()).Single(l => l.Date.Date == Day)
+            .IsSymptomOnly.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task SetSymptomsAsync_ClearingTheLastSymptom_DropsASymptomOnlyRow()
+    {
+        await _service.SetSymptomsAsync(Day, new[] { CycleSymptoms.Acne });
+
+        await _service.SetSymptomsAsync(Day, Array.Empty<string>());
+
+        (await _service.GetLogsAsync()).Should().BeEmpty("a symptom-only row with no symptoms has no reason to exist");
+    }
+
+    [Fact]
+    public async Task SetSymptomsAsync_ClearingSymptomsOnAPeriodDay_KeepsTheDay()
+    {
+        await _service.AddEpisodeAsync(Day, 2);
+        await _service.SetSymptomsAsync(Day, new[] { CycleSymptoms.Fatigue });
+
+        await _service.SetSymptomsAsync(Day, Array.Empty<string>());
+
+        (await _service.GetMarkedDatesAsync()).Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task SetSymptomsAsync_ReplacesRatherThanAppends()
+    {
+        await _service.SetSymptomsAsync(Day, new[] { CycleSymptoms.Cramps, CycleSymptoms.Acne });
+
+        await _service.SetSymptomsAsync(Day, new[] { CycleSymptoms.Bloating });
+
+        (await _service.GetLogsAsync()).Single().Symptoms.Should().Equal(CycleSymptoms.Bloating);
+    }
+
+    [Fact]
+    public async Task RemoveEpisodeAsync_KeepsTheSymptomsRecordedOnThoseDays()
+    {
+        await _service.AddEpisodeAsync(Day, 3);
+        await _service.SetSymptomsAsync(Day.AddDays(1), new[] { CycleSymptoms.Cramps });
+
+        await _service.RemoveEpisodeAsync(Day);
+
+        // Un-marking a period is a statement about the period, not about how the user felt.
+        (await _service.GetMarkedDatesAsync()).Should().BeEmpty();
+        var remaining = (await _service.GetLogsAsync()).Should().ContainSingle().Subject;
+        remaining.Date.Date.Should().Be(Day.AddDays(1));
+        remaining.IsSymptomOnly.Should().BeTrue();
+        remaining.Symptoms.Should().Equal(CycleSymptoms.Cramps);
+    }
+
+    [Theory]
+    [InlineData("en")]
+    [InlineData("uk")]
+    public void EverySymptomKeyResolvesToALabel(string culture)
+    {
+        // These are looked up by string at runtime, so a missing one compiles cleanly and then renders
+        // its own key on screen — exactly how MonthLabel shipped. A grep cannot see them; this can.
+        var info = new System.Globalization.CultureInfo(culture);
+
+        foreach (var key in CycleSymptoms.All)
+        {
+            Diarion.Resources.Localization.AppResources.ResourceManager.GetString(key, info)
+                .Should().NotBeNullOrWhiteSpace($"{key} must have a {culture} label");
+        }
+    }
+
+    [Fact]
+    public void ASymptomFlagLeftUnwrittenMeansAPeriodDay()
+    {
+        // LiteDB leaves a field it has never seen at its CLR default, so rows written before this one
+        // existed read as false. The flag is phrased as the negative for exactly that reason: a bool
+        // named IsPeriodDay would have defaulted to false and un-marked the user's entire history.
+        new CycleLog().IsSymptomOnly.Should().BeFalse();
     }
 }

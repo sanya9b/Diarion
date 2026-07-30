@@ -23,10 +23,16 @@
                 <Border Grid.Column="1" IsVisible="{Binding IsStreakVisible}" VerticalOptions="Center"
                         StrokeThickness="1.5" Stroke="{DynamicResource Theme_Coral}"
                         BackgroundColor="Transparent" StrokeShape="RoundRectangle 18" Padding="12,6">
-                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center"
+                                           SemanticProperties.Description="{x:Static localization:AppResources.StreakHeldByGraceHint}">
                         <Label Text="🔥" FontSize="16" VerticalOptions="Center" />
                         <Label Text="{Binding CurrentStreak}" FontSize="15" FontAttributes="Bold"
                                TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                        <!-- A caveat mark, not a colour: the palette is not distinguishable by hue alone,
+                             and an unmarked number would imply an unbroken run. -->
+                        <Label Text="*" FontSize="15" FontAttributes="Bold" VerticalOptions="Start" Margin="-3,0,0,0"
+                               IsVisible="{Binding IsStreakHeldByGrace}"
+                               TextColor="{DynamicResource Theme_Amber}" />
                     </HorizontalStackLayout>
                 </Border>
             </Grid>

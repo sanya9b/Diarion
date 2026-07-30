@@ -58,6 +58,13 @@ public partial class StatisticsViewModel : BaseViewModel
 
     public bool IsStreakVisible => CurrentStreak > 0;
 
+    /// <summary>
+    /// The run only survives because a missed day was forgiven. Worth saying: an unmarked number implies
+    /// an unbroken run, and the quota is finite — the next miss ends it.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isStreakHeldByGrace;
+
     [ObservableProperty]
     private System.Collections.ObjectModel.ObservableCollection<TimeRangeItem> _timeRanges = new();
 
@@ -188,7 +195,9 @@ public partial class StatisticsViewModel : BaseViewModel
         
         try
         {
-            CurrentStreak = (await _diaryService.GetCurrentStreakAsync()).Length;
+            var streak = await _diaryService.GetCurrentStreakAsync();
+            CurrentStreak = streak.Length;
+            IsStreakHeldByGrace = streak.HeldByGrace;
             OnPropertyChanged(nameof(IsStreakVisible));
 
             int days = (int)(SelectedTimeRange?.Option ?? TimeRangeOption.Week);
