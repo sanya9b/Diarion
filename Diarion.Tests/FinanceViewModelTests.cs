@@ -26,11 +26,23 @@ public class FinanceViewModelTests
         mock.Setup(s => s.GetTransfersAsync()).ReturnsAsync(transfers ?? new List<Transfer>());
         mock.Setup(s => s.GetFinanceTransactionsAsync()).ReturnsAsync(new List<FinanceTransaction>());
         mock.Setup(s => s.GetBudgetsAsync()).ReturnsAsync(new List<Budget>());
+        mock.Setup(s => s.ApplyDuePostingsAsync(It.IsAny<DateTime>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new PostingResult());
         return mock;
     }
 
-    private static FinanceViewModel NewViewModel(Mock<IFinanceService> finance, IDialogService? dialog = null) =>
-        new(finance.Object, dialog ?? new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
+    private static FinanceViewModel NewViewModel(
+        Mock<IFinanceService> finance,
+        IDialogService? dialog = null,
+        UserProfile? profile = null)
+    {
+        var profileMock = new Mock<IProfileService>();
+        if (profile != null)
+        {
+            profileMock.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(profile);
+        }
+        return new FinanceViewModel(finance.Object, dialog ?? new Mock<IDialogService>().Object, profileMock.Object);
+    }
 
     [Fact]
     public async Task LoadAsync_WithSavedTransactions_CalculatesBalancesCorrectly()
@@ -60,7 +72,7 @@ public class FinanceViewModelTests
         await viewModel.LoadAsync();
 
         // Assert
-        viewModel.Transactions.Should().HaveCount(5);
+        viewModel.Feed.OfType<TransactionFeedItem>().Should().HaveCount(5);
         
         // Total balance = (1000 + 500) - (200 + 50.5 + 100) = 1500 - 350.5 = 1149.5
         viewModel.TotalBalance.Should().Be(1149.5m);
@@ -107,7 +119,7 @@ public class FinanceViewModelTests
         storedTransactions[0].Type.Should().Be(TransactionType.Expense);
         storedTransactions[0].Category.Should().Be("Groceries");
         
-        viewModel.Transactions.Should().HaveCount(1);
+        viewModel.Feed.OfType<TransactionFeedItem>().Should().HaveCount(1);
         viewModel.NewAmountText.Should().BeEmpty();
         viewModel.NewCategory.Should().BeEmpty();
         viewModel.IsAddTransactionVisible.Should().BeFalse();
@@ -354,14 +366,14 @@ public class FinanceViewModelTests
         viewModel.SelectAccountCommand.Execute(viewModel.Accounts.Single(a => a.Name == "Cash"));
 
         viewModel.IsAllAccountsSelected.Should().BeFalse();
-        viewModel.Transactions.Should().ContainSingle(t => t.Amount == 30m);
+        viewModel.Feed.OfType<TransactionFeedItem>().Should().ContainSingle(i => i.Model.Amount == 30m);
         viewModel.TotalBalance.Should().Be(70m);       // 100 opening − 30
         viewModel.MonthIncome.Should().Be(0m);
 
         viewModel.SelectAllAccountsCommand.Execute(null);
 
         viewModel.IsAllAccountsSelected.Should().BeTrue();
-        viewModel.Transactions.Should().HaveCount(2);
+        viewModel.Feed.OfType<TransactionFeedItem>().Should().HaveCount(2);
         viewModel.TotalBalance.Should().Be(320m);
     }
 
@@ -493,8 +505,7 @@ public class FinanceViewModelTests
         stored[0].ToAccountId.Should().Be(to.Id);
 
         viewModel.IsTransferFormVisible.Should().BeFalse();
-        viewModel.HasTransfers.Should().BeTrue();
-        viewModel.TransferItems.Single().FromName.Should().Be("Card");
+        viewModel.Feed.OfType<TransferFeedItem>().Single().FromName.Should().Be("Card");
 
         // Money only moved between accounts, so the aggregate balance is untouched.
         viewModel.TotalBalance.Should().Be(500m);
@@ -534,5 +545,264 @@ public class FinanceViewModelTests
 
         financeMock.Verify(s => s.SaveTransferAsync(It.IsAny<Transfer>()), Times.Never);
         viewModel.HasTransferError.Should().BeTrue();
+    }
+
+    // --- The unified feed and planned transactions ---
+
+    private static PendingOccurrence Pending(DateTime date, string category, Guid? accountId = null)
+    {
+        var rule = new RecurringTransaction
+        {
+            Type = TransactionType.Expense,
+            AccountId = accountId,
+            Amount = 8000m,
+            Category = category,
+            AutoPost = false,
+            Recurrence = new RecurrenceRule { Kind = RecurrenceKind.MonthlyByDay, DayOfMonth = date.Day }
+        };
+        return new PendingOccurrence { RuleId = rule.Id, Date = date, Rule = rule };
+    }
+
+    [Fact]
+    public async Task LoadAsync_AppliesDuePostingsBeforeReadingTransactions()
+    {
+        // Otherwise a freshly posted row would only surface the next time the page is opened.
+        var calls = new List<string>();
+        var financeMock = FinanceMock();
+        financeMock.Setup(s => s.ApplyDuePostingsAsync(It.IsAny<DateTime>(), It.IsAny<Guid?>()))
+                   .ReturnsAsync(new PostingResult())
+                   .Callback(() => calls.Add("post"));
+        financeMock.Setup(s => s.GetFinanceTransactionsAsync())
+                   .ReturnsAsync(new List<FinanceTransaction>())
+                   .Callback(() => calls.Add("read"));
+
+        await NewViewModel(financeMock).LoadAsync();
+
+        calls.Should().Equal("post", "read");
+    }
+
+    [Fact]
+    public async Task LoadAsync_WhenPostingThrows_StillLoadsTheRestOfThePage()
+    {
+        // LoadAsync runs after every mutation, so a planner fault must not blank the finance page.
+        var financeMock = FinanceMock(new List<Account> { new() { Name = "Cash", InitialBalance = 100m } });
+        financeMock.Setup(s => s.ApplyDuePostingsAsync(It.IsAny<DateTime>(), It.IsAny<Guid?>()))
+                   .ThrowsAsync(new InvalidOperationException("planner exploded"));
+
+        var viewModel = NewViewModel(financeMock);
+
+        await viewModel.Invoking(v => v.LoadAsync()).Should().NotThrowAsync();
+        viewModel.TotalBalance.Should().Be(100m);
+        viewModel.HasPending.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task LoadAsync_BuildsOneFeedSortedByDateDescendingAcrossAllThreeKinds()
+    {
+        var card = new Account { Name = "Card" };
+        var cash = new Account { Name = "Cash" };
+
+        var financeMock = FinanceMock(
+            new List<Account> { card, cash },
+            new List<Transfer>
+            {
+                new() { FromAccountId = card.Id, ToAccountId = cash.Id, Amount = 500m, Date = new DateTime(2026, 7, 10) }
+            });
+        financeMock.Setup(s => s.GetFinanceTransactionsAsync()).ReturnsAsync(new List<FinanceTransaction>
+        {
+            new() { Amount = 450m, Category = "Food", Date = new DateTime(2026, 7, 8), AccountId = card.Id }
+        });
+        financeMock.Setup(s => s.ApplyDuePostingsAsync(It.IsAny<DateTime>(), It.IsAny<Guid?>()))
+                   .ReturnsAsync(new PostingResult
+                   {
+                       Pending = new List<PendingOccurrence> { Pending(new DateTime(2026, 7, 12), "Rent") }
+                   });
+
+        var viewModel = NewViewModel(financeMock);
+        await viewModel.LoadAsync();
+
+        viewModel.Feed.Should().HaveCount(3);
+        viewModel.Feed.Select(i => i.Date).Should().BeInDescendingOrder();
+        viewModel.Feed[0].Should().BeOfType<PlannedFeedItem>();
+        viewModel.Feed[1].Should().BeOfType<TransferFeedItem>();
+        viewModel.Feed[2].Should().BeOfType<TransactionFeedItem>();
+        viewModel.HasPending.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task LoadAsync_PendingRowSortsAboveSettledRowsOnTheSameDay()
+    {
+        var day = new DateTime(2026, 7, 12);
+        var financeMock = FinanceMock();
+        financeMock.Setup(s => s.GetFinanceTransactionsAsync()).ReturnsAsync(new List<FinanceTransaction>
+        {
+            new() { Amount = 450m, Category = "Food", Date = day }
+        });
+        financeMock.Setup(s => s.ApplyDuePostingsAsync(It.IsAny<DateTime>(), It.IsAny<Guid?>()))
+                   .ReturnsAsync(new PostingResult
+                   {
+                       Pending = new List<PendingOccurrence> { Pending(day, "Rent") }
+                   });
+
+        var viewModel = NewViewModel(financeMock);
+        await viewModel.LoadAsync();
+
+        // Something needing an answer should not be buried under settled rows it shares a date with.
+        viewModel.Feed[0].Should().BeOfType<PlannedFeedItem>();
+    }
+
+    [Fact]
+    public async Task LoadAsync_WithAnAccountSelected_FiltersPlannedRowsToo()
+    {
+        var card = new Account { Name = "Card" };
+        var cash = new Account { Name = "Cash" };
+
+        var financeMock = FinanceMock(new List<Account> { card, cash });
+        financeMock.Setup(s => s.ApplyDuePostingsAsync(It.IsAny<DateTime>(), It.IsAny<Guid?>()))
+                   .ReturnsAsync(new PostingResult
+                   {
+                       Pending = new List<PendingOccurrence>
+                       {
+                           Pending(new DateTime(2026, 7, 12), "CardRent", card.Id),
+                           Pending(new DateTime(2026, 7, 13), "CashRent", cash.Id)
+                       }
+                   });
+
+        var viewModel = NewViewModel(financeMock);
+        await viewModel.LoadAsync();
+        viewModel.Feed.OfType<PlannedFeedItem>().Should().HaveCount(2);
+
+        viewModel.SelectAccountCommand.Execute(viewModel.Accounts.Single(a => a.Name == "Card"));
+
+        viewModel.Feed.OfType<PlannedFeedItem>().Should().ContainSingle()
+                 .Which.Category.Should().Be("CardRent");
+    }
+
+    [Fact]
+    public async Task LoadAsync_MarksTransactionsThatCameFromAPlan()
+    {
+        var financeMock = FinanceMock();
+        financeMock.Setup(s => s.GetFinanceTransactionsAsync()).ReturnsAsync(new List<FinanceTransaction>
+        {
+            new() { Amount = 8000m, Category = "Rent", Date = new DateTime(2026, 7, 1), RecurringTransactionId = Guid.NewGuid() },
+            new() { Amount = 450m, Category = "Food", Date = new DateTime(2026, 7, 2) }
+        });
+
+        var viewModel = NewViewModel(financeMock);
+        await viewModel.LoadAsync();
+
+        var items = viewModel.Feed.OfType<TransactionFeedItem>().ToList();
+        items.Single(i => i.Model.Category == "Rent").IsFromPlan.Should().BeTrue();
+        items.Single(i => i.Model.Category == "Food").IsFromPlan.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ConfirmPlanned_PostsTheOccurrenceAndReloads()
+    {
+        var occurrence = Pending(new DateTime(2026, 7, 12), "Rent");
+        var financeMock = FinanceMock();
+        financeMock.Setup(s => s.ApplyDuePostingsAsync(It.IsAny<DateTime>(), It.IsAny<Guid?>()))
+                   .ReturnsAsync(new PostingResult { Pending = new List<PendingOccurrence> { occurrence } });
+
+        var viewModel = NewViewModel(financeMock);
+        await viewModel.LoadAsync();
+
+        var item = viewModel.Feed.OfType<PlannedFeedItem>().Single();
+        await viewModel.ConfirmPlannedCommand.ExecuteAsync(item);
+
+        financeMock.Verify(s => s.ConfirmOccurrenceAsync(occurrence.RuleId, occurrence.Date, It.IsAny<Guid?>()), Times.Once);
+        financeMock.Verify(s => s.GetFinanceTransactionsAsync(), Times.Exactly(2)); // reloaded
+    }
+
+    [Fact]
+    public async Task SkipPlanned_DismissesTheOccurrenceWithoutPostingIt()
+    {
+        var occurrence = Pending(new DateTime(2026, 7, 12), "Rent");
+        var financeMock = FinanceMock();
+        financeMock.Setup(s => s.ApplyDuePostingsAsync(It.IsAny<DateTime>(), It.IsAny<Guid?>()))
+                   .ReturnsAsync(new PostingResult { Pending = new List<PendingOccurrence> { occurrence } });
+
+        var viewModel = NewViewModel(financeMock);
+        await viewModel.LoadAsync();
+
+        await viewModel.SkipPlannedCommand.ExecuteAsync(viewModel.Feed.OfType<PlannedFeedItem>().Single());
+
+        financeMock.Verify(s => s.SkipOccurrenceAsync(occurrence.RuleId, occurrence.Date), Times.Once);
+        financeMock.Verify(s => s.ConfirmOccurrenceAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<Guid?>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task SaveRecurringRule_WithATodayStart_DoesNotBackfill()
+    {
+        // "From now on" is the normal reading of creating a plan today; anything already spent this month
+        // is manual data entry, not something to guess at.
+        RecurringTransaction? saved = null;
+        var financeMock = FinanceMock(new List<Account> { new() { Name = "Cash" } });
+        financeMock.Setup(s => s.SaveRecurringTransactionAsync(It.IsAny<RecurringTransaction>()))
+                   .Returns<RecurringTransaction>(r => { saved = r; return Task.CompletedTask; });
+
+        var viewModel = NewViewModel(financeMock);
+        await viewModel.LoadAsync();
+
+        viewModel.ShowRecurringFormCommand.Execute(null);
+        viewModel.NewRecurringAmountText = "8000";
+        viewModel.NewRecurringCategory = "Rent";
+        await viewModel.SaveRecurringRuleCommand.ExecuteAsync(null);
+
+        saved.Should().NotBeNull();
+        saved!.Amount.Should().Be(8000m);
+        saved.LastPostedThrough.Date.Should().Be(DateTime.Today.AddDays(-1));
+        saved.Recurrence.Anchor.Date.Should().Be(DateTime.Today);
+        viewModel.IsRecurringFormVisible.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task SaveRecurringRule_WithAPastStart_BackfillsFromThatDay()
+    {
+        RecurringTransaction? saved = null;
+        var financeMock = FinanceMock(new List<Account> { new() { Name = "Cash" } });
+        financeMock.Setup(s => s.SaveRecurringTransactionAsync(It.IsAny<RecurringTransaction>()))
+                   .Returns<RecurringTransaction>(r => { saved = r; return Task.CompletedTask; });
+
+        var viewModel = NewViewModel(financeMock);
+        await viewModel.LoadAsync();
+
+        var start = DateTime.Today.AddDays(-40);
+        viewModel.ShowRecurringFormCommand.Execute(null);
+        viewModel.NewRecurringAmountText = "8000";
+        viewModel.NewRecurringStartDate = start;
+        await viewModel.SaveRecurringRuleCommand.ExecuteAsync(null);
+
+        // Deliberately chosen in the past, so the watermark sits before it and the backfill runs.
+        saved!.LastPostedThrough.Date.Should().Be(start.AddDays(-1));
+    }
+
+    [Fact]
+    public async Task LoadAsync_WithPlannedTransactionsDisabled_PostsNothing()
+    {
+        // The toggle has to stop the write, not just hide the button — that is the whole point of it.
+        var financeMock = FinanceMock();
+        var viewModel = NewViewModel(financeMock, profile: new UserProfile { IsPlannedTransactionsEnabled = false });
+
+        await viewModel.LoadAsync();
+
+        financeMock.Verify(s => s.ApplyDuePostingsAsync(It.IsAny<DateTime>(), It.IsAny<Guid?>()), Times.Never);
+        viewModel.ShowPlanned.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task SaveRecurringRule_WithAnUnparseableAmount_IsRejected()
+    {
+        var financeMock = FinanceMock(new List<Account> { new() { Name = "Cash" } });
+        var viewModel = NewViewModel(financeMock);
+        await viewModel.LoadAsync();
+
+        viewModel.ShowRecurringFormCommand.Execute(null);
+        viewModel.NewRecurringAmountText = "not a number";
+        await viewModel.SaveRecurringRuleCommand.ExecuteAsync(null);
+
+        financeMock.Verify(s => s.SaveRecurringTransactionAsync(It.IsAny<RecurringTransaction>()), Times.Never);
+        viewModel.HasRecurringError.Should().BeTrue();
+        viewModel.IsRecurringFormVisible.Should().BeTrue();
     }
 }

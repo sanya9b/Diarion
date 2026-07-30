@@ -36,11 +36,11 @@
 
 | Стан | Фіча | Конкуренти | Інженерна нотатка |
 |------|------|-----------|-------------------|
-| `[x]` | Гнучкі графіки звичок + habit-strength + heatmap | Loop, HabitKit, Habitify | `Schedule` value-object у `HabitDefinition`, `TargetCount`; `Controls/ContributionGrid` |
-| `[x]` | Нагадування per-habit | Streaks, Way of Life | `ReminderTimes` у `HabitDefinition` → `INotificationService` |
+| `[x]` | Гнучкі графіки звичок + habit-strength + heatmap | Loop, HabitKit, Habitify | Спільний `RecurrenceRule` у `HabitDefinition.Schedule` + окрема квота `CompletionTarget`; `Controls/ContributionGrid` |
+| `[x]` | Нагадування per-habit | Streaks, Way of Life | `ReminderTime` (одне, не список) у `HabitDefinition` → `INotificationService` |
 | `[x]` | Quit-tracker: money-saved, live-годинник, milestones, лог зривів | I Am Sober, Quitzilla, QuitNic | `CostPerUnit/UnitsPerDay`, `List<RelapseEvent>`, milestone-рушій |
 | `[x]` | Нотатки: backlinks `[[…]]`, теги, full-text пошук, quick-capture inbox | Obsidian, Notion, Amplenote, Todoist | `links`/`inbox` колекції LiteDB, share-target, глобальний екран пошуку |
-| `[~]` | **Фінанси: бюджети, рахунки, планові транзакції, звіти** | Money Manager, Wallet, Spendee | див. розбивку нижче |
+| `[~]` | **Фінанси: бюджети, рахунки, планові транзакції, звіти** | Money Manager, Wallet, Spendee | Лишились тільки звіти (Phase D); див. розбивку нижче |
 | `[x]` | Керовані промпти + CBT + вечірній ритуал вдячності + власні питання | Stoic, Reflectly, Finch, Intellect | Колекція `guided_prompts` (40 вбудованих засіяно з .resx UK/EN + користувацькі) + чистий `PromptSelector` за валентністю настрою; `Controls/GuidedPromptSection`, `Views/PromptLibraryPage` |
 | `[x]` | М'яка гейміфікація (прощаючі streaks) + Year in Pixels | Daylio, Finch | Year in Pixels (`Controls/YearInPixelsView`); один спільний walker `StreakWalker` під щоденником і звичками, квота поблажок на забіг у `UserProfile` |
 | `[~]` | Адаптивний прогноз циклу + лог симптомів | Clue, Flo, Natural Cycles | Фаза A готова (див. розділ «Цикл» нижче); лог симптомів — Фаза B, не починалась |
@@ -54,7 +54,18 @@
 
 - [x] **Phase A — бюджети.** Місячні ліміти по категоріях, віджети прогресу, деталізація категорії, тумблер у налаштуваннях. `Budget`, `BudgetCalculator`.
 - [x] **Phase B — рахунки.** `Account` + міграція `M003`, смуга-фільтр рахунків, форма створення/редагування з вибором іконки й кольору, архівація, видалення з вибором цільового рахунку, перекази між рахунками (`Transfer` — окрема колекція, не `TransactionType`), облік рахунків у CSV/JSON-експорті.
-- [ ] **Phase C — планові транзакції.** `RecurringTransaction` + RRULE-рушій (спільний із планером).
+- [x] **Phase C — планові транзакції.** `RecurringTransaction` + спільний `RecurrenceRule` (Daily / Weekly /
+  IntervalDays / MonthlyByDay) — свій, не Ical.Net: уся `Diarion.Core/Services` це чисті калькулятори на
+  `DateTime`, а `Plugin.LocalNotification` однаково вміє лише Daily/Weekly. Правило матеріалізує справжні
+  `FinanceTransaction`, тож бюджети, баланси, статистика й CSV лишились без змін. Автопроведення з тумблером
+  на правилі; три незалежні захисти від подвійного проведення (напіввідкрите вікно, watermark «оброблено»,
+  дедуп за `(правило, дата)` з наявних рядків). Стрічка обʼєднана через `DataTemplateSelector`.
+  - **Свідомий компроміс:** кап добору 400 днів **назавжди** пропускає давніші спрацювання, бо watermark
+    після цього стрибає на сьогодні. Обмежено й тихо краще, ніж необмежено й руйнівно, але це компроміс.
+  - `MonthlyByDay` клампиться вниз (31-ше → 28 лютого), а не пропускає короткий місяць як RFC 5545:
+    місяць без оренди — це діра в бюджеті.
+  - Видалення правила лишає `RecurringTransactionId` на проведених рядках висіти. Занулення втратило б
+    походження і вимкнуло б третій захист, якби ідентичне правило створили наново.
 - [ ] **Phase D — звіти.** Динаміка по місяцях, порівняння періодів, розріз по рахунках.
 
 ---
@@ -111,7 +122,7 @@
 ## Технічний борг і відомі обмеження
 
 - Статистика (`StatisticsService.GetFinanceStatisticsAsync`) агрегує по всіх рахунках. Фільтр по рахунку не додано свідомо — на сторінці статистики немає селектора рахунку, тож параметр був би мертвим кодом. Додати разом із Phase D.
-- Перекази рендеряться окремою секцією над стрічкою транзакцій: `CollectionView.ItemTemplate` у `FinancePage.xaml` жорстко типізований під `FinanceTransaction`. Об'єднати стрічку — через `DataTemplateSelector`, коли з'являться планові транзакції (Phase C).
+- `Transfer.Date` єдина фінансова дата, не зрізана до дня (на відміну від `FinanceTransaction.Date`). Стрічка зрізає її в білдері; правити модель варто окремо, з міграцією.
 - Тести виконуються послідовно: паралелізацію xUnit вимкнено через гонки глобального маппера LiteDB.
 - `DiaryEntry.CycleDay` — похідне write-only поле: його пише лише `MainViewModel`, не читає ніхто, а після появи `cycle_logs` воно ще й відновлюване з логу. Лишили навмисно, бо його запис прикриває регресійний тест автозбереження; прибирати треба разом із перепискою того тесту.
 - Графік «настрій за годинами» зважує по спостереженнях, а не по днях (на відміну від донату). Приглушення тепер рахує `DayCount` — різні календарні дні, а не спостереження, — тож година, заповнена п'ять разів за один день, читається як вузька вибірка, якою вона і є.
