@@ -231,4 +231,154 @@ public class MigrationRunnerTests
 
         db.GetCollection<CycleLog>(DatabaseConstants.CycleLogsCollection).Count().Should().Be(0);
     }
+
+    // --- M006: splitting the habit schedule into a recurrence rule and a quota ---
+
+    /// <summary>
+    /// Writes a habit the way the pre-M006 model did: a Schedule sub-document with a Type discriminator.
+    /// Built by hand rather than through the typed model, because the old model no longer exists and its
+    /// enum names are exactly what the migration has to translate.
+    /// </summary>
+    private static void InsertLegacyHabit(LiteDatabase db, BsonValue type, int timesPerWeek = 3, BsonArray? daysOfWeek = null)
+    {
+        db.GetCollection(DatabaseConstants.HabitDefinitionsCollection).Insert(new BsonDocument
+        {
+            ["_id"] = Guid.NewGuid(),
+            ["Name"] = "Legacy",
+            ["ResourceKey"] = "",
+            ["Order"] = 0,
+            ["CreatedAt"] = new DateTime(2026, 1, 1),
+            ["Schedule"] = new BsonDocument
+            {
+                ["Type"] = type,
+                ["DaysOfWeek"] = daysOfWeek ?? new BsonArray(),
+                ["TimesPerWeek"] = timesPerWeek
+            }
+        });
+    }
+
+    private static HabitDefinition ReadOnlyHabit(LiteDatabase db)
+        => db.GetCollection<HabitDefinition>(DatabaseConstants.HabitDefinitionsCollection).FindAll().Single();
+
+    [Fact]
+    public void Run_MigratedHabit_DeserializesIntoTheNewModel()
+    {
+        // The enum is stored by name, and "SpecificDays" is not a RecurrenceKind. Without the migration
+        // this read throws, which would be a launch crash for anyone who ever picked a non-daily schedule.
+        using var db = new LiteDatabase(new MemoryStream());
+        InsertLegacyHabit(db, "SpecificDays", daysOfWeek: new BsonArray { 1, 3 });
+
+        MigrationRunner.Run(db);
+
+        var act = () => ReadOnlyHabit(db);
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void Run_MigratesSpecificDaysScheduleToAWeeklyRecurrence()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        InsertLegacyHabit(db, "SpecificDays", daysOfWeek: new BsonArray { 1, 3 });
+
+        MigrationRunner.Run(db);
+
+        var habit = ReadOnlyHabit(db);
+        habit.Schedule.Kind.Should().Be(RecurrenceKind.Weekly);
+        habit.Schedule.DaysOfWeek.Should().Equal(1, 3);
+        habit.Target.Should().BeNull();
+    }
+
+    [Fact]
+    public void Run_MigratesTimesPerWeekScheduleToADailyRecurrencePlusAQuota()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        InsertLegacyHabit(db, "TimesPerWeek", timesPerWeek: 4);
+
+        MigrationRunner.Run(db);
+
+        var habit = ReadOnlyHabit(db);
+        // The old IsScheduledOn answered true on every day for a quota, so Daily preserves the behaviour.
+        habit.Schedule.Kind.Should().Be(RecurrenceKind.Daily);
+        habit.Target.Should().NotBeNull();
+        habit.Target!.TimesPerWeek.Should().Be(4);
+    }
+
+    [Fact]
+    public void Run_LeavesADailyScheduleAsDaily()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        InsertLegacyHabit(db, "Daily");
+
+        MigrationRunner.Run(db);
+
+        var habit = ReadOnlyHabit(db);
+        habit.Schedule.Kind.Should().Be(RecurrenceKind.Daily);
+        habit.Target.Should().BeNull();
+    }
+
+    [Fact]
+    public void Run_MigratedHabitKeepsNoAnchor_SoHistoricalDaysStillCount()
+    {
+        // Seeding the anchor from CreatedAt would look tidy and would silently change the answer for every
+        // date before the habit existed — which is exactly what strength and streak walk over.
+        using var db = new LiteDatabase(new MemoryStream());
+        InsertLegacyHabit(db, "Daily");
+
+        MigrationRunner.Run(db);
+
+        var habit = ReadOnlyHabit(db);
+        habit.Schedule.Anchor.Should().Be(DateTime.MinValue);
+        habit.IsScheduledOn(new DateTime(2020, 5, 17)).Should().BeTrue();
+    }
+
+    [Fact]
+    public void Run_HabitStoredWithAnIntegerEnum_MigratesToo()
+    {
+        // Not how the default mapper writes it, but guessing wrong would turn a quota habit into an
+        // every-Nth-day one with nothing on screen to show for it.
+        using var db = new LiteDatabase(new MemoryStream());
+        InsertLegacyHabit(db, 2, timesPerWeek: 5); // 2 == TimesPerWeek
+
+        MigrationRunner.Run(db);
+
+        var habit = ReadOnlyHabit(db);
+        habit.Schedule.Kind.Should().Be(RecurrenceKind.Daily);
+        habit.Target!.TimesPerWeek.Should().Be(5);
+    }
+
+    [Fact]
+    public void Run_HabitWithNoStoredSchedule_IsUntouched()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        db.GetCollection(DatabaseConstants.HabitDefinitionsCollection).Insert(new BsonDocument
+        {
+            ["_id"] = Guid.NewGuid(),
+            ["Name"] = "Scheduleless",
+            ["CreatedAt"] = new DateTime(2026, 1, 1)
+        });
+
+        MigrationRunner.Run(db);
+
+        var habit = ReadOnlyHabit(db);
+        habit.Schedule.Kind.Should().Be(RecurrenceKind.Daily);
+        habit.Target.Should().BeNull();
+    }
+
+    [Fact]
+    public void Run_HabitScheduleSplit_IsIdempotent()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        InsertLegacyHabit(db, "TimesPerWeek", timesPerWeek: 4);
+
+        MigrationRunner.Run(db);
+        // A second pass has to be a no-op even though the runner would skip it on version alone.
+        new M006_SplitHabitScheduleIntoRecurrence().Up(db);
+
+        var habit = ReadOnlyHabit(db);
+        habit.Schedule.Kind.Should().Be(RecurrenceKind.Daily);
+        habit.Target!.TimesPerWeek.Should().Be(4);
+
+        var raw = db.GetCollection(DatabaseConstants.HabitDefinitionsCollection).FindAll().Single();
+        raw["Schedule"].AsDocument.ContainsKey("Type").Should().BeFalse();
+    }
 }

@@ -73,7 +73,8 @@ public class HabitService : IHabitService
                     HabitId = d.Id,
                     Name = name,
                     CreatedAt = d.CreatedAt.Date,
-                    Schedule = d.Schedule ?? new HabitSchedule(),
+                    Schedule = d.Schedule ?? new RecurrenceRule(),
+                    Target = d.Target,
                     CompletedDates = new HashSet<DateTime>()
                 };
                 byId[d.Id] = hist;

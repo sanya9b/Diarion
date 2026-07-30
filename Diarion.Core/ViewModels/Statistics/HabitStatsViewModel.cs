@@ -65,11 +65,11 @@ public partial class HabitStatsViewModel : ObservableObject
             foreach (var h in histories)
             {
                 var from = h.CreatedAt > strengthStart ? h.CreatedAt : strengthStart;
-                var strength = HabitStrengthCalculator.Strength(h.CompletedDates, from, today, h.Schedule);
-                var streak = HabitStrengthCalculator.CurrentStreak(h.CompletedDates, today, h.Schedule, grace);
+                var strength = HabitStrengthCalculator.Strength(h.CompletedDates, from, today, h.Schedule, h.Target);
+                var streak = HabitStrengthCalculator.CurrentStreak(h.CompletedDates, today, h.Schedule, h.Target, grace);
 
-                // A TimesPerWeek streak counts weeks, not days — mark it so "🔥 5" isn't misread.
-                var isWeekly = h.Schedule?.Type == Diarion.Models.HabitScheduleType.TimesPerWeek;
+                // A quota streak counts weeks, not days — mark it so "🔥 5" isn't misread.
+                var isWeekly = h.Target != null;
                 var streakText = isWeekly
                     ? streak.ToString(CultureInfo.CurrentCulture) + " " + Diarion.Resources.Localization.AppResources.HabitStreakWeeksSuffix
                     : streak.ToString(CultureInfo.CurrentCulture);
@@ -77,7 +77,7 @@ public partial class HabitStatsViewModel : ObservableObject
                 Habits.Add(new HabitCardViewModel
                 {
                     Name = h.Name,
-                    ScheduleText = HabitScheduleFormatter.Describe(h.Schedule),
+                    ScheduleText = HabitScheduleFormatter.Describe(h.Schedule, h.Target),
                     StrengthText = strength.ToString("0", CultureInfo.CurrentCulture) + "%",
                     StreakText = streakText,
                     CompletedDates = h.CompletedDates.ToList(),

@@ -33,7 +33,8 @@ public class HabitEditorViewModelTests
 
         _habitService.Verify(s => s.AddHabitDefinitionAsync(It.Is<HabitDefinition>(h =>
             h.Name == "Gym" &&
-            h.Schedule.Type == HabitScheduleType.SpecificDays &&
+            h.Schedule.Kind == RecurrenceKind.Weekly &&
+            h.Target == null &&
             h.Schedule.DaysOfWeek.Contains(1) &&
             h.Schedule.DaysOfWeek.Contains(3))), Times.Once);
         _navigation.Verify(n => n.NavigateBackAsync(), Times.Once);
@@ -63,9 +64,11 @@ public class HabitEditorViewModelTests
 
         await vm.SaveCommand.ExecuteAsync(null);
 
+        // A quota habit is open on every day; the "how many" lives on the target, not the schedule.
         _habitService.Verify(s => s.AddHabitDefinitionAsync(It.Is<HabitDefinition>(h =>
-            h.Schedule.Type == HabitScheduleType.TimesPerWeek &&
-            h.Schedule.TimesPerWeek == 4)), Times.Once);
+            h.Schedule.Kind == RecurrenceKind.Daily &&
+            h.Target != null &&
+            h.Target.TimesPerWeek == 4)), Times.Once);
         _navigation.Verify(n => n.NavigateBackAsync(), Times.Once);
     }
 

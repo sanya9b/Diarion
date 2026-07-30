@@ -112,7 +112,7 @@ public class StreakWalkerTests
         var schedule = MonWedFri();
         var done = new[] { Today, Today.AddDays(-2) };
 
-        StreakWalker.Walk(done, Today, 0, schedule.IsScheduledOn).Length.Should().Be(2);
+        StreakWalker.Walk(done, Today, 0, schedule.IsOccurrenceOn).Length.Should().Be(2);
     }
 
     [Fact]
@@ -122,15 +122,15 @@ public class StreakWalkerTests
         var schedule = MonWedFri();
         var done = new[] { Today, Today.AddDays(-5) }; // Wed and the previous Friday
 
-        var result = StreakWalker.Walk(done, Today, 1, schedule.IsScheduledOn);
+        var result = StreakWalker.Walk(done, Today, 1, schedule.IsOccurrenceOn);
 
         result.Length.Should().Be(2);
         result.GraceUsed.Should().Be(1);
     }
 
-    private static HabitSchedule MonWedFri() => new()
+    private static RecurrenceRule MonWedFri() => new()
     {
-        Type = HabitScheduleType.SpecificDays,
+        Kind = RecurrenceKind.Weekly,
         DaysOfWeek = new List<int> { (int)DayOfWeek.Monday, (int)DayOfWeek.Wednesday, (int)DayOfWeek.Friday }
     };
 }
