@@ -1062,7 +1062,7 @@
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetRecurringKindCommand}" CommandParameter="MonthlyByDay" />
                             </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=MonthLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Label Text="{localization:Translate Key=RecurrenceMonthlyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Border>
                         <Border Grid.Column="1" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="10,8">
                             <Border.Triggers>
@@ -1073,7 +1073,7 @@
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetRecurringKindCommand}" CommandParameter="Weekly" />
                             </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=HabitScheduleTimesPerWeek}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Label Text="{localization:Translate Key=RecurrenceWeeklyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Border>
                         <Border Grid.Column="2" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="10,8">
                             <Border.Triggers>
@@ -1084,7 +1084,7 @@
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetRecurringKindCommand}" CommandParameter="Daily" />
                             </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=HabitScheduleDaily}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Label Text="{localization:Translate Key=RecurrenceDailyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Border>
                     </Grid>
 

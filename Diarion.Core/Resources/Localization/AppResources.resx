@@ -259,6 +259,15 @@
   <data name="SettingsPlannedToggle" xml:space="preserve">
     <value>Planned transactions</value>
   </data>
+  <data name="RecurrenceMonthlyLabel" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="RecurrenceWeeklyLabel" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="RecurrenceDailyLabel" xml:space="preserve">
+    <value>Daily</value>
+  </data>
   <data name="HabitStreakWeeksSuffix" xml:space="preserve">
     <value>w</value>
   </data>

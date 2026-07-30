@@ -895,6 +895,24 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string RecurrenceMonthlyLabel {
+            get {
+                return ResourceManager.GetString("RecurrenceMonthlyLabel", resourceCulture) ?? "Monthly";
+            }
+        }
+
+        public static string RecurrenceWeeklyLabel {
+            get {
+                return ResourceManager.GetString("RecurrenceWeeklyLabel", resourceCulture) ?? "Weekly";
+            }
+        }
+
+        public static string RecurrenceDailyLabel {
+            get {
+                return ResourceManager.GetString("RecurrenceDailyLabel", resourceCulture) ?? "Daily";
+            }
+        }
+
         public static string HabitStreakWeeksSuffix {
             get {
                 return ResourceManager.GetString("HabitStreakWeeksSuffix", resourceCulture);

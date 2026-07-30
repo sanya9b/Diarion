@@ -259,6 +259,15 @@
   <data name="SettingsPlannedToggle" xml:space="preserve">
     <value>Планові транзакції</value>
   </data>
+  <data name="RecurrenceMonthlyLabel" xml:space="preserve">
+    <value>Щомісяця</value>
+  </data>
+  <data name="RecurrenceWeeklyLabel" xml:space="preserve">
+    <value>Щотижня</value>
+  </data>
+  <data name="RecurrenceDailyLabel" xml:space="preserve">
+    <value>Щодня</value>
+  </data>
   <data name="HabitStreakWeeksSuffix" xml:space="preserve">
     <value>тиж</value>
   </data>
