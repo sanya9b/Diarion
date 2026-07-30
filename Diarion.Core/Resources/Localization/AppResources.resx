@@ -226,6 +226,48 @@
   <data name="RecurrenceMonthlyOnDayFormat" xml:space="preserve">
     <value>Monthly on day {0}</value>
   </data>
+  <data name="PlannedTransactionsLabel" xml:space="preserve">
+    <value>Planned</value>
+  </data>
+  <data name="AddPlannedButton" xml:space="preserve">
+    <value>+ Planned</value>
+  </data>
+  <data name="PlannedFormTitle" xml:space="preserve">
+    <value>Planned transaction</value>
+  </data>
+  <data name="PlannedRepeatLabel" xml:space="preserve">
+    <value>Repeats</value>
+  </data>
+  <data name="PlannedStartsOnLabel" xml:space="preserve">
+    <value>Starts on</value>
+  </data>
+  <data name="PlannedAutoPostLabel" xml:space="preserve">
+    <value>Add automatically</value>
+  </data>
+  <data name="PlannedAutoPostHint" xml:space="preserve">
+    <value>Off: each one waits for your confirmation.</value>
+  </data>
+  <data name="PlannedConfirmButton" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="PlannedSkipButton" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="DeletePlannedConfirm" xml:space="preserve">
+    <value>Delete this plan? Transactions it already added stay.</value>
+  </data>
+  <data name="SettingsPlannedToggle" xml:space="preserve">
+    <value>Planned transactions</value>
+  </data>
+  <data name="RecurrenceMonthlyLabel" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="RecurrenceWeeklyLabel" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="RecurrenceDailyLabel" xml:space="preserve">
+    <value>Daily</value>
+  </data>
   <data name="HabitStreakWeeksSuffix" xml:space="preserve">
     <value>w</value>
   </data>

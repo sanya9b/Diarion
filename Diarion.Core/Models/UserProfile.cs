@@ -40,6 +40,10 @@ public partial class UserProfile : ObservableObject
     // Фінанси: показувати бюджети (за замовчуванням увімкнено)
     [ObservableProperty] private bool _isBudgetsEnabled = true;
 
+    // Фінанси: планові транзакції. Увімкнено, бо без створеного правила фіча не робить нічого;
+    // тумблер потрібен, щоб її можна було зупинити, не видаляючи правил.
+    [ObservableProperty] private bool _isPlannedTransactionsEnabled = true;
+
     // Менструальний календар
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsCycleTrackingActive))]

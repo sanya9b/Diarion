@@ -226,6 +226,48 @@
   <data name="RecurrenceMonthlyOnDayFormat" xml:space="preserve">
     <value>Щомісяця {0}-го</value>
   </data>
+  <data name="PlannedTransactionsLabel" xml:space="preserve">
+    <value>Заплановані</value>
+  </data>
+  <data name="AddPlannedButton" xml:space="preserve">
+    <value>+ Планова</value>
+  </data>
+  <data name="PlannedFormTitle" xml:space="preserve">
+    <value>Планова транзакція</value>
+  </data>
+  <data name="PlannedRepeatLabel" xml:space="preserve">
+    <value>Повторення</value>
+  </data>
+  <data name="PlannedStartsOnLabel" xml:space="preserve">
+    <value>Початок</value>
+  </data>
+  <data name="PlannedAutoPostLabel" xml:space="preserve">
+    <value>Додавати автоматично</value>
+  </data>
+  <data name="PlannedAutoPostHint" xml:space="preserve">
+    <value>Вимкнено: кожна чекатиме вашого підтвердження.</value>
+  </data>
+  <data name="PlannedConfirmButton" xml:space="preserve">
+    <value>Підтвердити</value>
+  </data>
+  <data name="PlannedSkipButton" xml:space="preserve">
+    <value>Пропустити</value>
+  </data>
+  <data name="DeletePlannedConfirm" xml:space="preserve">
+    <value>Видалити цей план? Уже додані транзакції лишаться.</value>
+  </data>
+  <data name="SettingsPlannedToggle" xml:space="preserve">
+    <value>Планові транзакції</value>
+  </data>
+  <data name="RecurrenceMonthlyLabel" xml:space="preserve">
+    <value>Щомісяця</value>
+  </data>
+  <data name="RecurrenceWeeklyLabel" xml:space="preserve">
+    <value>Щотижня</value>
+  </data>
+  <data name="RecurrenceDailyLabel" xml:space="preserve">
+    <value>Щодня</value>
+  </data>
   <data name="HabitStreakWeeksSuffix" xml:space="preserve">
     <value>тиж</value>
   </data>

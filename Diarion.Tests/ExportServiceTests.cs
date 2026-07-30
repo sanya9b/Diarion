@@ -51,6 +51,32 @@ public class ExportServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Json_IncludesRecurringTransactions()
+    {
+        // Absent from the whitelist, rules would silently drop out of the user's portable copy.
+        _dbContext.GetCollection<RecurringTransaction>(DatabaseConstants.RecurringTransactionsCollection)
+            .Insert(new RecurringTransaction { Amount = 8000m, Category = "RentRule" });
+
+        var json = await _service.BuildAsync(ExportFormat.Json);
+
+        json.Should().Contain("\"finance_recurring\"");
+        json.Should().Contain("RentRule");
+    }
+
+    [Fact]
+    public async Task Csv_LeavesRecurringRulesOut()
+    {
+        // Posted rows are already in the transactions block; a block of rules would be a table of things
+        // that have not happened, in a file people sum in a spreadsheet.
+        _dbContext.GetCollection<RecurringTransaction>(DatabaseConstants.RecurringTransactionsCollection)
+            .Insert(new RecurringTransaction { Amount = 8000m, Category = "RentRule" });
+
+        var csv = await _service.BuildAsync(ExportFormat.Csv);
+
+        csv.Should().NotContain("RentRule");
+    }
+
+    [Fact]
     public async Task Csv_HasHeaderAndQuotesFieldsWithCommas()
     {
         var csv = await _service.BuildAsync(ExportFormat.Csv);

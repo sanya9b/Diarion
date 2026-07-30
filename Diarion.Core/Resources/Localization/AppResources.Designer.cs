@@ -829,6 +829,90 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string PlannedTransactionsLabel {
+            get {
+                return ResourceManager.GetString("PlannedTransactionsLabel", resourceCulture) ?? "Planned";
+            }
+        }
+
+        public static string AddPlannedButton {
+            get {
+                return ResourceManager.GetString("AddPlannedButton", resourceCulture) ?? "+ Planned";
+            }
+        }
+
+        public static string PlannedFormTitle {
+            get {
+                return ResourceManager.GetString("PlannedFormTitle", resourceCulture) ?? "Planned transaction";
+            }
+        }
+
+        public static string PlannedRepeatLabel {
+            get {
+                return ResourceManager.GetString("PlannedRepeatLabel", resourceCulture) ?? "Repeats";
+            }
+        }
+
+        public static string PlannedStartsOnLabel {
+            get {
+                return ResourceManager.GetString("PlannedStartsOnLabel", resourceCulture) ?? "Starts on";
+            }
+        }
+
+        public static string PlannedAutoPostLabel {
+            get {
+                return ResourceManager.GetString("PlannedAutoPostLabel", resourceCulture) ?? "Add automatically";
+            }
+        }
+
+        public static string PlannedAutoPostHint {
+            get {
+                return ResourceManager.GetString("PlannedAutoPostHint", resourceCulture) ?? "Off: each one waits for your confirmation.";
+            }
+        }
+
+        public static string PlannedConfirmButton {
+            get {
+                return ResourceManager.GetString("PlannedConfirmButton", resourceCulture) ?? "Confirm";
+            }
+        }
+
+        public static string PlannedSkipButton {
+            get {
+                return ResourceManager.GetString("PlannedSkipButton", resourceCulture) ?? "Skip";
+            }
+        }
+
+        public static string DeletePlannedConfirm {
+            get {
+                return ResourceManager.GetString("DeletePlannedConfirm", resourceCulture) ?? "Delete this plan? Transactions it already added stay.";
+            }
+        }
+
+        public static string SettingsPlannedToggle {
+            get {
+                return ResourceManager.GetString("SettingsPlannedToggle", resourceCulture) ?? "Planned transactions";
+            }
+        }
+
+        public static string RecurrenceMonthlyLabel {
+            get {
+                return ResourceManager.GetString("RecurrenceMonthlyLabel", resourceCulture) ?? "Monthly";
+            }
+        }
+
+        public static string RecurrenceWeeklyLabel {
+            get {
+                return ResourceManager.GetString("RecurrenceWeeklyLabel", resourceCulture) ?? "Weekly";
+            }
+        }
+
+        public static string RecurrenceDailyLabel {
+            get {
+                return ResourceManager.GetString("RecurrenceDailyLabel", resourceCulture) ?? "Daily";
+            }
+        }
+
         public static string HabitStreakWeeksSuffix {
             get {
                 return ResourceManager.GetString("HabitStreakWeeksSuffix", resourceCulture);

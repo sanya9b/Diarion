@@ -14,14 +14,20 @@ public partial class FinanceViewModel : BaseViewModel
     private readonly IFinanceService _financeService;
     private readonly IProfileService _profileService;
 
-    public ObservableCollection<FinanceTransaction> Transactions { get; } = new();
+    /// <summary>
+    /// The single account-filtered, date-sorted stream the page renders: transactions, transfers and
+    /// occurrences awaiting confirmation, told apart by a template selector.
+    /// </summary>
+    public ObservableCollection<FinanceFeedItem> Feed { get; } = new();
+
     public ObservableCollection<BudgetItemViewModel> Budgets { get; } = new();
 
     // --- Accounts / wallets ---
-    /// <summary>All transactions unfiltered; <see cref="Transactions"/> shows the account-filtered view.</summary>
+    /// <summary>All transactions unfiltered; <see cref="Feed"/> shows the account-filtered view.</summary>
     private List<FinanceTransaction> _allTransactions = new();
     private List<Account> _accounts = new();
     private List<Transfer> _transfers = new();
+    private List<PendingOccurrence> _pending = new();
 
     /// <summary>Accounts for the selector strip and the add-transaction picker.</summary>
     public ObservableCollection<AccountItemViewModel> Accounts { get; } = new();
@@ -94,13 +100,58 @@ public partial class FinanceViewModel : BaseViewModel
     private Guid? _newAccountId;
 
     // --- Transfers between accounts ---
-    public ObservableCollection<TransferItemViewModel> TransferItems { get; } = new();
-
-    [ObservableProperty]
-    private bool _hasTransfers;
-
     [ObservableProperty]
     private bool _isTransferFormVisible;
+
+    // --- Planned (recurring) transactions ---
+    /// <summary>At least one occurrence is waiting to be confirmed or skipped.</summary>
+    [ObservableProperty]
+    private bool _hasPending;
+
+    /// <summary>Feature toggle. Off, nothing posts and the entry point is hidden, but rules are kept.</summary>
+    [ObservableProperty]
+    private bool _showPlanned = true;
+
+    [ObservableProperty]
+    private bool _isRecurringFormVisible;
+
+    [ObservableProperty]
+    private string _newRecurringAmountText = string.Empty;
+
+    [ObservableProperty]
+    private string _newRecurringCategory = string.Empty;
+
+    [ObservableProperty]
+    private string _newRecurringNote = string.Empty;
+
+    [ObservableProperty]
+    private TransactionType _newRecurringType = TransactionType.Expense;
+
+    public bool IsRecurringExpenseSelected => NewRecurringType == TransactionType.Expense;
+    public bool IsRecurringIncomeSelected => NewRecurringType == TransactionType.Income;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsRecurringMonthly))]
+    [NotifyPropertyChangedFor(nameof(IsRecurringWeekly))]
+    [NotifyPropertyChangedFor(nameof(IsRecurringDaily))]
+    private RecurrenceKind _newRecurringKind = RecurrenceKind.MonthlyByDay;
+
+    public bool IsRecurringMonthly => NewRecurringKind == RecurrenceKind.MonthlyByDay;
+    public bool IsRecurringWeekly => NewRecurringKind == RecurrenceKind.Weekly;
+    public bool IsRecurringDaily => NewRecurringKind == RecurrenceKind.Daily;
+
+    [ObservableProperty]
+    private DateTime _newRecurringStartDate = DateTime.Today;
+
+    [ObservableProperty]
+    private bool _newRecurringAutoPost = true;
+
+    [ObservableProperty]
+    private string _recurringError = string.Empty;
+
+    public bool HasRecurringError => !string.IsNullOrWhiteSpace(RecurringError);
+
+    partial void OnRecurringErrorChanged(string value) => OnPropertyChanged(nameof(HasRecurringError));
 
     [ObservableProperty]
     private string _newTransferAmountText = string.Empty;
@@ -289,6 +340,28 @@ public partial class FinanceViewModel : BaseViewModel
         try
         {
             _accounts = await _financeService.GetAccountsAsync(includeArchived: true);
+
+            var profile = await _profileService.GetUserProfileAsync();
+            ShowBudgets = profile?.IsBudgetsEnabled ?? true;
+            ShowPlanned = profile?.IsPlannedTransactionsEnabled ?? true;
+
+            // Post what has come due before reading, so freshly materialized rows appear in this load
+            // rather than only the next time the page is opened. Wrapped because this is the one thing
+            // in LoadAsync that writes: every mutation command ends with a reload, so a planner failure
+            // would otherwise blank the whole page after something as unrelated as saving a budget.
+            _pending = new List<PendingOccurrence>();
+            if (ShowPlanned)
+            {
+                try
+                {
+                    _pending = (await _financeService.ApplyDuePostingsAsync(DateTime.Today, DefaultAccountId)).Pending;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Recurring posting failed: {ex.Message}");
+                }
+            }
+
             _allTransactions = await _financeService.GetFinanceTransactionsAsync();
             _transfers = await _financeService.GetTransfersAsync();
 
@@ -299,13 +372,9 @@ public partial class FinanceViewModel : BaseViewModel
             }
 
             BuildAccountsCollection();
-            BuildTransfersCollection();
-            ApplyAccountFilter();
+            BuildFeed();
             CalculateBalances();
             UpdateAccountSelectionState();
-
-            var profile = await _profileService.GetUserProfileAsync();
-            ShowBudgets = profile?.IsBudgetsEnabled ?? true;
 
             await LoadBudgetsAsync(_allTransactions);
         }
@@ -394,42 +463,85 @@ public partial class FinanceViewModel : BaseViewModel
         OnPropertyChanged(nameof(HasAccounts));
     }
 
-    private void BuildTransfersCollection()
+    private string ResolveAccountName(Guid id) =>
+        AccountLocalization.ResolveName(_accounts.FirstOrDefault(a => a.Id == id));
+
+    /// <summary>
+    /// Rebuilds the one stream the page renders. The account filter applies to all three kinds:
+    /// transactions by owner, transfers by either leg, pending occurrences by their rule's account.
+    /// </summary>
+    private void BuildFeed()
     {
-        TransferItems.Clear();
-        var visible = SelectedAccountId == null
+        var culture = System.Globalization.CultureInfo.CurrentCulture;
+        var items = new List<FinanceFeedItem>();
+
+        var transactions = SelectedAccountId == null
+            ? _allTransactions
+            : _allTransactions.Where(t => t.AccountId == SelectedAccountId);
+
+        foreach (var t in transactions)
+        {
+            items.Add(new TransactionFeedItem
+            {
+                Id = t.Id,
+                Date = t.Date,
+                CreatedAt = t.CreatedAt,
+                Model = t,
+                IsFromPlan = t.RecurringTransactionId != null
+            });
+        }
+
+        var transfers = SelectedAccountId == null
             ? _transfers
             : _transfers.Where(t => t.FromAccountId == SelectedAccountId || t.ToAccountId == SelectedAccountId);
 
-        foreach (var t in visible.OrderByDescending(t => t.Date))
+        foreach (var t in transfers)
         {
-            TransferItems.Add(new TransferItemViewModel
+            items.Add(new TransferFeedItem
             {
                 Id = t.Id,
+                // Truncated here rather than on the model: Transfer.Date is the one finance date that
+                // isn't date-only, and reshaping it is a schema-adjacent change with no coverage here.
+                Date = t.Date.Date,
+                CreatedAt = t.CreatedAt,
                 FromName = ResolveAccountName(t.FromAccountId),
                 ToName = ResolveAccountName(t.ToAccountId),
-                AmountText = t.Amount.ToString("N2", System.Globalization.CultureInfo.CurrentCulture),
-                DateText = t.Date.ToString("dd.MM.yyyy", System.Globalization.CultureInfo.CurrentCulture),
+                AmountText = t.Amount.ToString("N2", culture),
+                DateText = t.Date.ToString("dd.MM.yyyy", culture),
                 Note = t.Note
             });
         }
 
-        HasTransfers = TransferItems.Count > 0;
-    }
+        var pending = SelectedAccountId == null
+            ? _pending
+            : _pending.Where(p => p.Rule.AccountId == SelectedAccountId);
 
-    private string ResolveAccountName(Guid id) =>
-        AccountLocalization.ResolveName(_accounts.FirstOrDefault(a => a.Id == id));
-
-    private void ApplyAccountFilter()
-    {
-        Transactions.Clear();
-        var filtered = SelectedAccountId == null
-            ? _allTransactions
-            : _allTransactions.Where(t => t.AccountId == SelectedAccountId);
-        foreach (var t in filtered)
+        foreach (var p in pending)
         {
-            Transactions.Add(t);
+            items.Add(new PlannedFeedItem
+            {
+                Id = p.Rule.Id,
+                RuleId = p.RuleId,
+                Date = p.Date,
+                CreatedAt = p.Rule.CreatedAt,
+                Category = p.Rule.Category,
+                AmountText = p.Rule.Amount.ToString("N2", culture),
+                RecurrenceText = RecurrenceFormatter.Describe(p.Rule.Recurrence),
+                DateText = p.Date.ToString("dd.MM.yyyy", culture),
+                IsExpense = p.Rule.Type == TransactionType.Expense
+            });
         }
+
+        Feed.Clear();
+        foreach (var item in items
+            .OrderByDescending(i => i.Date)
+            .ThenByDescending(i => i.SortRank)
+            .ThenByDescending(i => i.CreatedAt))
+        {
+            Feed.Add(item);
+        }
+
+        HasPending = _pending.Count > 0;
     }
 
     private void UpdateAccountSelectionState()
@@ -476,12 +588,126 @@ public partial class FinanceViewModel : BaseViewModel
     // --- Account selection & management ---
 
     [RelayCommand]
+    private void ShowRecurringForm()
+    {
+        RecurringError = string.Empty;
+        NewRecurringAmountText = string.Empty;
+        NewRecurringCategory = string.Empty;
+        NewRecurringNote = string.Empty;
+        NewRecurringType = TransactionType.Expense;
+        NewRecurringKind = RecurrenceKind.MonthlyByDay;
+        NewRecurringStartDate = DateTime.Today;
+        NewRecurringAutoPost = true;
+        OnPropertyChanged(nameof(IsRecurringExpenseSelected));
+        OnPropertyChanged(nameof(IsRecurringIncomeSelected));
+        IsRecurringFormVisible = true;
+    }
+
+    [RelayCommand]
+    private void HideRecurringForm() => IsRecurringFormVisible = false;
+
+    [RelayCommand]
+    private void SetRecurringType(string typeText)
+    {
+        if (!Enum.TryParse<TransactionType>(typeText, out var type)) return;
+
+        NewRecurringType = type;
+        OnPropertyChanged(nameof(IsRecurringExpenseSelected));
+        OnPropertyChanged(nameof(IsRecurringIncomeSelected));
+    }
+
+    [RelayCommand]
+    private void SetRecurringKind(string kindText)
+    {
+        if (Enum.TryParse<RecurrenceKind>(kindText, out var kind))
+        {
+            NewRecurringKind = kind;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SaveRecurringRuleAsync()
+    {
+        RecurringError = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(NewRecurringAmountText) ||
+            !decimal.TryParse(NewRecurringAmountText.Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var amount) ||
+            amount <= 0)
+        {
+            RecurringError = Diarion.Resources.Localization.AppResources.TransferAmountError;
+            return;
+        }
+
+        var start = NewRecurringStartDate.Date;
+        var rule = new RecurringTransaction
+        {
+            Type = NewRecurringType,
+            AccountId = NewAccountId ?? DefaultAccountId,
+            Amount = amount,
+            Category = (NewRecurringCategory ?? string.Empty).Trim(),
+            Note = (NewRecurringNote ?? string.Empty).Trim(),
+            AutoPost = NewRecurringAutoPost,
+            Recurrence = new RecurrenceRule
+            {
+                Kind = NewRecurringKind,
+                Anchor = start,
+                DayOfMonth = start.Day,
+                DaysOfWeek = new List<int> { (int)start.DayOfWeek }
+            },
+            // A start in the past is taken at its word and back-fills from there. Anything else — the
+            // usual case of starting today — means "from now on": today counts as already dealt with, so
+            // the first post is the next occurrence. Reading it the other way would guess that this
+            // month's rent has not been entered yet, and guessing wrong writes money into the ledger.
+            LastPostedThrough = start < DateTime.Today ? start.AddDays(-1) : DateTime.Today
+        };
+
+        await _financeService.SaveRecurringTransactionAsync(rule);
+
+        IsRecurringFormVisible = false;
+        await LoadAsync();
+    }
+
+    [RelayCommand]
+    private async Task DeleteRecurringRuleAsync(PlannedFeedItem item)
+    {
+        if (item == null) return;
+
+        var confirm = await _dialogService.ShowConfirmationAsync(
+            Diarion.Resources.Localization.AppResources.DeleteConfirmTitle,
+            Diarion.Resources.Localization.AppResources.DeletePlannedConfirm,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
+
+        if (!confirm) return;
+
+        await _financeService.DeleteRecurringTransactionAsync(item.RuleId, deletePostedTransactions: false);
+        await LoadAsync();
+    }
+
+    [RelayCommand]
+    private async Task ConfirmPlannedAsync(PlannedFeedItem item)
+    {
+        if (item == null) return;
+
+        await _financeService.ConfirmOccurrenceAsync(item.RuleId, item.Date, DefaultAccountId);
+        await LoadAsync();
+    }
+
+    [RelayCommand]
+    private async Task SkipPlannedAsync(PlannedFeedItem item)
+    {
+        if (item == null) return;
+
+        await _financeService.SkipOccurrenceAsync(item.RuleId, item.Date);
+        await LoadAsync();
+    }
+
+    [RelayCommand]
     private void SelectAccount(AccountItemViewModel item)
     {
         if (item == null) return;
         SelectedAccountId = item.Id;
-        ApplyAccountFilter();
-        BuildTransfersCollection();
+        BuildFeed();
         CalculateBalances();
         UpdateAccountSelectionState();
     }
@@ -490,8 +716,7 @@ public partial class FinanceViewModel : BaseViewModel
     private void SelectAllAccounts()
     {
         SelectedAccountId = null;
-        ApplyAccountFilter();
-        BuildTransfersCollection();
+        BuildFeed();
         CalculateBalances();
         UpdateAccountSelectionState();
     }
@@ -679,8 +904,7 @@ public partial class FinanceViewModel : BaseViewModel
         }
 
         BuildAccountsCollection();
-        BuildTransfersCollection();
-        ApplyAccountFilter();
+        BuildFeed();
         CalculateBalances();
         UpdateAccountSelectionState();
     }
@@ -826,7 +1050,7 @@ public partial class FinanceViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task DeleteTransferAsync(TransferItemViewModel item)
+    private async Task DeleteTransferAsync(TransferFeedItem item)
     {
         if (item == null) return;
 
@@ -1060,13 +1284,3 @@ public partial class SelectableOptionViewModel : ObservableObject
     private bool _isSelected;
 }
 
-/// <summary>A transfer row, pre-formatted because transfers render outside the transaction template.</summary>
-public class TransferItemViewModel
-{
-    public Guid Id { get; set; }
-    public string FromName { get; set; } = string.Empty;
-    public string ToName { get; set; } = string.Empty;
-    public string AmountText { get; set; } = string.Empty;
-    public string DateText { get; set; } = string.Empty;
-    public string Note { get; set; } = string.Empty;
-}

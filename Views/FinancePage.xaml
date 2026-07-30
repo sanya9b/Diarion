@@ -5,12 +5,163 @@
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:selectors="clr-namespace:Diarion.Selectors"
              x:Class="Diarion.Views.FinancePage"
              x:Name="RootPage"
              x:DataType="viewModels:FinanceViewModel"
              Shell.PresentationMode="ModalAnimated"
              Title="{localization:Translate Key=FinanceTitle}"
              BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <ContentPage.Resources>
+        <DataTemplate x:Key="FeedTransactionTemplate" x:DataType="viewModels:TransactionFeedItem">
+            <Border Padding="14,8"
+                    Margin="24,0"
+                    StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    StrokeShape="RoundRectangle 14">
+                <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                    <!-- Marks a row a rule posted, so an unexpected entry is traceable to its plan. -->
+                    <Label Grid.Column="0"
+                           Text="⟳"
+                           FontSize="12"
+                           VerticalOptions="Center"
+                           IsVisible="{Binding IsFromPlan}"
+                           TextColor="{DynamicResource Theme_Ocean_Dust}"
+                           SemanticProperties.Description="{x:Static localization:AppResources.PlannedTransactionsLabel}" />
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                        <Label Text="{Binding Model.Category}" FontSize="15" FontAttributes="Bold" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Label Text="{Binding Model.Note}" FontSize="12" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding Model.Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="2" Spacing="0" VerticalOptions="Center" HorizontalOptions="End">
+                        <Label FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="End">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding Model.Type}" Value="Income">
+                                    <Setter Property="Text" Value="{Binding Model.Amount, StringFormat='+{0:N2}'}" />
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding Model.Type}" Value="Expense">
+                                    <Setter Property="Text" Value="{Binding Model.Amount, StringFormat='-{0:N2}'}" />
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label Text="{Binding Model.Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="10" HorizontalTextAlignment="End" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+
+                    <Grid Grid.Column="3" ColumnDefinitions="Auto, Auto" ColumnSpacing="12" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
+                        <Grid Grid.Column="0">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.EditTransactionCommand}" CommandParameter="{Binding Model}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✏️" FontSize="14" InputTransparent="True" />
+                        </Grid>
+                        <Grid Grid.Column="1">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteTransactionCommand}" CommandParameter="{Binding Model}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✕" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" InputTransparent="True" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="FeedTransferTemplate" x:DataType="viewModels:TransferFeedItem">
+            <Border Padding="14,8"
+                    Margin="24,0"
+                    StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    StrokeShape="RoundRectangle 14">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                    <Label Grid.Column="0" Text="⇄" FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                        <Label FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding FromName}" />
+                                    <Span Text=" → " />
+                                    <Span Text="{Binding ToName}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label Text="{Binding Note}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" IsVisible="{Binding Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="2" Spacing="0" VerticalOptions="Center" HorizontalOptions="End">
+                        <Label Text="{Binding AmountText}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" />
+                        <Label Text="{Binding DateText}" FontSize="10" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" />
+                    </VerticalStackLayout>
+
+                    <Grid Grid.Column="3" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteTransferCommand}" CommandParameter="{Binding .}" />
+                        </Grid.GestureRecognizers>
+                        <Label Text="✕" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" InputTransparent="True" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="FeedPlannedTemplate" x:DataType="viewModels:PlannedFeedItem">
+            <Border Padding="14,8"
+                    Margin="24,0"
+                    StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Sage}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    StrokeShape="RoundRectangle 14">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                    <Label Grid.Column="0" Text="⏳" FontSize="13" VerticalOptions="Center" />
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                        <Label Text="{Binding Category}" FontSize="15" FontAttributes="Bold" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Label Text="{Binding RecurrenceText}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="2" Spacing="0" VerticalOptions="Center" HorizontalOptions="End">
+                        <Label FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="End" TextColor="{DynamicResource Theme_Ocean_Dust}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsExpense}" Value="True">
+                                    <Setter Property="Text" Value="{Binding AmountText, StringFormat='-{0}'}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsExpense}" Value="False">
+                                    <Setter Property="Text" Value="{Binding AmountText, StringFormat='+{0}'}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label Text="{Binding DateText}" FontSize="10" HorizontalTextAlignment="End" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+
+                    <Grid Grid.Column="3" ColumnDefinitions="Auto,Auto" ColumnSpacing="12" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
+                        <Grid Grid.Column="0">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ConfirmPlannedCommand}" CommandParameter="{Binding .}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✓" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}" InputTransparent="True"
+                                   SemanticProperties.Description="{x:Static localization:AppResources.PlannedConfirmButton}" />
+                        </Grid>
+                        <Grid Grid.Column="1">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SkipPlannedCommand}" CommandParameter="{Binding .}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✕" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" InputTransparent="True"
+                                   SemanticProperties.Description="{x:Static localization:AppResources.PlannedSkipButton}" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <selectors:FinanceFeedTemplateSelector x:Key="FeedTemplateSelector"
+                                               TransactionTemplate="{StaticResource FeedTransactionTemplate}"
+                                               TransferTemplate="{StaticResource FeedTransferTemplate}"
+                                               PlannedTemplate="{StaticResource FeedPlannedTemplate}" />
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
@@ -34,8 +185,9 @@
                                VerticalOptions="Center" />
         </Grid>
 
-        <!-- Virtualized list: balance summary + add button in the header, transactions recycled -->
-        <CollectionView Grid.Row="1" BackgroundColor="Transparent" ItemsSource="{Binding Transactions}">
+        <!-- Virtualized list: balance summary + add button in the header, feed rows recycled. One stream
+             for transactions, transfers and pending plans so they read in date order instead of by kind. -->
+        <CollectionView Grid.Row="1" BackgroundColor="Transparent" ItemsSource="{Binding Feed}">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
             </CollectionView.ItemsLayout>
@@ -236,108 +388,30 @@
                         </ScrollView>
                     </VerticalStackLayout>
 
-                    <!-- Перекази між рахунками -->
-                    <VerticalStackLayout Spacing="10">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Grid.Column="0" Text="{localization:Translate Key=TransfersLabel}" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{localization:Translate Key=AddTransferButton}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding ShowTransferFormCommand}" />
-                                </Label.GestureRecognizers>
-                            </Label>
-                        </Grid>
-
-                        <VerticalStackLayout Spacing="8" IsVisible="{Binding HasTransfers}" BindableLayout.ItemsSource="{Binding TransferItems}">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="viewModels:TransferItemViewModel">
-                                    <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" StrokeShape="RoundRectangle 14" Padding="14,8">
-                                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
-                                                <Label FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation">
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <Span Text="{Binding FromName}" />
-                                                            <Span Text=" → " />
-                                                            <Span Text="{Binding ToName}" />
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
-                                                </Label>
-                                                <Label Text="{Binding Note}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" IsVisible="{Binding Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
-                                            </VerticalStackLayout>
-
-                                            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center" HorizontalOptions="End">
-                                                <Label Text="{Binding AmountText}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" />
-                                                <Label Text="{Binding DateText}" FontSize="10" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" />
-                                            </VerticalStackLayout>
-
-                                            <Grid Grid.Column="2" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
-                                                <Grid.GestureRecognizers>
-                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteTransferCommand}" CommandParameter="{Binding .}" />
-                                                </Grid.GestureRecognizers>
-                                                <Label Text="✕" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" InputTransparent="True" />
-                                            </Grid>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
-                    </VerticalStackLayout>
+                    <!-- Перекази і плани: тільки кнопки додавання. Самі рядки живуть у спільній стрічці. -->
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
+                        <Label Grid.Column="0" Text="{localization:Translate Key=AddTransferButton}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ShowTransferFormCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label Grid.Column="2" Text="{localization:Translate Key=AddPlannedButton}" FontSize="12" FontAttributes="Bold" IsVisible="{Binding ShowPlanned}" TextColor="{DynamicResource Theme_Sage}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ShowRecurringFormCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Grid>
                 </VerticalStackLayout>
             </CollectionView.Header>
 
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:FinanceTransaction">
-                    <Border Padding="14,8"
-                            Margin="24,0"
-                            StrokeThickness="1"
-                            Stroke="{DynamicResource Theme_Dust_Ocean}"
-                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                            StrokeShape="RoundRectangle 14">
-                        <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="12" VerticalOptions="Center">
-                                    <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
-                                        <Label Text="{Binding Category}" FontSize="15" FontAttributes="Bold" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Label Text="{Binding Note}" FontSize="12" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
-                                    </VerticalStackLayout>
+                <StaticResource Key="FeedTemplateSelector" />
+            </CollectionView.ItemTemplate>
 
-                                    <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center" HorizontalOptions="End">
-                                        <Label FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="End">
-                                            <Label.Triggers>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Income">
-                                                    <Setter Property="Text" Value="{Binding Amount, StringFormat='+{0:N2}'}" />
-                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Expense">
-                                                    <Setter Property="Text" Value="{Binding Amount, StringFormat='-{0:N2}'}" />
-                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
-                                                </DataTrigger>
-                                            </Label.Triggers>
-                                        </Label>
-                                        <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="10" HorizontalTextAlignment="End" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                    </VerticalStackLayout>
-
-                                    <Grid Grid.Column="2" ColumnDefinitions="Auto, Auto" ColumnSpacing="12" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
-                                        <Grid Grid.Column="0">
-                                            <Grid.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.EditTransactionCommand}" CommandParameter="{Binding .}" />
-                                            </Grid.GestureRecognizers>
-                                            <Label Text="✏️" FontSize="14" InputTransparent="True" />
-                                        </Grid>
-                                        <Grid Grid.Column="1">
-                                            <Grid.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteTransactionCommand}" CommandParameter="{Binding .}" />
-                                            </Grid.GestureRecognizers>
-                                            <Label Text="✕" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" InputTransparent="True" />
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-
-                    <CollectionView.Footer>
-                        <BoxView HeightRequest="24" Color="Transparent" />
-                    </CollectionView.Footer>
-                </CollectionView>
+            <CollectionView.Footer>
+                <BoxView HeightRequest="24" Color="Transparent" />
+            </CollectionView.Footer>
+        </CollectionView>
 
         <!-- Popup Overlay -->
         <Grid Grid.RowSpan="2"
@@ -910,6 +984,128 @@
 
                     <Button Text="{localization:Translate Key=SaveButton}"
                             Command="{Binding SaveTransferCommand}"
+                            CornerRadius="12"
+                            Padding="16,10"
+                            Margin="0,4,0,0"
+                            BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
+                            TextColor="{DynamicResource Theme_Snow_Midnight}"
+                            FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Planned (recurring) rule form overlay -->
+        <Grid Grid.RowSpan="2"
+              BackgroundColor="{DynamicResource Theme_Val_99000000_B3000000}"
+              IsVisible="{Binding IsRecurringFormVisible}"
+              InputTransparent="False">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding HideRecurringFormCommand}" />
+            </Grid.GestureRecognizers>
+
+            <Border StrokeShape="RoundRectangle 24"
+                    StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    Padding="20,16"
+                    Margin="24"
+                    VerticalOptions="Center">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                </Border.Shadow>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer />
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{localization:Translate Key=PlannedFormTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                    <!-- Income / expense -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="12,8">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsRecurringExpenseSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SetRecurringTypeCommand}" CommandParameter="Expense" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{localization:Translate Key=ExpenseLabel}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="12,8">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsRecurringIncomeSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SetRecurringTypeCommand}" CommandParameter="Income" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{localization:Translate Key=IncomeLabel}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                    </Grid>
+
+                    <Entry Text="{Binding NewRecurringAmountText}" Placeholder="{localization:Translate Key=AmountPlaceholder}" Keyboard="Numeric" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" />
+                    <Entry Text="{Binding NewRecurringCategory}" Placeholder="{localization:Translate Key=CategoryPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" />
+                    <Entry Text="{Binding NewRecurringNote}" Placeholder="{localization:Translate Key=NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" />
+
+                    <!-- Recurrence kind -->
+                    <Label Text="{localization:Translate Key=PlannedRepeatLabel}" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,4,0,0" />
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="10,8">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsRecurringMonthly}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SetRecurringKindCommand}" CommandParameter="MonthlyByDay" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{localization:Translate Key=RecurrenceMonthlyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="10,8">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsRecurringWeekly}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SetRecurringKindCommand}" CommandParameter="Weekly" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{localization:Translate Key=RecurrenceWeeklyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                        <Border Grid.Column="2" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="10,8">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsRecurringDaily}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SetRecurringKindCommand}" CommandParameter="Daily" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{localization:Translate Key=RecurrenceDailyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                    </Grid>
+
+                    <!-- The start date also sets the day-of-month / weekday the rule lands on. -->
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,4,0,0">
+                        <Label Grid.Column="0" Text="{localization:Translate Key=PlannedStartsOnLabel}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                        <DatePicker Grid.Column="1" Date="{Binding NewRecurringStartDate}" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" Format="dd.MM.yyyy" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <VerticalStackLayout Grid.Column="0" Spacing="1">
+                            <Label Text="{localization:Translate Key=PlannedAutoPostLabel}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Label Text="{localization:Translate Key=PlannedAutoPostHint}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </VerticalStackLayout>
+                        <Switch Grid.Column="1" IsToggled="{Binding NewRecurringAutoPost}" OnColor="{DynamicResource Theme_Sage}" VerticalOptions="Center" />
+                    </Grid>
+
+                    <Label Text="{Binding RecurringError}" IsVisible="{Binding HasRecurringError}" FontSize="12" TextColor="{DynamicResource Theme_Coral}" />
+
+                    <Button Text="{localization:Translate Key=SaveButton}"
+                            Command="{Binding SaveRecurringRuleCommand}"
                             CornerRadius="12"
                             Padding="16,10"
                             Margin="0,4,0,0"

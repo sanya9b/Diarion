@@ -281,6 +281,11 @@
                             <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsBudgetsEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.SettingsBudgetsToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
+
+                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsPlannedTransactionsEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.SettingsPlannedToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Grid>
                     </VerticalStackLayout>
                 </Border>
 
