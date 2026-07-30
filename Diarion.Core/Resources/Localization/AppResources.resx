@@ -1288,4 +1288,37 @@
   <data name="NotesQuickCapturePlaceholder" xml:space="preserve">
     <value>Quick note…</value>
   </data>
+  <data name="StatsTrendByMonth" xml:space="preserve">
+    <value>By month</value>
+  </data>
+  <data name="StatsTrendByWeek" xml:space="preserve">
+    <value>By week</value>
+  </data>
+  <data name="StatsComparisonTitle" xml:space="preserve">
+    <value>Compared with</value>
+  </data>
+  <data name="StatsNoBaseline" xml:space="preserve">
+    <value>No earlier data to compare with yet.</value>
+  </data>
+  <data name="StatsAccountBreakdown" xml:space="preserve">
+    <value>By account</value>
+  </data>
+  <data name="StatsTransfersRow" xml:space="preserve">
+    <value>Transfers</value>
+  </data>
+  <data name="StatsMoverNew" xml:space="preserve">
+    <value>new</value>
+  </data>
+  <data name="StatsMoverGone" xml:space="preserve">
+    <value>gone</value>
+  </data>
+  <data name="StatsBiggestMoves" xml:space="preserve">
+    <value>Biggest moves</value>
+  </data>
+  <data name="AccountUnassigned" xml:space="preserve">
+    <value>No account</value>
+  </data>
+  <data name="CategoryOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
 </root>

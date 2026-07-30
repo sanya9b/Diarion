@@ -1652,6 +1652,50 @@ public static string ClearAllDataSuccessMsg {
         public static string TransferSameAccountError {
             get { return ResourceManager.GetString("TransferSameAccountError", resourceCulture) ?? "Choose two different accounts."; }
         }
+
+        public static string StatsTrendByMonth {
+            get { return ResourceManager.GetString("StatsTrendByMonth", resourceCulture) ?? "By month"; }
+        }
+
+        public static string StatsTrendByWeek {
+            get { return ResourceManager.GetString("StatsTrendByWeek", resourceCulture) ?? "By week"; }
+        }
+
+        public static string StatsComparisonTitle {
+            get { return ResourceManager.GetString("StatsComparisonTitle", resourceCulture) ?? "Compared with"; }
+        }
+
+        public static string StatsNoBaseline {
+            get { return ResourceManager.GetString("StatsNoBaseline", resourceCulture) ?? "No earlier data to compare with yet."; }
+        }
+
+        public static string StatsAccountBreakdown {
+            get { return ResourceManager.GetString("StatsAccountBreakdown", resourceCulture) ?? "By account"; }
+        }
+
+        public static string StatsTransfersRow {
+            get { return ResourceManager.GetString("StatsTransfersRow", resourceCulture) ?? "Transfers"; }
+        }
+
+        public static string StatsMoverNew {
+            get { return ResourceManager.GetString("StatsMoverNew", resourceCulture) ?? "new"; }
+        }
+
+        public static string StatsMoverGone {
+            get { return ResourceManager.GetString("StatsMoverGone", resourceCulture) ?? "gone"; }
+        }
+
+        public static string StatsBiggestMoves {
+            get { return ResourceManager.GetString("StatsBiggestMoves", resourceCulture) ?? "Biggest moves"; }
+        }
+
+        public static string AccountUnassigned {
+            get { return ResourceManager.GetString("AccountUnassigned", resourceCulture) ?? "No account"; }
+        }
+
+        public static string CategoryOther {
+            get { return ResourceManager.GetString("CategoryOther", resourceCulture) ?? "Other"; }
+        }
     }
 }
 
