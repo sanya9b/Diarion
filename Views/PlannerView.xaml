@@ -151,8 +151,14 @@
                 <VerticalStackLayout Spacing="2" IsVisible="{Binding HasUntimedTodos}">
                     <Label Text="{x:Static localization:AppResources.PlannerUntimedLabel}" FontSize="9.5" FontAttributes="Bold"
                            CharacterSpacing="1.2" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding UntimedTodos}"
-                                         BindableLayout.ItemTemplate="{StaticResource TodoRow}" />
+                    <!-- Caps at roughly three rows and scrolls past that, so a long backlog of unscheduled
+                         work cannot push the hour grid — the actual point of this screen — off the fold.
+                         MaximumHeightRequest rather than HeightRequest: with one or two tasks the tray
+                         shrinks instead of reserving empty space. -->
+                    <ScrollView MaximumHeightRequest="76" VerticalScrollBarVisibility="Default">
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding UntimedTodos}"
+                                             BindableLayout.ItemTemplate="{StaticResource TodoRow}" />
+                    </ScrollView>
                 </VerticalStackLayout>
 
                 <!-- Hour grid 7–23, the same window the hourly mood scale uses. -->
