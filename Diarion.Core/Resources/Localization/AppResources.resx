@@ -1321,4 +1321,10 @@
   <data name="CategoryOther" xml:space="preserve">
     <value>Other</value>
   </data>
+  <data name="HealthSyncUnsupported" xml:space="preserve">
+    <value>Health sync is not available on this device yet.</value>
+  </data>
+  <data name="StreakHeldByGraceHint" xml:space="preserve">
+    <value>A forgiven day is holding this streak.</value>
+  </data>
 </root>

@@ -22,11 +22,11 @@ public class HealthDataService : IHealthDataService
     {
 #if IOS
         return Task.FromResult(HKHealthStore.IsHealthDataAvailable);
-#elif ANDROID
-        var context = Microsoft.Maui.ApplicationModel.Platform.AppContext;
-        var status = HealthConnectClient.GetSdkStatus(context);
-        return Task.FromResult(status == HealthConnectClient.SdkAvailable || status == 3); // 3 is usually SdkAvailable
 #else
+        // Android reports unsupported on purpose. Reading Health Connect needs Kotlin coroutine interop
+        // that is not written yet, and the placeholder that stood here returned invented sleep times
+        // which the caller wrote straight into the user's diary entry. An unavailable feature is honest;
+        // a feature that fabricates personal history is not. Flip this back on with the real read.
         return Task.FromResult(false);
 #endif
     }
@@ -46,13 +46,10 @@ public class HealthDataService : IHealthDataService
             tcs.TrySetResult(success);
         });
         return await tcs.Task;
-#elif ANDROID
-        // For Android Health Connect, permissions require launching an intent from MainActivity.
-        // For simplicity in this demo, we assume the user has granted them, 
-        // or they will be handled by a specific ActivityResult launcher.
-        return true; 
 #else
-        return false;
+        // Never claim a grant that was never asked for. Android needs an ActivityResult launcher from
+        // MainActivity, which arrives with the real Health Connect read.
+        return await Task.FromResult(false);
 #endif
     }
 
@@ -92,26 +89,9 @@ public class HealthDataService : IHealthDataService
         
         healthStore.ExecuteQuery(query);
         return await tcs.Task;
-#elif ANDROID
-        try
-        {
-            // Fully functional Health Connect requires Kotlin Coroutines interop (RunBlocking or similar).
-            // This is a placeholder for the actual suspend function call.
-            var context = Microsoft.Maui.ApplicationModel.Platform.AppContext;
-            var client = HealthConnectClient.GetOrCreate(context);
-            
-            // Normally you would call:
-            // var response = await client.ReadRecordsAsync(...);
-            
-            // Returning realistic dummy data to prove compilation passes with the namespace imported
-            return (new TimeSpan(23, 30, 0), new TimeSpan(7, 15, 0));
-        }
-        catch
-        {
-            return (null, null);
-        }
 #else
-        return (null, null);
+        // Unreachable while IsSupportedAsync says no, and empty rather than invented if it ever is.
+        return await Task.FromResult<(TimeSpan?, TimeSpan?)>((null, null));
 #endif
     }
 }

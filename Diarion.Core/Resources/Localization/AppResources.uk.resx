@@ -1447,4 +1447,10 @@
   <data name="CategoryOther" xml:space="preserve">
     <value>Інше</value>
   </data>
+  <data name="HealthSyncUnsupported" xml:space="preserve">
+    <value>Синхронізація зі здоровʼям поки недоступна на цьому пристрої.</value>
+  </data>
+  <data name="StreakHeldByGraceHint" xml:space="preserve">
+    <value>Серію тримає прощений день.</value>
+  </data>
 </root>
