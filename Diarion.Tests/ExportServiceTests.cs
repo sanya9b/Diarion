@@ -51,6 +51,21 @@ public class ExportServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Json_IncludesCycleHistory()
+    {
+        // It was missing from the whitelist entirely, so a user's portable copy silently lost every
+        // logged period — the one export nobody would think to check until they needed it.
+        _dbContext.GetCollection<CycleLog>(DatabaseConstants.CycleLogsCollection)
+            .Insert(new CycleLog { Date = new DateTime(2026, 6, 10) });
+
+        var json = await _service.BuildAsync(ExportFormat.Json);
+
+        // Asserting on the collection carrying a row, not on the date text: LiteDB writes dates as UTC,
+        // so a local midnight lands in the file as the previous evening.
+        json.Should().Contain("\"cycle_logs\":[{");
+    }
+
+    [Fact]
     public async Task Json_IncludesRecurringTransactions()
     {
         // Absent from the whitelist, rules would silently drop out of the user's portable copy.
