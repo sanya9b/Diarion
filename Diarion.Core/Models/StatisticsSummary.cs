@@ -102,7 +102,16 @@ public class FinanceStatistics
     public decimal TotalExpense { get; set; }
     public List<CategoryStatItem> ExpenseByCategory { get; set; } = new();
     public List<CategoryStatItem> IncomeByCategory { get; set; } = new();
-    
+
+    /// <summary>Income and expense per bucket over the window, for the diverging chart.</summary>
+    public Diarion.Services.FinanceTrendReport Trend { get; set; } = new();
+
+    /// <summary>The same window measured against the one immediately before it.</summary>
+    public Diarion.Services.FinanceComparisonReport Comparison { get; set; } = new();
+
+    /// <summary>Per-account flow. Empty when a single account is already selected.</summary>
+    public List<Diarion.Services.FinanceAccountReportRow> AccountBreakdown { get; set; } = new();
+
     public bool IsEmpty => TotalIncome == 0 && TotalExpense == 0;
     public bool IsNotEmpty => !IsEmpty;
 }

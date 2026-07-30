@@ -50,6 +50,7 @@ public partial class StatisticsViewModel : BaseViewModel
 {
     private readonly Diarion.Services.IStatisticsService _statisticsService;
     private readonly Diarion.Services.IDiaryService _diaryService;
+    private readonly Diarion.Services.IFinanceService _financeService;
     private readonly Diarion.Services.INavigationService _navigationService;
 
     [ObservableProperty]
@@ -93,6 +94,7 @@ public partial class StatisticsViewModel : BaseViewModel
     public StatisticsViewModel(
         Diarion.Services.IStatisticsService statisticsService,
         Diarion.Services.IDiaryService diaryService,
+        Diarion.Services.IFinanceService financeService,
         Diarion.Services.INavigationService navigationService,
         ViewModels.Statistics.MoodStatsViewModel moodStats,
         ViewModels.Statistics.SleepStatsViewModel sleepStats,
@@ -102,6 +104,7 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         _statisticsService = statisticsService;
         _diaryService = diaryService;
+        _financeService = financeService;
         _navigationService = navigationService;
         MoodStats = moodStats;
         SleepStats = sleepStats;
@@ -204,7 +207,8 @@ public partial class StatisticsViewModel : BaseViewModel
             }
             else if (IsFinanceTabVisible)
             {
-                await FinanceStats.LoadDataAsync(days);
+                await LoadFinanceAccountsAsync();
+                await FinanceStats.LoadDataAsync(days, SelectedStatsAccountId);
             }
             else if (IsHabitsTabVisible)
             {
@@ -214,6 +218,71 @@ public partial class StatisticsViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    // --- Account scope for the finance tab ---
+
+    /// <summary>Null means every account, matching the finance page's own strip.</summary>
+    [ObservableProperty]
+    private Guid? _selectedStatsAccountId;
+
+    [ObservableProperty]
+    private bool _isAllStatsAccountsSelected = true;
+
+    public System.Collections.ObjectModel.ObservableCollection<AccountItemViewModel> StatsAccounts { get; } = new();
+
+    public bool HasStatsAccounts => StatsAccounts.Count > 1;
+
+    /// <summary>
+    /// Tapping through account chips must not stack reloads. SelectTab already fires a load without
+    /// awaiting it, and the finance query now reads twice the window, so overlapping runs would finish
+    /// out of order and leave whichever happened to be slowest on screen.
+    /// </summary>
+    private readonly Diarion.Helpers.AsyncDebouncer _accountDebouncer = new(TimeSpan.FromMilliseconds(150));
+
+    private async Task LoadFinanceAccountsAsync()
+    {
+        if (StatsAccounts.Count > 0) return;
+
+        var accounts = await _financeService.GetAccountsAsync(includeArchived: false);
+        foreach (var account in accounts)
+        {
+            StatsAccounts.Add(new AccountItemViewModel
+            {
+                Id = account.Id,
+                Name = Diarion.Services.AccountLocalization.ResolveName(account),
+                Icon = account.Icon,
+                ColorHex = account.ColorHex
+            });
+        }
+
+        OnPropertyChanged(nameof(HasStatsAccounts));
+        UpdateStatsAccountSelection();
+    }
+
+    [CommunityToolkit.Mvvm.Input.RelayCommand]
+    private void SelectStatsAccount(AccountItemViewModel? item)
+    {
+        SelectedStatsAccountId = item?.Id;
+        UpdateStatsAccountSelection();
+        _accountDebouncer.Debounce(LoadStatisticsAsync);
+    }
+
+    [CommunityToolkit.Mvvm.Input.RelayCommand]
+    private void SelectAllStatsAccounts()
+    {
+        SelectedStatsAccountId = null;
+        UpdateStatsAccountSelection();
+        _accountDebouncer.Debounce(LoadStatisticsAsync);
+    }
+
+    private void UpdateStatsAccountSelection()
+    {
+        IsAllStatsAccountsSelected = SelectedStatsAccountId == null;
+        foreach (var account in StatsAccounts)
+        {
+            account.IsSelected = account.Id == SelectedStatsAccountId;
         }
     }
 

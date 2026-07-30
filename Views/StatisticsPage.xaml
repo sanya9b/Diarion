@@ -6,6 +6,7 @@
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:stats="clr-namespace:Diarion.ViewModels.Statistics;assembly=Diarion.Core"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Diarion.Views.StatisticsPage"
              x:DataType="viewmodels:StatisticsViewModel"
              Title="{Binding Title}"
@@ -353,6 +354,45 @@
                     <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
 
+                <!-- Account scope. Inside the finance stack, not next to the period chips: those are
+                     shared by every tab and an account means nothing to sleep or habits. -->
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" BackgroundColor="Transparent" IsVisible="{Binding HasStatsAccounts}">
+                    <HorizontalStackLayout Spacing="8">
+                        <Border StrokeShape="RoundRectangle 17" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="14,6" HeightRequest="34">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsAllStatsAccountsSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectAllStatsAccountsCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{x:Static localization:AppResources.AllAccounts}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+
+                        <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding StatsAccounts}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:AccountItemViewModel">
+                                    <Border StrokeShape="RoundRectangle 17" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="14,6" HeightRequest="34">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:StatisticsViewModel}}, Path=SelectStatsAccountCommand}" CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                            <Label Text="{Binding Icon}" FontSize="13" VerticalOptions="Center" />
+                                            <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </HorizontalStackLayout>
+                </ScrollView>
+
                 <!-- KPI row -->
                 <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" IsVisible="{Binding FinanceStats.IsNotEmpty}">
                     <controls:StatTile Grid.Column="0"
@@ -397,6 +437,137 @@
                                                              MutedColor="{DynamicResource Theme_Ocean_Dust}" />
                             </Grid>
                         </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Trend: income above the line, expense below -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding FinanceStats.HasTrend}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{Binding FinanceStats.TrendTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Amber}" />
+
+                        <!-- Legend with text labels: the palette is not distinguishable by hue alone. -->
+                        <HorizontalStackLayout Spacing="16">
+                            <HorizontalStackLayout Spacing="6">
+                                <Border BackgroundColor="{DynamicResource Theme_Sage}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                                <Label Text="{x:Static localization:AppResources.IncomeLabel}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="6">
+                                <Border BackgroundColor="{DynamicResource Theme_Coral}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                                <Label Text="{x:Static localization:AppResources.ExpenseLabel}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </HorizontalStackLayout>
+
+                        <!-- Fixed height: a self-sizing GraphicsView collapses to nothing on Android. -->
+                        <Grid HeightRequest="180">
+                            <controls:NetFlowBarChart Items="{Binding FinanceStats.TrendBuckets}"
+                                                      PeakValue="{Binding FinanceStats.TrendPeak}"
+                                                      IncomeColor="{DynamicResource Theme_Sage}"
+                                                      ExpenseColor="{DynamicResource Theme_Coral}"
+                                                      SurfaceColor="{DynamicResource Theme_Snow_Black}"
+                                                      TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                                      MutedColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Comparison with the preceding equal-length window -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding FinanceStats.IsNotEmpty}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.StatsComparisonTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Amber}" />
+                        <Label Text="{Binding FinanceStats.ComparisonRangeText}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Label Text="{x:Static localization:AppResources.StatsNoBaseline}"
+                               IsVisible="{Binding FinanceStats.HasComparison, Converter={toolkit:InvertedBoolConverter}}"
+                               FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <VerticalStackLayout Spacing="10" IsVisible="{Binding FinanceStats.HasComparison}" BindableLayout.ItemsSource="{Binding FinanceStats.ComparisonMetrics}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="stats:MetricDeltaItem">
+                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10">
+                                        <Label Grid.Column="0" Text="{Binding Label}" FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Grid.Column="1" Text="{Binding ValueText}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Grid.Column="2" Text="{Binding DeltaText}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" WidthRequest="72" HorizontalTextAlignment="End">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsGood}" Value="True">
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsGood}" Value="False">
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <Label Text="{x:Static localization:AppResources.StatsBiggestMoves}" IsVisible="{Binding FinanceStats.HasComparison}" FontSize="11" CharacterSpacing="1.2" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,4,0,0" />
+
+                        <VerticalStackLayout Spacing="8" IsVisible="{Binding FinanceStats.HasComparison}" BindableLayout.ItemsSource="{Binding FinanceStats.ExpenseMovers}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="stats:CategoryMoverItem">
+                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+                                        <Label Grid.Column="0" Text="{Binding Category}" FontSize="13" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Grid.Column="1" Text="{Binding Badge}" IsVisible="{Binding HasBadge}" FontSize="10" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                        <Label Grid.Column="2" Text="{Binding ChangeText}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" WidthRequest="90" HorizontalTextAlignment="End">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsGood}" Value="True">
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsGood}" Value="False">
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Per-account flow. Hidden when a single account is already selected. -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding FinanceStats.HasAccountBreakdown}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="{x:Static localization:AppResources.StatsAccountBreakdown}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Amber}" />
+
+                        <VerticalStackLayout Spacing="14" BindableLayout.ItemsSource="{Binding FinanceStats.AccountBreakdown}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="stats:AccountFlowItem">
+                                    <VerticalStackLayout Spacing="4">
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Border BackgroundColor="{Binding ColorHex}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                                            <Label Text="{Binding Icon}" FontSize="13" VerticalOptions="Center" />
+                                            <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        </HorizontalStackLayout>
+
+                                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8" Margin="18,0,0,0">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="1">
+                                                <Label Text="{x:Static localization:AppResources.IncomeLabel}" FontSize="10" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                                <Label Text="{Binding IncomeText}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="1">
+                                                <Label Text="{x:Static localization:AppResources.ExpenseLabel}" FontSize="10" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                                <Label Text="{Binding ExpenseText}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Column="2" Spacing="1" IsVisible="{Binding HasTransfers}">
+                                                <Label Text="{x:Static localization:AppResources.StatsTransfersRow}" FontSize="10" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                                <Label Text="{Binding TransferText}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>

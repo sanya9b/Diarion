@@ -171,7 +171,7 @@ public class StatisticsViewModelsTests
     public async Task FinanceStats_LoadData_PositiveBalance_HasLeadingPlus()
     {
         var statsMock = new Mock<IStatisticsService>();
-        statsMock.Setup(s => s.GetFinanceStatisticsAsync(It.IsAny<int>()))
+        statsMock.Setup(s => s.GetFinanceStatisticsAsync(It.IsAny<int>(), It.IsAny<Guid?>()))
             .ReturnsAsync(new FinanceStatistics { TotalIncome = 1000m, TotalExpense = 350.5m });
 
         var vm = new FinanceStatsViewModel(statsMock.Object);
@@ -187,7 +187,7 @@ public class StatisticsViewModelsTests
     public async Task FinanceStats_LoadData_NegativeBalance_HasLeadingMinus()
     {
         var statsMock = new Mock<IStatisticsService>();
-        statsMock.Setup(s => s.GetFinanceStatisticsAsync(It.IsAny<int>()))
+        statsMock.Setup(s => s.GetFinanceStatisticsAsync(It.IsAny<int>(), It.IsAny<Guid?>()))
             .ReturnsAsync(new FinanceStatistics { TotalIncome = 100m, TotalExpense = 300m });
 
         var vm = new FinanceStatsViewModel(statsMock.Object);

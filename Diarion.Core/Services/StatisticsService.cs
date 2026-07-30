@@ -196,13 +196,28 @@ public class StatisticsService : IStatisticsService
         return await _todoService.GetTodoStatsSummaryAsync(startDate, DateTime.Today);
     }
 
-    public async Task<FinanceStatistics> GetFinanceStatisticsAsync(int days)
+    public async Task<FinanceStatistics> GetFinanceStatisticsAsync(int days, Guid? accountId = null)
     {
+        var today = DateTime.Today;
         var startDate = GetStartDate(days);
-        var transactions = await _financeService.GetFinanceTransactionsForStatsAsync(startDate, DateTime.Today);
-        
+
+        // Twice the selected window: the comparison card needs the preceding period as a baseline, and
+        // fetching it here keeps everything on this screen derived from one read of one set of rows.
+        var fetchStart = startDate.AddDays(-days);
+        var fetched = await _financeService.GetFinanceTransactionsForStatsAsync(fetchStart, today);
+
+        // Scoped in memory rather than in the query on purpose. AccountId is a nullable Guid and LiteDB's
+        // LINQ translation is broken for those (see FinanceService.DeleteAccountAsync) — and it fails by
+        // returning no rows, which this screen would render as a perfectly plausible empty state. It also
+        // makes flipping the account chip free, since the rows are already in hand.
+        var scoped = accountId == null
+            ? fetched
+            : fetched.Where(t => t.AccountId == accountId).ToList();
+
+        var transactions = scoped.Where(t => t.Date >= startDate).ToList();
+
         var stats = new FinanceStatistics();
-        
+
         var expenses = transactions.Where(t => t.Type == TransactionType.Expense).ToList();
         var incomes = transactions.Where(t => t.Type == TransactionType.Income).ToList();
         
@@ -248,6 +263,18 @@ public class StatisticsService : IStatisticsService
                 grouped[i].ColorHex = incomeColors[i % incomeColors.Length];
             }
             stats.IncomeByCategory = grouped;
+        }
+
+        stats.Trend = FinanceReportCalculator.ComputeTrend(transactions, startDate, today);
+        stats.Comparison = FinanceReportCalculator.ComputeComparison(scoped, startDate, today);
+
+        // One account is not a breakdown — the card hides itself rather than showing a single bar.
+        if (accountId == null)
+        {
+            var accounts = await _financeService.GetAccountsAsync(includeArchived: true);
+            var transfers = await _financeService.GetTransfersAsync();
+            stats.AccountBreakdown = FinanceReportCalculator.ComputeAccountBreakdown(
+                accounts, transactions, transfers, startDate, today);
         }
 
         return stats;

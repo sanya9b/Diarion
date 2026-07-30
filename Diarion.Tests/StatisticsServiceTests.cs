@@ -439,4 +439,119 @@ public class StatisticsServiceTests
         result.HourlyProfile.Single(p => p.Hour == 9).DayCount.Should().Be(1);
         result.HourlyProfile.Single(p => p.Hour == 10).DayCount.Should().Be(1);
     }
+
+    // --- Finance reports ---
+
+    private static (StatisticsService Service, Mock<IFinanceService> Finance) FinanceServiceOver(
+        List<FinanceTransaction> rows,
+        List<Account>? accounts = null,
+        List<Transfer>? transfers = null)
+    {
+        var finance = new Mock<IFinanceService>();
+        finance.Setup(s => s.GetFinanceTransactionsForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+               .ReturnsAsync((DateTime start, DateTime end) =>
+                   rows.Where(r => r.Date >= start.Date && r.Date <= end.Date).ToList());
+        finance.Setup(s => s.GetAccountsAsync(It.IsAny<bool>())).ReturnsAsync(accounts ?? new List<Account>());
+        finance.Setup(s => s.GetTransfersAsync()).ReturnsAsync(transfers ?? new List<Transfer>());
+
+        var service = new StatisticsService(
+            new Mock<IDiaryService>().Object, new Mock<ITodoService>().Object, finance.Object);
+        return (service, finance);
+    }
+
+    private static FinanceTransaction Spend(decimal amount, DateTime date, Guid? accountId = null)
+        => new() { Type = TransactionType.Expense, Amount = amount, Date = date, Category = "Food", AccountId = accountId };
+
+    [Fact]
+    public async Task GetFinanceStatisticsAsync_FetchesTwiceTheSelectedWindow()
+    {
+        // Pins the widened fetch. Narrowed back to N days the comparison card would silently show every
+        // figure as "new", which looks like a plausible empty state rather than a bug.
+        var (service, finance) = FinanceServiceOver(new List<FinanceTransaction>());
+
+        await service.GetFinanceStatisticsAsync(30);
+
+        finance.Verify(s => s.GetFinanceTransactionsForStatsAsync(
+            DateTime.Today.AddDays(-59), DateTime.Today), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetFinanceStatisticsAsync_KpisCoverOnlyTheSelectedWindow_NotTheBaseline()
+    {
+        var rows = new List<FinanceTransaction>
+        {
+            Spend(100m, DateTime.Today),
+            Spend(900m, DateTime.Today.AddDays(-40))   // inside the fetch, outside the window
+        };
+        var (service, _) = FinanceServiceOver(rows);
+
+        var stats = await service.GetFinanceStatisticsAsync(30);
+
+        stats.TotalExpense.Should().Be(100m);
+        stats.Comparison.Expense.Previous.Should().Be(900m, "the baseline is what the wider fetch is for");
+    }
+
+    [Fact]
+    public async Task GetFinanceStatisticsAsync_TrendTotalsEqualTheKpiTotals()
+    {
+        // The chart sits directly under the KPI tiles; one fetch is what makes them structurally agree.
+        var rows = Enumerable.Range(0, 20)
+            .Select(offset => Spend(10m, DateTime.Today.AddDays(-offset)))
+            .ToList();
+        var (service, _) = FinanceServiceOver(rows);
+
+        var stats = await service.GetFinanceStatisticsAsync(30);
+
+        stats.Trend.TotalExpense.Should().Be(stats.TotalExpense);
+    }
+
+    [Fact]
+    public async Task GetFinanceStatisticsAsync_WithAnAccount_ScopesTotalsAndSkipsTheBreakdown()
+    {
+        var card = new Account { Name = "Card" };
+        var cash = new Account { Name = "Cash" };
+        var rows = new List<FinanceTransaction>
+        {
+            Spend(100m, DateTime.Today, card.Id),
+            Spend(250m, DateTime.Today, cash.Id)
+        };
+        var (service, _) = FinanceServiceOver(rows, new List<Account> { card, cash });
+
+        var scoped = await service.GetFinanceStatisticsAsync(30, card.Id);
+
+        scoped.TotalExpense.Should().Be(100m);
+        scoped.Trend.TotalExpense.Should().Be(100m);
+        scoped.AccountBreakdown.Should().BeEmpty("one account is not a breakdown");
+    }
+
+    [Fact]
+    public async Task GetFinanceStatisticsAsync_WithAnAccount_RequestsTheSameDbRangeAsWithout()
+    {
+        // Guards against pushing the account predicate into LiteDB later: AccountId is a nullable Guid,
+        // whose LINQ translation is broken there, and it fails by returning nothing at all.
+        var card = new Account { Name = "Card" };
+        var (service, finance) = FinanceServiceOver(new List<FinanceTransaction>(), new List<Account> { card });
+
+        await service.GetFinanceStatisticsAsync(30);
+        await service.GetFinanceStatisticsAsync(30, card.Id);
+
+        finance.Verify(s => s.GetFinanceTransactionsForStatsAsync(
+            DateTime.Today.AddDays(-59), DateTime.Today), Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task GetFinanceStatisticsAsync_AccountBreakdownSumsToTheHeadlineTotals()
+    {
+        var card = new Account { Name = "Card" };
+        var rows = new List<FinanceTransaction>
+        {
+            Spend(100m, DateTime.Today, card.Id),
+            Spend(40m, DateTime.Today, null)      // never assigned — must still be counted somewhere
+        };
+        var (service, _) = FinanceServiceOver(rows, new List<Account> { card });
+
+        var stats = await service.GetFinanceStatisticsAsync(30);
+
+        stats.AccountBreakdown.Sum(r => r.Expense).Should().Be(stats.TotalExpense);
+    }
 }
