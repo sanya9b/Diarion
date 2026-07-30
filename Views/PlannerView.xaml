@@ -11,17 +11,17 @@
     <ContentView.Resources>
         <!-- One row shape, used by both the untimed tray and the hour grid. -->
         <DataTemplate x:Key="TodoRow" x:DataType="viewmodels:TodoItemViewModel">
-            <Border Margin="0,3" StrokeShape="RoundRectangle 18" StrokeThickness="0"
+            <Border Margin="0,1.5" StrokeShape="RoundRectangle 12" StrokeThickness="0"
                     BackgroundColor="{DynamicResource Theme_Snow_Black}">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding BindingContext.GoToTodoDetailsCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
                 </Border.GestureRecognizers>
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="{AppThemeBinding Light=0.05, Dark=0.2}" />
+                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,2" Radius="5" Opacity="{AppThemeBinding Light=0.04, Dark=0.15}" />
                 </Border.Shadow>
-                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" Padding="12,4" ColumnSpacing="10" VerticalOptions="Center">
-                    <Border Grid.Column="0" WidthRequest="22" HeightRequest="22" StrokeShape="RoundRectangle 6"
-                            StrokeThickness="2" VerticalOptions="Center">
+                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" Padding="9,2" ColumnSpacing="7" VerticalOptions="Center">
+                    <Border Grid.Column="0" WidthRequest="17" HeightRequest="17" StrokeShape="RoundRectangle 5"
+                            StrokeThickness="1.5" VerticalOptions="Center">
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="False">
                                 <Setter Property="BackgroundColor" Value="Transparent" />
@@ -55,10 +55,10 @@
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.ToggleTodoCompletionCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
-                        <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
+                        <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="10" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
                     </Border>
 
-                    <Label Grid.Column="1" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="14" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                    <Label Grid.Column="1" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="12.5" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}">
                         <Label.Triggers>
                             <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
                                 <Setter Property="TextDecorations" Value="Strikethrough" />
@@ -70,10 +70,10 @@
                     <!-- The real time, because an 08:30 task sits in the 08 row and would otherwise be
                          indistinguishable from one at 08:00. -->
                     <Label Grid.Column="2" Text="{Binding TargetTime, StringFormat='{0:hh\\:mm}'}" IsVisible="{Binding HasTime}"
-                           InputTransparent="True" FontSize="11" FontAttributes="Bold" VerticalOptions="Center"
+                           InputTransparent="True" FontSize="9.5" FontAttributes="Bold" VerticalOptions="Center"
                            TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                    <Border Grid.Column="3" StrokeShape="RoundRectangle 6" Padding="6,2" VerticalOptions="Center">
+                    <Border Grid.Column="3" StrokeShape="RoundRectangle 5" Padding="5,1" VerticalOptions="Center">
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Low">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
@@ -85,7 +85,7 @@
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label FontSize="10" FontAttributes="Bold" InputTransparent="True">
+                        <Label FontSize="8.5" FontAttributes="Bold" InputTransparent="True">
                             <Label.Triggers>
                                 <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Low">
                                     <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityLow}" />
@@ -103,11 +103,11 @@
                         </Label>
                     </Border>
 
-                    <ImageButton Grid.Column="4" WidthRequest="18" HeightRequest="18" VerticalOptions="Center" BackgroundColor="Transparent"
+                    <ImageButton Grid.Column="4" WidthRequest="15" HeightRequest="15" VerticalOptions="Center" BackgroundColor="Transparent"
                                  Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}"
                                  CommandParameter="{Binding .}">
                         <ImageButton.Source>
-                            <FontImageSource FontFamily="OpenSansRegular" Glyph="✕" Color="{DynamicResource Theme_Midnight_Dust}" Size="11" />
+                            <FontImageSource FontFamily="OpenSansRegular" Glyph="✕" Color="{DynamicResource Theme_Midnight_Dust}" Size="9" />
                         </ImageButton.Source>
                     </ImageButton>
                 </Grid>
@@ -115,7 +115,7 @@
         </DataTemplate>
     </ContentView.Resources>
 
-    <Grid RowDefinitions="Auto, *" Padding="20,2,20,20" RowSpacing="10">
+    <Grid RowDefinitions="Auto, *" Padding="14,2,14,14" RowSpacing="6">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalOptions="Center" ColumnSpacing="12">
             <Label Grid.Column="0" Text="{x:Static localization:AppResources.TodoListLabel}" FontAttributes="Bold" FontSize="16" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             
@@ -142,12 +142,12 @@
         </Grid>
 
         <ScrollView Grid.Row="1" BackgroundColor="Transparent">
-            <VerticalStackLayout Spacing="10">
+            <VerticalStackLayout Spacing="6">
 
                 <!-- Untimed tasks. They keep behaving exactly as before; the grid is an addition,
                      not a requirement to put a clock on everything. -->
-                <VerticalStackLayout Spacing="4" IsVisible="{Binding HasUntimedTodos}">
-                    <Label Text="{x:Static localization:AppResources.PlannerUntimedLabel}" FontSize="11" FontAttributes="Bold"
+                <VerticalStackLayout Spacing="2" IsVisible="{Binding HasUntimedTodos}">
+                    <Label Text="{x:Static localization:AppResources.PlannerUntimedLabel}" FontSize="9.5" FontAttributes="Bold"
                            CharacterSpacing="1.2" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding UntimedTodos}"
                                          BindableLayout.ItemTemplate="{StaticResource TodoRow}" />
@@ -157,14 +157,14 @@
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding HourSlots}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:PlannerHourSlot">
-                            <Grid ColumnDefinitions="32,*" ColumnSpacing="8" MinimumHeightRequest="34">
-                                <Label Grid.Column="0" Text="{Binding Label}" FontSize="11" FontAttributes="Bold"
-                                       VerticalOptions="Start" Margin="0,10,0,0"
+                            <Grid ColumnDefinitions="24,*" ColumnSpacing="6" MinimumHeightRequest="24">
+                                <Label Grid.Column="0" Text="{Binding Label}" FontSize="9.5" FontAttributes="Bold"
+                                       VerticalOptions="Start" Margin="0,6,0,0"
                                        TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
                                 <!-- Empty row: a tap starts a task already scheduled at this hour. -->
-                                <Border Grid.Column="1" IsVisible="{Binding IsEmpty}" HeightRequest="30"
-                                        StrokeShape="RoundRectangle 10" StrokeThickness="1" StrokeDashArray="3,3"
+                                <Border Grid.Column="1" IsVisible="{Binding IsEmpty}" HeightRequest="20"
+                                        StrokeShape="RoundRectangle 8" StrokeThickness="1" StrokeDashArray="3,3"
                                         Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding BindingContext.AddAtHourCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
