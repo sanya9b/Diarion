@@ -1704,6 +1704,10 @@ public static string ClearAllDataSuccessMsg {
         public static string StreakHeldByGraceHint {
             get { return ResourceManager.GetString("StreakHeldByGraceHint", resourceCulture) ?? "A forgiven day is holding this streak."; }
         }
+
+        public static string CycleSymptomsLabel {
+            get { return ResourceManager.GetString("CycleSymptomsLabel", resourceCulture) ?? "Symptoms"; }
+        }
     }
 }
 

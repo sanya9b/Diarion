@@ -1327,4 +1327,31 @@
   <data name="StreakHeldByGraceHint" xml:space="preserve">
     <value>A forgiven day is holding this streak.</value>
   </data>
+  <data name="CycleSymptomsLabel" xml:space="preserve">
+    <value>Symptoms</value>
+  </data>
+  <data name="CycleSymptomCramps" xml:space="preserve">
+    <value>Cramps</value>
+  </data>
+  <data name="CycleSymptomHeadache" xml:space="preserve">
+    <value>Headache</value>
+  </data>
+  <data name="CycleSymptomBloating" xml:space="preserve">
+    <value>Bloating</value>
+  </data>
+  <data name="CycleSymptomFatigue" xml:space="preserve">
+    <value>Fatigue</value>
+  </data>
+  <data name="CycleSymptomMoodSwings" xml:space="preserve">
+    <value>Mood swings</value>
+  </data>
+  <data name="CycleSymptomTenderness" xml:space="preserve">
+    <value>Tenderness</value>
+  </data>
+  <data name="CycleSymptomAcne" xml:space="preserve">
+    <value>Acne</value>
+  </data>
+  <data name="CycleSymptomCravings" xml:space="preserve">
+    <value>Cravings</value>
+  </data>
 </root>

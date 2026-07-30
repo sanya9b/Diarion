@@ -189,6 +189,22 @@ public class CycleLogServiceTests : IDisposable
         remaining.Symptoms.Should().Equal(CycleSymptoms.Cramps);
     }
 
+    [Theory]
+    [InlineData("en")]
+    [InlineData("uk")]
+    public void EverySymptomKeyResolvesToALabel(string culture)
+    {
+        // These are looked up by string at runtime, so a missing one compiles cleanly and then renders
+        // its own key on screen — exactly how MonthLabel shipped. A grep cannot see them; this can.
+        var info = new System.Globalization.CultureInfo(culture);
+
+        foreach (var key in CycleSymptoms.All)
+        {
+            Diarion.Resources.Localization.AppResources.ResourceManager.GetString(key, info)
+                .Should().NotBeNullOrWhiteSpace($"{key} must have a {culture} label");
+        }
+    }
+
     [Fact]
     public void ASymptomFlagLeftUnwrittenMeansAPeriodDay()
     {

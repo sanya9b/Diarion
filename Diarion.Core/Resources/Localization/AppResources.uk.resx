@@ -1453,4 +1453,31 @@
   <data name="StreakHeldByGraceHint" xml:space="preserve">
     <value>Серію тримає прощений день.</value>
   </data>
+  <data name="CycleSymptomsLabel" xml:space="preserve">
+    <value>Симптоми</value>
+  </data>
+  <data name="CycleSymptomCramps" xml:space="preserve">
+    <value>Спазми</value>
+  </data>
+  <data name="CycleSymptomHeadache" xml:space="preserve">
+    <value>Головний біль</value>
+  </data>
+  <data name="CycleSymptomBloating" xml:space="preserve">
+    <value>Здуття</value>
+  </data>
+  <data name="CycleSymptomFatigue" xml:space="preserve">
+    <value>Втома</value>
+  </data>
+  <data name="CycleSymptomMoodSwings" xml:space="preserve">
+    <value>Перепади настрою</value>
+  </data>
+  <data name="CycleSymptomTenderness" xml:space="preserve">
+    <value>Чутливість грудей</value>
+  </data>
+  <data name="CycleSymptomAcne" xml:space="preserve">
+    <value>Висипання</value>
+  </data>
+  <data name="CycleSymptomCravings" xml:space="preserve">
+    <value>Тяга до їжі</value>
+  </data>
 </root>

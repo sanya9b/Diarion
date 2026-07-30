@@ -109,6 +109,39 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
+                <!-- Symptom log. Any day can carry symptoms, not only a period day. -->
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <Label Grid.Column="0" Text="{x:Static localization:AppResources.CycleSymptomsLabel}"
+                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextTransform="Uppercase"
+                               VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <DatePicker Grid.Column="1" Date="{Binding SymptomDate}" MaximumDate="{Binding MaximumDate}"
+                                    Format="dd.MM.yyyy" FontSize="13" FontAttributes="Bold" VerticalOptions="Center"
+                                    BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    </Grid>
+
+                    <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignContent="Start"
+                                BindableLayout.ItemsSource="{Binding SymptomToggles}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:SymptomToggleViewModel">
+                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Margin="0,0,8,8"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="12,7">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleSymptomCommand}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{Binding Label}" FontSize="13" VerticalOptions="Center"
+                                           TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+
             </VerticalStackLayout>
         </ScrollView>
     </Grid>
