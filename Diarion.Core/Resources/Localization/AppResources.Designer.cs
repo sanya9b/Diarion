@@ -817,6 +817,18 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string RecurrenceEveryNDaysFormat {
+            get {
+                return ResourceManager.GetString("RecurrenceEveryNDaysFormat", resourceCulture) ?? "Every {0} days";
+            }
+        }
+
+        public static string RecurrenceMonthlyOnDayFormat {
+            get {
+                return ResourceManager.GetString("RecurrenceMonthlyOnDayFormat", resourceCulture) ?? "Monthly on day {0}";
+            }
+        }
+
         public static string HabitStreakWeeksSuffix {
             get {
                 return ResourceManager.GetString("HabitStreakWeeksSuffix", resourceCulture);
