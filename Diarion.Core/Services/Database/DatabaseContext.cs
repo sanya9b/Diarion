@@ -57,6 +57,9 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         var transfersCollection = _db.GetCollection<Transfer>(DatabaseConstants.TransfersCollection);
         // No index: a few dozen rows, read once per day-load, and every write would have to maintain it.
         _db.GetCollection<GuidedPrompt>(DatabaseConstants.GuidedPromptsCollection);
+        // No index either: a handful of rules read once per finance-page load, and a Date index would be
+        // meaningless on a rule, which has a recurrence rather than a date.
+        _db.GetCollection<RecurringTransaction>(DatabaseConstants.RecurringTransactionsCollection);
 
         entriesCollection.EnsureIndex(x => x.Date);
         wishlistCollection.EnsureIndex(x => x.Date);

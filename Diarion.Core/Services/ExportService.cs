@@ -35,6 +35,7 @@ public class ExportService : IExportService
         DatabaseConstants.BudgetsCollection,
         DatabaseConstants.AccountsCollection,
         DatabaseConstants.TransfersCollection,
+        DatabaseConstants.RecurringTransactionsCollection,
         DatabaseConstants.GuidedPromptsCollection,
     };
 
@@ -102,6 +103,11 @@ public class ExportService : IExportService
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Recurring rules are deliberately absent. Their posted rows are already in the transactions block,
+    /// which is the complete answer to "what happened to my money"; a block of rules would be a table of
+    /// things that have not happened, in a file people sum in a spreadsheet.
+    /// </summary>
     private string BuildFinanceCsv()
     {
         var accountNames = _dbContext.GetCollection<Account>(DatabaseConstants.AccountsCollection)
