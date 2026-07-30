@@ -81,7 +81,7 @@ public class HabitServiceTests : IDisposable
             Id = Guid.NewGuid(),
             Name = "Gym",
             CreatedAt = monday.AddDays(-7),
-            Schedule = new HabitSchedule { Type = HabitScheduleType.SpecificDays, DaysOfWeek = new() { (int)DayOfWeek.Monday } }
+            Schedule = new RecurrenceRule { Kind = RecurrenceKind.Weekly, DaysOfWeek = new() { (int)DayOfWeek.Monday } }
         });
 
         var onMonday = await _service.GetActiveHabitsForDateAsync(monday);

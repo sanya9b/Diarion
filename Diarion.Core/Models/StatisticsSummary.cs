@@ -83,7 +83,8 @@ public class HabitCompletionHistory
     public Guid HabitId { get; set; }
     public string Name { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
-    public HabitSchedule Schedule { get; set; } = new();
+    public RecurrenceRule Schedule { get; set; } = new();
+    public CompletionTarget? Target { get; set; }
     public HashSet<DateTime> CompletedDates { get; set; } = new();
 }
 

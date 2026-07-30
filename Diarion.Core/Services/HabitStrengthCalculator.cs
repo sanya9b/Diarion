@@ -13,13 +13,18 @@ namespace Diarion.Services;
 public static class HabitStrengthCalculator
 {
     private const double HalfLifeDays = 30.0;
-    private static readonly HabitSchedule DailySchedule = new() { Type = HabitScheduleType.Daily };
+    private static readonly RecurrenceRule DailySchedule = new() { Kind = RecurrenceKind.Daily };
 
     public static double Strength(ISet<DateTime> completedDates, DateTime from, DateTime today)
         => Strength(completedDates, from, today, DailySchedule);
 
     /// <summary>Habit strength in [0, 100]. Applies the EMA on each scheduled day in [from, today].</summary>
-    public static double Strength(ISet<DateTime> completedDates, DateTime from, DateTime today, HabitSchedule? schedule)
+    public static double Strength(
+        ISet<DateTime> completedDates,
+        DateTime from,
+        DateTime today,
+        RecurrenceRule? schedule,
+        CompletionTarget? target = null)
     {
         if (completedDates == null) return 0;
 
@@ -29,16 +34,16 @@ public static class HabitStrengthCalculator
 
         var sched = schedule ?? DailySchedule;
 
-        if (sched.Type == HabitScheduleType.TimesPerWeek)
+        if (target != null)
         {
-            return WeeklyStrength(completedDates, start, end, Math.Max(1, sched.TimesPerWeek));
+            return WeeklyStrength(completedDates, start, end, Math.Max(1, target.TimesPerWeek));
         }
 
         double alpha = 1.0 - Math.Pow(0.5, 1.0 / HalfLifeDays);
         double score = 0.0;
         for (var d = start; d <= end; d = d.AddDays(1))
         {
-            if (!sched.IsScheduledOn(d)) continue;
+            if (!sched.IsOccurrenceOn(d)) continue;
             double value = completedDates.Contains(d.Date) ? 1.0 : 0.0;
             score += (value - score) * alpha;
         }
@@ -47,29 +52,34 @@ public static class HabitStrengthCalculator
     }
 
     public static int CurrentStreak(ISet<DateTime> completedDates, DateTime today)
-        => CurrentStreak(completedDates, today, DailySchedule, graceDays: 0);
+        => CurrentStreak(completedDates, today, DailySchedule, target: null, graceDays: 0);
 
-    public static int CurrentStreak(ISet<DateTime> completedDates, DateTime today, HabitSchedule? schedule)
-        => CurrentStreak(completedDates, today, schedule, graceDays: 0);
+    public static int CurrentStreak(ISet<DateTime> completedDates, DateTime today, RecurrenceRule? schedule)
+        => CurrentStreak(completedDates, today, schedule, target: null, graceDays: 0);
 
     /// <summary>
     /// Consecutive completed <b>scheduled</b> days ending at the latest scheduled day on/before today.
     /// An unfinished today (its scheduled slot not yet done) doesn't break the streak. Up to
     /// <paramref name="graceDays"/> missed scheduled days are forgiven across the run; days the habit was
-    /// never due on cost nothing. TimesPerWeek counts whole weeks, so grace does not apply to it.
+    /// never due on cost nothing. A quota habit counts whole weeks, so grace does not apply to it.
     /// </summary>
-    public static int CurrentStreak(ISet<DateTime> completedDates, DateTime today, HabitSchedule? schedule, int graceDays)
+    public static int CurrentStreak(
+        ISet<DateTime> completedDates,
+        DateTime today,
+        RecurrenceRule? schedule,
+        CompletionTarget? target,
+        int graceDays)
     {
         if (completedDates == null || completedDates.Count == 0) return 0;
 
         var sched = schedule ?? DailySchedule;
 
-        if (sched.Type == HabitScheduleType.TimesPerWeek)
+        if (target != null)
         {
-            return WeeklyStreak(completedDates, today.Date, Math.Max(1, sched.TimesPerWeek));
+            return WeeklyStreak(completedDates, today.Date, Math.Max(1, target.TimesPerWeek));
         }
 
-        return StreakWalker.Walk(completedDates, today, graceDays, sched.IsScheduledOn).Length;
+        return StreakWalker.Walk(completedDates, today, graceDays, sched.IsOccurrenceOn).Length;
     }
 
     // --- TimesPerWeek (weekly granularity) ---

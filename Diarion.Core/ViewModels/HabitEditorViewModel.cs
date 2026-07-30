@@ -116,11 +116,11 @@ public partial class HabitEditorViewModel : BaseViewModel
 
         Name = (string.IsNullOrEmpty(def.Name) ? HabitLocalization.ResolveName(def) : def.Name) ?? string.Empty;
 
-        var schedule = def.Schedule ?? new HabitSchedule();
-        IsDaily = schedule.Type == HabitScheduleType.Daily;
-        IsSpecificDays = schedule.Type == HabitScheduleType.SpecificDays;
-        IsTimesPerWeek = schedule.Type == HabitScheduleType.TimesPerWeek;
-        if (schedule.TimesPerWeek is >= 1 and <= 7) TimesPerWeek = schedule.TimesPerWeek;
+        var schedule = def.Schedule ?? new RecurrenceRule();
+        IsTimesPerWeek = def.Target != null;
+        IsSpecificDays = !IsTimesPerWeek && schedule.Kind == RecurrenceKind.Weekly;
+        IsDaily = !IsTimesPerWeek && !IsSpecificDays;
+        if (def.Target?.TimesPerWeek is >= 1 and <= 7) TimesPerWeek = def.Target.TimesPerWeek;
 
         ReminderEnabled = def.ReminderTime.HasValue;
         if (def.ReminderTime.HasValue) ReminderTime = def.ReminderTime.Value;
@@ -180,11 +180,13 @@ public partial class HabitEditorViewModel : BaseViewModel
             return;
         }
 
-        var schedule = new HabitSchedule();
+        var schedule = new RecurrenceRule();
+        CompletionTarget? target = null;
         if (IsTimesPerWeek)
         {
-            schedule.Type = HabitScheduleType.TimesPerWeek;
-            schedule.TimesPerWeek = Math.Clamp(TimesPerWeek, 1, 7);
+            // A quota is open on every day; the target carries the "how many".
+            schedule.Kind = RecurrenceKind.Daily;
+            target = new CompletionTarget { TimesPerWeek = Math.Clamp(TimesPerWeek, 1, 7) };
         }
         else if (IsSpecificDays)
         {
@@ -194,12 +196,12 @@ public partial class HabitEditorViewModel : BaseViewModel
                 ValidationMessage = AppResources.HabitEditorDaysRequired;
                 return;
             }
-            schedule.Type = HabitScheduleType.SpecificDays;
+            schedule.Kind = RecurrenceKind.Weekly;
             schedule.DaysOfWeek = days;
         }
         else
         {
-            schedule.Type = HabitScheduleType.Daily;
+            schedule.Kind = RecurrenceKind.Daily;
         }
 
         TimeSpan? reminder = ReminderEnabled ? ReminderTime : null;
@@ -217,6 +219,7 @@ public partial class HabitEditorViewModel : BaseViewModel
             def.Name = name;
             def.ResourceKey = string.Empty; // an edited name overrides any built-in localization key
             def.Schedule = schedule;
+            def.Target = target;
             def.ReminderTime = reminder;
             await _habitService.UpdateHabitDefinitionAsync(def);
             savedId = def.Id;
@@ -227,6 +230,7 @@ public partial class HabitEditorViewModel : BaseViewModel
             {
                 Name = name,
                 Schedule = schedule,
+                Target = target,
                 ReminderTime = reminder,
                 CreatedAt = DateTime.Today
             };
@@ -239,12 +243,13 @@ public partial class HabitEditorViewModel : BaseViewModel
         await _navigationService.NavigateBackAsync();
     }
 
-    private async Task ApplyReminderAsync(Guid habitId, string name, TimeSpan? reminder, HabitSchedule schedule)
+    private async Task ApplyReminderAsync(Guid habitId, string name, TimeSpan? reminder, RecurrenceRule schedule)
     {
         if (reminder.HasValue)
         {
             await _notificationService.RequestPermissionsAsync();
-            var weekdays = schedule.Type == HabitScheduleType.SpecificDays ? schedule.DaysOfWeek : null;
+            // A quota habit is genuinely Daily now, so it keeps getting the daily reminder it always got.
+            var weekdays = schedule.Kind == RecurrenceKind.Weekly ? schedule.DaysOfWeek : null;
             _notificationService.ScheduleHabitReminder(habitId, name, reminder.Value, weekdays);
         }
         else

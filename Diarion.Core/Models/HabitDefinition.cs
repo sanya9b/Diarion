@@ -19,12 +19,19 @@ public class HabitDefinition
     public DateTime? DeletedAt { get; set; }
 
     /// <summary>When this habit is expected. Defaults to daily; legacy rows without a stored schedule
-    /// deserialize to this default too.</summary>
-    public HabitSchedule Schedule { get; set; } = new();
+    /// deserialize to this default too. The habit's own window is <see cref="CreatedAt"/>/<see cref="DeletedAt"/>,
+    /// so the rule's own Anchor and EndDate are left unset.</summary>
+    public RecurrenceRule Schedule { get; set; } = new();
+
+    /// <summary>
+    /// Optional weekly quota ("any 3 days a week"). Null — the normal case — means the schedule alone
+    /// decides. When set, strength and streak are counted in weeks and the schedule stays open on every day.
+    /// </summary>
+    public CompletionTarget? Target { get; set; }
 
     /// <summary>Optional daily reminder time-of-day. Null means no reminder.</summary>
     public TimeSpan? ReminderTime { get; set; }
 
     /// <summary>Whether the habit is expected on <paramref name="date"/> (null-safe over <see cref="Schedule"/>).</summary>
-    public bool IsScheduledOn(DateTime date) => (Schedule ?? new HabitSchedule()).IsScheduledOn(date);
+    public bool IsScheduledOn(DateTime date) => (Schedule ?? new RecurrenceRule()).IsOccurrenceOn(date);
 }
