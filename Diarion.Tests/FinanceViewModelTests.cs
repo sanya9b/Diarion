@@ -751,7 +751,8 @@ public class FinanceViewModelTests
 
         saved.Should().NotBeNull();
         saved!.Amount.Should().Be(8000m);
-        saved.LastPostedThrough.Date.Should().Be(DateTime.Today.AddDays(-1));
+        // Today is already "dealt with", so nothing is written the moment the rule is created.
+        saved.LastPostedThrough.Date.Should().Be(DateTime.Today);
         saved.Recurrence.Anchor.Date.Should().Be(DateTime.Today);
         viewModel.IsRecurringFormVisible.Should().BeFalse();
     }

@@ -654,9 +654,11 @@ public partial class FinanceViewModel : BaseViewModel
                 DayOfMonth = start.Day,
                 DaysOfWeek = new List<int> { (int)start.DayOfWeek }
             },
-            // A start in the past is taken at its word and back-fills from there; the usual case, today,
-            // means "from now on" and posts nothing retroactively.
-            LastPostedThrough = start > DateTime.Today ? DateTime.Today : start.AddDays(-1)
+            // A start in the past is taken at its word and back-fills from there. Anything else — the
+            // usual case of starting today — means "from now on": today counts as already dealt with, so
+            // the first post is the next occurrence. Reading it the other way would guess that this
+            // month's rent has not been entered yet, and guessing wrong writes money into the ledger.
+            LastPostedThrough = start < DateTime.Today ? start.AddDays(-1) : DateTime.Today
         };
 
         await _financeService.SaveRecurringTransactionAsync(rule);
