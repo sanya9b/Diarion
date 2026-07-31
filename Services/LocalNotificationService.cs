@@ -144,6 +144,85 @@ public class LocalNotificationService : INotificationService
 #endif
     }
 
+    // Reminder ids for a task rule: slot 0 = daily, slots 1..7 = weekly per weekday, 8.. = one-shot
+    // occurrences. Kept apart from the habit slots by the salt, so two features cannot cancel each other.
+    private const int TaskReminderSlots = 40;
+    private static int TaskRuleReminderId(Guid ruleId, int slot)
+        => unchecked(ruleId.GetHashCode() * 131 + 7919 + slot);
+
+    public void ScheduleRepeatingTaskReminder(Guid ruleId, string title, TimeSpan timeOfDay, IReadOnlyList<int>? weekdays)
+    {
+#if ANDROID || IOS || MACCATALYST
+        CancelRepeatingTaskReminder(ruleId);
+        var now = DateTime.Now;
+
+        if (weekdays == null || weekdays.Count == 0)
+        {
+            var next = now.Date.Add(timeOfDay);
+            if (next <= now) next = next.AddDays(1);
+
+            LocalNotificationCenter.Current.Show(new NotificationRequest
+            {
+                NotificationId = TaskRuleReminderId(ruleId, 0),
+                Title = title,
+                Schedule = new NotificationRequestSchedule
+                {
+                    NotifyTime = next,
+                    RepeatType = NotificationRepeat.Daily
+                }
+            });
+            return;
+        }
+
+        foreach (var day in weekdays.Distinct())
+        {
+            var next = now.Date.Add(timeOfDay);
+            int daysUntil = ((day - (int)next.DayOfWeek) + 7) % 7;
+            next = next.AddDays(daysUntil);
+            if (next <= now) next = next.AddDays(7);
+
+            LocalNotificationCenter.Current.Show(new NotificationRequest
+            {
+                NotificationId = TaskRuleReminderId(ruleId, day + 1),
+                Title = title,
+                Schedule = new NotificationRequestSchedule
+                {
+                    NotifyTime = next,
+                    RepeatType = NotificationRepeat.Weekly
+                }
+            });
+        }
+#endif
+    }
+
+    public void ScheduleTaskOccurrenceReminders(Guid ruleId, string title, IReadOnlyList<DateTime> moments)
+    {
+#if ANDROID || IOS || MACCATALYST
+        CancelRepeatingTaskReminder(ruleId);
+
+        var slot = 8;
+        foreach (var moment in moments.Where(m => m > DateTime.Now).Take(TaskReminderSlots - 8))
+        {
+            LocalNotificationCenter.Current.Show(new NotificationRequest
+            {
+                NotificationId = TaskRuleReminderId(ruleId, slot++),
+                Title = title,
+                Schedule = new NotificationRequestSchedule { NotifyTime = moment }
+            });
+        }
+#endif
+    }
+
+    public void CancelRepeatingTaskReminder(Guid ruleId)
+    {
+#if ANDROID || IOS || MACCATALYST
+        for (int slot = 0; slot < TaskReminderSlots; slot++)
+        {
+            LocalNotificationCenter.Current.Cancel(TaskRuleReminderId(ruleId, slot));
+        }
+#endif
+    }
+
     public async Task<bool> RequestPermissionsAsync()
     {
 #if ANDROID || IOS || MACCATALYST

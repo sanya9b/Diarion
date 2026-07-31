@@ -527,6 +527,106 @@ public class DiaryServiceTests : IDisposable
             Times.Once);
     }
 
+    [Fact]
+    public async Task SetRecurrenceAsync_AWeeklyReminderIsHandedToThePlatformRepeat()
+    {
+        // The point of the whole reminder change: this has to be scheduled when the rule is made, not when
+        // its day is eventually opened, or the one day the user relied on being told about is the one day
+        // they had no reason to look at.
+        var notifications = new Mock<INotificationService>();
+        var service = new TodoService(_dbContext, notifications.Object);
+        var todo = new TodoItem
+        {
+            TaskDescription = "Теніс",
+            TargetDate = DateTime.Today,
+            HasTime = true,
+            TargetTime = new TimeSpan(18, 0, 0),
+            HasReminder = true
+        };
+        await service.SaveTodoAsync(todo);
+
+        await service.SetRecurrenceAsync(todo.Id, new RecurrenceRule
+        {
+            Kind = RecurrenceKind.Weekly,
+            DaysOfWeek = new List<int> { (int)DayOfWeek.Tuesday },
+            Anchor = DateTime.Today
+        });
+
+        notifications.Verify(n => n.ScheduleRepeatingTaskReminder(
+            It.IsAny<Guid>(), "Теніс", new TimeSpan(18, 0, 0),
+            It.Is<IReadOnlyList<int>>(d => d.Contains((int)DayOfWeek.Tuesday))), Times.Once);
+    }
+
+    [Fact]
+    public async Task SetRecurrenceAsync_ARuleWithAnEndDateIsScheduledOccurrenceByOccurrence()
+    {
+        // A platform repeat has no end. Left to it, a rule that stops in a fortnight would go on reminding
+        // the user for years.
+        var notifications = new Mock<INotificationService>();
+        var service = new TodoService(_dbContext, notifications.Object);
+        var todo = new TodoItem
+        {
+            TaskDescription = "Курс",
+            TargetDate = DateTime.Today,
+            HasTime = true,
+            TargetTime = new TimeSpan(9, 0, 0),
+            HasReminder = true
+        };
+        await service.SaveTodoAsync(todo);
+
+        await service.SetRecurrenceAsync(todo.Id, new RecurrenceRule
+        {
+            Kind = RecurrenceKind.Daily,
+            Anchor = DateTime.Today,
+            EndDate = DateTime.Today.AddDays(14)
+        });
+
+        notifications.Verify(n => n.ScheduleRepeatingTaskReminder(
+            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<IReadOnlyList<int>>()), Times.Never);
+        notifications.Verify(n => n.ScheduleTaskOccurrenceReminders(
+            It.IsAny<Guid>(), "Курс", It.Is<IReadOnlyList<DateTime>>(m => m.Count > 0 && m.Count <= 15)), Times.Once);
+    }
+
+    [Fact]
+    public async Task SetRecurrenceAsync_ARuleWithoutAReminderSchedulesNothing()
+    {
+        var notifications = new Mock<INotificationService>();
+        var service = new TodoService(_dbContext, notifications.Object);
+        var todo = new TodoItem { TaskDescription = "Тиша", TargetDate = DateTime.Today };
+        await service.SaveTodoAsync(todo);
+        notifications.Invocations.Clear();
+
+        await service.SetRecurrenceAsync(todo.Id, new RecurrenceRule { Kind = RecurrenceKind.Daily, Anchor = DateTime.Today });
+
+        notifications.Verify(n => n.ScheduleRepeatingTaskReminder(
+            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<IReadOnlyList<int>>()), Times.Never);
+        notifications.Verify(n => n.CancelRepeatingTaskReminder(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task SetRecurrenceAsync_EndingASeriesCancelsItsStandingReminder()
+    {
+        var notifications = new Mock<INotificationService>();
+        var service = new TodoService(_dbContext, notifications.Object);
+        var todo = new TodoItem
+        {
+            TaskDescription = "Теніс",
+            TargetDate = DateTime.Today,
+            HasTime = true,
+            TargetTime = new TimeSpan(18, 0, 0),
+            HasReminder = true
+        };
+        await service.SaveTodoAsync(todo);
+        await service.SetRecurrenceAsync(todo.Id, new RecurrenceRule { Kind = RecurrenceKind.Daily, Anchor = DateTime.Today });
+        notifications.Invocations.Clear();
+
+        await service.SetRecurrenceAsync(todo.Id, null);
+
+        notifications.Verify(n => n.CancelRepeatingTaskReminder(It.IsAny<Guid>()), Times.Once);
+        notifications.Verify(n => n.ScheduleRepeatingTaskReminder(
+            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<IReadOnlyList<int>>()), Times.Never);
+    }
+
     /// <summary>A day only counts towards the streak if the user put something in it.</summary>
     private static DiaryEntry JournaledOn(DateTime date) =>
         new() { Date = date, Emotion = Emotion.Calm };

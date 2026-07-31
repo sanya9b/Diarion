@@ -130,10 +130,20 @@ public class TodoService : ITodoService
         }
     }
 
+    private bool _remindersResynced;
+
     private void GenerateRepeatingTasks(DateTime dateOnly, List<TodoItem> items)
     {
         var rules = RecurringTasksCollection.FindAll().ToList();
         if (rules.Count == 0) return;
+
+        // Once per session, on the first look at today: one-shot reminders are laid down 90 days out, so
+        // without this they would quietly run out for anyone who stops editing their rules.
+        if (!_remindersResynced && dateOnly == DateTime.Today)
+        {
+            _remindersResynced = true;
+            foreach (var rule in rules) SyncRuleReminder(rule);
+        }
 
         foreach (var occurrence in RecurringTaskPlanner.PlanForDay(rules, items, dateOnly))
         {
@@ -206,6 +216,9 @@ public class TodoService : ITodoService
                 {
                     rule.Skip(todo.TargetDate);
                     RecurringTasksCollection.Update(rule);
+                    // A skipped day changes what the reminders should be, and a native repeat cannot miss
+                    // a day out — so this may also be what moves the rule onto one-shot scheduling.
+                    SyncRuleReminder(rule);
                 }
             }
 
@@ -237,6 +250,7 @@ public class TodoService : ITodoService
                 // provenance keeps it pinned against auto-migration, and keeps it deleted if deleted.
                 rule.Recurrence.EndDate = todo.TargetDate.AddDays(-1);
                 RecurringTasksCollection.Update(rule);
+                SyncRuleReminder(rule);
                 return;
             }
 
@@ -256,6 +270,7 @@ public class TodoService : ITodoService
                 RecurringTasksCollection.Insert(rule);
                 todo.RecurringTaskId = rule.Id;
                 TodosCollection.Update(todo);
+                SyncRuleReminder(rule);
                 return;
             }
 
@@ -264,7 +279,58 @@ public class TodoService : ITodoService
             recurrence.Anchor = rule.Recurrence.Anchor;
             rule.Recurrence = recurrence;
             RecurringTasksCollection.Update(rule);
+            SyncRuleReminder(rule);
         });
+    }
+
+    /// <summary>
+    /// How far ahead one-shot reminders are laid down for the rules no platform repeat can express.
+    /// Re-laid whenever the rule is touched and once per session on the first read of today, so the
+    /// window only runs out for someone who has not opened the app in three months.
+    /// </summary>
+    private const int ReminderLookaheadDays = 90;
+
+    /// <summary>
+    /// Puts the rule's reminder where the operating system will fire it without the app being opened.
+    /// Materializing an occurrence is what used to schedule the notification, and materializing is lazy,
+    /// so a task set for next Friday stayed silent unless the user happened to look at next Friday — which
+    /// is precisely the day they were relying on being told about.
+    /// </summary>
+    private void SyncRuleReminder(RecurringTask rule)
+    {
+        if (_notificationService == null) return;
+
+        _notificationService.CancelRepeatingTaskReminder(rule.Id);
+
+        var recurrence = rule.Recurrence ?? new RecurrenceRule();
+        if (!rule.HasReminder || !rule.HasTime) return;
+        if (recurrence.EndDate != null && recurrence.EndDate < DateTime.Today) return;
+
+        // The platform's own repeat only says "every day" or "every weekday N" — it cannot stop on a date
+        // and cannot miss one out. Anything bounded or skipped is laid down occurrence by occurrence.
+        var canRepeatNatively =
+            recurrence.EndDate == null
+            && rule.SkippedDates.Count == 0
+            && recurrence.Kind is RecurrenceKind.Daily or RecurrenceKind.Weekly;
+
+        if (canRepeatNatively)
+        {
+            _notificationService.ScheduleRepeatingTaskReminder(
+                rule.Id,
+                rule.TaskDescription,
+                rule.TargetTime,
+                recurrence.Kind == RecurrenceKind.Weekly ? recurrence.DaysOfWeek : null);
+            return;
+        }
+
+        var moments = recurrence
+            .Enumerate(DateTime.Today, DateTime.Today.AddDays(ReminderLookaheadDays))
+            .Where(day => !rule.IsSkipped(day))
+            .Select(day => day.Add(rule.TargetTime))
+            .Where(moment => moment > DateTime.Now)
+            .ToList();
+
+        _notificationService.ScheduleTaskOccurrenceReminders(rule.Id, rule.TaskDescription, moments);
     }
 
     /// <summary>
@@ -286,7 +352,9 @@ public class TodoService : ITodoService
         if (existing.TargetTime != todo.TargetTime) { rule.TargetTime = todo.TargetTime; changed = true; }
         if (existing.HasReminder != todo.HasReminder) { rule.HasReminder = todo.HasReminder; changed = true; }
 
-        if (changed) RecurringTasksCollection.Update(rule);
+        if (!changed) return;
+        RecurringTasksCollection.Update(rule);
+        SyncRuleReminder(rule);
     }
 
     public Task DeleteTodosByDiaryEntryAsync(Guid diaryEntryId)
