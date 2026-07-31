@@ -36,6 +36,14 @@ public class TodoItem
 
     public string? RepeatGroupId { get; set; }
 
+    /// <summary>
+    /// The <see cref="RecurringTask"/> that materialized this row, or null for a one-off. Nullable so rows
+    /// written before repeats moved onto a rule deserialize to null without a migration. Together with
+    /// <see cref="TargetDate"/> it also identifies an occurrence, which is what stops a series producing
+    /// the same day twice, and it is what pins the row against being dragged forward by auto-migration.
+    /// </summary>
+    public Guid? RecurringTaskId { get; set; }
+
     public bool HasReminder { get; set; }
     
     public TodoPriority Priority { get; set; } = TodoPriority.Medium;

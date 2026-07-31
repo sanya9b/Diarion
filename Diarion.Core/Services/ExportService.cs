@@ -38,6 +38,7 @@ public class ExportService : IExportService
         DatabaseConstants.RecurringTransactionsCollection,
         DatabaseConstants.GuidedPromptsCollection,
         DatabaseConstants.CycleLogsCollection,
+        DatabaseConstants.RecurringTasksCollection,
     };
 
     private readonly IDatabaseContext _dbContext;
