@@ -1456,6 +1456,9 @@
   <data name="CycleSymptomsLabel" xml:space="preserve">
     <value>Симптоми</value>
   </data>
+  <data name="PlannerUntimedLabel" xml:space="preserve">
+    <value>Без часу</value>
+  </data>
   <data name="CycleSymptomCramps" xml:space="preserve">
     <value>Спазми</value>
   </data>

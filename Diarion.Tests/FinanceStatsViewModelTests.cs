@@ -76,7 +76,9 @@ public class FinanceStatsViewModelTests : IDisposable
         await _viewModel.LoadDataAsync(365);
 
         _viewModel.TrendTitle.Should().Be(Diarion.Resources.Localization.AppResources.StatsTrendByMonth);
-        _viewModel.TrendBuckets.Should().HaveCount(13);
+        // 12 or 13, depending on today: a year ending on the last day of a month starts on the first of
+        // one, so both edges land on month boundaries. Exact edges are pinned in ReportPeriodTests.
+        _viewModel.TrendBuckets.Count.Should().BeInRange(12, 13);
         _viewModel.TrendBuckets.Should().OnlyContain(b => !string.IsNullOrWhiteSpace(b.Label));
     }
 
@@ -85,11 +87,13 @@ public class FinanceStatsViewModelTests : IDisposable
     {
         await AddAsync(TransactionType.Expense, 100m, 1);
 
-        await _viewModel.LoadDataAsync(365);
+        // Weekly, because 30 is not a multiple of 7: the leftover bucket exists on every calendar day of
+        // every year. Which *monthly* edges get clipped depends on today, so that lives in ReportPeriodTests.
+        await _viewModel.LoadDataAsync(30);
 
-        // The rolling window clips both ends; an undimmed short bar reads as a collapse in spending.
+        // An undimmed short bar reads as a collapse in spending, so the flag has to reach the chart item.
         _viewModel.TrendBuckets.First().IsPartial.Should().BeTrue();
-        _viewModel.TrendBuckets.Last().IsPartial.Should().BeTrue();
+        _viewModel.TrendBuckets.Last().IsPartial.Should().BeFalse("weeks anchor to the window end");
     }
 
     [Fact]
