@@ -95,7 +95,10 @@ public partial class TodoDetailViewModel : BaseViewModel
     private DateTime _recurrenceEndDate = DateTime.Today.AddMonths(1);
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasRecurrenceError))]
     private string _recurrenceError = string.Empty;
+
+    public bool HasRecurrenceError => !string.IsNullOrWhiteSpace(RecurrenceError);
 
     /// <summary>Reads the rule back in words, through the formatter finance and habits already share.</summary>
     public string RecurrenceSummary => IsRecurring ? RecurrenceFormatter.Describe(ComposeRule()) : string.Empty;

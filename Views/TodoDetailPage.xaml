@@ -89,6 +89,132 @@
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskRepeatLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
 
+                        <VerticalStackLayout Spacing="10" IsVisible="{Binding IsRecurring}" Margin="34,0,0,0">
+                            <!-- Kind. Four chips in the priority idiom above, one bound bool each: DataTrigger
+                                 cannot compare an enum to a parameter, so the ViewModel exposes the comparison. -->
+                            <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Center">
+                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceDaily}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="Daily" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{x:Static localization:AppResources.RecurrenceDailyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </Border>
+
+                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceWeekly}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="Weekly" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{x:Static localization:AppResources.RecurrenceWeeklyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </Border>
+
+                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceInterval}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="IntervalDays" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{Binding EveryNDays, StringFormat={x:Static localization:AppResources.RecurrenceEveryNDaysFormat}}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </Border>
+
+                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceMonthly}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="MonthlyByDay" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{x:Static localization:AppResources.RecurrenceMonthlyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </Border>
+                            </FlexLayout>
+
+                            <!-- Weekdays, only for the weekly kind. Monday first, named by the culture. -->
+                            <FlexLayout Wrap="Wrap" JustifyContent="Start" IsVisible="{Binding IsRecurrenceWeekly}"
+                                        BindableLayout.ItemsSource="{Binding Weekdays}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="viewmodels:WeekdayToggle">
+                                        <Border StrokeShape="RoundRectangle 15" StrokeThickness="1" WidthRequest="38" HeightRequest="30" Margin="0,0,6,6"
+                                                Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TodoDetailViewModel}}, Path=ToggleWeekdayCommand}" CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="{Binding ShortName}" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" FontSize="11" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </FlexLayout>
+
+                            <!-- Every N days -->
+                            <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10" IsVisible="{Binding IsRecurrenceInterval}">
+                                <Label Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding DecrementEveryNCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label Grid.Column="1" Text="{Binding EveryNDays}" FontSize="15" WidthRequest="34" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Label Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding IncrementEveryNCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+
+                            <!-- Day of month -->
+                            <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10" IsVisible="{Binding IsRecurrenceMonthly}">
+                                <Label Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding DecrementDayOfMonthCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label Grid.Column="1" Text="{Binding DayOfMonth}" FontSize="15" WidthRequest="34" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Label Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding IncrementDayOfMonthCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <CheckBox IsChecked="{Binding HasRecurrenceEnd}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{x:Static localization:AppResources.RecurrenceEndDateLabel}" VerticalOptions="Center" FontSize="13" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </Grid>
+                            <DatePicker Date="{Binding RecurrenceEndDate}" IsVisible="{Binding HasRecurrenceEnd}" Format="dd.MM.yyyy"
+                                        TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
+
+                            <!-- The rule read back in words, so the chips above are never the only statement of it. -->
+                            <Label Text="{Binding RecurrenceSummary}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Label Text="{Binding RecurrenceError}" IsVisible="{Binding HasRecurrenceError}"
+                                   FontSize="12" TextColor="{DynamicResource Theme_Coral}" />
+                        </VerticalStackLayout>
+
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <CheckBox IsChecked="{Binding HasReminder}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.ReminderLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />

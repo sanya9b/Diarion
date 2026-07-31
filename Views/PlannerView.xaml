@@ -19,7 +19,7 @@
                 <Border.Shadow>
                     <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,2" Radius="5" Opacity="{AppThemeBinding Light=0.04, Dark=0.15}" />
                 </Border.Shadow>
-                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" Padding="9,2" ColumnSpacing="7" VerticalOptions="Center">
+                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto, Auto" Padding="9,2" ColumnSpacing="7" VerticalOptions="Center">
                     <Border Grid.Column="0" WidthRequest="17" HeightRequest="17" StrokeShape="RoundRectangle 5"
                             StrokeThickness="1.5" VerticalOptions="Center">
                         <Border.Triggers>
@@ -67,13 +67,20 @@
                         </Label.Triggers>
                     </Label>
 
+                    <!-- Marks a row that belongs to a series. A glyph rather than a colour: the palette does
+                         not distinguish by hue alone, the same reason the grace-held streak carries an
+                         asterisk instead of a tint. -->
+                    <Label Grid.Column="2" Text="↻" IsVisible="{Binding IsRecurring}" InputTransparent="True"
+                           FontSize="11" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}"
+                           SemanticProperties.Description="{x:Static localization:AppResources.RecurringTaskAccessibility}" />
+
                     <!-- The real time, because an 08:30 task sits in the 08 row and would otherwise be
                          indistinguishable from one at 08:00. -->
-                    <Label Grid.Column="2" Text="{Binding TargetTime, StringFormat='{0:hh\\:mm}'}" IsVisible="{Binding HasTime}"
+                    <Label Grid.Column="3" Text="{Binding TargetTime, StringFormat='{0:hh\\:mm}'}" IsVisible="{Binding HasTime}"
                            InputTransparent="True" FontSize="9.5" FontAttributes="Bold" VerticalOptions="Center"
                            TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                    <Border Grid.Column="3" StrokeShape="RoundRectangle 5" Padding="5,1" VerticalOptions="Center">
+                    <Border Grid.Column="4" StrokeShape="RoundRectangle 5" Padding="5,1" VerticalOptions="Center">
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Low">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
@@ -105,7 +112,7 @@
 
                     <!-- A tapped Label, not an ImageButton: the button carries a platform minimum height
                          that HeightRequest does not override, and it was setting the whole row's height. -->
-                    <Grid Grid.Column="4" BackgroundColor="Transparent" Padding="4,0" VerticalOptions="Center">
+                    <Grid Grid.Column="5" BackgroundColor="Transparent" Padding="4,0" VerticalOptions="Center">
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
                         </Grid.GestureRecognizers>
