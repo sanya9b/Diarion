@@ -37,6 +37,7 @@ public partial class PlannerSectionViewModel : ObservableObject
 
     private readonly ITodoService _todoService;
     private readonly INavigationService _navigationService;
+    private readonly IDialogService _dialogService;
 
     public ObservableCollection<TodoItemViewModel> Todos { get; } = new();
 
@@ -48,10 +49,12 @@ public partial class PlannerSectionViewModel : ObservableObject
     [ObservableProperty]
     private bool _hasUntimedTodos;
 
-    public PlannerSectionViewModel(ITodoService todoService, INavigationService navigationService)
+    public PlannerSectionViewModel(
+        ITodoService todoService, INavigationService navigationService, IDialogService dialogService)
     {
         _todoService = todoService;
         _navigationService = navigationService;
+        _dialogService = dialogService;
     }
 
     public async Task LoadTodosForDateAsync(DateTime date)
@@ -135,6 +138,29 @@ public partial class PlannerSectionViewModel : ObservableObject
 
         try
         {
+            // A one-off just goes. A row that belongs to a series is two different requests wearing the
+            // same gesture, and guessing which one was meant is how a whole series disappears by accident.
+            if (todo.Model.RecurringTaskId != null)
+            {
+                var thisOne = Diarion.Resources.Localization.AppResources.DeleteThisOccurrenceOption;
+                var wholeSeries = Diarion.Resources.Localization.AppResources.DeleteWholeSeriesOption;
+
+                var choice = await _dialogService.ShowActionSheetAsync(
+                    Diarion.Resources.Localization.AppResources.DeleteRecurringTaskTitle,
+                    Diarion.Resources.Localization.AppResources.CancelButtonLabel,
+                    thisOne, wholeSeries);
+
+                if (choice == null) return;
+
+                if (choice == wholeSeries)
+                {
+                    await _todoService.DeleteRecurringTaskAsync(todo.Model.RecurringTaskId.Value);
+                    Todos.Remove(todo);
+                    WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
+                    return;
+                }
+            }
+
             await _todoService.DeleteTodoAsync(todo.Id);
             Todos.Remove(todo);
             WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));

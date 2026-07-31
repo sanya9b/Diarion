@@ -625,6 +625,27 @@
   <data name="RecurringTaskAccessibility" xml:space="preserve">
     <value>Repeating task</value>
   </data>
+  <data name="ParseHintFormat" xml:space="preserve">
+    <value>Read from the text: {0}</value>
+  </data>
+  <data name="ParseUndoLabel" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="CancelButtonLabel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ToggleCalendarAccessibility" xml:space="preserve">
+    <value>Show or hide the calendar</value>
+  </data>
+  <data name="DeleteRecurringTaskTitle" xml:space="preserve">
+    <value>This task repeats</value>
+  </data>
+  <data name="DeleteThisOccurrenceOption" xml:space="preserve">
+    <value>Delete only this day</value>
+  </data>
+  <data name="DeleteWholeSeriesOption" xml:space="preserve">
+    <value>Delete the whole series</value>
+  </data>
   <data name="ReminderLabel" xml:space="preserve">
     <value>Enable reminder</value>
   </data>
