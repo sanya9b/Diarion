@@ -363,7 +363,13 @@ public partial class TodoDetailViewModel : BaseViewModel
         if (rule?.Recurrence == null) return;
 
         RecurrenceKind = rule.Recurrence.Kind;
-        EveryNDays = Math.Max(1, rule.Recurrence.EveryN);
+        // Only read the interval off a rule that actually has one. A daily rule leaves EveryN at 1, and
+        // letting that reach the chip makes it read "every 1 day" — the daily chip beside it, worded
+        // differently, so neither says what tapping it would do.
+        if (rule.Recurrence.Kind == RecurrenceKind.IntervalDays)
+        {
+            EveryNDays = Math.Max(1, rule.Recurrence.EveryN);
+        }
         DayOfMonth = Math.Clamp(rule.Recurrence.DayOfMonth, 1, 31);
         foreach (var day in Weekdays)
         {

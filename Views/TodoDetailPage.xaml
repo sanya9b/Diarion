@@ -32,8 +32,14 @@
                                Color="{DynamicResource Theme_Ocean_Dust}" />
         </Grid>
 
-        <Grid Grid.Row="1" Padding="24,10,24,24" RowSpacing="14" RowDefinitions="Auto, Auto">
-            <Border Grid.Row="0" StrokeShape="RoundRectangle 24"
+        <!-- The fields scroll, the button does not. Both rows used to be Auto with nothing scrolling, so
+             the form simply grew past the bottom of the screen and took Save with it — which is the one
+             control that must never be the thing off the edge. A cap on width keeps the card readable
+             when the window is wide; on a phone it never reaches it. -->
+        <Grid Grid.Row="1" Padding="24,10,24,24" RowSpacing="14" RowDefinitions="*, Auto"
+              MaximumWidthRequest="640">
+            <ScrollView Grid.Row="0" VerticalScrollBarVisibility="Never">
+            <Border StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
@@ -50,6 +56,20 @@
                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
                                    BackgroundColor="Transparent"
                                    HeightRequest="42" />
+
+                            <!-- Directly under the field it is about. What the parser read, with a way
+                                 back. The text itself is not touched until save: cutting words away
+                                 mid-typing moves the caret under the user's hands. -->
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasParseHint}">
+                                <Label Grid.Column="0" Text="{Binding ParseHint}" FontSize="12" VerticalOptions="Center"
+                                       LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Sage}" />
+                                <Label Grid.Column="1" Text="{x:Static localization:AppResources.ParseUndoLabel}" FontSize="12"
+                                       FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding DismissParseCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
                         </VerticalStackLayout>
 
                         <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
@@ -82,20 +102,6 @@
                         <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="12" IsVisible="{Binding HasTime}">
                             <Label Grid.Column="0" Text="{x:Static localization:AppResources.TimeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                             <TimePicker Grid.Column="1" Time="{Binding TargetTime}" Format="HH:mm" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
-                        </Grid>
-
-                        <!-- What the parser read out of the title, with a way back. The text itself is not
-                             touched until save: cutting words away mid-typing moves the caret under the
-                             user's hands. -->
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasParseHint}">
-                            <Label Grid.Column="0" Text="{Binding ParseHint}" FontSize="12" VerticalOptions="Center"
-                                   LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Sage}" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.ParseUndoLabel}" FontSize="12"
-                                   FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding DismissParseCommand}" />
-                                </Label.GestureRecognizers>
-                            </Label>
                         </Grid>
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
@@ -309,6 +315,7 @@
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
+            </ScrollView>
 
                 <Border Grid.Row="1" StrokeShape="RoundRectangle 14"
                         StrokeThickness="0"
