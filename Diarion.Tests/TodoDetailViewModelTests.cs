@@ -159,6 +159,93 @@ public class TodoDetailViewModelTests
     }
 
     [Fact]
+    public async Task TypingASchedulePutsItIntoTheFormAndCutsItOutOfTheTitle()
+    {
+        _viewModel.TaskDescription = "щовівторка о 18:00 теніс";
+
+        _viewModel.IsRecurring.Should().BeTrue();
+        _viewModel.RecurrenceKind.Should().Be(RecurrenceKind.Weekly);
+        _viewModel.Weekdays.Single(d => d.DayOfWeek == (int)DayOfWeek.Tuesday).IsSelected.Should().BeTrue();
+        _viewModel.HasTime.Should().BeTrue();
+        _viewModel.TargetTime.Should().Be(new TimeSpan(18, 0, 0));
+        _viewModel.HasParseHint.Should().BeTrue();
+
+        await SaveIgnoringNavigationAsync();
+
+        _todoServiceMock.Verify(s => s.SaveTodoAsync(It.Is<TodoItem>(t => t.TaskDescription == "теніс")), Times.Once);
+    }
+
+    [Fact]
+    public void ANamedHourTurnsTheReminderOn()
+    {
+        // Saying an hour out loud is asking to be told about it; typing one into the picker is not.
+        _viewModel.TaskDescription = "щодня о 9:00 таблетки";
+
+        _viewModel.HasReminder.Should().BeTrue();
+    }
+
+    [Fact]
+    public void PlainTitleLeavesTheFormAlone()
+    {
+        _viewModel.TaskDescription = "подзвонити стоматологу";
+
+        _viewModel.IsRecurring.Should().BeFalse();
+        _viewModel.HasParseHint.Should().BeFalse();
+        _viewModel.HasReminder.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task UndoPutsTheScheduleBackAndKeepsTheTitleWhole()
+    {
+        _viewModel.TaskDescription = "щовівторка о 18:00 теніс";
+        _viewModel.DismissParseCommand.Execute(null);
+
+        _viewModel.IsRecurring.Should().BeFalse();
+        _viewModel.HasTime.Should().BeFalse();
+        _viewModel.HasReminder.Should().BeFalse();
+        _viewModel.HasParseHint.Should().BeFalse();
+
+        await SaveIgnoringNavigationAsync();
+
+        _todoServiceMock.Verify(
+            s => s.SaveTodoAsync(It.Is<TodoItem>(t => t.TaskDescription == "щовівторка о 18:00 теніс")), Times.Once);
+    }
+
+    [Fact]
+    public void OnceUndoneTheTextIsNotReadAgain()
+    {
+        _viewModel.TaskDescription = "щовівторка теніс";
+        _viewModel.DismissParseCommand.Execute(null);
+
+        _viewModel.TaskDescription = "щочетверга теніс";
+
+        _viewModel.IsRecurring.Should().BeFalse();
+        _viewModel.HasParseHint.Should().BeFalse();
+    }
+
+    [Fact]
+    public void AChipTappedByHandIsNotOverwrittenByTheParser()
+    {
+        _viewModel.SetRecurrenceKindCommand.Execute(nameof(RecurrenceKind.MonthlyByDay));
+
+        _viewModel.TaskDescription = "щовівторка теніс";
+
+        _viewModel.RecurrenceKind.Should().Be(RecurrenceKind.MonthlyByDay);
+    }
+
+    [Fact]
+    public async Task ATitleThatIsNothingButASchedulKeepsItsWords()
+    {
+        // Cutting "щовівторка" out of "щовівторка" leaves a task with no name at all, which is worse
+        // than a badly named one.
+        _viewModel.TaskDescription = "щовівторка";
+
+        await SaveIgnoringNavigationAsync();
+
+        _todoServiceMock.Verify(s => s.SaveTodoAsync(It.Is<TodoItem>(t => t.TaskDescription == "щовівторка")), Times.Once);
+    }
+
+    [Fact]
     public void SelectPriority_UpdatesSelectedPriorityAndItems()
     {
         // Arrange

@@ -84,6 +84,20 @@
                             <TimePicker Grid.Column="1" Time="{Binding TargetTime}" Format="HH:mm" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
                         </Grid>
 
+                        <!-- What the parser read out of the title, with a way back. The text itself is not
+                             touched until save: cutting words away mid-typing moves the caret under the
+                             user's hands. -->
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasParseHint}">
+                            <Label Grid.Column="0" Text="{Binding ParseHint}" FontSize="12" VerticalOptions="Center"
+                                   LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Sage}" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.ParseUndoLabel}" FontSize="12"
+                                   FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding DismissParseCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <CheckBox IsChecked="{Binding IsRecurring}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskRepeatLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />

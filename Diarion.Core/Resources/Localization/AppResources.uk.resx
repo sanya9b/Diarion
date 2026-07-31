@@ -625,6 +625,12 @@
   <data name="RecurringTaskAccessibility" xml:space="preserve">
     <value>Повторювана задача</value>
   </data>
+  <data name="ParseHintFormat" xml:space="preserve">
+    <value>Розпізнано з тексту: {0}</value>
+  </data>
+  <data name="ParseUndoLabel" xml:space="preserve">
+    <value>Повернути</value>
+  </data>
   <data name="ReminderLabel" xml:space="preserve">
     <value>Увімкнути нагадування</value>
   </data>
