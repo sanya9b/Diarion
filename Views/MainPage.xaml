@@ -23,21 +23,27 @@
         </Grid>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
-            <Grid.GestureRecognizers>
-                <SwipeGestureRecognizer Direction="Up" Command="{Binding CalendarSection.ToggleCalendarCommand}" />
-                <SwipeGestureRecognizer Direction="Down" Command="{Binding CalendarSection.ToggleCalendarCommand}" />
-            </Grid.GestureRecognizers>
-
             <VerticalStackLayout Grid.Row="0" Padding="24,4,24,10" Spacing="0">
                 
                 <controls:CalendarView IsExpanded="{Binding BindingContext.CalendarSection.IsCalendarExpanded, Source={x:Reference PageRoot}}" BindingContext="{Binding CalendarSection}" x:DataType="viewmodels:CalendarSectionViewModel" />
 
-                <!-- Date Typographical Editorial Style -->
-                <VerticalStackLayout Margin="0,-4,0,16" Spacing="0" HorizontalOptions="Fill">
+                <!-- Date Typographical Editorial Style.
+                     The handle and the day name are the calendar's control. The swipe used to sit on the
+                     whole page below, so any vertical drag anywhere — scrolling the planner, most of all —
+                     threw the month open. Scoped here it is only triggered on purpose, and a tap does the
+                     same thing for anyone who never thinks to drag a bar they did not know was a handle. -->
+                <VerticalStackLayout Margin="0,-4,0,16" Spacing="0" HorizontalOptions="Fill"
+                                     BackgroundColor="Transparent">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CalendarSection.ToggleCalendarCommand}" />
+                        <SwipeGestureRecognizer Direction="Down" Command="{Binding CalendarSection.ToggleCalendarCommand}" />
+                        <SwipeGestureRecognizer Direction="Up" Command="{Binding CalendarSection.ToggleCalendarCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
                     <BoxView HeightRequest="4" WidthRequest="32" CornerRadius="2"
                              BackgroundColor="{DynamicResource Theme_Dust_Ocean}"
-                             HorizontalOptions="Center" Margin="0,0,0,4" />
-                    <Label Text="{Binding CalendarSection.SelectedDateDayName}" FontFamily="MarckScript" FontSize="28" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                             HorizontalOptions="Center" Margin="0,0,0,4"
+                             SemanticProperties.Description="{x:Static localization:AppResources.ToggleCalendarAccessibility}" />
+                    <Label Text="{Binding CalendarSection.SelectedDateDayName}" FontFamily="MarckScript" FontSize="28" HorizontalTextAlignment="Center" HorizontalOptions="Center" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </VerticalStackLayout>
 
                 <!-- Tabs: Typography-Driven Design -->

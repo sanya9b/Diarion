@@ -634,6 +634,9 @@
   <data name="CancelButtonLabel" xml:space="preserve">
     <value>Скасувати</value>
   </data>
+  <data name="ToggleCalendarAccessibility" xml:space="preserve">
+    <value>Показати або сховати календар</value>
+  </data>
   <data name="DeleteRecurringTaskTitle" xml:space="preserve">
     <value>Ця задача повторюється</value>
   </data>

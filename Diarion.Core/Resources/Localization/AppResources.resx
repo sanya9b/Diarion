@@ -634,6 +634,9 @@
   <data name="CancelButtonLabel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="ToggleCalendarAccessibility" xml:space="preserve">
+    <value>Show or hide the calendar</value>
+  </data>
   <data name="DeleteRecurringTaskTitle" xml:space="preserve">
     <value>This task repeats</value>
   </data>
