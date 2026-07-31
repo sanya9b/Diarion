@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Diarion.Models;
 using Diarion.Services.Database;
 using Diarion.Services.Database.Migrations;
@@ -380,5 +382,251 @@ public class MigrationRunnerTests
 
         var raw = db.GetCollection(DatabaseConstants.HabitDefinitionsCollection).FindAll().Single();
         raw["Schedule"].AsDocument.ContainsKey("Type").Should().BeFalse();
+    }
+
+    // --- M007: extracting todo repeats into recurring task rules ---
+
+    /// <summary>
+    /// Writes a todo the way the pre-M007 model did. Built by hand because the three fields that made a
+    /// series are exactly the ones the migration removes, so the typed model can no longer express them.
+    /// </summary>
+    private static Guid InsertLegacyTodo(
+        LiteDatabase db,
+        DateTime targetDate,
+        string description = "Стретчинг",
+        bool isDailyRepeat = true,
+        DateTime? repeatEndDate = null,
+        string? repeatGroupId = null,
+        string priority = "Medium")
+    {
+        var id = Guid.NewGuid();
+        var doc = new BsonDocument
+        {
+            ["_id"] = id,
+            ["TargetDate"] = targetDate,
+            ["TaskDescription"] = description,
+            ["IsCompleted"] = false,
+            ["IsDailyRepeat"] = isDailyRepeat,
+            ["HasTime"] = false,
+            ["HasReminder"] = false,
+            ["Priority"] = priority,
+            ["CreatedAt"] = targetDate
+        };
+        if (repeatEndDate != null) doc["RepeatEndDate"] = repeatEndDate.Value;
+        if (repeatGroupId != null) doc["RepeatGroupId"] = repeatGroupId;
+
+        db.GetCollection(DatabaseConstants.TodosCollection).Insert(doc);
+        return id;
+    }
+
+    private static List<RecurringTask> Rules(LiteDatabase db)
+        => db.GetCollection<RecurringTask>(DatabaseConstants.RecurringTasksCollection).FindAll().ToList();
+
+    private static List<TodoItem> Todos(LiteDatabase db)
+        => db.GetCollection<TodoItem>(DatabaseConstants.TodosCollection).FindAll().ToList();
+
+    /// <summary>
+    /// M007 is not in the runner's array yet — it lands there together with the code that reads the rules,
+    /// so that no build exists in which the fields have been stripped but the old reader is still live.
+    /// These drive it directly.
+    /// </summary>
+    private static void MigrateTodoRepeats(LiteDatabase db)
+        => new M007_ExtractTodoRepeatsIntoRecurringTasks().Up(db);
+
+    [Fact]
+    public void Run_MigratesAGroupIdSeriesIntoOneRule()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        var group = Guid.NewGuid().ToString();
+        InsertLegacyTodo(db, new DateTime(2026, 7, 1), repeatGroupId: group);
+        InsertLegacyTodo(db, new DateTime(2026, 7, 2), repeatGroupId: group);
+
+        MigrateTodoRepeats(db);
+
+        var rule = Rules(db).Single();
+        rule.TaskDescription.Should().Be("Стретчинг");
+        rule.Recurrence.Kind.Should().Be(RecurrenceKind.Daily);
+        Todos(db).Should().OnlyContain(t => t.RecurringTaskId == rule.Id);
+    }
+
+    [Fact]
+    public void Run_MigratesADescriptionOnlySeriesIntoOneRule()
+    {
+        // Rows written straight to the collection never got a group id, and neither did the clones the
+        // generator inserted from them. Grouping by description was how the old code coped; the migration
+        // has to cope the same way or those series arrive as one rule per row.
+        using var db = new LiteDatabase(new MemoryStream());
+        InsertLegacyTodo(db, new DateTime(2026, 7, 1));
+        InsertLegacyTodo(db, new DateTime(2026, 7, 2));
+
+        MigrateTodoRepeats(db);
+
+        Rules(db).Should().ContainSingle();
+        Todos(db).Select(t => t.RecurringTaskId).Distinct().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Run_TwoLegacySeriesWithTheSameDescriptionStillMerge()
+    {
+        // Faithful to the old definition rather than to the new one: without a group id these rows *were*
+        // one series, and inventing a split here would be guessing at history the database does not hold.
+        using var db = new LiteDatabase(new MemoryStream());
+        InsertLegacyTodo(db, new DateTime(2026, 7, 1), "Прибрати");
+        InsertLegacyTodo(db, new DateTime(2026, 7, 2), "Прибрати");
+
+        MigrateTodoRepeats(db);
+
+        Rules(db).Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Run_TurnedOffInstanceKeepsItsProvenance()
+    {
+        // Turning a series off left RepeatEndDate on every row but IsDailyRepeat=false on the one the user
+        // edited. Selecting on the flag alone drops it, and a dropped row loses the pin that keeps
+        // auto-migration from walking it into today.
+        using var db = new LiteDatabase(new MemoryStream());
+        var group = Guid.NewGuid().ToString();
+        var ended = new DateTime(2026, 7, 1);
+        InsertLegacyTodo(db, new DateTime(2026, 7, 1), repeatEndDate: ended, repeatGroupId: group);
+        InsertLegacyTodo(db, new DateTime(2026, 7, 2), isDailyRepeat: false, repeatEndDate: ended, repeatGroupId: group);
+
+        MigrateTodoRepeats(db);
+
+        Rules(db).Should().ContainSingle();
+        Todos(db).Should().OnlyContain(t => t.RecurringTaskId != null);
+    }
+
+    [Fact]
+    public void Run_ATurnedOffSeriesCarriesItsEndDateOntoTheRule()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        var group = Guid.NewGuid().ToString();
+        InsertLegacyTodo(db, new DateTime(2026, 7, 1), repeatEndDate: new DateTime(2026, 7, 3), repeatGroupId: group);
+
+        MigrateTodoRepeats(db);
+
+        Rules(db).Single().Recurrence.EndDate.Should().Be(new DateTime(2026, 7, 3));
+    }
+
+    [Fact]
+    public void Run_ASeriesWithOneOpenRowStaysOpenEnded()
+    {
+        // The old generation filter kept producing while a single row had no end date, so a group holding
+        // both must migrate as open. Reading it the other way silently kills a live series.
+        using var db = new LiteDatabase(new MemoryStream());
+        var group = Guid.NewGuid().ToString();
+        InsertLegacyTodo(db, new DateTime(2026, 7, 1), repeatEndDate: new DateTime(2026, 7, 3), repeatGroupId: group);
+        InsertLegacyTodo(db, new DateTime(2026, 7, 2), repeatGroupId: group);
+
+        MigrateTodoRepeats(db);
+
+        Rules(db).Single().Recurrence.EndDate.Should().BeNull();
+    }
+
+    [Fact]
+    public void Run_TheRuleAnchorsAtTheEarliestInstance()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        var group = Guid.NewGuid().ToString();
+        InsertLegacyTodo(db, new DateTime(2026, 7, 9), repeatGroupId: group);
+        InsertLegacyTodo(db, new DateTime(2026, 7, 4), repeatGroupId: group);
+
+        MigrateTodoRepeats(db);
+
+        Rules(db).Single().Recurrence.Anchor.Should().Be(new DateTime(2026, 7, 4));
+    }
+
+    [Fact]
+    public void Run_TheTemplateComesFromTheLatestInstance()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        var group = Guid.NewGuid().ToString();
+        InsertLegacyTodo(db, new DateTime(2026, 7, 4), "Стара назва", repeatGroupId: group, priority: "Low");
+        InsertLegacyTodo(db, new DateTime(2026, 7, 9), "Нова назва", repeatGroupId: group, priority: "High");
+
+        MigrateTodoRepeats(db);
+
+        var rule = Rules(db).Single();
+        rule.TaskDescription.Should().Be("Нова назва");
+        rule.Priority.Should().Be(TodoPriority.High);
+    }
+
+    [Fact]
+    public void Run_ANonRepeatingTodoIsLeftAlone()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        InsertLegacyTodo(db, new DateTime(2026, 7, 1), "Разова", isDailyRepeat: false);
+
+        MigrateTodoRepeats(db);
+
+        Rules(db).Should().BeEmpty();
+        Todos(db).Single().RecurringTaskId.Should().BeNull();
+    }
+
+    [Fact]
+    public void Run_TodoRepeatExtraction_IsIdempotent()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        InsertLegacyTodo(db, new DateTime(2026, 7, 1), repeatGroupId: "g");
+
+        MigrateTodoRepeats(db);
+        MigrateTodoRepeats(db);
+
+        Rules(db).Should().ContainSingle();
+        var raw = db.GetCollection(DatabaseConstants.TodosCollection).FindAll().Single();
+        raw.ContainsKey("IsDailyRepeat").Should().BeFalse();
+        raw.ContainsKey("RepeatGroupId").Should().BeFalse();
+    }
+
+    [Fact]
+    public void Run_ResumedHalfwayThroughAGroup_DoesNotCreateASecondRule()
+    {
+        // The runner has no transaction. A crash between stamping the first row and the second leaves the
+        // rest unmigrated, and a freshly generated rule id would make them a second series — which means a
+        // duplicate task every single day, forever.
+        using var db = new LiteDatabase(new MemoryStream());
+        var group = Guid.NewGuid().ToString();
+        InsertLegacyTodo(db, new DateTime(2026, 7, 1), repeatGroupId: group);
+        var second = InsertLegacyTodo(db, new DateTime(2026, 7, 2), repeatGroupId: group);
+
+        MigrateTodoRepeats(db);
+
+        // Put one row back the way it was, as an interrupted run would have left it.
+        var raw = db.GetCollection(DatabaseConstants.TodosCollection);
+        var doc = raw.FindById(second);
+        doc.Remove("RecurringTaskId");
+        doc["IsDailyRepeat"] = true;
+        doc["RepeatGroupId"] = group;
+        raw.Update(doc);
+
+        MigrateTodoRepeats(db);
+
+        Rules(db).Should().ContainSingle();
+        Todos(db).Select(t => t.RecurringTaskId).Distinct().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Run_AResumedGroupKeepsTheAnchorFromTheWholeSeries()
+    {
+        // The second pass can only see what is left, so recomputing the rule from it would move the anchor
+        // forward onto whichever row happened to survive.
+        using var db = new LiteDatabase(new MemoryStream());
+        var group = Guid.NewGuid().ToString();
+        InsertLegacyTodo(db, new DateTime(2026, 7, 1), repeatGroupId: group);
+        var later = InsertLegacyTodo(db, new DateTime(2026, 7, 20), repeatGroupId: group);
+
+        MigrateTodoRepeats(db);
+
+        var raw = db.GetCollection(DatabaseConstants.TodosCollection);
+        var doc = raw.FindById(later);
+        doc.Remove("RecurringTaskId");
+        doc["IsDailyRepeat"] = true;
+        doc["RepeatGroupId"] = group;
+        raw.Update(doc);
+
+        MigrateTodoRepeats(db);
+
+        Rules(db).Single().Recurrence.Anchor.Should().Be(new DateTime(2026, 7, 1));
     }
 }

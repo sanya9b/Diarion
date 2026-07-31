@@ -79,6 +79,20 @@ public class ExportServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Json_IncludesRecurringTasks()
+    {
+        // Worse here than a missing block: a restored copy would hold tasks whose RecurringTaskId points
+        // at a rule that no longer exists, and those rows are pinned out of auto-migration forever.
+        _dbContext.GetCollection<RecurringTask>(DatabaseConstants.RecurringTasksCollection)
+            .Insert(new RecurringTask { TaskDescription = "StretchRule" });
+
+        var json = await _service.BuildAsync(ExportFormat.Json);
+
+        json.Should().Contain("\"todo_recurring\"");
+        json.Should().Contain("StretchRule");
+    }
+
+    [Fact]
     public async Task Csv_LeavesRecurringRulesOut()
     {
         // Posted rows are already in the transactions block; a block of rules would be a table of things

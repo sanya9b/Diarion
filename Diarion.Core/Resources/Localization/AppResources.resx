@@ -613,8 +613,17 @@
   <data name="TimeLabel" xml:space="preserve">
     <value>Time:</value>
   </data>
-  <data name="DailyRepeatLabel" xml:space="preserve">
-    <value>Repeat daily</value>
+  <data name="TaskRepeatLabel" xml:space="preserve">
+    <value>Repeat</value>
+  </data>
+  <data name="RecurrenceEndDateLabel" xml:space="preserve">
+    <value>Repeat until</value>
+  </data>
+  <data name="RecurrenceDaysRequired" xml:space="preserve">
+    <value>Pick at least one day.</value>
+  </data>
+  <data name="RecurringTaskAccessibility" xml:space="preserve">
+    <value>Repeating task</value>
   </data>
   <data name="ReminderLabel" xml:space="preserve">
     <value>Enable reminder</value>

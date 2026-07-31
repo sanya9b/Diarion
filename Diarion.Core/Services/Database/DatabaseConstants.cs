@@ -19,4 +19,5 @@ public static class DatabaseConstants
     public const string RecurringTransactionsCollection = "finance_recurring";
     public const string GuidedPromptsCollection = "guided_prompts";
     public const string CycleLogsCollection = "cycle_logs";
+    public const string RecurringTasksCollection = "todo_recurring";
 }

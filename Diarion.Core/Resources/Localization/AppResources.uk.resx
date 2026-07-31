@@ -613,8 +613,17 @@
   <data name="TimeLabel" xml:space="preserve">
     <value>Час:</value>
   </data>
-  <data name="DailyRepeatLabel" xml:space="preserve">
-    <value>Повторювати щодня</value>
+  <data name="TaskRepeatLabel" xml:space="preserve">
+    <value>Повторювати</value>
+  </data>
+  <data name="RecurrenceEndDateLabel" xml:space="preserve">
+    <value>Повторювати до</value>
+  </data>
+  <data name="RecurrenceDaysRequired" xml:space="preserve">
+    <value>Оберіть хоча б один день.</value>
+  </data>
+  <data name="RecurringTaskAccessibility" xml:space="preserve">
+    <value>Повторювана задача</value>
   </data>
   <data name="ReminderLabel" xml:space="preserve">
     <value>Увімкнути нагадування</value>

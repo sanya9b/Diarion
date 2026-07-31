@@ -31,6 +31,23 @@ public class PlannerSectionViewModelTests
     }
 
     [Fact]
+    public async Task LoadTodosForDate_MarksARowThatBelongsToASeries()
+    {
+        // The row needs to say so on the list: without it a repeating task and a one-off are
+        // indistinguishable until the form is reopened.
+        var oneOff = Task("Купити хліб", 9);
+        var occurrence = Task("Стретчинг", 10);
+        occurrence.RecurringTaskId = Guid.NewGuid();
+        var viewModel = NewViewModel(oneOff, occurrence);
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        var rows = viewModel.HourSlots.SelectMany(s => s.Items).ToList();
+        rows.Single(t => t.TaskDescription == "Стретчинг").IsRecurring.Should().BeTrue();
+        rows.Single(t => t.TaskDescription == "Купити хліб").IsRecurring.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task LoadTodosForDate_BuildsOneRowPerHourFromSevenToTwentyThree()
     {
         var viewModel = NewViewModel();

@@ -60,6 +60,8 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         // No index either: a handful of rules read once per finance-page load, and a Date index would be
         // meaningless on a rule, which has a recurrence rather than a date.
         _db.GetCollection<RecurringTransaction>(DatabaseConstants.RecurringTransactionsCollection);
+        // Same again for repeating tasks: a handful of rules, read once per day-load, no date to index.
+        _db.GetCollection<RecurringTask>(DatabaseConstants.RecurringTasksCollection);
 
         entriesCollection.EnsureIndex(x => x.Date);
         wishlistCollection.EnsureIndex(x => x.Date);

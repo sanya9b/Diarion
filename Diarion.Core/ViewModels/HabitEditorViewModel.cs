@@ -12,15 +12,6 @@ using Diarion.Services;
 
 namespace Diarion.ViewModels;
 
-public partial class WeekdayToggle : ObservableObject
-{
-    public int DayOfWeek { get; set; } // (int)System.DayOfWeek, 0 = Sunday … 6 = Saturday
-    public string ShortName { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    private bool _isSelected;
-}
-
 [QueryProperty(nameof(HabitId), "HabitId")]
 public partial class HabitEditorViewModel : BaseViewModel
 {
@@ -88,11 +79,9 @@ public partial class HabitEditorViewModel : BaseViewModel
     private void BuildWeekdays()
     {
         Weekdays.Clear();
-        var names = CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedDayNames; // indexed by (int)DayOfWeek
-        // Monday-first order.
-        foreach (var dow in new[] { 1, 2, 3, 4, 5, 6, 0 })
+        foreach (var toggle in WeekdayToggle.BuildMondayFirst())
         {
-            Weekdays.Add(new WeekdayToggle { DayOfWeek = dow, ShortName = names[dow] });
+            Weekdays.Add(toggle);
         }
     }
 

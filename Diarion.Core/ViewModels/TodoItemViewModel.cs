@@ -17,7 +17,7 @@ public partial class TodoItemViewModel : ObservableObject
         _targetTime = model.TargetTime;
         _taskDescription = model.TaskDescription;
         _isCompleted = model.IsCompleted;
-        _isDailyRepeat = model.IsDailyRepeat;
+        _isRecurring = model.RecurringTaskId != null;
         _hasReminder = model.HasReminder;
         _priority = model.Priority;
     }
@@ -45,8 +45,9 @@ public partial class TodoItemViewModel : ObservableObject
         Model.IsCompleted = value;
     }
 
+    /// <summary>Read-only on a row: the series is edited through the task form, never from the list.</summary>
     [ObservableProperty]
-    private bool _isDailyRepeat;
+    private bool _isRecurring;
 
     [ObservableProperty]
     private bool _hasReminder;
@@ -62,7 +63,6 @@ public partial class TodoItemViewModel : ObservableObject
         Model.TargetTime = TargetTime;
         Model.TaskDescription = TaskDescription;
         Model.IsCompleted = IsCompleted;
-        Model.IsDailyRepeat = IsDailyRepeat;
         Model.HasReminder = HasReminder;
         Model.Priority = Priority;
     }

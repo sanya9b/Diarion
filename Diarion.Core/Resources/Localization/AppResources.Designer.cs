@@ -90,7 +90,10 @@ namespace Diarion.Resources.Localization {
         public static string SettingsTabData => ResourceManager.GetString("SettingsTabData", resourceCulture) ?? "Data";
         public static string AddTimeLabel => ResourceManager.GetString("AddTimeLabel", resourceCulture) ?? "Add target time";
         public static string TimeLabel => ResourceManager.GetString("TimeLabel", resourceCulture) ?? "Time:";
-        public static string DailyRepeatLabel => ResourceManager.GetString("DailyRepeatLabel", resourceCulture) ?? "Repeat daily";
+        public static string TaskRepeatLabel => ResourceManager.GetString("TaskRepeatLabel", resourceCulture) ?? "Repeat";
+        public static string RecurrenceEndDateLabel => ResourceManager.GetString("RecurrenceEndDateLabel", resourceCulture) ?? "Repeat until";
+        public static string RecurrenceDaysRequired => ResourceManager.GetString("RecurrenceDaysRequired", resourceCulture) ?? "Pick at least one day.";
+        public static string RecurringTaskAccessibility => ResourceManager.GetString("RecurringTaskAccessibility", resourceCulture) ?? "Repeating task";
         public static string ReminderLabel => ResourceManager.GetString("ReminderLabel", resourceCulture) ?? "Enable reminder";
         public static string ProfileMenuTitle => ResourceManager.GetString("ProfileMenuTitle", resourceCulture) ?? "Personal Settings";
         public static string GeneralInfoLabel => ResourceManager.GetString("GeneralInfoLabel", resourceCulture) ?? "GENERAL INFORMATION";
