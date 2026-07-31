@@ -19,6 +19,12 @@ public partial class PlannerHourSlot : ObservableObject
 {
     public int Hour { get; init; }
     public string Label { get; init; } = string.Empty;
+
+    /// <summary>
+    /// What <see cref="Label"/> means, spelled out. The superscript zeros that make the label read as a
+    /// time on screen are announced character by character otherwise.
+    /// </summary>
+    public string AccessibleTime => $"{Hour:00}:00";
     public ObservableCollection<TodoItemViewModel> Items { get; } = new();
 
     [ObservableProperty]

@@ -195,10 +195,21 @@
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding HourSlots}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:PlannerHourSlot">
-                            <Grid ColumnDefinitions="28,*" ColumnSpacing="6" MinimumHeightRequest="28">
-                                <Label Grid.Column="0" Text="{Binding Label}" FontSize="11.5" FontAttributes="Bold"
-                                       VerticalOptions="Start" Margin="0,7,0,0"
-                                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Grid ColumnDefinitions="34,*" ColumnSpacing="6" MinimumHeightRequest="28">
+                                <!-- "07" with a small raised "00" — the timetable way of writing the top
+                                     of an hour, so the column reads as a time rather than as an index,
+                                     for six pixels where ":00" would cost more than twenty.
+                                     Two labels rather than one string: the Unicode superscript zero is
+                                     drawn as a ring and at this size is a degree sign, not a digit, and
+                                     a MAUI span cannot raise a baseline. Aligning both to the top of the
+                                     line is what puts the small pair where a superscript belongs. -->
+                                <HorizontalStackLayout Grid.Column="0" Spacing="0.5" VerticalOptions="Start" Margin="0,7,0,0"
+                                                       SemanticProperties.Description="{Binding AccessibleTime}">
+                                    <Label Text="{Binding Label}" FontSize="11.5" FontAttributes="Bold"
+                                           VerticalOptions="Start" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                    <Label Text="00" FontSize="7.5" FontAttributes="Bold"
+                                           VerticalOptions="Start" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                </HorizontalStackLayout>
 
                                 <!-- Empty row: a tap starts a task already scheduled at this hour. -->
                                 <Border Grid.Column="1" IsVisible="{Binding IsEmpty}" HeightRequest="24"
