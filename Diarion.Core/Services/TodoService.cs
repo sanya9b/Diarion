@@ -115,7 +115,7 @@ public class TodoService : ITodoService
             if (task.Priority == TodoPriority.High)
             {
                 int currentHighCount = items.Count(t => t.Priority == TodoPriority.High && !t.IsCompleted);
-                if (currentHighCount >= 3)
+                if (currentHighCount >= RecurringTaskPlanner.MaxHighPriorityPerDay)
                 {
                     task.Priority = TodoPriority.Medium;
                 }

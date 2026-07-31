@@ -166,7 +166,7 @@ public partial class TodoDetailViewModel : BaseViewModel
                 var currentId = _currentTodo?.Id ?? Guid.Empty;
                 int highPriorityCount = existingTodos.Count(t => t.Priority == TodoPriority.High && t.Id != currentId);
                 
-                if (highPriorityCount >= 3)
+                if (highPriorityCount >= RecurringTaskPlanner.MaxHighPriorityPerDay)
                 {
                     IsBusy = false;
                     var title = Diarion.Resources.Localization.AppResources.MaxHighPriorityAlertTitle;
