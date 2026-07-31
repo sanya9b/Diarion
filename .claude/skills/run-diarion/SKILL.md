@@ -16,9 +16,14 @@ things that are not are **saving anything** and **clicking blind**.
 
 - **Never tap Save, never create a task, never tick a mood.** Open screens, toggle controls that live in
   the ViewModel, close with ✕ or the back arrow. Nothing is written until a save.
-- **Take a fresh screenshot immediately before every click.** Coordinates from an earlier shot are a
-  guess about a screen that has since moved. A stale coordinate once landed on the mood row and wrote a
-  mood into the user's diary.
+- **Take a fresh screenshot before every click, and read it.** Both halves matter. A shot you did not
+  look at is worth no more than a stale one: taking a new capture and then clicking where the control was
+  *last time* has already sent a click into a browser window sitting on top of Diarion. Read the image,
+  confirm Diarion is the thing in front, then click. A stale coordinate once landed on the mood row and
+  wrote a mood into the user's diary.
+- `SetForegroundWindow` does not always win. `shot.ps1` captures the screen region where the Diarion
+  window is, so another application on top of it comes back in the picture instead — which is also
+  exactly what your click will hit. If the capture shows something that is not Diarion, stop.
 - **Startup applies pending migrations** to the real database. That is normally fine — it would happen on
   the user's next launch anyway — but say so in your report when the branch adds one.
 - If the change to be checked cannot be seen without saving, stop and ask the user first.
@@ -44,7 +49,12 @@ the bypass flag is refused as an endpoint-policy override, and it is not needed.
 powershell -NoProfile -File .claude/skills/run-diarion/scripts/shot.ps1 -Out shot01.png
 powershell -NoProfile -File .claude/skills/run-diarion/scripts/click.ps1 -X 1141 -Y 306
 powershell -NoProfile -File .claude/skills/run-diarion/scripts/scroll.ps1 -X 798 -Y 500 -Notches -5
+powershell -NoProfile -File .claude/skills/run-diarion/scripts/resize.ps1 -Width 400 -Height 860
 ```
+
+**Judging layout? Resize first.** Diarion ships to Android and iOS. A 1440px window answers a question
+nobody asked — touch targets, reach and how much of the day fits are all phone questions. `resize.ps1`
+defaults to roughly a phone. It is a proxy, not a device: DPI and text scaling still differ.
 
 `shot.ps1` waits up to a minute for the window, brings it to the front, and prints the origin:
 
