@@ -169,15 +169,27 @@
                 <VerticalStackLayout Spacing="2" IsVisible="{Binding HasUntimedTodos}">
                     <Label Text="{x:Static localization:AppResources.PlannerUntimedLabel}" FontSize="11.5" FontAttributes="Bold"
                            CharacterSpacing="1.2" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                    <!-- Caps at roughly three rows and scrolls past that, so a long backlog of unscheduled
+                    <!-- Caps at exactly three rows and scrolls past that, so a long backlog of unscheduled
                          work cannot push the hour grid — the actual point of this screen — off the fold.
                          MaximumHeightRequest rather than HeightRequest: with one or two tasks the tray
-                         shrinks instead of reserving empty space. -->
-                    <ScrollView MaximumHeightRequest="92" VerticalScrollBarVisibility="Default">
+                         shrinks instead of reserving empty space. Three whole rows, not three and a
+                         sliver: a row cut through the middle reads as a drawing fault rather than as an
+                         invitation to scroll, and it blurs the boundary with the grid below. -->
+                    <ScrollView MaximumHeightRequest="84" VerticalScrollBarVisibility="Default">
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding UntimedTodos}"
                                              BindableLayout.ItemTemplate="{StaticResource TodoRow}" />
                     </ScrollView>
                 </VerticalStackLayout>
+
+                <!-- The two halves of this screen are lists of identical rows, so without a line and a
+                     name between them they read as one list whose first few entries happen to be missing
+                     their hour. Both are hidden when there is nothing untimed: with a single section
+                     there is nothing to tell apart, and a rule across the top would be decoration. -->
+                <BoxView HeightRequest="1" Margin="0,4" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5"
+                         IsVisible="{Binding HasUntimedTodos}" />
+                <Label Text="{x:Static localization:AppResources.PlannerByHourLabel}" FontSize="11.5" FontAttributes="Bold"
+                       CharacterSpacing="1.2" TextTransform="Uppercase" Margin="0,0,0,2"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding HasUntimedTodos}" />
 
                 <!-- Hour grid 7–23, the same window the hourly mood scale uses. -->
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding HourSlots}">

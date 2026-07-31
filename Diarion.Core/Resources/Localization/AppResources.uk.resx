@@ -640,6 +640,9 @@
   <data name="PlannerHoursAccessibility" xml:space="preserve">
     <value>Розклад по годинах</value>
   </data>
+  <data name="PlannerByHourLabel" xml:space="preserve">
+    <value>За годинами</value>
+  </data>
   <data name="DeleteRecurringTaskTitle" xml:space="preserve">
     <value>Ця задача повторюється</value>
   </data>
