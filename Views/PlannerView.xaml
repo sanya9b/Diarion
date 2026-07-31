@@ -80,34 +80,24 @@
                            InputTransparent="True" FontSize="11.5" FontAttributes="Bold" VerticalOptions="Center"
                            TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                    <Border Grid.Column="4" StrokeShape="RoundRectangle 6" Padding="6,1.5" VerticalOptions="Center">
+                    <!-- Priority as a dot: one size, colour alone. The word still reaches a screen reader
+                         through the semantic description, which is the only place it survives. -->
+                    <Border Grid.Column="4" StrokeShape="Ellipse" Padding="0" StrokeThickness="0"
+                            WidthRequest="12" HeightRequest="12" VerticalOptions="Center" InputTransparent="True">
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Low">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                <Setter Property="SemanticProperties.Description" Value="{x:Static localization:AppResources.PriorityLow}" />
                             </DataTrigger>
                             <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Medium">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
+                                <Setter Property="SemanticProperties.Description" Value="{x:Static localization:AppResources.PriorityMedium}" />
                             </DataTrigger>
                             <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="High">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                <Setter Property="SemanticProperties.Description" Value="{x:Static localization:AppResources.PriorityHigh}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label FontSize="10.5" FontAttributes="Bold" InputTransparent="True">
-                            <Label.Triggers>
-                                <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Low">
-                                    <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityLow}" />
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Medium">
-                                    <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityMedium}" />
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="High">
-                                    <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityHigh}" />
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
                     </Border>
 
                     <!-- A tapped Label, not an ImageButton: the button carries a platform minimum height
