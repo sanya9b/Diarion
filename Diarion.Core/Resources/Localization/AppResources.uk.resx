@@ -637,6 +637,9 @@
   <data name="ToggleCalendarAccessibility" xml:space="preserve">
     <value>Показати або сховати календар</value>
   </data>
+  <data name="PlannerHoursAccessibility" xml:space="preserve">
+    <value>Розклад по годинах</value>
+  </data>
   <data name="DeleteRecurringTaskTitle" xml:space="preserve">
     <value>Ця задача повторюється</value>
   </data>

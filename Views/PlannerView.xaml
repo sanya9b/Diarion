@@ -19,8 +19,8 @@
                 <Border.Shadow>
                     <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,2" Radius="5" Opacity="{AppThemeBinding Light=0.04, Dark=0.15}" />
                 </Border.Shadow>
-                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto, Auto" Padding="9,2" ColumnSpacing="7" VerticalOptions="Center">
-                    <Border Grid.Column="0" WidthRequest="17" HeightRequest="17" StrokeShape="RoundRectangle 5"
+                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto, Auto" Padding="9,3" ColumnSpacing="7" VerticalOptions="Center">
+                    <Border Grid.Column="0" WidthRequest="20" HeightRequest="20" StrokeShape="RoundRectangle 6"
                             StrokeThickness="1.5" VerticalOptions="Center">
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="False">
@@ -55,10 +55,10 @@
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.ToggleTodoCompletionCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
-                        <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="10" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
+                        <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
                     </Border>
 
-                    <Label Grid.Column="1" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="12.5" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                    <Label Grid.Column="1" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="14.5" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}">
                         <Label.Triggers>
                             <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
                                 <Setter Property="TextDecorations" Value="Strikethrough" />
@@ -71,16 +71,16 @@
                          not distinguish by hue alone, the same reason the grace-held streak carries an
                          asterisk instead of a tint. -->
                     <Label Grid.Column="2" Text="↻" IsVisible="{Binding IsRecurring}" InputTransparent="True"
-                           FontSize="11" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}"
+                           FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}"
                            SemanticProperties.Description="{x:Static localization:AppResources.RecurringTaskAccessibility}" />
 
                     <!-- The real time, because an 08:30 task sits in the 08 row and would otherwise be
                          indistinguishable from one at 08:00. -->
                     <Label Grid.Column="3" Text="{Binding TargetTime, StringFormat='{0:hh\\:mm}'}" IsVisible="{Binding HasTime}"
-                           InputTransparent="True" FontSize="9.5" FontAttributes="Bold" VerticalOptions="Center"
+                           InputTransparent="True" FontSize="11.5" FontAttributes="Bold" VerticalOptions="Center"
                            TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                    <Border Grid.Column="4" StrokeShape="RoundRectangle 5" Padding="5,1" VerticalOptions="Center">
+                    <Border Grid.Column="4" StrokeShape="RoundRectangle 6" Padding="6,1.5" VerticalOptions="Center">
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Low">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
@@ -92,7 +92,7 @@
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label FontSize="8.5" FontAttributes="Bold" InputTransparent="True">
+                        <Label FontSize="10.5" FontAttributes="Bold" InputTransparent="True">
                             <Label.Triggers>
                                 <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Low">
                                     <Setter Property="Text" Value="{x:Static localization:AppResources.PriorityLow}" />
@@ -116,7 +116,7 @@
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
                         </Grid.GestureRecognizers>
-                        <Label Text="✕" FontSize="10" InputTransparent="True" VerticalOptions="Center"
+                        <Label Text="✕" FontSize="12" InputTransparent="True" VerticalOptions="Center"
                                TextColor="{DynamicResource Theme_Midnight_Dust}" />
                     </Grid>
                 </Grid>
@@ -126,7 +126,28 @@
 
     <Grid RowDefinitions="Auto, *" Padding="14,2,14,14" RowSpacing="6">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalOptions="Center" ColumnSpacing="12">
-            <Label Grid.Column="0" Text="{x:Static localization:AppResources.TodoListLabel}" FontAttributes="Bold" FontSize="16" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            <!-- The clock names what the narrow left column of the grid below is, where a column of bare
+                 two-digit numbers does not say so on its own. -->
+            <HorizontalStackLayout Grid.Column="0" Spacing="7" VerticalOptions="Center">
+                <!-- Drawn rather than typed. Every clock character Windows has is a colour emoji, and a
+                     grey disc with a red hand beside a white heading reads as something pasted in from
+                     elsewhere. A Border with an elliptical stroke is the same idiom as the rest of this
+                     control, takes the theme colour, and stays sharp at any size. -->
+                <Border WidthRequest="18" HeightRequest="18" StrokeShape="Ellipse"
+                        Stroke="{DynamicResource Theme_Ocean_Dust}" StrokeThickness="1.5"
+                        BackgroundColor="Transparent" Padding="0" VerticalOptions="Center"
+                        SemanticProperties.Description="{x:Static localization:AppResources.PlannerHoursAccessibility}">
+                    <Grid>
+                        <BoxView WidthRequest="1.5" HeightRequest="5" TranslationY="-2.5"
+                                 Color="{DynamicResource Theme_Ocean_Dust}"
+                                 HorizontalOptions="Center" VerticalOptions="Center" />
+                        <BoxView WidthRequest="4" HeightRequest="1.5" TranslationX="2"
+                                 Color="{DynamicResource Theme_Ocean_Dust}"
+                                 HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+                <Label Text="{x:Static localization:AppResources.TodoListLabel}" FontAttributes="Bold" FontSize="18" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </HorizontalStackLayout>
             
             <Grid Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End">
                 <Border StrokeShape="RoundRectangle 8"
@@ -156,13 +177,13 @@
                 <!-- Untimed tasks. They keep behaving exactly as before; the grid is an addition,
                      not a requirement to put a clock on everything. -->
                 <VerticalStackLayout Spacing="2" IsVisible="{Binding HasUntimedTodos}">
-                    <Label Text="{x:Static localization:AppResources.PlannerUntimedLabel}" FontSize="9.5" FontAttributes="Bold"
+                    <Label Text="{x:Static localization:AppResources.PlannerUntimedLabel}" FontSize="11.5" FontAttributes="Bold"
                            CharacterSpacing="1.2" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                     <!-- Caps at roughly three rows and scrolls past that, so a long backlog of unscheduled
                          work cannot push the hour grid — the actual point of this screen — off the fold.
                          MaximumHeightRequest rather than HeightRequest: with one or two tasks the tray
                          shrinks instead of reserving empty space. -->
-                    <ScrollView MaximumHeightRequest="76" VerticalScrollBarVisibility="Default">
+                    <ScrollView MaximumHeightRequest="92" VerticalScrollBarVisibility="Default">
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding UntimedTodos}"
                                              BindableLayout.ItemTemplate="{StaticResource TodoRow}" />
                     </ScrollView>
@@ -172,13 +193,13 @@
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding HourSlots}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:PlannerHourSlot">
-                            <Grid ColumnDefinitions="24,*" ColumnSpacing="6" MinimumHeightRequest="24">
-                                <Label Grid.Column="0" Text="{Binding Label}" FontSize="9.5" FontAttributes="Bold"
-                                       VerticalOptions="Start" Margin="0,6,0,0"
+                            <Grid ColumnDefinitions="28,*" ColumnSpacing="6" MinimumHeightRequest="28">
+                                <Label Grid.Column="0" Text="{Binding Label}" FontSize="11.5" FontAttributes="Bold"
+                                       VerticalOptions="Start" Margin="0,7,0,0"
                                        TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
                                 <!-- Empty row: a tap starts a task already scheduled at this hour. -->
-                                <Border Grid.Column="1" IsVisible="{Binding IsEmpty}" HeightRequest="20"
+                                <Border Grid.Column="1" IsVisible="{Binding IsEmpty}" HeightRequest="24"
                                         StrokeShape="RoundRectangle 8" StrokeThickness="1" StrokeDashArray="3,3"
                                         Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
                                     <Border.GestureRecognizers>

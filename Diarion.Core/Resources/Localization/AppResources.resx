@@ -637,6 +637,9 @@
   <data name="ToggleCalendarAccessibility" xml:space="preserve">
     <value>Show or hide the calendar</value>
   </data>
+  <data name="PlannerHoursAccessibility" xml:space="preserve">
+    <value>Planned by hour</value>
+  </data>
   <data name="DeleteRecurringTaskTitle" xml:space="preserve">
     <value>This task repeats</value>
   </data>
