@@ -63,7 +63,70 @@ public partial class TodoDetailViewModel : BaseViewModel
     private TimeSpan _targetTime;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RecurrenceSummary))]
     private bool _isRecurring;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsRecurrenceWeekly))]
+    [NotifyPropertyChangedFor(nameof(IsRecurrenceInterval))]
+    [NotifyPropertyChangedFor(nameof(IsRecurrenceMonthly))]
+    [NotifyPropertyChangedFor(nameof(RecurrenceSummary))]
+    private RecurrenceKind _recurrenceKind = RecurrenceKind.Daily;
+
+    public bool IsRecurrenceDaily => RecurrenceKind == RecurrenceKind.Daily;
+    public bool IsRecurrenceWeekly => RecurrenceKind == RecurrenceKind.Weekly;
+    public bool IsRecurrenceInterval => RecurrenceKind == RecurrenceKind.IntervalDays;
+    public bool IsRecurrenceMonthly => RecurrenceKind == RecurrenceKind.MonthlyByDay;
+
+    public List<WeekdayToggle> Weekdays { get; } = WeekdayToggle.BuildMondayFirst();
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RecurrenceSummary))]
+    private int _everyNDays = 2;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RecurrenceSummary))]
+    private int _dayOfMonth = DateTime.Today.Day;
+
+    [ObservableProperty]
+    private bool _hasRecurrenceEnd;
+
+    [ObservableProperty]
+    private DateTime _recurrenceEndDate = DateTime.Today.AddMonths(1);
+
+    [ObservableProperty]
+    private string _recurrenceError = string.Empty;
+
+    /// <summary>Reads the rule back in words, through the formatter finance and habits already share.</summary>
+    public string RecurrenceSummary => IsRecurring ? RecurrenceFormatter.Describe(ComposeRule()) : string.Empty;
+
+    [RelayCommand]
+    public void SetRecurrenceKind(string kindName)
+    {
+        if (Enum.TryParse<RecurrenceKind>(kindName, out var kind)) RecurrenceKind = kind;
+    }
+
+    [RelayCommand]
+    public void ToggleWeekday(WeekdayToggle? day)
+    {
+        if (day == null) return;
+        day.IsSelected = !day.IsSelected;
+        // Picking days means the user wants specific days, whatever the chips above say.
+        RecurrenceKind = RecurrenceKind.Weekly;
+        OnPropertyChanged(nameof(RecurrenceSummary));
+    }
+
+    [RelayCommand]
+    public void IncrementEveryN() => EveryNDays = Math.Min(EveryNDays + 1, 365);
+
+    [RelayCommand]
+    public void DecrementEveryN() => EveryNDays = Math.Max(EveryNDays - 1, 1);
+
+    [RelayCommand]
+    public void IncrementDayOfMonth() => DayOfMonth = Math.Min(DayOfMonth + 1, 31);
+
+    [RelayCommand]
+    public void DecrementDayOfMonth() => DayOfMonth = Math.Max(DayOfMonth - 1, 1);
 
     [ObservableProperty]
     private bool _hasReminder;
@@ -125,6 +188,10 @@ public partial class TodoDetailViewModel : BaseViewModel
             HasTime = _currentTodo.HasTime;
             TargetTime = _currentTodo.TargetTime;
             IsRecurring = _currentTodo.RecurringTaskId != null;
+            if (_currentTodo.RecurringTaskId != null)
+            {
+                await LoadRecurrenceAsync(_currentTodo.RecurringTaskId.Value);
+            }
             HasReminder = _currentTodo.HasReminder;
             
             foreach (var item in PrioritiesList)
@@ -139,14 +206,45 @@ public partial class TodoDetailViewModel : BaseViewModel
         }
     }
 
+    private async Task LoadRecurrenceAsync(Guid ruleId)
+    {
+        var rule = await _todoService.GetRecurringTaskAsync(ruleId);
+        if (rule?.Recurrence == null) return;
+
+        RecurrenceKind = rule.Recurrence.Kind;
+        EveryNDays = Math.Max(1, rule.Recurrence.EveryN);
+        DayOfMonth = Math.Clamp(rule.Recurrence.DayOfMonth, 1, 31);
+        foreach (var day in Weekdays)
+        {
+            day.IsSelected = rule.Recurrence.DaysOfWeek?.Contains(day.DayOfWeek) == true;
+        }
+
+        HasRecurrenceEnd = rule.Recurrence.EndDate != null;
+        if (rule.Recurrence.EndDate != null) RecurrenceEndDate = rule.Recurrence.EndDate.Value;
+
+        OnPropertyChanged(nameof(RecurrenceSummary));
+    }
+
+    /// <summary>The rule the form currently describes. Built for the summary as well as for saving.</summary>
+    private RecurrenceRule ComposeRule() => new()
+    {
+        Kind = RecurrenceKind,
+        DaysOfWeek = Weekdays.Where(d => d.IsSelected).Select(d => d.DayOfWeek).ToList(),
+        EveryN = EveryNDays,
+        DayOfMonth = DayOfMonth,
+        Anchor = _targetDate,
+        EndDate = HasRecurrenceEnd ? RecurrenceEndDate.Date : null
+    };
+
+    /// <summary>The rule to save, or null to end the series.</summary>
+    private RecurrenceRule? BuildRecurrence() => IsRecurring ? ComposeRule() : null;
+
     /// <summary>
-    /// The rule the form is asking for, or null to end the series. Daily for now — the kind picker lands
-    /// with the rest of the form.
+    /// A weekly rule with no day selected never fires, so it would read as "saved" and then quietly do
+    /// nothing at all.
     /// </summary>
-    private RecurrenceRule? BuildRecurrence()
-        => IsRecurring
-            ? new RecurrenceRule { Kind = RecurrenceKind.Daily, Anchor = _targetDate }
-            : null;
+    private bool RecurrenceIsIncomplete()
+        => IsRecurring && RecurrenceKind == RecurrenceKind.Weekly && !Weekdays.Any(d => d.IsSelected);
 
     [RelayCommand]
     public async Task CloseAsync()
@@ -161,6 +259,13 @@ public partial class TodoDetailViewModel : BaseViewModel
         {
             return;
         }
+
+        if (RecurrenceIsIncomplete())
+        {
+            RecurrenceError = Diarion.Resources.Localization.AppResources.RecurrenceDaysRequired;
+            return;
+        }
+        RecurrenceError = string.Empty;
 
         try
         {
