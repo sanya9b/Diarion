@@ -96,6 +96,10 @@ namespace Diarion.Resources.Localization {
         public static string RecurringTaskAccessibility => ResourceManager.GetString("RecurringTaskAccessibility", resourceCulture) ?? "Repeating task";
         public static string ParseHintFormat => ResourceManager.GetString("ParseHintFormat", resourceCulture) ?? "Read from the text: {0}";
         public static string ParseUndoLabel => ResourceManager.GetString("ParseUndoLabel", resourceCulture) ?? "Undo";
+        public static string CancelButtonLabel => ResourceManager.GetString("CancelButtonLabel", resourceCulture) ?? "Cancel";
+        public static string DeleteRecurringTaskTitle => ResourceManager.GetString("DeleteRecurringTaskTitle", resourceCulture) ?? "This task repeats";
+        public static string DeleteThisOccurrenceOption => ResourceManager.GetString("DeleteThisOccurrenceOption", resourceCulture) ?? "Delete only this day";
+        public static string DeleteWholeSeriesOption => ResourceManager.GetString("DeleteWholeSeriesOption", resourceCulture) ?? "Delete the whole series";
         public static string ReminderLabel => ResourceManager.GetString("ReminderLabel", resourceCulture) ?? "Enable reminder";
         public static string ProfileMenuTitle => ResourceManager.GetString("ProfileMenuTitle", resourceCulture) ?? "Personal Settings";
         public static string GeneralInfoLabel => ResourceManager.GetString("GeneralInfoLabel", resourceCulture) ?? "GENERAL INFORMATION";

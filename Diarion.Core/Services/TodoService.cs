@@ -227,6 +227,30 @@ public class TodoService : ITodoService
         });
     }
 
+    public Task DeleteRecurringTaskAsync(Guid ruleId)
+    {
+        return Task.Run(() =>
+        {
+            _notificationService?.CancelRepeatingTaskReminder(ruleId);
+
+            // In memory: nullable Guid comparisons are the ones LiteDB mistranslates, and here a wrong
+            // empty result would look like a series that had already been cleaned up.
+            var outstanding = TodosCollection.FindAll()
+                .Where(t => t.RecurringTaskId == ruleId && !t.IsCompleted)
+                .ToList();
+
+            foreach (var todo in outstanding)
+            {
+                TodosCollection.Delete(todo.Id);
+                _notificationService?.CancelTodoReminder(todo.Id);
+            }
+
+            // Completed rows keep pointing at a rule that no longer exists, exactly as posted finance rows
+            // do. Nulling it would erase where they came from, and auto-migration already leaves them be.
+            RecurringTasksCollection.Delete(ruleId);
+        });
+    }
+
     public Task<RecurringTask?> GetRecurringTaskAsync(Guid ruleId)
         => Task.Run<RecurringTask?>(() => RecurringTasksCollection.FindById(ruleId));
 

@@ -78,7 +78,8 @@ public class MainViewModelTests
 
         _plannerSection = new PlannerSectionViewModel(
             _todoServiceMock.Object,
-            _navigationServiceMock.Object);
+            _navigationServiceMock.Object,
+            new Mock<IDialogService>().Object);
 
         _quickMenuSection = new QuickMenuViewModel(
             _menuConfigServiceMock.Object,

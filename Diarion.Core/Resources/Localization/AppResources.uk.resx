@@ -631,6 +631,18 @@
   <data name="ParseUndoLabel" xml:space="preserve">
     <value>Повернути</value>
   </data>
+  <data name="CancelButtonLabel" xml:space="preserve">
+    <value>Скасувати</value>
+  </data>
+  <data name="DeleteRecurringTaskTitle" xml:space="preserve">
+    <value>Ця задача повторюється</value>
+  </data>
+  <data name="DeleteThisOccurrenceOption" xml:space="preserve">
+    <value>Видалити лише цей день</value>
+  </data>
+  <data name="DeleteWholeSeriesOption" xml:space="preserve">
+    <value>Видалити всю серію</value>
+  </data>
   <data name="ReminderLabel" xml:space="preserve">
     <value>Увімкнути нагадування</value>
   </data>

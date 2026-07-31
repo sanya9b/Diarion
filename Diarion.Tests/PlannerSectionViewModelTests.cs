@@ -27,7 +27,84 @@ public class PlannerSectionViewModelTests
     {
         var service = new Mock<ITodoService>();
         service.Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>())).ReturnsAsync(todos.ToList());
-        return new PlannerSectionViewModel(service.Object, new Mock<INavigationService>().Object);
+        return new PlannerSectionViewModel(
+            service.Object, new Mock<INavigationService>().Object, new Mock<IDialogService>().Object);
+    }
+
+    private static (PlannerSectionViewModel Vm, Mock<ITodoService> Service, Mock<IDialogService> Dialog)
+        NewViewModelWithDialog(params TodoItem[] todos)
+    {
+        var service = new Mock<ITodoService>();
+        service.Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>())).ReturnsAsync(todos.ToList());
+        var dialog = new Mock<IDialogService>();
+        return (new PlannerSectionViewModel(service.Object, new Mock<INavigationService>().Object, dialog.Object),
+                service, dialog);
+    }
+
+    private static TodoItem Occurrence(string text, Guid ruleId, int hour = 9)
+    {
+        var todo = Task(text, hour);
+        todo.RecurringTaskId = ruleId;
+        return todo;
+    }
+
+    [Fact]
+    public async Task DeletingAOneOffAsksNothing()
+    {
+        var (viewModel, service, dialog) = NewViewModelWithDialog(Task("Купити хліб", 9));
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        await viewModel.DeleteTodoCommand.ExecuteAsync(viewModel.Todos.Single());
+
+        dialog.Verify(d => d.ShowActionSheetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string[]>()), Times.Never);
+        service.Verify(s => s.DeleteTodoAsync(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeletingAnOccurrenceAsksWhichOfTheTwoThingsWasMeant()
+    {
+        var ruleId = Guid.NewGuid();
+        var (viewModel, service, dialog) = NewViewModelWithDialog(Occurrence("Стретчинг", ruleId));
+        dialog.Setup(d => d.ShowActionSheetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string[]>()))
+              .ReturnsAsync(Diarion.Resources.Localization.AppResources.DeleteThisOccurrenceOption);
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        await viewModel.DeleteTodoCommand.ExecuteAsync(viewModel.Todos.Single());
+
+        service.Verify(s => s.DeleteTodoAsync(It.IsAny<Guid>()), Times.Once);
+        service.Verify(s => s.DeleteRecurringTaskAsync(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ChoosingTheWholeSeriesDeletesTheRuleRatherThanTheRow()
+    {
+        var ruleId = Guid.NewGuid();
+        var (viewModel, service, dialog) = NewViewModelWithDialog(Occurrence("Стретчинг", ruleId));
+        dialog.Setup(d => d.ShowActionSheetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string[]>()))
+              .ReturnsAsync(Diarion.Resources.Localization.AppResources.DeleteWholeSeriesOption);
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        await viewModel.DeleteTodoCommand.ExecuteAsync(viewModel.Todos.Single());
+
+        service.Verify(s => s.DeleteRecurringTaskAsync(ruleId), Times.Once);
+        service.Verify(s => s.DeleteTodoAsync(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task BackingOutOfTheDialogDeletesNothingAtAll()
+    {
+        // The reason the sheet was worth a new dialog method: a two-button confirmation has no way to say
+        // "neither", and this is a destructive action with two destructive answers.
+        var (viewModel, service, dialog) = NewViewModelWithDialog(Occurrence("Стретчинг", Guid.NewGuid()));
+        dialog.Setup(d => d.ShowActionSheetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string[]>()))
+              .ReturnsAsync((string?)null);
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        await viewModel.DeleteTodoCommand.ExecuteAsync(viewModel.Todos.Single());
+
+        service.Verify(s => s.DeleteTodoAsync(It.IsAny<Guid>()), Times.Never);
+        service.Verify(s => s.DeleteRecurringTaskAsync(It.IsAny<Guid>()), Times.Never);
+        viewModel.Todos.Should().ContainSingle();
     }
 
     [Fact]
@@ -158,7 +235,8 @@ public class PlannerSectionViewModelTests
         var service = new Mock<ITodoService>();
         service.Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>()))
                .ReturnsAsync(new List<TodoItem> { Task("Gym", 8) });
-        var viewModel = new PlannerSectionViewModel(service.Object, navigation.Object);
+        var viewModel = new PlannerSectionViewModel(
+            service.Object, navigation.Object, new Mock<IDialogService>().Object);
         await viewModel.LoadTodosForDateAsync(Day);
 
         await viewModel.AddAtHourCommand.ExecuteAsync(viewModel.HourSlots.Single(s => s.Hour == 14));

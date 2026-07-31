@@ -631,6 +631,18 @@
   <data name="ParseUndoLabel" xml:space="preserve">
     <value>Undo</value>
   </data>
+  <data name="CancelButtonLabel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="DeleteRecurringTaskTitle" xml:space="preserve">
+    <value>This task repeats</value>
+  </data>
+  <data name="DeleteThisOccurrenceOption" xml:space="preserve">
+    <value>Delete only this day</value>
+  </data>
+  <data name="DeleteWholeSeriesOption" xml:space="preserve">
+    <value>Delete the whole series</value>
+  </data>
   <data name="ReminderLabel" xml:space="preserve">
     <value>Enable reminder</value>
   </data>

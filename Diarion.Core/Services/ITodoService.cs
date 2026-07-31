@@ -24,6 +24,13 @@ public interface ITodoService
     /// "leave this alone", which is what every caller that only ticks a task complete needs to say.
     /// </summary>
     Task SetRecurrenceAsync(Guid todoId, RecurrenceRule? recurrence);
+
+    /// <summary>
+    /// Removes a series: the rule, its standing reminder, and every occurrence still outstanding.
+    /// Completed occurrences stay — they are a record of what was actually done, and deleting the plan
+    /// is not the same as denying the history.
+    /// </summary>
+    Task DeleteRecurringTaskAsync(Guid ruleId);
     Task DeleteTodosByDiaryEntryAsync(Guid diaryEntryId);
     Task<IEnumerable<TodoStatsDto>> GetTodosForStatsAsync(DateTime startDate, DateTime endDate);
     Task<TodoStatistics> GetTodoStatsSummaryAsync(DateTime startDate, DateTime endDate);
