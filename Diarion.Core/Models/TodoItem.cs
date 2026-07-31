@@ -30,12 +30,6 @@ public class TodoItem
     
     public bool IsCompleted { get; set; }
     
-    public bool IsDailyRepeat { get; set; }
-
-    public DateTime? RepeatEndDate { get; set; }
-
-    public string? RepeatGroupId { get; set; }
-
     /// <summary>
     /// The <see cref="RecurringTask"/> that materialized this row, or null for a one-off. Nullable so rows
     /// written before repeats moved onto a rule deserialize to null without a migration. Together with

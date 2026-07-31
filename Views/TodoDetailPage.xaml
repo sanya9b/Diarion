@@ -85,7 +85,7 @@
                         </Grid>
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                            <CheckBox IsChecked="{Binding IsDailyRepeat}" VerticalOptions="Center" />
+                            <CheckBox IsChecked="{Binding IsRecurring}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.DailyRepeatLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
 

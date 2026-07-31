@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
 using FluentAssertions;
+using Moq;
 using Xunit;
 
 namespace Diarion.Tests;
@@ -49,6 +51,19 @@ public class DiaryServiceTests : IDisposable
         {
             await _diaryService.DeleteEntryAsync(e.Id);
         }
+        // Rules too, or a "cleared" database would quietly start producing tasks again on the next read.
+        _dbContext.GetCollection<RecurringTask>(DatabaseConstants.RecurringTasksCollection).DeleteAll();
+    }
+
+    /// <summary>Saves a task and puts it on a daily rule anchored to its own day.</summary>
+    private async Task<TodoItem> StartDailySeriesAsync(
+        string description, DateTime date, TodoPriority priority = TodoPriority.Medium)
+    {
+        var todo = new TodoItem { TaskDescription = description, TargetDate = date, Priority = priority };
+        await _todoService.SaveTodoAsync(todo);
+        await _todoService.SetRecurrenceAsync(
+            todo.Id, new RecurrenceRule { Kind = RecurrenceKind.Daily, Anchor = date });
+        return todo;
     }
 
     [Fact]
@@ -302,15 +317,7 @@ public class DiaryServiceTests : IDisposable
         }
 
         // Create 1 High-priority daily repeating task from Yesterday
-        var repeatingTodo = new TodoItem
-        {
-            TaskDescription = "Repeating High Priority Task",
-            TargetDate = yesterday,
-            IsDailyRepeat = true,
-            RepeatGroupId = Guid.NewGuid().ToString(),
-            Priority = TodoPriority.High
-        };
-        await _todoService.SaveTodoAsync(repeatingTodo);
+        await StartDailySeriesAsync("Repeating High Priority Task", yesterday, TodoPriority.High);
 
         // Act
         var todos = await _todoService.GetTodosForDateAsync(today);
@@ -326,22 +333,16 @@ public class DiaryServiceTests : IDisposable
     {
         await ClearDatabaseAsync();
 
-        // A daily-repeat task created 10 days ago, viewed on the next 3 days (clones generated).
+        // A daily-repeat task created 10 days ago, viewed on the next 3 days (occurrences materialized).
         var day0 = DateTime.Today.AddDays(-10);
-        await _todoService.SaveTodoAsync(new TodoItem
-        {
-            TaskDescription = "Drink water",
-            TargetDate = day0,
-            IsDailyRepeat = true
-        });
+        await StartDailySeriesAsync("Drink water", day0);
         for (int i = 1; i <= 3; i++)
             await _todoService.GetTodosForDateAsync(day0.AddDays(i));
 
         // On day 3 the user unchecks "repeat".
         var day3 = (await _todoService.GetTodosForDateAsync(day0.AddDays(3)))
             .Single(t => t.TaskDescription == "Drink water");
-        day3.IsDailyRepeat = false;
-        await _todoService.SaveTodoAsync(day3);
+        await _todoService.SetRecurrenceAsync(day3.Id, null);
 
         // Days after the uncheck day must not have the task any more.
         for (int i = 4; i <= 6; i++)
@@ -356,23 +357,18 @@ public class DiaryServiceTests : IDisposable
     {
         await ClearDatabaseAsync();
 
-        // Daily-repeat task created 3 days ago; clones generated for the in-between days.
+        // Daily-repeat task created 3 days ago; occurrences materialized for the in-between days.
         var today = DateTime.Today;
-        await _todoService.SaveTodoAsync(new TodoItem
-        {
-            TaskDescription = "Drink water",
-            TargetDate = today.AddDays(-3),
-            IsDailyRepeat = true
-        });
+        await StartDailySeriesAsync("Drink water", today.AddDays(-3));
         await _todoService.GetTodosForDateAsync(today.AddDays(-2));
         var yesterday = await _todoService.GetTodosForDateAsync(today.AddDays(-1));
 
         // Yesterday the user unchecks "repeat".
         var task = yesterday.Single(t => t.TaskDescription == "Drink water");
-        task.IsDailyRepeat = false;
-        await _todoService.SaveTodoAsync(task);
+        await _todoService.SetRecurrenceAsync(task.Id, null);
 
-        // Opening today must NOT drag the (now non-repeat) task forward via auto-migration.
+        // Opening today must NOT drag the ended occurrence forward via auto-migration. It is pinned by
+        // its own provenance now, where the old scheme needed the end date to do double duty.
         var todayTodos = await _todoService.GetTodosForDateAsync(today);
         todayTodos.Should().BeEmpty("a repeat instance that was turned off must stay on its own day");
 
@@ -382,53 +378,27 @@ public class DiaryServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task GetTodosForDateAsync_WhenRepeatTurnedOff_DoesNotDuplicateOnSameDay_Legacy()
+    public async Task GetTodosForDateAsync_WhenRepeatTurnedOff_LeavesOneRowAndEndsTheSeries()
     {
+        // The two tests this replaces both existed because the grouping key was ambiguous: one covered a
+        // series with a group id, one a series without. A series without an id is now unrepresentable —
+        // it is a Guid or it is not a series — so the legacy half moved to MigrationRunnerTests, where
+        // that shape still turns up in databases already on disk.
         await ClearDatabaseAsync();
         var day0 = DateTime.Today.AddDays(-10);
 
-        // Legacy-style repeating task with NO RepeatGroupId (the case that duplicated).
-        _dbContext.GetCollection<TodoItem>(DatabaseConstants.TodosCollection).Insert(new TodoItem
-        {
-            TaskDescription = "Stretch",
-            TargetDate = day0,
-            IsDailyRepeat = true
-        });
+        await StartDailySeriesAsync("Stretch", day0);
 
         await _todoService.GetTodosForDateAsync(day0.AddDays(1));
         var day2 = (await _todoService.GetTodosForDateAsync(day0.AddDays(2))).Single(t => t.TaskDescription == "Stretch");
 
-        // Turn the repeat off on day 2.
-        day2.IsDailyRepeat = false;
-        await _todoService.SaveTodoAsync(day2);
-
-        // Re-open day 2: exactly one task, and it is no longer a repeat.
-        var reopened = await _todoService.GetTodosForDateAsync(day0.AddDays(2));
-        reopened.Count(t => t.TaskDescription == "Stretch").Should().Be(1);
-        reopened.Single(t => t.TaskDescription == "Stretch").IsDailyRepeat.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task GetTodosForDateAsync_WhenRepeatTurnedOff_DoesNotDuplicateOnSameDay_WithGroupId()
-    {
-        await ClearDatabaseAsync();
-        var day0 = DateTime.Today.AddDays(-10);
-
-        await _todoService.SaveTodoAsync(new TodoItem
-        {
-            TaskDescription = "Stretch",
-            TargetDate = day0,
-            IsDailyRepeat = true
-        });
-
-        await _todoService.GetTodosForDateAsync(day0.AddDays(1));
-        var day2 = (await _todoService.GetTodosForDateAsync(day0.AddDays(2))).Single(t => t.TaskDescription == "Stretch");
-
-        day2.IsDailyRepeat = false;
-        await _todoService.SaveTodoAsync(day2);
+        await _todoService.SetRecurrenceAsync(day2.Id, null);
 
         var reopened = await _todoService.GetTodosForDateAsync(day0.AddDays(2));
         reopened.Count(t => t.TaskDescription == "Stretch").Should().Be(1);
+
+        var rule = await _todoService.GetRecurringTaskAsync(day2.RecurringTaskId!.Value);
+        rule!.Recurrence.EndDate.Should().BeBefore(day2.TargetDate, "the series ended before the day it was switched off on");
     }
 
     [Fact]
@@ -437,23 +407,124 @@ public class DiaryServiceTests : IDisposable
         await ClearDatabaseAsync();
         var day0 = DateTime.Today.AddDays(-10);
 
-        _dbContext.GetCollection<TodoItem>(DatabaseConstants.TodosCollection).Insert(new TodoItem
-        {
-            TaskDescription = "Stretch",
-            TargetDate = day0,
-            IsDailyRepeat = true
-        });
+        await StartDailySeriesAsync("Stretch", day0);
 
         await _todoService.GetTodosForDateAsync(day0.AddDays(1));
         var day2 = (await _todoService.GetTodosForDateAsync(day0.AddDays(2))).Single(t => t.TaskDescription == "Stretch");
-        day2.IsDailyRepeat = false;
-        await _todoService.SaveTodoAsync(day2);
+        await _todoService.SetRecurrenceAsync(day2.Id, null);
 
         // Delete the turned-off instance; it must not come back.
         await _todoService.DeleteTodoAsync(day2.Id);
 
         var reopened = await _todoService.GetTodosForDateAsync(day0.AddDays(2));
         reopened.Should().NotContain(t => t.TaskDescription == "Stretch");
+    }
+
+    [Fact]
+    public async Task GetTodosForDateAsync_TwoSeriesWithTheSameDescriptionDoNotMerge()
+    {
+        // The defect the whole rewrite is for. Grouped by text, one of these two swallowed the other and
+        // the user simply never saw the second task again.
+        await ClearDatabaseAsync();
+        var day0 = DateTime.Today.AddDays(-5);
+
+        await StartDailySeriesAsync("Прибрати", day0);
+        await StartDailySeriesAsync("Прибрати", day0);
+
+        var next = await _todoService.GetTodosForDateAsync(day0.AddDays(1));
+
+        next.Count(t => t.TaskDescription == "Прибрати").Should().Be(2);
+    }
+
+    [Fact]
+    public async Task SaveTodoAsync_RenamingAnOccurrenceRenamesTheSeries()
+    {
+        // The old scheme did this too, but only as a side effect of the newest instance being the
+        // template. Renaming an older one changed nothing, which was impossible to predict.
+        await ClearDatabaseAsync();
+        var day0 = DateTime.Today.AddDays(-5);
+        await StartDailySeriesAsync("Drink water", day0);
+
+        var day1 = (await _todoService.GetTodosForDateAsync(day0.AddDays(1))).Single();
+        day1.TaskDescription = "Drink 2L water";
+        await _todoService.SaveTodoAsync(day1);
+
+        var day2 = await _todoService.GetTodosForDateAsync(day0.AddDays(2));
+        day2.Should().ContainSingle(t => t.TaskDescription == "Drink 2L water");
+    }
+
+    [Fact]
+    public async Task GetTodosForDateAsync_ADemotedOccurrenceDoesNotDemoteTheSeries()
+    {
+        // Under the old scheme the demoted clone became the template for the next day, so one busy day
+        // dropped a High series to Medium permanently. The template lives on the rule now.
+        await ClearDatabaseAsync();
+        var day0 = DateTime.Today.AddDays(-5);
+        await StartDailySeriesAsync("Big thing", day0, TodoPriority.High);
+
+        // Crowd day 1 so the arriving occurrence is demoted.
+        for (int i = 0; i < RecurringTaskPlanner.MaxHighPriorityPerDay; i++)
+        {
+            await _todoService.SaveTodoAsync(new TodoItem
+            {
+                TaskDescription = $"Busy {i}",
+                TargetDate = day0.AddDays(1),
+                Priority = TodoPriority.High
+            });
+        }
+
+        var day1 = await _todoService.GetTodosForDateAsync(day0.AddDays(1));
+        day1.Single(t => t.TaskDescription == "Big thing").Priority.Should().Be(TodoPriority.Medium);
+
+        var day2 = await _todoService.GetTodosForDateAsync(day0.AddDays(2));
+        day2.Single(t => t.TaskDescription == "Big thing").Priority.Should().Be(TodoPriority.High);
+    }
+
+    [Fact]
+    public async Task DeleteTodoAsync_AnOccurrenceOfALiveSeriesStaysDeleted()
+    {
+        await ClearDatabaseAsync();
+        var day0 = DateTime.Today.AddDays(-5);
+        await StartDailySeriesAsync("Stretch", day0);
+
+        var day1 = (await _todoService.GetTodosForDateAsync(day0.AddDays(1))).Single();
+        await _todoService.DeleteTodoAsync(day1.Id);
+
+        (await _todoService.GetTodosForDateAsync(day0.AddDays(1))).Should().BeEmpty();
+
+        // One day skipped, not the series ended — the difference between deleting a row and unchecking
+        // the box.
+        (await _todoService.GetTodosForDateAsync(day0.AddDays(2)))
+            .Should().ContainSingle(t => t.TaskDescription == "Stretch");
+    }
+
+    [Fact]
+    public async Task GetTodosForDateAsync_AGeneratedOccurrenceGetsItsReminderScheduled()
+    {
+        // The old generator inserted straight into the collection, so a repeating task with a reminder
+        // notified only on the instances the user had saved through the form by hand.
+        var notifications = new Mock<INotificationService>();
+        var service = new TodoService(_dbContext, notifications.Object);
+        var today = DateTime.Today;
+
+        var todo = new TodoItem
+        {
+            TaskDescription = "Pills",
+            TargetDate = today,
+            HasTime = true,
+            TargetTime = TimeSpan.FromHours(9),
+            HasReminder = true
+        };
+        await service.SaveTodoAsync(todo);
+        await service.SetRecurrenceAsync(todo.Id, new RecurrenceRule { Kind = RecurrenceKind.Daily, Anchor = today });
+        notifications.Invocations.Clear();
+
+        // Tomorrow, so the reminder is still in the future whatever time of day the suite runs at.
+        await service.GetTodosForDateAsync(today.AddDays(1));
+
+        notifications.Verify(
+            n => n.ScheduleTodoReminder(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()),
+            Times.Once);
     }
 
     /// <summary>A day only counts towards the streak if the user put something in it.</summary>

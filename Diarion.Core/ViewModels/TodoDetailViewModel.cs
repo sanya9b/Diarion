@@ -63,7 +63,7 @@ public partial class TodoDetailViewModel : BaseViewModel
     private TimeSpan _targetTime;
 
     [ObservableProperty]
-    private bool _isDailyRepeat;
+    private bool _isRecurring;
 
     [ObservableProperty]
     private bool _hasReminder;
@@ -124,7 +124,7 @@ public partial class TodoDetailViewModel : BaseViewModel
             IsCompleted = _currentTodo.IsCompleted;
             HasTime = _currentTodo.HasTime;
             TargetTime = _currentTodo.TargetTime;
-            IsDailyRepeat = _currentTodo.IsDailyRepeat;
+            IsRecurring = _currentTodo.RecurringTaskId != null;
             HasReminder = _currentTodo.HasReminder;
             
             foreach (var item in PrioritiesList)
@@ -138,6 +138,15 @@ public partial class TodoDetailViewModel : BaseViewModel
             Title = Diarion.Resources.Localization.AppResources.EditTaskTitle;
         }
     }
+
+    /// <summary>
+    /// The rule the form is asking for, or null to end the series. Daily for now — the kind picker lands
+    /// with the rest of the form.
+    /// </summary>
+    private RecurrenceRule? BuildRecurrence()
+        => IsRecurring
+            ? new RecurrenceRule { Kind = RecurrenceKind.Daily, Anchor = _targetDate }
+            : null;
 
     [RelayCommand]
     public async Task CloseAsync()
@@ -191,10 +200,10 @@ public partial class TodoDetailViewModel : BaseViewModel
             _currentTodo.TaskDescription = TaskDescription.Trim();
             _currentTodo.IsCompleted = IsCompleted;
             _currentTodo.Priority = SelectedPriority;
-            _currentTodo.IsDailyRepeat = IsDailyRepeat;
             _currentTodo.HasReminder = HasReminder;
 
             await _todoService.SaveTodoAsync(_currentTodo);
+            await _todoService.SetRecurrenceAsync(_currentTodo.Id, BuildRecurrence());
             await _navigationService.NavigateBackAsync();
         }
         finally
