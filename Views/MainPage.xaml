@@ -32,7 +32,7 @@
                      whole page below, so any vertical drag anywhere — scrolling the planner, most of all —
                      threw the month open. Scoped here it is only triggered on purpose, and a tap does the
                      same thing for anyone who never thinks to drag a bar they did not know was a handle. -->
-                <VerticalStackLayout Margin="0,-4,0,16" Spacing="0" HorizontalOptions="Fill"
+                <VerticalStackLayout Margin="0,-1,0,16" Spacing="0" HorizontalOptions="Fill"
                                      BackgroundColor="Transparent">
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding CalendarSection.ToggleCalendarCommand}" />
