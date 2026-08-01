@@ -58,4 +58,13 @@ public class RecurringTask
         var day = date.Date;
         return SkippedDates.Any(d => d.Date == day);
     }
+
+    /// <summary>
+    /// Whether the series is still running on the given day. A row keeps its <c>RecurringTaskId</c> for
+    /// ever — that provenance is what pins it against auto-migration — so the id alone cannot answer
+    /// whether the task still repeats; only the id together with a date can. Every screen has to ask this
+    /// the same way, or one of them goes on showing a repeat the user has already switched off.
+    /// </summary>
+    public bool IsActiveOn(DateTime day)
+        => Recurrence?.EndDate == null || Recurrence.EndDate >= day.Date;
 }

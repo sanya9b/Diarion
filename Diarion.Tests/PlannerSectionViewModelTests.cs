@@ -118,6 +118,61 @@ public class PlannerSectionViewModelTests
     }
 
     [Fact]
+    public async Task DeletingARowTakesItOffTheHourGridStraightAway()
+    {
+        // The reported "it deletes, but with a delay". Nothing is bound to Todos — the view reads the hour
+        // slots and the untimed tray — so removing from Todos alone left the block on screen until
+        // something else happened to reload the day.
+        var (viewModel, _, _) = NewViewModelWithDialog(Task("Купити хліб", 9));
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        await viewModel.DeleteTodoCommand.ExecuteAsync(viewModel.Todos.Single());
+
+        viewModel.HourSlots.SelectMany(s => s.Items).Should().BeEmpty();
+        viewModel.HourSlots.Should().OnlyContain(s => s.IsEmpty);
+    }
+
+    [Fact]
+    public async Task DeletingTheLastUntimedRowEmptiesTheTray()
+    {
+        var (viewModel, _, _) = NewViewModelWithDialog(Task("Купити хліб"));
+        await viewModel.LoadTodosForDateAsync(Day);
+        viewModel.HasUntimedTodos.Should().BeTrue();
+
+        await viewModel.DeleteTodoCommand.ExecuteAsync(viewModel.Todos.Single());
+
+        viewModel.UntimedTodos.Should().BeEmpty();
+        viewModel.HasUntimedTodos.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task DeletingTheWholeSeriesTakesTheRowOffTheHourGridToo()
+    {
+        var ruleId = Guid.NewGuid();
+        var (viewModel, _, dialog) = NewViewModelWithDialog(Occurrence("Стретчинг", ruleId));
+        dialog.Setup(d => d.ShowActionSheetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string[]>()))
+              .ReturnsAsync(Diarion.Resources.Localization.AppResources.DeleteWholeSeriesOption);
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        await viewModel.DeleteTodoCommand.ExecuteAsync(viewModel.Todos.Single());
+
+        viewModel.HourSlots.SelectMany(s => s.Items).Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task DeletingOneOfTwoRowsLeavesTheOtherOnTheGrid()
+    {
+        var (viewModel, _, _) = NewViewModelWithDialog(Task("Купити хліб", 9), Task("Прибрати", 14));
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        await viewModel.DeleteTodoCommand.ExecuteAsync(
+            viewModel.Todos.Single(t => t.TaskDescription == "Купити хліб"));
+
+        viewModel.HourSlots.SelectMany(s => s.Items)
+            .Should().ContainSingle(t => t.TaskDescription == "Прибрати");
+    }
+
+    [Fact]
     public async Task LoadTodosForDate_MarksARowThatBelongsToASeries()
     {
         // The row needs to say so on the list: without it a repeating task and a one-off are
