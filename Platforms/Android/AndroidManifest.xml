@@ -12,6 +12,7 @@
 	<uses-permission android:name="android.permission.USE_BIOMETRIC" />
 	<uses-permission android:name="android.permission.USE_FINGERPRINT" />
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-	<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-	<uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+	<!-- No exact-alarm permissions. USE_EXACT_ALARM is restricted by Play to alarm clocks and
+	     calendars; SCHEDULE_EXACT_ALARM is no longer auto-granted from Android 14 and would degrade
+	     silently. Reminders schedule as InexactAllowWhileIdle instead — see LocalNotificationService. -->
 </manifest>

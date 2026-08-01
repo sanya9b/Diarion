@@ -5,11 +5,52 @@ using System.Threading.Tasks;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.Core;
 using Plugin.LocalNotification.Core.Models;
+using Plugin.LocalNotification.Core.Models.AndroidOption;
 
 namespace Diarion.Services;
 
 public class LocalNotificationService : INotificationService
 {
+    /// <summary>
+    /// Every reminder in the app is scheduled inexactly but doze-aware.
+    /// <para>
+    /// Exact alarms would be a little more punctual, and they cost two permissions to get there.
+    /// <c>USE_EXACT_ALARM</c> is restricted by Google Play to alarm clocks and calendars, which a diary
+    /// is not; <c>SCHEDULE_EXACT_ALARM</c> stopped being granted automatically on Android 14, so from
+    /// there on an exact schedule silently degrades unless the user is sent into system settings to
+    /// turn it on. A reminder that quietly stops arriving is the worst failure this feature has, so
+    /// neither is worth a few minutes of precision on an evening journalling nudge.
+    /// </para>
+    /// <para>
+    /// The cost is real and belongs on the record: in deep doze Android may hold an inexact alarm for
+    /// up to roughly ten minutes. If that ever matters for a timed task, the fix is to ask
+    /// <c>IAndroidNotificationService.CanScheduleExactNotifications</c> and pick
+    /// <see cref="AndroidScheduleMode.ExactAllowWhileIdle"/> when it is already permitted — one line
+    /// here, because every reminder goes through <see cref="At"/>.
+    /// </para>
+    /// </summary>
+    private const AndroidScheduleMode ReminderScheduleMode = AndroidScheduleMode.InexactAllowWhileIdle;
+
+    /// <summary>
+    /// The one place a reminder's timing is described. Shared so the schedule mode cannot drift
+    /// between the seven call sites that used to spell this out individually.
+    /// </summary>
+    private static NotificationRequestSchedule At(DateTime notifyTime, NotificationRepeat? repeat = null)
+    {
+        var schedule = new NotificationRequestSchedule
+        {
+            NotifyTime = notifyTime,
+            Android = new AndroidScheduleOptions { ScheduleMode = ReminderScheduleMode }
+        };
+
+        if (repeat.HasValue)
+        {
+            schedule.RepeatType = repeat.Value;
+        }
+
+        return schedule;
+    }
+
     public void ScheduleTodoReminder(Guid todoId, string title, string description, DateTime targetTime)
     {
 #if ANDROID || IOS || MACCATALYST
@@ -23,10 +64,7 @@ public class LocalNotificationService : INotificationService
                 NotificationId = notificationId,
                 Title = title,
                 Description = description,
-                Schedule = new NotificationRequestSchedule
-                {
-                    NotifyTime = targetTime
-                }
+                Schedule = At(targetTime)
             };
 
             LocalNotificationCenter.Current.Show(request);
@@ -61,11 +99,7 @@ public class LocalNotificationService : INotificationService
             NotificationId = DailyReminderId,
             Title = Diarion.Resources.Localization.AppResources.DailyReminderTitle,
             Description = Diarion.Resources.Localization.AppResources.DailyReminderMessage,
-            Schedule = new NotificationRequestSchedule
-            {
-                NotifyTime = next,
-                RepeatType = NotificationRepeat.Daily
-            }
+            Schedule = At(next, NotificationRepeat.Daily)
         };
 
         LocalNotificationCenter.Current.Show(request);
@@ -103,11 +137,7 @@ public class LocalNotificationService : INotificationService
                 NotificationId = HabitReminderId(habitId, 0),
                 Title = title,
                 Description = description,
-                Schedule = new NotificationRequestSchedule
-                {
-                    NotifyTime = next,
-                    RepeatType = NotificationRepeat.Daily
-                }
+                Schedule = At(next, NotificationRepeat.Daily)
             });
             return;
         }
@@ -124,11 +154,7 @@ public class LocalNotificationService : INotificationService
                 NotificationId = HabitReminderId(habitId, day + 1),
                 Title = title,
                 Description = description,
-                Schedule = new NotificationRequestSchedule
-                {
-                    NotifyTime = next,
-                    RepeatType = NotificationRepeat.Weekly
-                }
+                Schedule = At(next, NotificationRepeat.Weekly)
             });
         }
 #endif
@@ -165,11 +191,7 @@ public class LocalNotificationService : INotificationService
             {
                 NotificationId = TaskRuleReminderId(ruleId, 0),
                 Title = title,
-                Schedule = new NotificationRequestSchedule
-                {
-                    NotifyTime = next,
-                    RepeatType = NotificationRepeat.Daily
-                }
+                Schedule = At(next, NotificationRepeat.Daily)
             });
             return;
         }
@@ -185,11 +207,7 @@ public class LocalNotificationService : INotificationService
             {
                 NotificationId = TaskRuleReminderId(ruleId, day + 1),
                 Title = title,
-                Schedule = new NotificationRequestSchedule
-                {
-                    NotifyTime = next,
-                    RepeatType = NotificationRepeat.Weekly
-                }
+                Schedule = At(next, NotificationRepeat.Weekly)
             });
         }
 #endif
@@ -207,7 +225,7 @@ public class LocalNotificationService : INotificationService
             {
                 NotificationId = TaskRuleReminderId(ruleId, slot++),
                 Title = title,
-                Schedule = new NotificationRequestSchedule { NotifyTime = moment }
+                Schedule = At(moment)
             });
         }
 #endif
