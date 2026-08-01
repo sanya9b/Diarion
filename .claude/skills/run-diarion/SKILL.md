@@ -93,6 +93,13 @@ Checking that the task form's Save button survives the recurrence picker being o
 6. `scroll.ps1` over the card, `shot.ps1`, read: do the fields below reach, and does Save stay put?
 7. Close with ✕. Stop the background task. Delete the PNGs.
 
+## What this cannot check
+
+**Swipe gestures.** `SwipeView` maps to WinUI's `SwipeControl`, which is touch-first and does not respond
+to a synthetic mouse drag — `drag.ps1` moves the pointer across a row and nothing happens. That is the
+tool failing, not the feature: the planner's swipe-to-delete works on Android and iOS and cannot be
+exercised here at all. Say so rather than reporting it as verified.
+
 ## When the fallback is wrong
 
 These helpers drive the desktop, so they assume Diarion is the foreground window and nothing else is

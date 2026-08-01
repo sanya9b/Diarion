@@ -643,6 +643,9 @@
   <data name="PlannerByHourLabel" xml:space="preserve">
     <value>By hour</value>
   </data>
+  <data name="DeleteTaskAccessibility" xml:space="preserve">
+    <value>Delete task</value>
+  </data>
   <data name="DeleteRecurringTaskTitle" xml:space="preserve">
     <value>This task repeats</value>
   </data>

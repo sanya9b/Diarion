@@ -11,7 +11,29 @@
     <ContentView.Resources>
         <!-- One row shape, used by both the untimed tray and the hour grid. -->
         <DataTemplate x:Key="TodoRow" x:DataType="viewmodels:TodoItemViewModel">
-            <Border Margin="0,1" StrokeShape="RoundRectangle 10" StrokeThickness="0" MinimumHeightRequest="0"
+          <!-- Swipe left to delete, the same gesture and the same coral panel the notes list uses.
+               It replaces a ✕ that was about 20 by 16 pixels — a quarter of the recommended touch
+               target, doing the most destructive thing on the row, sitting at the exact edge where a
+               thumb rests while scrolling. A gesture cannot be hit by accident. -->
+          <!-- MinimumHeightRequest="0" because SwipeView carries a platform minimum of its own, exactly
+               as the ImageButton did before it, and it was setting the row height again — 42px where the
+               content needs 26, which also cost the untimed tray a third of its rows. -->
+          <SwipeView Margin="0,1" MinimumHeightRequest="0">
+            <SwipeView.RightItems>
+                <SwipeItems>
+                    <SwipeItemView Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}"
+                                   CommandParameter="{Binding .}">
+                        <Border StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Coral}"
+                                StrokeShape="RoundRectangle 10" Margin="8,0,0,0" WidthRequest="58"
+                                SemanticProperties.Description="{x:Static localization:AppResources.DeleteTaskAccessibility}">
+                            <Path Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"
+                                  Fill="White" HorizontalOptions="Center" VerticalOptions="Center"
+                                  Aspect="Uniform" WidthRequest="18" HeightRequest="18" />
+                        </Border>
+                    </SwipeItemView>
+                </SwipeItems>
+            </SwipeView.RightItems>
+            <Border StrokeShape="RoundRectangle 10" StrokeThickness="0" MinimumHeightRequest="0"
                     BackgroundColor="{DynamicResource Theme_Snow_Black}">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding BindingContext.GoToTodoDetailsCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
@@ -19,7 +41,7 @@
                 <Border.Shadow>
                     <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,2" Radius="5" Opacity="{AppThemeBinding Light=0.04, Dark=0.15}" />
                 </Border.Shadow>
-                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto, Auto" Padding="9,3" ColumnSpacing="7" VerticalOptions="Center">
+                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" Padding="9,3" ColumnSpacing="7" VerticalOptions="Center">
                     <Border Grid.Column="0" WidthRequest="20" HeightRequest="20" StrokeShape="RoundRectangle 6"
                             StrokeThickness="1.5" VerticalOptions="Center">
                         <Border.Triggers>
@@ -100,17 +122,9 @@
                         </Border.Triggers>
                     </Border>
 
-                    <!-- A tapped Label, not an ImageButton: the button carries a platform minimum height
-                         that HeightRequest does not override, and it was setting the whole row's height. -->
-                    <Grid Grid.Column="5" BackgroundColor="Transparent" Padding="4,0" VerticalOptions="Center">
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
-                        </Grid.GestureRecognizers>
-                        <Label Text="✕" FontSize="12" InputTransparent="True" VerticalOptions="Center"
-                               TextColor="{DynamicResource Theme_Midnight_Dust}" />
-                    </Grid>
                 </Grid>
             </Border>
+          </SwipeView>
         </DataTemplate>
     </ContentView.Resources>
 
