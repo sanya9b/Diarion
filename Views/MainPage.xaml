@@ -43,7 +43,10 @@
                              BackgroundColor="{DynamicResource Theme_Dust_Ocean}"
                              HorizontalOptions="Center" Margin="0,0,0,4"
                              SemanticProperties.Description="{x:Static localization:AppResources.ToggleCalendarAccessibility}" />
-                    <Label Text="{Binding CalendarSection.SelectedDateDayName}" FontFamily="MarckScript" FontSize="28" HorizontalTextAlignment="Center" HorizontalOptions="Center" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    <!-- 24 rather than 28: the line now carries the date too, and "понеділок, 22 листопада"
+                         is the longest it gets. At 28 that wraps on a narrow phone, and a wrapped date
+                         costs more than two points of display type. -->
+                    <Label Text="{Binding CalendarSection.SelectedDateLabel}" FontFamily="MarckScript" FontSize="24" MaxLines="1" HorizontalTextAlignment="Center" HorizontalOptions="Center" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </VerticalStackLayout>
 
                 <!-- Tabs: Typography-Driven Design -->

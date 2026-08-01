@@ -27,14 +27,33 @@ public partial class CalendarSectionViewModel : ObservableObject
     [ObservableProperty]
     private List<CalendarDay> _calendarDays = new();
 
+    /// <summary>Mirrors the day cell in CalendarView.xaml — its height, and the gap under it.</summary>
+    private const double DayCellHeight = 52;
+    private const double DayCellSpacing = 8;
+
+    /// <summary>
+    /// The grid's height, stated rather than measured. A wrapping FlexLayout with a percentage Basis
+    /// measures itself a row taller than it lays out, and <c>AlignContent="Start"</c> packs the weeks at
+    /// the top — so the surplus showed up as a band of empty space between the last week and the day name
+    /// underneath, which read as a padding nobody could find. The trailing gap under the final row is
+    /// subtracted: it is spacing between weeks, and there is no week after the last one.
+    /// </summary>
+    [ObservableProperty]
+    private double _calendarGridHeight;
+
     [ObservableProperty]
     private string _currentMonthName = string.Empty;
 
     [ObservableProperty]
     private string _currentYear = string.Empty;
 
+    /// <summary>
+    /// The chosen day, named and dated — "середа, 13 серпня". The weekday alone was ambiguous the moment
+    /// the calendar collapsed: every Wednesday reads the same, and there was nothing on screen to say
+    /// which one you had landed on.
+    /// </summary>
     [ObservableProperty]
-    private string _selectedDateDayName = string.Empty;
+    private string _selectedDateLabel = string.Empty;
 
     [ObservableProperty]
     private string _todayMonthShort = string.Empty;
@@ -77,9 +96,13 @@ public partial class CalendarSectionViewModel : ObservableObject
         var culture = Diarion.Resources.Localization.AppResources.Culture ?? CultureInfo.CurrentCulture;
         CurrentMonthName = date.ToString("MMMM", culture);
         CurrentYear = date.ToString("yyyy");
-        SelectedDateDayName = date.ToString("dddd", culture);
+        SelectedDateLabel = date.ToString("dddd, d MMMM", culture);
         
         CalendarDays = _calendarService.GenerateCalendarDays(date);
+
+        // Five weeks or six, depending on how the month falls.
+        var weeks = (int)Math.Ceiling(CalendarDays.Count / 7.0);
+        CalendarGridHeight = weeks * (DayCellHeight + DayCellSpacing) - DayCellSpacing;
     }
 
     [RelayCommand]
@@ -133,7 +156,7 @@ public partial class CalendarSectionViewModel : ObservableObject
                 day.IsSelected = day.Date.Date == date.Date;
             }
             var culture = Diarion.Resources.Localization.AppResources.Culture ?? CultureInfo.CurrentCulture;
-            SelectedDateDayName = date.ToString("dddd", culture);
+            SelectedDateLabel = date.ToString("dddd, d MMMM", culture);
         }
 
         WeakReferenceMessenger.Default.Send(new DateSelectedMessage(CurrentCalendarDate));

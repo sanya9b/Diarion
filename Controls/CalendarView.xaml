@@ -43,7 +43,12 @@
             </Grid>
         </Grid>
 
+        <!-- Height stated, not measured. A wrapping FlexLayout with a percentage Basis measures itself a
+             row taller than it lays out, and AlignContent="Start" packs the weeks upward — so the surplus
+             appeared as a band of empty space under the calendar that no padding in this file explained.
+             The number comes from the cell height and spacing below; keep the three in step. -->
         <FlexLayout Grid.Row="1" x:Name="CalendarGrid" BindableLayout.ItemsSource="{Binding CalendarDays}"
+                HeightRequest="{Binding CalendarGridHeight}"
                 Wrap="Wrap"
                 Direction="Row"
                 JustifyContent="SpaceBetween"
