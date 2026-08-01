@@ -617,6 +617,106 @@
                 </VerticalStackLayout>
             </VerticalStackLayout>
 
+            <!-- ================= CYCLE TAB ================= -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsCycleTabVisible}">
+
+                <VerticalStackLayout IsVisible="{Binding CycleStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
+                    <Label Text="🩸" FontSize="48" HorizontalOptions="Center" />
+                    <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <!-- The period chips do not apply here: the shortest of them is a week. -->
+                <Label Text="{x:Static localization:AppResources.CycleStatsAllTimeNote}"
+                       IsVisible="{Binding CycleStats.IsNotEmpty}"
+                       FontSize="11"
+                       LineBreakMode="WordWrap"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                <!-- KPI rows -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding CycleStats.IsNotEmpty}">
+                    <controls:StatTile Grid.Column="0"
+                                       Label="{x:Static localization:AppResources.CycleStatsAverage}"
+                                       Value="{Binding CycleStats.AverageCycleText}"
+                                       Caption="{x:Static localization:AppResources.CycleStatsDaysCaption}"
+                                       AccentColor="{DynamicResource Theme_Berry}" />
+                    <controls:StatTile Grid.Column="1"
+                                       Label="{x:Static localization:AppResources.CycleStatsPeriodLength}"
+                                       Value="{Binding CycleStats.AveragePeriodText}"
+                                       Caption="{x:Static localization:AppResources.CycleStatsDaysCaption}"
+                                       AccentColor="{DynamicResource Theme_Berry}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding CycleStats.IsNotEmpty}">
+                    <controls:StatTile Grid.Column="0"
+                                       Label="{x:Static localization:AppResources.CycleStatsShortest}"
+                                       Value="{Binding CycleStats.ShortestCycleText}"
+                                       Caption="{x:Static localization:AppResources.CycleStatsDaysCaption}"
+                                       AccentColor="{DynamicResource Theme_Berry}" />
+                    <controls:StatTile Grid.Column="1"
+                                       Label="{x:Static localization:AppResources.CycleStatsLongest}"
+                                       Value="{Binding CycleStats.LongestCycleText}"
+                                       Caption="{x:Static localization:AppResources.CycleStatsDaysCaption}"
+                                       AccentColor="{DynamicResource Theme_Berry}" />
+                </Grid>
+
+                <Label Text="{Binding CycleStats.BasisText}"
+                       IsVisible="{Binding CycleStats.HasBasis}"
+                       FontSize="11"
+                       LineBreakMode="WordWrap"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                <!-- Cycle length chart -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding CycleStats.HasCycles}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.CycleStatsLengthChart}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Berry}" />
+                        <controls:SleepBarChart HeightRequest="150"
+                                                Items="{Binding CycleStats.CycleChartData}"
+                                                MaxValue="45"
+                                                BarColor="{DynamicResource Theme_Berry}"
+                                                TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                                MutedColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Logged days heatmap -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding CycleStats.HasCalendar}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.CycleStatsCalendar}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Berry}" />
+                        <controls:ContributionGrid HeightRequest="110"
+                                                   CompletedDates="{Binding CycleStats.MarkedDates}"
+                                                   StartDate="{Binding CycleStats.CalendarStart}"
+                                                   EndDate="{Binding CycleStats.CalendarEnd}"
+                                                   AccentColor="{DynamicResource Theme_Berry}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Most frequent symptoms -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding CycleStats.HasSymptoms}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.CycleStatsSymptoms}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Berry}" />
+                        <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding CycleStats.Symptoms}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="stats:CycleSymptomItemViewModel">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0" Text="{Binding Label}" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Grid.Column="1" Text="{Binding CountText}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Berry}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

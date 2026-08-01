@@ -18,10 +18,17 @@ public class CorrelationService : ICorrelationService
     public const int MinSampleSize = 14;
 
     private readonly IDiaryService _diaryService;
+    private readonly ICycleLogService _cycleLogService;
+    private readonly IProfileService _profileService;
 
-    public CorrelationService(IDiaryService diaryService)
+    public CorrelationService(
+        IDiaryService diaryService,
+        ICycleLogService cycleLogService,
+        IProfileService profileService)
     {
         _diaryService = diaryService;
+        _cycleLogService = cycleLogService;
+        _profileService = profileService;
     }
 
     public async Task<IReadOnlyList<MoodCorrelation>> GetMoodCorrelationsAsync(int days, int lagDays = 0)
@@ -56,11 +63,13 @@ public class CorrelationService : ICorrelationService
             }
         }
 
-        var factors = new (string Key, Dictionary<DateTime, double> Values)[]
+        var factors = new List<(string Key, Dictionary<DateTime, double> Values)>
         {
             ("SleepDuration", sleepDurationByDate),
             ("SleepQuality", sleepQualityByDate),
         };
+
+        factors.AddRange(await BuildCycleFactorsAsync(start));
 
         var results = new List<MoodCorrelation>();
         foreach (var (key, values) in factors)
@@ -94,6 +103,54 @@ public class CorrelationService : ICorrelationService
         }
 
         return results.OrderByDescending(c => Math.Abs(c.Coefficient)).ToList();
+    }
+
+    /// <summary>
+    /// Cycle factors, or nothing at all when the feature is off — a correlation against a period the
+    /// user is not tracking would be built from an all-zero series anyway.
+    ///
+    /// Both series are keyed on every day in the window, not only on the days with a log row: a period
+    /// day is only meaningful against the days that were not one, and a dictionary of nothing but ones
+    /// has no variance for Pearson to work with.
+    /// </summary>
+    private async Task<List<(string Key, Dictionary<DateTime, double> Values)>> BuildCycleFactorsAsync(DateTime start)
+    {
+        var empty = new List<(string, Dictionary<DateTime, double>)>();
+
+        var profile = await _profileService.GetUserProfileAsync();
+        if (profile?.IsCycleTrackingActive != true)
+        {
+            return empty;
+        }
+
+        var logs = await _cycleLogService.GetLogsAsync();
+        if (logs is not { Count: > 0 })
+        {
+            return empty;
+        }
+
+        var byDate = logs.GroupBy(l => l.Date.Date).ToDictionary(g => g.Key, g => g.First());
+
+        // Only span days the user has actually been logging; padding zeros back to the start of the
+        // window before they ever opened the feature would invent "not a period day" observations.
+        var firstLogged = logs.Min(l => l.Date.Date);
+        var from = firstLogged > start.Date ? firstLogged : start.Date;
+
+        var periodDay = new Dictionary<DateTime, double>();
+        var symptomLoad = new Dictionary<DateTime, double>();
+
+        for (var d = from; d <= DateTime.Today; d = d.AddDays(1))
+        {
+            byDate.TryGetValue(d, out var log);
+            periodDay[d] = log is { IsSymptomOnly: false } ? 1 : 0;
+            symptomLoad[d] = log?.Symptoms?.Count ?? 0;
+        }
+
+        return new List<(string, Dictionary<DateTime, double>)>
+        {
+            ("CyclePeriodDay", periodDay),
+            ("CycleSymptomLoad", symptomLoad),
+        };
     }
 
     private static double SleepHours(TimeSpan start, TimeSpan end)

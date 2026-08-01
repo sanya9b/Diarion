@@ -143,6 +143,12 @@ public partial class ProfileViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    public async Task OpenPromptHistoryAsync()
+    {
+        await _navigationService.NavigateToAsync("PromptHistory");
+    }
+
+    [RelayCommand]
     public async Task OpenCycleAsync()
     {
         await _navigationService.NavigateToAsync("Cycle");

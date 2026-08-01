@@ -70,6 +70,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ProductivityStatsViewModel>();
         services.AddTransient<FinanceStatsViewModel>();
         services.AddTransient<HabitStatsViewModel>();
+        services.AddTransient<CycleStatsViewModel>();
         services.AddTransient<StatisticsViewModel>();
         
         services.AddTransient<WishlistViewModel>();
@@ -79,6 +80,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<HabitEditorViewModel>();
         services.AddTransient<PromptLibraryViewModel>();
         services.AddTransient<PromptEditorViewModel>();
+        services.AddTransient<PromptHistoryViewModel>();
         services.AddTransient<CycleViewModel>();
 
         return services;
@@ -105,6 +107,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<HabitEditorPage>();
         services.AddTransient<PromptLibraryPage>();
         services.AddTransient<PromptEditorPage>();
+        services.AddTransient<PromptHistoryPage>();
         services.AddTransient<CyclePage>();
 
         return services;

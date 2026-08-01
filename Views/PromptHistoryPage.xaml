@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             x:Class="Diarion.Views.PromptHistoryPage"
+             x:Name="RootPage"
+             x:DataType="viewModels:PromptHistoryViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{localization:Translate Key=PromptHistoryTitle}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCloseTapped" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <Label Text="{localization:Translate Key=PromptHistoryTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="{localization:Translate Key=PromptHistorySubtitle}" FontSize="12" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator Grid.Column="2"
+                               WidthRequest="28"
+                               HeightRequest="28"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{DynamicResource Theme_Berry}"
+                               VerticalOptions="Center" />
+        </Grid>
+
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+            <Border Grid.Row="0"
+                    Margin="24,10,24,10"
+                    StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    StrokeShape="RoundRectangle 16"
+                    Padding="16,4"
+                    IsVisible="{Binding HasAnswers}">
+                <SearchBar Text="{Binding SearchQuery}"
+                           Placeholder="{localization:Translate Key=PromptHistorySearch}"
+                           PlaceholderColor="{DynamicResource Theme_Ocean_Dust}"
+                           TextColor="{DynamicResource Theme_Midnight_Snow}"
+                           CancelButtonColor="{DynamicResource Theme_Coral}"
+                           BackgroundColor="Transparent" />
+            </Border>
+
+            <CollectionView Grid.Row="1"
+                            BackgroundColor="Transparent"
+                            ItemsSource="{Binding Answers}"
+                            VerticalScrollBarVisibility="Never"
+                            SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:PromptAnswerItemViewModel">
+                        <Border Padding="16,14"
+                                Margin="24,0"
+                                StrokeThickness="1"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                                StrokeShape="RoundRectangle 16">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenDayCommand}"
+                                                      CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="{Binding DateText}"
+                                       FontSize="11"
+                                       FontAttributes="Bold"
+                                       CharacterSpacing="1.5"
+                                       TextTransform="Uppercase"
+                                       TextColor="{DynamicResource Theme_Berry}" />
+
+                                <Label Text="{Binding Question}"
+                                       IsVisible="{Binding HasQuestion}"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       LineBreakMode="WordWrap"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                                <Label Text="{Binding Answer}"
+                                       FontSize="14"
+                                       LineBreakMode="WordWrap"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.Footer>
+                    <BoxView HeightRequest="24" BackgroundColor="Transparent" />
+                </CollectionView.Footer>
+            </CollectionView>
+
+            <!-- A plain sibling rather than CollectionView.EmptyView: the EmptyView renders outside the
+                 page's binding scope, so nothing inside it resolves and the message never appears. -->
+            <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" VerticalOptions="Start" Spacing="8" Margin="24,40,24,0">
+                <Label Text="{localization:Translate Key=PromptHistoryEmpty}"
+                       IsVisible="{Binding IsEmpty}"
+                       LineBreakMode="WordWrap"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                <Label Text="{localization:Translate Key=PromptHistoryNoMatches}"
+                       IsVisible="{Binding HasNoMatches}"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -796,6 +796,84 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string TabCycle {
+            get {
+                return ResourceManager.GetString("TabCycle", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsAllTimeNote {
+            get {
+                return ResourceManager.GetString("CycleStatsAllTimeNote", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsAverage {
+            get {
+                return ResourceManager.GetString("CycleStatsAverage", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsShortest {
+            get {
+                return ResourceManager.GetString("CycleStatsShortest", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsLongest {
+            get {
+                return ResourceManager.GetString("CycleStatsLongest", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsPeriodLength {
+            get {
+                return ResourceManager.GetString("CycleStatsPeriodLength", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsDaysCaption {
+            get {
+                return ResourceManager.GetString("CycleStatsDaysCaption", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsLengthChart {
+            get {
+                return ResourceManager.GetString("CycleStatsLengthChart", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsCalendar {
+            get {
+                return ResourceManager.GetString("CycleStatsCalendar", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsSymptoms {
+            get {
+                return ResourceManager.GetString("CycleStatsSymptoms", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsBasisFormat {
+            get {
+                return ResourceManager.GetString("CycleStatsBasisFormat", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsDiscardedFormat {
+            get {
+                return ResourceManager.GetString("CycleStatsDiscardedFormat", resourceCulture);
+            }
+        }
+
+        public static string CycleStatsNoCompleteCycle {
+            get {
+                return ResourceManager.GetString("CycleStatsNoCompleteCycle", resourceCulture);
+            }
+        }
+
         public static string StatsHabitStrength {
             get {
                 return ResourceManager.GetString("StatsHabitStrength", resourceCulture);
@@ -1009,6 +1087,42 @@ namespace Diarion.Resources.Localization {
         public static string PromptLibraryManage {
             get {
                 return ResourceManager.GetString("PromptLibraryManage", resourceCulture);
+            }
+        }
+
+        public static string PromptHistoryOpen {
+            get {
+                return ResourceManager.GetString("PromptHistoryOpen", resourceCulture);
+            }
+        }
+
+        public static string PromptHistoryTitle {
+            get {
+                return ResourceManager.GetString("PromptHistoryTitle", resourceCulture);
+            }
+        }
+
+        public static string PromptHistorySubtitle {
+            get {
+                return ResourceManager.GetString("PromptHistorySubtitle", resourceCulture);
+            }
+        }
+
+        public static string PromptHistorySearch {
+            get {
+                return ResourceManager.GetString("PromptHistorySearch", resourceCulture);
+            }
+        }
+
+        public static string PromptHistoryEmpty {
+            get {
+                return ResourceManager.GetString("PromptHistoryEmpty", resourceCulture);
+            }
+        }
+
+        public static string PromptHistoryNoMatches {
+            get {
+                return ResourceManager.GetString("PromptHistoryNoMatches", resourceCulture);
             }
         }
 
@@ -1498,6 +1612,18 @@ public static string ClearAllDataSuccessMsg {
 
         public static string FactorSleepQuality {
             get { return ResourceManager.GetString("FactorSleepQuality", resourceCulture) ?? "Sleep quality"; }
+        }
+
+        public static string FactorCyclePeriodDay {
+            get {
+                return ResourceManager.GetString("FactorCyclePeriodDay", resourceCulture);
+            }
+        }
+
+        public static string FactorCycleSymptoms {
+            get {
+                return ResourceManager.GetString("FactorCycleSymptoms", resourceCulture);
+            }
         }
 
         public static string ExportDataTitle {

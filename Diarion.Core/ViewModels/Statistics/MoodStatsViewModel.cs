@@ -92,6 +92,8 @@ public partial class MoodStatsViewModel : ObservableObject
             {
                 "SleepDuration" => AppResources.FactorSleepDuration,
                 "SleepQuality" => AppResources.FactorSleepQuality,
+                "CyclePeriodDay" => AppResources.FactorCyclePeriodDay,
+                "CycleSymptomLoad" => AppResources.FactorCycleSymptoms,
                 _ => c.FactorKey
             };
             var arrow = c.Coefficient >= 0 ? "↑" : "↓";

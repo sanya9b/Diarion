@@ -16,4 +16,7 @@ public interface IDiaryService
 
     // Statistics (Optimized DB Queries)
     Task<IEnumerable<DiaryEntryStatsDto>> GetDiaryEntriesForStatsAsync(DateTime startDate, DateTime endDate);
+
+    /// <summary>Every answered guided prompt, newest first. Unanswered days are left out.</summary>
+    Task<IReadOnlyList<PromptAnswerDto>> GetPromptAnswersAsync();
 }
