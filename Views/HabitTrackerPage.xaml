@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
-             xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              x:Class="Diarion.Views.HabitTrackerPage"
              x:Name="RootPage"
              x:DataType="viewModels:HabitTrackerViewModel"
@@ -161,23 +160,13 @@
 
                             <!-- Quit-tracker stats -->
                             <VerticalStackLayout Spacing="12">
-                                <!-- Edit tracker (name / start / cost / units) -->
+                                <!-- Edit tracker (name / start / cost / units / reminder) -->
                                 <Label Text="✎" FontSize="16" HorizontalOptions="End" TextColor="{DynamicResource Theme_Ocean_Dust}"
                                        SemanticProperties.Description="{localization:Translate Key=HabitTrackerEditTitle}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding EditTrackerCommand}" CommandParameter="{Binding SelectedTracker}" />
                                     </Label.GestureRecognizers>
                                 </Label>
-
-                                <!-- Live clean-time hero -->
-                                <Border StrokeThickness="0" StrokeShape="RoundRectangle 18"
-                                        BackgroundColor="{DynamicResource Theme_Val_1AC26D53_26FFFFFF}" Padding="16">
-                                    <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-                                        <Label Text="{localization:Translate Key=QuitCleanTimeLabel}" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                        <Label Text="{Binding SelectedTracker.LiveTimeText}" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
-                                        <Label Text="{Binding SelectedTracker.NextMilestoneText}" FontSize="12" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                    </VerticalStackLayout>
-                                </Border>
 
                                 <!-- Money saved -->
                                 <Border IsVisible="{Binding SelectedTracker.HasMoney}" StrokeThickness="0" StrokeShape="RoundRectangle 18"
@@ -188,27 +177,6 @@
                                     </Grid>
                                 </Border>
 
-                                <!-- Relapse action + count -->
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                                    <Button Grid.Column="0" Text="{localization:Translate Key=QuitRelapseButton}"
-                                            Command="{Binding RelapseCommand}" CommandParameter="{Binding SelectedTracker}"
-                                            BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Coral}"
-                                            BorderColor="{DynamicResource Theme_Coral}" BorderWidth="1" CornerRadius="18" />
-                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
-                                        <Label Text="{Binding SelectedTracker.RelapseCountText}" FontSize="16" FontAttributes="Bold" HorizontalOptions="End" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Label Text="{localization:Translate Key=QuitRelapsesLabel}" FontSize="10" TextTransform="Uppercase" HorizontalOptions="End" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                    </VerticalStackLayout>
-                                </Grid>
-
-                                <!-- Relapse log -->
-                                <VerticalStackLayout Spacing="4" IsVisible="{Binding SelectedTracker.HasRelapses}"
-                                                     BindableLayout.ItemsSource="{Binding SelectedTracker.Relapses}">
-                                    <BindableLayout.ItemTemplate>
-                                        <DataTemplate x:DataType="models:RelapseEvent">
-                                            <Label Text="{Binding Date, StringFormat='• {0:dd.MM.yyyy}'}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                        </DataTemplate>
-                                    </BindableLayout.ItemTemplate>
-                                </VerticalStackLayout>
                             </VerticalStackLayout>
 
                             <FlexLayout BindableLayout.ItemsSource="{Binding TrackerDays}"
@@ -239,7 +207,8 @@
                                                 <DataTrigger TargetType="Border" Binding="{Binding IsFuture}" Value="True">
                                                     <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Val_1A000000_33000000}" />
                                                     <Setter Property="StrokeThickness" Value="0" />
-                                                    <Setter Property="Opacity" Value="0.5" />
+                                                    <Setter Property="Opacity" Value="0.4" />
+                                                    <Setter Property="InputTransparent" Value="True" />
                                                 </DataTrigger>
                                             </Border.Triggers>
 
@@ -345,6 +314,19 @@
                             <Entry Text="{Binding NewTrackerUnits}" Keyboard="Numeric" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Dust_Ocean}" />
                         </VerticalStackLayout>
                     </Grid>
+
+                    <!-- Reminder -->
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="{localization:Translate Key=HabitReminderLabel}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding NewTrackerReminderEnabled}" VerticalOptions="Center" />
+                        </Grid>
+                        <TimePicker Time="{Binding NewTrackerReminderTime}"
+                                    Format="HH:mm"
+                                    IsVisible="{Binding NewTrackerReminderEnabled}"
+                                    HorizontalOptions="Start"
+                                    TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    </VerticalStackLayout>
 
                     <Label Text="{Binding ValidationMessage}"
                            IsVisible="{Binding HasValidationMessage}"

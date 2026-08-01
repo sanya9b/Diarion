@@ -19,6 +19,9 @@ public class HarmfulHabitTracker
 
     /// <summary>Logged relapses; the most recent one resets the clean-time counter.</summary>
     public List<RelapseEvent> Relapses { get; set; } = new();
+
+    /// <summary>Optional daily reminder time-of-day. Null means no reminder.</summary>
+    public TimeSpan? ReminderTime { get; set; }
 }
 
 /// <summary>A single relapse: when it happened and an optional note.</summary>

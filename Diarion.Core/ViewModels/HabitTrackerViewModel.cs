@@ -32,6 +32,12 @@ public partial class HabitTrackerViewModel : BaseViewModel
     private string _newTrackerUnits = string.Empty;
 
     [ObservableProperty]
+    private bool _newTrackerReminderEnabled;
+
+    [ObservableProperty]
+    private TimeSpan _newTrackerReminderTime = new(9, 0, 0);
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FormTitleText))]
     [NotifyPropertyChangedFor(nameof(FormButtonText))]
     private bool _isEditingTracker;
@@ -53,11 +59,16 @@ public partial class HabitTrackerViewModel : BaseViewModel
     private bool _isAddTrackerFormVisible;
 
     private readonly IDialogService _dialogService;
+    private readonly INotificationService _notificationService;
 
-    public HabitTrackerViewModel(IHabitService habitService, IDialogService dialogService)
+    public HabitTrackerViewModel(
+        IHabitService habitService,
+        IDialogService dialogService,
+        INotificationService notificationService)
     {
         _habitService = habitService;
         _dialogService = dialogService;
+        _notificationService = notificationService;
         Title = AppResources.HabitTrackerTitle;
     }
 
@@ -81,6 +92,8 @@ public partial class HabitTrackerViewModel : BaseViewModel
         NewTrackerStartDate = DateTime.Today;
         NewTrackerCost = string.Empty;
         NewTrackerUnits = string.Empty;
+        NewTrackerReminderEnabled = false;
+        NewTrackerReminderTime = new TimeSpan(9, 0, 0);
         ValidationMessage = string.Empty;
         IsAddTrackerFormVisible = true;
     }
@@ -97,6 +110,8 @@ public partial class HabitTrackerViewModel : BaseViewModel
         NewTrackerStartDate = target.StartDate;
         NewTrackerCost = target.CostPerUnit > 0 ? target.CostPerUnit.ToString(CultureInfo.CurrentCulture) : string.Empty;
         NewTrackerUnits = target.UnitsPerDay > 0 ? target.UnitsPerDay.ToString(CultureInfo.CurrentCulture) : string.Empty;
+        NewTrackerReminderEnabled = target.ReminderTime.HasValue;
+        NewTrackerReminderTime = target.ReminderTime ?? new TimeSpan(9, 0, 0);
         ValidationMessage = string.Empty;
         IsAddTrackerFormVisible = true;
     }
@@ -112,6 +127,8 @@ public partial class HabitTrackerViewModel : BaseViewModel
         NewTrackerStartDate = DateTime.Today;
         NewTrackerCost = string.Empty;
         NewTrackerUnits = string.Empty;
+        NewTrackerReminderEnabled = false;
+        NewTrackerReminderTime = new TimeSpan(9, 0, 0);
     }
 
     [RelayCommand]
@@ -148,16 +165,33 @@ public partial class HabitTrackerViewModel : BaseViewModel
             tracker = new HarmfulHabitTracker();
         }
 
+        var reminder = NewTrackerReminderEnabled ? NewTrackerReminderTime : (TimeSpan?)null;
+
         tracker.HarmfulHabitName = normalizedName;
         tracker.StartDate = NewTrackerStartDate.Date;
         tracker.CostPerUnit = cost;
         tracker.UnitsPerDay = units;
+        tracker.ReminderTime = reminder;
 
         await _habitService.SaveHarmfulHabitTrackerAsync(tracker);
+        await ApplyReminderAsync(tracker.Id, normalizedName, reminder);
 
         var savedId = tracker.Id;
         HideAddTrackerForm();
         await LoadAsync(savedId);
+    }
+
+    private async Task ApplyReminderAsync(Guid trackerId, string name, TimeSpan? reminder)
+    {
+        if (reminder.HasValue)
+        {
+            await _notificationService.RequestPermissionsAsync();
+            _notificationService.ScheduleHabitReminder(trackerId, name, reminder.Value, null);
+        }
+        else
+        {
+            _notificationService.CancelHabitReminder(trackerId);
+        }
     }
 
     [RelayCommand]
@@ -172,7 +206,8 @@ public partial class HabitTrackerViewModel : BaseViewModel
         if (!result) return;
 
         await _habitService.DeleteHarmfulHabitTrackerAsync(tracker.Id);
-        
+        _notificationService.CancelHabitReminder(tracker.Id);
+
         Trackers.Remove(tracker);
         if (SelectedTracker?.Id == tracker.Id)
         {
@@ -207,51 +242,10 @@ public partial class HabitTrackerViewModel : BaseViewModel
         if (isMarked)
         {
             SelectedTracker.MarkDay(day.Date);
-            
-            // Якщо відмітили день, який є останнім у рядку (кратний 5), та він є останнім у списку - додаємо ще 5 днів
-            if (day.DayNumber % 5 == 0 && day.Date == TrackerDays.Last().Date)
-            {
-                var currentDate = day.Date.AddDays(1);
-                var dayNumber = day.DayNumber + 1;
-                for (int i = 0; i < 5; i++)
-                {
-                    TrackerDays.Add(new HarmfulHabitDayViewModel(dayNumber, currentDate, false));
-                    currentDate = currentDate.AddDays(1);
-                    dayNumber++;
-                }
-            }
         }
         else
         {
             SelectedTracker.UnmarkDay(day.Date);
-        }
-    }
-
-    [RelayCommand]
-    private async Task RelapseAsync(HarmfulHabitTrackerItemViewModel? tracker)
-    {
-        var target = tracker ?? SelectedTracker;
-        if (target == null) return;
-
-        bool confirm = await _dialogService.ShowConfirmationAsync(
-            AppResources.QuitRelapseConfirmTitle,
-            AppResources.QuitRelapseConfirmMessage,
-            AppResources.DeleteConfirmYes,
-            AppResources.DeleteConfirmNo);
-
-        if (!confirm) return;
-
-        var today = DateTime.Today;
-        await _habitService.AddRelapseAsync(target.Id, today, null);
-        target.AddRelapse(today);
-    }
-
-    /// <summary>Ticks the live clean-time counters; called from the page's dispatcher timer.</summary>
-    public void RefreshLiveStats()
-    {
-        foreach (var tracker in Trackers)
-        {
-            tracker.RefreshLive();
         }
     }
 
@@ -304,25 +298,18 @@ public partial class HabitTrackerViewModel : BaseViewModel
             return;
         }
 
-        var currentDate = tracker.StartDate.Date;
-        var dayNumber = 1;
+        var startDate = tracker.StartDate.Date;
+        int elapsedDays = Math.Max(1, (DateTime.Today - startDate).Days + 1);
 
-        int maxMarkedDayNum = 0;
-        foreach (var markedDate in tracker.MarkedDays)
-        {
-            int d = (markedDate.Date - tracker.StartDate.Date).Days + 1;
-            if (d > maxMarkedDayNum) maxMarkedDayNum = d;
-        }
+        // Кожен день від старту до сьогодні має бути доступний для відмітки, далі —
+        // заморожений хвіст. Щонайменше 30 днів і завжди кратно 5 (повні рядки).
+        int requiredDays = Math.Max(30, ((elapsedDays + 4) / 5) * 5 + 5);
 
-        // Гарантуємо щонайменше 30 днів (щоб кружки заповнювали екран) 
-        // і щоб кількість днів завжди була кратна 5 (повні рядки)
-        int requiredDays = Math.Max(30, ((maxMarkedDayNum + 4) / 5) * 5 + 5);
-
-        for (int i = 0; i < requiredDays; i++)
+        var currentDate = startDate;
+        for (int dayNumber = 1; dayNumber <= requiredDays; dayNumber++)
         {
             TrackerDays.Add(new HarmfulHabitDayViewModel(dayNumber, currentDate, tracker.MarkedDays.Contains(currentDate)));
             currentDate = currentDate.AddDays(1);
-            dayNumber++;
         }
     }
 }
@@ -339,6 +326,7 @@ public partial class HarmfulHabitTrackerItemViewModel : ObservableObject
 
         CostPerUnit = tracker.CostPerUnit;
         UnitsPerDay = tracker.UnitsPerDay;
+        ReminderTime = tracker.ReminderTime;
         Relapses = (tracker.Relapses ?? new List<RelapseEvent>()).OrderByDescending(r => r.Date).ToList();
         RefreshLive();
     }
@@ -351,6 +339,9 @@ public partial class HarmfulHabitTrackerItemViewModel : ObservableObject
 
     public decimal CostPerUnit { get; private set; }
     public double UnitsPerDay { get; private set; }
+    public TimeSpan? ReminderTime { get; private set; }
+
+    /// <summary>Kept so the money-saved maths still resets on the latest relapse; no longer shown.</summary>
     public List<RelapseEvent> Relapses { get; private set; }
 
     [ObservableProperty]
@@ -362,28 +353,11 @@ public partial class HarmfulHabitTrackerItemViewModel : ObservableObject
 
     public string MarkedDaysCountText => MarkedDaysCount.ToString(CultureInfo.CurrentCulture);
 
-    // --- Quit-tracker live stats ---
-
-    [ObservableProperty]
-    private string _liveTimeText = string.Empty;
-
-    [ObservableProperty]
-    private string _cleanDaysText = "0";
-
     [ObservableProperty]
     private string _moneySavedText = string.Empty;
 
     [ObservableProperty]
     private bool _hasMoney;
-
-    [ObservableProperty]
-    private string _nextMilestoneText = string.Empty;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasRelapses))]
-    private string _relapseCountText = "0";
-
-    public bool HasRelapses => Relapses.Count > 0;
 
     private HarmfulHabitTracker BuildSnapshot() => new()
     {
@@ -394,42 +368,12 @@ public partial class HarmfulHabitTrackerItemViewModel : ObservableObject
         Relapses = Relapses
     };
 
-    /// <summary>Recomputes the live clean-time / money / milestone texts from the current moment.</summary>
+    /// <summary>Recomputes the money-saved estimate. Day-granular, so once per load is enough.</summary>
     public void RefreshLive()
     {
-        var now = DateTime.Now;
-        var snapshot = BuildSnapshot();
-
-        var cleanSince = QuitTrackerCalculator.CleanSince(snapshot, now.Date);
-        int cleanDays = QuitTrackerCalculator.CleanDays(snapshot, now.Date);
-
-        var elapsed = now - cleanSince;
-        if (elapsed < TimeSpan.Zero) elapsed = TimeSpan.Zero;
-
-        LiveTimeText = string.Format(
-            AppResources.QuitLiveTimeFormat,
-            (int)elapsed.TotalDays, elapsed.Hours, elapsed.Minutes, elapsed.Seconds);
-        CleanDaysText = cleanDays.ToString(CultureInfo.CurrentCulture);
-
-        var money = QuitTrackerCalculator.MoneySaved(snapshot, now.Date);
+        var money = QuitTrackerCalculator.MoneySaved(BuildSnapshot(), DateTime.Today);
         HasMoney = money > 0m;
         MoneySavedText = money.ToString("N2", CultureInfo.CurrentCulture);
-
-        var next = QuitTrackerCalculator.NextMilestone(cleanDays);
-        NextMilestoneText = next.HasValue
-            ? string.Format(AppResources.QuitNextMilestoneFormat, next.Value)
-            : AppResources.QuitAllMilestones;
-
-        RelapseCountText = Relapses.Count.ToString(CultureInfo.CurrentCulture);
-    }
-
-    /// <summary>Records a relapse locally (the service persists it) and refreshes the live stats.</summary>
-    public void AddRelapse(DateTime date)
-    {
-        Relapses = Relapses.Append(new RelapseEvent { Date = date.Date }).OrderByDescending(r => r.Date).ToList();
-        OnPropertyChanged(nameof(Relapses));
-        OnPropertyChanged(nameof(HasRelapses));
-        RefreshLive();
     }
 
     public void MarkDay(DateTime date)

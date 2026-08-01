@@ -13,38 +13,6 @@ namespace Diarion.Tests;
 public class QuitTrackerViewModelTests
 {
     [Fact]
-    public async Task Relapse_Confirmed_ResetsCleanDays_AndPersists()
-    {
-        var tracker = new HarmfulHabitTracker
-        {
-            Id = Guid.NewGuid(),
-            HarmfulHabitName = "Smoking",
-            StartDate = DateTime.Today.AddDays(-10)
-        };
-
-        var habit = new Mock<IHabitService>();
-        habit.Setup(s => s.GetHarmfulHabitTrackersAsync())
-            .ReturnsAsync(new List<HarmfulHabitTracker> { tracker });
-
-        var dialog = new Mock<IDialogService>();
-        dialog.Setup(d => d.ShowConfirmationAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(true);
-
-        var vm = new HabitTrackerViewModel(habit.Object, dialog.Object);
-        await vm.LoadAsync();
-
-        var item = vm.SelectedTracker!;
-        item.CleanDaysText.Should().Be("10"); // clean since start, no relapses yet
-
-        await vm.RelapseCommand.ExecuteAsync(item);
-
-        habit.Verify(s => s.AddRelapseAsync(tracker.Id, It.IsAny<DateTime>(), It.IsAny<string>()), Times.Once);
-        item.CleanDaysText.Should().Be("0");        // relapse today resets the clean streak
-        item.RelapseCountText.Should().Be("1");
-        item.HasRelapses.Should().BeTrue();
-    }
-
-    [Fact]
     public async Task Edit_SetsCostAndUnits_PreservingRelapses()
     {
         var tracker = new HarmfulHabitTracker
@@ -63,7 +31,10 @@ public class QuitTrackerViewModelTests
         habit.Setup(s => s.SaveHarmfulHabitTrackerAsync(It.IsAny<HarmfulHabitTracker>()))
             .Returns<HarmfulHabitTracker>(t => { saved = t; return Task.CompletedTask; });
 
-        var vm = new HabitTrackerViewModel(habit.Object, new Mock<IDialogService>().Object);
+        var vm = new HabitTrackerViewModel(
+            habit.Object,
+            new Mock<IDialogService>().Object,
+            new Mock<INotificationService>().Object);
         await vm.LoadAsync();
 
         vm.EditTrackerCommand.Execute(vm.SelectedTracker);
@@ -74,27 +45,33 @@ public class QuitTrackerViewModelTests
         saved.Should().NotBeNull();
         saved!.CostPerUnit.Should().Be(2m);
         saved.UnitsPerDay.Should().Be(20);
-        saved.Relapses.Should().ContainSingle(); // preserved through edit
+        saved.Relapses.Should().ContainSingle(); // the dormant relapse log survives an edit
     }
 
     [Fact]
-    public async Task Relapse_Declined_DoesNothing()
+    public async Task MoneySaved_CountsFromLatestRelapse()
     {
-        var tracker = new HarmfulHabitTracker { Id = Guid.NewGuid(), HarmfulHabitName = "Smoking", StartDate = DateTime.Today.AddDays(-3) };
+        var tracker = new HarmfulHabitTracker
+        {
+            Id = Guid.NewGuid(),
+            HarmfulHabitName = "Smoking",
+            StartDate = DateTime.Today.AddDays(-10),
+            CostPerUnit = 2m,
+            UnitsPerDay = 10,
+            Relapses = new List<RelapseEvent> { new() { Date = DateTime.Today.AddDays(-3) } }
+        };
 
         var habit = new Mock<IHabitService>();
         habit.Setup(s => s.GetHarmfulHabitTrackersAsync()).ReturnsAsync(new List<HarmfulHabitTracker> { tracker });
 
-        var dialog = new Mock<IDialogService>();
-        dialog.Setup(d => d.ShowConfirmationAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(false);
-
-        var vm = new HabitTrackerViewModel(habit.Object, dialog.Object);
+        var vm = new HabitTrackerViewModel(
+            habit.Object,
+            new Mock<IDialogService>().Object,
+            new Mock<INotificationService>().Object);
         await vm.LoadAsync();
 
-        await vm.RelapseCommand.ExecuteAsync(vm.SelectedTracker);
-
-        habit.Verify(s => s.AddRelapseAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<string>()), Times.Never);
-        vm.SelectedTracker!.CleanDaysText.Should().Be("3");
+        // 3 clean days since the relapse × 10 units × 2 — the relapse still resets the maths
+        vm.SelectedTracker!.HasMoney.Should().BeTrue();
+        vm.SelectedTracker.MoneySavedText.Should().Be(60m.ToString("N2"));
     }
 }
