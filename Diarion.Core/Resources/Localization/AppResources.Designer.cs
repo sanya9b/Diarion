@@ -101,6 +101,8 @@ namespace Diarion.Resources.Localization {
         public static string PlannerHoursAccessibility => ResourceManager.GetString("PlannerHoursAccessibility", resourceCulture) ?? "Planned by hour";
         public static string PlannerByHourLabel => ResourceManager.GetString("PlannerByHourLabel", resourceCulture) ?? "By hour";
         public static string DeleteTaskAccessibility => ResourceManager.GetString("DeleteTaskAccessibility", resourceCulture) ?? "Delete task";
+        public static string TaskWhenLabel => ResourceManager.GetString("TaskWhenLabel", resourceCulture) ?? "When";
+        public static string RecurrenceIntervalChip => ResourceManager.GetString("RecurrenceIntervalChip", resourceCulture) ?? "Every N days";
         public static string DeleteRecurringTaskTitle => ResourceManager.GetString("DeleteRecurringTaskTitle", resourceCulture) ?? "This task repeats";
         public static string DeleteThisOccurrenceOption => ResourceManager.GetString("DeleteThisOccurrenceOption", resourceCulture) ?? "Delete only this day";
         public static string DeleteWholeSeriesOption => ResourceManager.GetString("DeleteWholeSeriesOption", resourceCulture) ?? "Delete the whole series";

@@ -646,6 +646,12 @@
   <data name="DeleteTaskAccessibility" xml:space="preserve">
     <value>Delete task</value>
   </data>
+  <data name="TaskWhenLabel" xml:space="preserve">
+    <value>When</value>
+  </data>
+  <data name="RecurrenceIntervalChip" xml:space="preserve">
+    <value>Every N days</value>
+  </data>
   <data name="DeleteRecurringTaskTitle" xml:space="preserve">
     <value>This task repeats</value>
   </data>

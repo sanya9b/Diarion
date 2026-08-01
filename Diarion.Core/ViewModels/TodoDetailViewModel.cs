@@ -62,13 +62,24 @@ public partial class TodoDetailViewModel : BaseViewModel
     private bool _hasTime;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TargetTimeDisplay))]
     private TimeSpan _targetTime;
+
+    /// <summary>
+    /// The time as we want it read — "08:30", zero-padded. TimePicker.Format is honoured on Android and
+    /// iOS but not on Windows, where the native control draws its own hour and minute fields and drops
+    /// the leading zero. Drawing the text ourselves is the only way the three platforms agree.
+    /// </summary>
+    public string TargetTimeDisplay => TargetTime.ToString(@"hh\:mm");
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(RecurrenceSummary))]
     private bool _isRecurring;
 
     [ObservableProperty]
+    // Every one of the four, including Daily. Leaving it out meant the Daily chip never repainted, so it
+    // stayed lit next to whichever kind was actually chosen.
+    [NotifyPropertyChangedFor(nameof(IsRecurrenceDaily))]
     [NotifyPropertyChangedFor(nameof(IsRecurrenceWeekly))]
     [NotifyPropertyChangedFor(nameof(IsRecurrenceInterval))]
     [NotifyPropertyChangedFor(nameof(IsRecurrenceMonthly))]
