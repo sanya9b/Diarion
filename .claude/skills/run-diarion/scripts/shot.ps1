@@ -1,4 +1,4 @@
-param([string]$Out = "shot.png")
+param([string]$Out = "shot.png", [switch]$NoRaise)
 
 # Captures the Diarion window to a PNG. Waits for the window rather than sleeping blindly, because a
 # cold MAUI start is slow and how slow varies.
@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 public class Win {
   [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out RECT r);
   [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);
+  [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr h, IntPtr dc, uint flags);
   [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left, Top, Right, Bottom; }
 }
 "@
@@ -24,8 +25,10 @@ while ((Get-Date) -lt $deadline) {
 }
 if (-not $proc) { Write-Output "NO_WINDOW"; exit 1 }
 
-[void][Win]::SetForegroundWindow($proc.MainWindowHandle)
-Start-Sleep -Milliseconds 400
+if (-not $NoRaise) {
+  [void][Win]::SetForegroundWindow($proc.MainWindowHandle)
+  Start-Sleep -Milliseconds 400
+}
 
 $r = New-Object Win+RECT
 [void][Win]::GetWindowRect($proc.MainWindowHandle, [ref]$r)
@@ -35,7 +38,18 @@ if ($w -le 0 -or $h -le 0) { Write-Output "BAD_RECT"; exit 1 }
 
 $bmp = New-Object System.Drawing.Bitmap $w, $h
 $g = [System.Drawing.Graphics]::FromImage($bmp)
-$g.CopyFromScreen($r.Left, $r.Top, 0, 0, $bmp.Size)
+
+if ($NoRaise) {
+  # Asks the window to draw itself, so an application sitting on top of it does not end up in the
+  # picture. Use when the user is working in another window and stealing the foreground would be rude.
+  # PW_RENDERFULLCONTENT = 2; without it a composition-rendered window comes back blank.
+  $hdc = $g.GetHdc()
+  [void][Win]::PrintWindow($proc.MainWindowHandle, $hdc, 2)
+  $g.ReleaseHdc($hdc)
+} else {
+  $g.CopyFromScreen($r.Left, $r.Top, 0, 0, $bmp.Size)
+}
+
 $bmp.Save($Out, [System.Drawing.Imaging.ImageFormat]::Png)
 $g.Dispose(); $bmp.Dispose()
 

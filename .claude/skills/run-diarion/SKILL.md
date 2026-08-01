@@ -21,9 +21,15 @@ things that are not are **saving anything** and **clicking blind**.
   *last time* has already sent a click into a browser window sitting on top of Diarion. Read the image,
   confirm Diarion is the thing in front, then click. A stale coordinate once landed on the mood row and
   wrote a mood into the user's diary.
-- `SetForegroundWindow` does not always win. `shot.ps1` captures the screen region where the Diarion
-  window is, so another application on top of it comes back in the picture instead — which is also
-  exactly what your click will hit. If the capture shows something that is not Diarion, stop.
+- `SetForegroundWindow` does not always win. Windows refuses it while the user is actively typing or
+  clicking somewhere else — which is often, since they are watching you work. `shot.ps1` captures the
+  screen region where the Diarion window is, so whatever is on top comes back in the picture instead —
+  and that is also what your click would hit. If the capture is not Diarion, stop.
+- `shot.ps1 -NoRaise` asks the window to draw itself instead of copying the screen, so it captures
+  Diarion even with something in front of it and without taking focus. Use it when the user is plainly
+  in the middle of something. It only solves looking: clicking still needs the window in front.
+- **A rect of `-32000,-32000` means the window is minimized** — usually because the user just minimized
+  it. Do not restore it. Stop, and say the check is outstanding.
 - **Startup applies pending migrations** to the real database. That is normally fine — it would happen on
   the user's next launch anyway — but say so in your report when the branch adds one.
 - If the change to be checked cannot be seen without saving, stop and ask the user first.
