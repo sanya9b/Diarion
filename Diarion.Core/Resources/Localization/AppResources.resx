@@ -1495,4 +1495,124 @@
   <data name="BackupFailed" xml:space="preserve">
     <value>The backup could not be completed. Nothing was changed.</value>
   </data>
+  <data name="ClearAllDataButton" xml:space="preserve">
+    <value>Delete all my data</value>
+  </data>
+  <data name="ClearAllDataConfirmTitle" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="ClearAllDataConfirmMsg" xml:space="preserve">
+    <value>Are you absolutely sure you want to delete all your data? This action cannot be undone.</value>
+  </data>
+  <data name="ClearAllDataSuccessMsg" xml:space="preserve">
+    <value>All your data has been successfully deleted.</value>
+  </data>
+  <data name="AppLockTitle" xml:space="preserve">
+    <value>App Lock</value>
+  </data>
+  <data name="EnterPinTitle" xml:space="preserve">
+    <value>Enter PIN</value>
+  </data>
+  <data name="EnterPinPrompt" xml:space="preserve">
+    <value>Enter a 4-digit PIN</value>
+  </data>
+  <data name="ConfirmPinPrompt" xml:space="preserve">
+    <value>Confirm your PIN</value>
+  </data>
+  <data name="EnterCurrentPinPrompt" xml:space="preserve">
+    <value>Enter current PIN</value>
+  </data>
+  <data name="EnterNewPinPrompt" xml:space="preserve">
+    <value>Enter new PIN</value>
+  </data>
+  <data name="PinInvalidMessage" xml:space="preserve">
+    <value>The PIN must be 4 digits.</value>
+  </data>
+  <data name="PinMismatchMessage" xml:space="preserve">
+    <value>The PINs do not match.</value>
+  </data>
+  <data name="PinSetSuccessMessage" xml:space="preserve">
+    <value>App lock enabled.</value>
+  </data>
+  <data name="PinIncorrectMessage" xml:space="preserve">
+    <value>Incorrect PIN</value>
+  </data>
+  <data name="PinLockedOutMessage" xml:space="preserve">
+    <value>Too many attempts. Try again in {0}s.</value>
+  </data>
+  <data name="RemovePinConfirmMessage" xml:space="preserve">
+    <value>Remove the app lock PIN?</value>
+  </data>
+  <data name="SetPinButton" xml:space="preserve">
+    <value>Set PIN</value>
+  </data>
+  <data name="ChangePinButton" xml:space="preserve">
+    <value>Change PIN</value>
+  </data>
+  <data name="RemovePinButton" xml:space="preserve">
+    <value>Remove PIN</value>
+  </data>
+  <data name="UnlockWithBiometricsButton" xml:space="preserve">
+    <value>Unlock with biometrics</value>
+  </data>
+  <data name="DeleteButtonLabel" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="OnboardingTitle" xml:space="preserve">
+    <value>Welcome to Diarion</value>
+  </data>
+  <data name="OnboardingSubtitle" xml:space="preserve">
+    <value>Your private, offline diary</value>
+  </data>
+  <data name="OnboardingPrivacyText" xml:space="preserve">
+    <value>Everything stays on your device. No cloud, no account — nothing to leak.</value>
+  </data>
+  <data name="OnboardingReminderLabel" xml:space="preserve">
+    <value>Remind me to journal daily</value>
+  </data>
+  <data name="OnboardingGetStartedButton" xml:space="preserve">
+    <value>Get started</value>
+  </data>
+  <data name="RemindersTitle" xml:space="preserve">
+    <value>REMINDERS</value>
+  </data>
+  <data name="DailyReminderLabel" xml:space="preserve">
+    <value>Daily journaling reminder</value>
+  </data>
+  <data name="ReminderTimeLabel" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="DailyReminderTitle" xml:space="preserve">
+    <value>Time for your diary</value>
+  </data>
+  <data name="DailyReminderMessage" xml:space="preserve">
+    <value>A quiet minute for yourself?</value>
+  </data>
+  <data name="StatsMoodInfluencesTitle" xml:space="preserve">
+    <value>WHAT AFFECTS YOUR MOOD</value>
+  </data>
+  <data name="StatsCorrelationDisclaimer" xml:space="preserve">
+    <value>Linked to your mood — not proven to cause it.</value>
+  </data>
+  <data name="ExportDataTitle" xml:space="preserve">
+    <value>EXPORT DATA</value>
+  </data>
+  <data name="ExportDataDescription" xml:space="preserve">
+    <value>Export your data in open formats you can keep or move anywhere.</value>
+  </data>
+  <data name="ExportJsonButton" xml:space="preserve">
+    <value>JSON</value>
+  </data>
+  <data name="ExportCsvButton" xml:space="preserve">
+    <value>CSV</value>
+  </data>
+  <data name="ExportMarkdownButton" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
+  <data name="ExportSuccessMessage" xml:space="preserve">
+    <value>Export ready to share.</value>
+  </data>
+  <data name="CloseButtonLabel" xml:space="preserve">
+    <value>Close</value>
+  </data>
 </root>
