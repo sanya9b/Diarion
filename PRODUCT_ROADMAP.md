@@ -6,7 +6,7 @@
 - **Privacy-by-architecture** — маркетинговий стовп №1.
 - **Монетизація:** щедре безкоштовне ядро + одноразовий lifetime «Diarion Pro»; ніколи не гейтити експорт і приватність.
 
-Позначки: `[x]` готово · `[~]` в роботі · `[ ]` не починалось.
+Позначки: `[x]` готово · `[~]` в роботі · `[ ]` не починалось · `[-]` свідомо пропущено.
 
 ---
 
@@ -38,7 +38,7 @@
 |------|------|-----------|-------------------|
 | `[x]` | Гнучкі графіки звичок + habit-strength + heatmap | Loop, HabitKit, Habitify | Спільний `RecurrenceRule` у `HabitDefinition.Schedule` + окрема квота `CompletionTarget`; `Controls/ContributionGrid` |
 | `[x]` | Нагадування per-habit | Streaks, Way of Life | `ReminderTime` (одне, не список) у `HabitDefinition` → `INotificationService` |
-| `[x]` | Quit-tracker: money-saved, live-годинник, milestones, лог зривів | I Am Sober, Quitzilla, QuitNic | `CostPerUnit/UnitsPerDay`, `List<RelapseEvent>`, milestone-рушій |
+| `[x]` | Quit-tracker: сітка чистих днів, money-saved, щоденне нагадування | I Am Sober, Quitzilla, QuitNic | `CostPerUnit/UnitsPerDay` + `ReminderTime` → `ScheduleHabitReminder` (без днів тижня). Live-годинник, milestones і кнопка зривів прибрані з екрана як шум — `RelapseEvent`, `AddRelapseAsync` і `QuitTrackerCalculator` лишені в коді й далі скидають відлік грошей на останньому зриві |
 | `[x]` | Нотатки: backlinks `[[…]]`, теги, full-text пошук, quick-capture inbox | Obsidian, Notion, Amplenote, Todoist | `links`/`inbox` колекції LiteDB, share-target, глобальний екран пошуку |
 | `[x]` | **Фінанси: бюджети, рахунки, планові транзакції, звіти** | Money Manager, Wallet, Spendee | Усі чотири фази закриті; див. розбивку нижче |
 | `[x]` | Керовані промпти + CBT + вечірній ритуал вдячності + власні питання | Stoic, Reflectly, Finch, Intellect | Колекція `guided_prompts` (40 вбудованих засіяно з .resx UK/EN + користувацькі) + чистий `PromptSelector` за валентністю настрою; `Controls/GuidedPromptSection`, `Views/PromptLibraryPage` |
@@ -47,7 +47,7 @@
 | `[ ]` | HealthKit / Health Connect (read) | Bearable, Apple Journal, Journey | iOS-гілка `HealthDataService` реальна; **Android свідомо звітує «не підтримується»** — там стояла заглушка, що віддавала вигаданий сон 23:30–07:15 прямо в запис щоденника. Потрібен Kotlin-coroutine interop + per-metric consent |
 | `[ ]` | Home/lock-screen віджети | Streaks, HabitKit, Loop | WidgetKit (iOS) / Glance-RemoteViews (Android) через нативний embedding |
 | `[x]` | Планер: time-blocking таймлайн + NL/RRULE-повтори | Structured, TickTick, Todoist | Усі три фази закриті: таймлайн, структуровані повтори, розбір природною мовою. Див. розділ «Планер» нижче |
-| `[ ]` | Читання: полиці, прогрес, рейтинги, сесії, цілі, mood-теги | StoryGraph, Bookly, Goodreads | Наявний `ReadingTrackerBook` — це лише слот + назва + дата; потрібні `ReadingStatus`, `ReadingSession`, `ReadingGoal` |
+| `[-]` | Читання: полиці, прогрес, рейтинги, сесії, цілі, mood-теги | StoryGraph, Bookly, Goodreads | **Свідомо пропущено на рішення власника — не пропонувати й не повертатись без окремого запиту.** Наявний `ReadingTrackerBook` (слот + назва + дата) лишається як є; `ReadingStatus`, `ReadingSession`, `ReadingGoal` не робимо |
 | `[ ]` | Opt-in on-device / cloud AI (резюме, «копни глибше») | Apple Journal, Day One, Stoic | Вимкнено за замовчуванням; on-device (Foundation Models/Gemini Nano) або узгоджений API без retention |
 
 ### Фінанси — розбивка по фазах
