@@ -21,8 +21,10 @@
           <SwipeView Margin="0,1" MinimumHeightRequest="0">
             <SwipeView.RightItems>
                 <SwipeItems>
-                    <SwipeItemView Command="{Binding BindingContext.DeleteTodoCommand, Source={x:Reference PlannerViewRoot}}"
-                                   CommandParameter="{Binding .}">
+                    <!-- The row's own command. A SwipeItemView is not in the row's visual tree, so
+                         x:Reference back to the view — which every other gesture in this template uses —
+                         resolves to nothing here and the button did nothing at all. -->
+                    <SwipeItemView Command="{Binding DeleteCommand}">
                         <Border StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Coral}"
                                 StrokeShape="RoundRectangle 10" Margin="8,0,0,0" WidthRequest="58"
                                 SemanticProperties.Description="{x:Static localization:AppResources.DeleteTaskAccessibility}">

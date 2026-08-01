@@ -18,6 +18,9 @@ public interface ITodoService
     /// <summary>The rule behind a repeating task, or null if this one does not repeat.</summary>
     Task<RecurringTask?> GetRecurringTaskAsync(Guid ruleId);
 
+    /// <summary>Every series. A handful of rows, read once per day-load.</summary>
+    Task<List<RecurringTask>> GetRecurringTasksAsync();
+
     /// <summary>
     /// Starts, changes or ends the series a task belongs to. Null ends it. Separate from
     /// <see cref="SaveTodoAsync"/> rather than an argument on it because a nullable rule cannot say

@@ -23,10 +23,19 @@ public class PlannerSectionViewModelTests
         TargetTime = hour == null ? TimeSpan.Zero : new TimeSpan(hour.Value, minute, 0)
     };
 
+    /// <summary>A live daily rule for every series any of these rows belongs to.</summary>
+    private static List<RecurringTask> LiveRulesFor(IEnumerable<TodoItem> todos)
+        => todos.Where(t => t.RecurringTaskId != null)
+                .Select(t => t.RecurringTaskId!.Value)
+                .Distinct()
+                .Select(id => new RecurringTask { Id = id })
+                .ToList();
+
     private static PlannerSectionViewModel NewViewModel(params TodoItem[] todos)
     {
         var service = new Mock<ITodoService>();
         service.Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>())).ReturnsAsync(todos.ToList());
+        service.Setup(s => s.GetRecurringTasksAsync()).ReturnsAsync(LiveRulesFor(todos));
         return new PlannerSectionViewModel(
             service.Object, new Mock<INavigationService>().Object, new Mock<IDialogService>().Object);
     }
@@ -36,6 +45,7 @@ public class PlannerSectionViewModelTests
     {
         var service = new Mock<ITodoService>();
         service.Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>())).ReturnsAsync(todos.ToList());
+        service.Setup(s => s.GetRecurringTasksAsync()).ReturnsAsync(LiveRulesFor(todos));
         var dialog = new Mock<IDialogService>();
         return (new PlannerSectionViewModel(service.Object, new Mock<INavigationService>().Object, dialog.Object),
                 service, dialog);
@@ -125,14 +135,36 @@ public class PlannerSectionViewModelTests
     }
 
     [Fact]
-    public async Task LoadTodosForDate_BuildsOneRowPerHourFromSevenToTwentyThree()
+    public async Task LoadTodosForDate_ARowWhoseSeriesHasEndedNoLongerSaysItRepeats()
+    {
+        // Switching the repeat off ends the series but leaves the occurrence pointing at its rule, because
+        // that provenance is what pins it against auto-migration. Reading the glyph off the id alone meant
+        // the row kept claiming to repeat — which looks exactly like the switch not having worked.
+        var ruleId = Guid.NewGuid();
+        var ended = Occurrence("Стретчинг", ruleId);
+        var service = new Mock<ITodoService>();
+        service.Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>())).ReturnsAsync(new List<TodoItem> { ended });
+        service.Setup(s => s.GetRecurringTasksAsync()).ReturnsAsync(new List<RecurringTask>
+        {
+            new() { Id = ruleId, Recurrence = new RecurrenceRule { EndDate = Day.AddDays(-1) } }
+        });
+        var viewModel = new PlannerSectionViewModel(
+            service.Object, new Mock<INavigationService>().Object, new Mock<IDialogService>().Object);
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        viewModel.Todos.Single().IsRecurring.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task LoadTodosForDate_BuildsOneRowPerHourFromFiveToTwentyThree()
     {
         var viewModel = NewViewModel();
 
         await viewModel.LoadTodosForDateAsync(Day);
 
-        viewModel.HourSlots.Should().HaveCount(17);
-        viewModel.HourSlots.First().Hour.Should().Be(7);
+        viewModel.HourSlots.Should().HaveCount(19);
+        viewModel.HourSlots.First().Hour.Should().Be(5);
         viewModel.HourSlots.Last().Hour.Should().Be(23);
         viewModel.HourSlots.Should().OnlyContain(s => s.IsEmpty);
     }
@@ -176,9 +208,9 @@ public class PlannerSectionViewModelTests
     }
 
     [Theory]
-    [InlineData(0, 7)]    // small hours clamp up to the first row
-    [InlineData(6, 7)]
-    [InlineData(7, 7)]
+    [InlineData(0, 5)]    // small hours clamp up to the first row
+    [InlineData(4, 5)]
+    [InlineData(5, 5)]
     [InlineData(23, 23)]
     public async Task LoadTodosForDate_TasksOutsideTheWindowLandOnTheNearestEdgeRow(int hour, int expectedSlot)
     {
@@ -211,7 +243,7 @@ public class PlannerSectionViewModelTests
         await viewModel.LoadTodosForDateAsync(Day);
         await viewModel.LoadTodosForDateAsync(Day);
 
-        viewModel.HourSlots.Should().HaveCount(17, "the grid is rebuilt, not appended to");
+        viewModel.HourSlots.Should().HaveCount(19, "the grid is rebuilt, not appended to");
         viewModel.HourSlots.Single(s => s.Hour == 8).Items.Should().ContainSingle();
     }
 
@@ -235,6 +267,7 @@ public class PlannerSectionViewModelTests
         var service = new Mock<ITodoService>();
         service.Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>()))
                .ReturnsAsync(new List<TodoItem> { Task("Gym", 8) });
+        service.Setup(s => s.GetRecurringTasksAsync()).ReturnsAsync(new List<RecurringTask>());
         var viewModel = new PlannerSectionViewModel(
             service.Object, navigation.Object, new Mock<IDialogService>().Object);
         await viewModel.LoadTodosForDateAsync(Day);

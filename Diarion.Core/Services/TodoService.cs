@@ -254,6 +254,9 @@ public class TodoService : ITodoService
     public Task<RecurringTask?> GetRecurringTaskAsync(Guid ruleId)
         => Task.Run<RecurringTask?>(() => RecurringTasksCollection.FindById(ruleId));
 
+    public Task<List<RecurringTask>> GetRecurringTasksAsync()
+        => Task.Run(() => RecurringTasksCollection.FindAll().ToList());
+
     public Task SetRecurrenceAsync(Guid todoId, RecurrenceRule? recurrence)
     {
         return Task.Run(() =>

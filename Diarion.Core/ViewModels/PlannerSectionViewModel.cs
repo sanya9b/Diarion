@@ -34,11 +34,12 @@ public partial class PlannerHourSlot : ObservableObject
 public partial class PlannerSectionViewModel : ObservableObject
 {
     /// <summary>
-    /// The grid runs 7–23, matching the hourly mood scale so the app has one idea of "a day".
-    /// A task outside that window is kept in the nearest edge slot rather than hidden — a task nobody
-    /// can see is a task nobody does — and its block always prints its real time.
+    /// The grid runs 5–23. It started at 7 to match the hourly mood scale, but a planner and a mood log
+    /// are not asked the same question: nobody records a mood before dawn, and plenty of days start there.
+    /// A task outside the window is kept in the nearest edge slot rather than hidden — a task nobody can
+    /// see is a task nobody does — and its block always prints its real time.
     /// </summary>
-    public const int FirstHour = 7;
+    public const int FirstHour = 5;
     public const int LastHour = 23;
 
     private readonly ITodoService _todoService;
@@ -67,10 +68,19 @@ public partial class PlannerSectionViewModel : ObservableObject
     {
         using var _ = StartupTrace.Measure("PlannerSectionViewModel.LoadTodosForDateAsync");
         var items = await _todoService.GetTodosForDateAsync(date.Date);
+
+        // Which series are still running on this day. An ended one leaves its occurrences pointing at it
+        // for ever, so the id alone cannot answer whether the row still repeats.
+        var live = (await _todoService.GetRecurringTasksAsync())
+            .Where(rule => rule.Recurrence?.EndDate == null || rule.Recurrence.EndDate >= date.Date)
+            .Select(rule => rule.Id)
+            .ToHashSet();
+
         Todos.Clear();
         foreach (var item in items)
         {
-            Todos.Add(new TodoItemViewModel(item));
+            var isRecurring = item.RecurringTaskId != null && live.Contains(item.RecurringTaskId.Value);
+            Todos.Add(new TodoItemViewModel(item, isRecurring, row => DeleteTodoCommand.Execute(row)));
         }
 
         BuildHourGrid();

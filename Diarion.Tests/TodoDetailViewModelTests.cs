@@ -246,6 +246,36 @@ public class TodoDetailViewModelTests
     }
 
     [Fact]
+    public async Task UncheckingRepeatOnAnExistingSeriesEndsIt()
+    {
+        // The path the user actually walks: open an occurrence that already belongs to a series, untick
+        // the box, save. Distinct from unticking on a brand-new task, which is what the other test covers.
+        var ruleId = Guid.NewGuid();
+        var todo = new TodoItem
+        {
+            Id = Guid.NewGuid(),
+            TaskDescription = "Стретчинг",
+            TargetDate = DateTime.Today,
+            RecurringTaskId = ruleId
+        };
+        _todoServiceMock.Setup(s => s.GetTodoByIdAsync(todo.Id)).ReturnsAsync(todo);
+        _todoServiceMock.Setup(s => s.GetRecurringTaskAsync(ruleId)).ReturnsAsync(new RecurringTask
+        {
+            Id = ruleId,
+            Recurrence = new RecurrenceRule { Kind = RecurrenceKind.Daily, Anchor = DateTime.Today.AddDays(-5) }
+        });
+
+        _viewModel.TodoId = todo.Id.ToString();
+        await Task.Delay(50);   // OnTodoIdChanged is async void, as the toolkit generates it
+        _viewModel.IsRecurring.Should().BeTrue("the form should open showing the task as repeating");
+
+        _viewModel.IsRecurring = false;
+        await SaveIgnoringNavigationAsync();
+
+        _todoServiceMock.Verify(s => s.SetRecurrenceAsync(todo.Id, null), Times.Once);
+    }
+
+    [Fact]
     public void SelectPriority_UpdatesSelectedPriorityAndItems()
     {
         // Arrange

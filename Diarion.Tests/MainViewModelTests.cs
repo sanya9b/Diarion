@@ -49,6 +49,10 @@ public class MainViewModelTests
             .Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>()))
             .ReturnsAsync(new List<TodoItem>());
 
+        _todoServiceMock
+            .Setup(s => s.GetRecurringTasksAsync())
+            .ReturnsAsync(new List<RecurringTask>());
+
         _profileServiceMock
             .Setup(s => s.GetUserProfileAsync())
             .ReturnsAsync(new UserProfile());
