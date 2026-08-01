@@ -41,9 +41,18 @@
                 <Border.Shadow>
                     <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,2" Radius="5" Opacity="{AppThemeBinding Light=0.04, Dark=0.15}" />
                 </Border.Shadow>
-                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" Padding="9,3" ColumnSpacing="7" VerticalOptions="Center">
-                    <Border Grid.Column="0" WidthRequest="20" HeightRequest="20" StrokeShape="RoundRectangle 6"
-                            StrokeThickness="1.5" VerticalOptions="Center">
+                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" Padding="5,3" ColumnSpacing="7" VerticalOptions="Center">
+                    <!-- The box stays 20px; what you can hit is 32 wide by the full height of the row.
+                         Ticking a task off is the most frequent thing done here and it was the second
+                         smallest target on the screen. The row's own left padding is spent on this
+                         instead, so the text beside it barely moves. Vertical reach is free — the row is
+                         28px and nothing else is competing for it. -->
+                    <Grid Grid.Column="0" BackgroundColor="Transparent" Padding="6,0" VerticalOptions="Fill">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.ToggleTodoCompletionCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
+                        </Grid.GestureRecognizers>
+                    <Border WidthRequest="20" HeightRequest="20" StrokeShape="RoundRectangle 6"
+                            StrokeThickness="1.5" VerticalOptions="Center" InputTransparent="True">
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="False">
                                 <Setter Property="BackgroundColor" Value="Transparent" />
@@ -74,11 +83,9 @@
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                             </MultiTrigger>
                         </Border.Triggers>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.ToggleTodoCompletionCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
-                        </Border.GestureRecognizers>
                         <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
                     </Border>
+                    </Grid>
 
                     <Label Grid.Column="1" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="14.5" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}">
                         <Label.Triggers>
@@ -153,7 +160,9 @@
                 <Label Text="{x:Static localization:AppResources.TodoListLabel}" FontAttributes="Bold" FontSize="18" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </HorizontalStackLayout>
             
-            <Grid Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End">
+            <!-- Padding on the container, not on the pill: the hitbox below fills the grid, so the target
+                 becomes 52 by 44 while the button you can see stays 36 by 28. -->
+            <Grid Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Padding="8" BackgroundColor="Transparent">
                 <Border StrokeShape="RoundRectangle 8"
                         WidthRequest="36" HeightRequest="28"
                         BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
@@ -225,8 +234,10 @@
                                            VerticalOptions="Start" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                                 </HorizontalStackLayout>
 
-                                <!-- Empty row: a tap starts a task already scheduled at this hour. -->
-                                <Border Grid.Column="1" IsVisible="{Binding IsEmpty}" HeightRequest="24"
+                                <!-- Empty row: a tap starts a task already scheduled at this hour. Its
+                                     height matches a filled row, so the grid keeps one rhythm and the
+                                     target is not the smallest thing on a screen made of targets. -->
+                                <Border Grid.Column="1" IsVisible="{Binding IsEmpty}" HeightRequest="28"
                                         StrokeShape="RoundRectangle 8" StrokeThickness="1" StrokeDashArray="3,3"
                                         Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
                                     <Border.GestureRecognizers>
