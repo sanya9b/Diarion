@@ -1591,4 +1591,28 @@
   <data name="CycleSymptomCravings" xml:space="preserve">
     <value>Тяга до їжі</value>
   </data>
+  <data name="BackupPassphraseTitle" xml:space="preserve">
+    <value>Пароль резервної копії</value>
+  </data>
+  <data name="BackupPassphraseExportPrompt" xml:space="preserve">
+    <value>Придумайте пароль для цієї копії. Він знадобиться, щоб відновити її на новому телефоні. Ми його ніде не зберігаємо і не можемо відновити.</value>
+  </data>
+  <data name="BackupPassphraseRestorePrompt" xml:space="preserve">
+    <value>Введіть пароль, з яким створювалася ця копія.</value>
+  </data>
+  <data name="BackupWrongPassphrase" xml:space="preserve">
+    <value>Цей пароль не відкриває копію. Нічого не змінено.</value>
+  </data>
+  <data name="BackupNotDiarionFile" xml:space="preserve">
+    <value>Це не резервна копія Diarion. Нічого не змінено.</value>
+  </data>
+  <data name="BackupNewerSchema" xml:space="preserve">
+    <value>Копію зроблено новішою версією Diarion. Спершу оновіть застосунок. Нічого не змінено.</value>
+  </data>
+  <data name="BackupLegacyOtherDevice" xml:space="preserve">
+    <value>Це стара копія, яка відкривається лише на телефоні, де її створено. Нові копії захищені паролем і відновлюються будь-де.</value>
+  </data>
+  <data name="BackupFailed" xml:space="preserve">
+    <value>Не вдалося виконати операцію. Нічого не змінено.</value>
+  </data>
 </root>

@@ -1471,4 +1471,28 @@
   <data name="CycleSymptomCravings" xml:space="preserve">
     <value>Cravings</value>
   </data>
+  <data name="BackupPassphraseTitle" xml:space="preserve">
+    <value>Backup passphrase</value>
+  </data>
+  <data name="BackupPassphraseExportPrompt" xml:space="preserve">
+    <value>Choose a passphrase for this backup. You will need it to restore on a new phone. It is not stored anywhere and cannot be recovered.</value>
+  </data>
+  <data name="BackupPassphraseRestorePrompt" xml:space="preserve">
+    <value>Enter the passphrase this backup was created with.</value>
+  </data>
+  <data name="BackupWrongPassphrase" xml:space="preserve">
+    <value>That passphrase does not open this backup. Nothing was changed.</value>
+  </data>
+  <data name="BackupNotDiarionFile" xml:space="preserve">
+    <value>That file is not a Diarion backup. Nothing was changed.</value>
+  </data>
+  <data name="BackupNewerSchema" xml:space="preserve">
+    <value>This backup was made by a newer version of Diarion. Update the app first. Nothing was changed.</value>
+  </data>
+  <data name="BackupLegacyOtherDevice" xml:space="preserve">
+    <value>This is an older backup that only opens on the phone that created it. Newer backups use a passphrase and restore anywhere.</value>
+  </data>
+  <data name="BackupFailed" xml:space="preserve">
+    <value>The backup could not be completed. Nothing was changed.</value>
+  </data>
 </root>

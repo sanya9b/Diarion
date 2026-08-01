@@ -1853,6 +1853,38 @@ public static string ClearAllDataSuccessMsg {
         public static string PlannerUntimedLabel {
             get { return ResourceManager.GetString("PlannerUntimedLabel", resourceCulture) ?? "No time set"; }
         }
+
+        public static string BackupPassphraseTitle {
+            get { return ResourceManager.GetString("BackupPassphraseTitle", resourceCulture) ?? "Backup passphrase"; }
+        }
+
+        public static string BackupPassphraseExportPrompt {
+            get { return ResourceManager.GetString("BackupPassphraseExportPrompt", resourceCulture) ?? "Choose a passphrase for this backup. You will need it to restore on a new phone. It is not stored anywhere and cannot be recovered."; }
+        }
+
+        public static string BackupPassphraseRestorePrompt {
+            get { return ResourceManager.GetString("BackupPassphraseRestorePrompt", resourceCulture) ?? "Enter the passphrase this backup was created with."; }
+        }
+
+        public static string BackupWrongPassphrase {
+            get { return ResourceManager.GetString("BackupWrongPassphrase", resourceCulture) ?? "That passphrase does not open this backup. Nothing was changed."; }
+        }
+
+        public static string BackupNotDiarionFile {
+            get { return ResourceManager.GetString("BackupNotDiarionFile", resourceCulture) ?? "That file is not a Diarion backup. Nothing was changed."; }
+        }
+
+        public static string BackupNewerSchema {
+            get { return ResourceManager.GetString("BackupNewerSchema", resourceCulture) ?? "This backup was made by a newer version of Diarion. Update the app first. Nothing was changed."; }
+        }
+
+        public static string BackupLegacyOtherDevice {
+            get { return ResourceManager.GetString("BackupLegacyOtherDevice", resourceCulture) ?? "This is an older backup that only opens on the phone that created it. Newer backups use a passphrase and restore anywhere."; }
+        }
+
+        public static string BackupFailed {
+            get { return ResourceManager.GetString("BackupFailed", resourceCulture) ?? "The backup could not be completed. Nothing was changed."; }
+        }
     }
 }
 

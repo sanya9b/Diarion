@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
+using Diarion.Resources.Localization;
 using Diarion.Services;
 using Microsoft.Maui.Controls;
 
@@ -225,14 +226,12 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     public async Task ExportBackupAsync()
     {
-        bool success = await _backupService.ExportBackupAsync();
-        if (success)
-        {
-            await _dialogService.ShowAlertAsync(
-                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup",
-                Diarion.Resources.Localization.AppResources.BackupExportSuccess ?? "Backup created successfully.",
-                Diarion.Resources.Localization.AppResources.OkButtonLabel);
-        }
+        var outcome = await _backupService.ExportBackupAsync(
+            () => PromptForPassphraseAsync(AppResources.BackupPassphraseExportPrompt));
+
+        await ReportBackupOutcomeAsync(
+            outcome,
+            AppResources.BackupExportSuccess ?? "Backup created successfully.");
     }
 
     [RelayCommand]
@@ -243,17 +242,55 @@ public partial class ProfileViewModel : BaseViewModel
             Diarion.Resources.Localization.AppResources.BackupImportWarning ?? "This will overwrite your current data. Are you sure?",
             Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
             Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
-            
+
         if (!confirm) return;
 
-        bool success = await _backupService.ImportBackupAsync();
-        if (success)
+        var outcome = await _backupService.ImportBackupAsync(
+            () => PromptForPassphraseAsync(AppResources.BackupPassphraseRestorePrompt));
+
+        await ReportBackupOutcomeAsync(
+            outcome,
+            AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.");
+    }
+
+    private async Task<string?> PromptForPassphraseAsync(string message)
+    {
+        var entered = await _dialogService.ShowPromptAsync(
+            AppResources.BackupPassphraseTitle,
+            message,
+            AppResources.OkButtonLabel,
+            AppResources.DeleteConfirmNo);
+
+        // The prompt returns an empty string on cancel as well as on an empty entry; neither is a
+        // usable passphrase, so both mean "the user did not go through with it".
+        return string.IsNullOrWhiteSpace(entered) ? null : entered;
+    }
+
+    /// <summary>
+    /// Says what happened, including when it failed. The previous version reported only success, so a
+    /// restore that silently did nothing looked identical to one that worked.
+    /// </summary>
+    private Task ReportBackupOutcomeAsync(BackupOutcome outcome, string successMessage)
+    {
+        if (outcome == BackupOutcome.Cancelled)
         {
-            await _dialogService.ShowAlertAsync(
-                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup",
-                Diarion.Resources.Localization.AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.",
-                Diarion.Resources.Localization.AppResources.OkButtonLabel);
+            return Task.CompletedTask;
         }
+
+        var message = outcome switch
+        {
+            BackupOutcome.Success => successMessage,
+            BackupOutcome.WrongPassphrase => AppResources.BackupWrongPassphrase,
+            BackupOutcome.NotADiarionBackup => AppResources.BackupNotDiarionFile,
+            BackupOutcome.NewerSchema => AppResources.BackupNewerSchema,
+            BackupOutcome.LegacyBackupFromAnotherDevice => AppResources.BackupLegacyOtherDevice,
+            _ => AppResources.BackupFailed
+        };
+
+        return _dialogService.ShowAlertAsync(
+            AppResources.BackupTitle ?? "Backup",
+            message,
+            AppResources.OkButtonLabel);
     }
 
     [RelayCommand]
