@@ -184,6 +184,40 @@ public class ExportServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Markdown_IncludesTheCycleLogAsItsOwnSection()
+    {
+        var logs = _dbContext.GetCollection<CycleLog>(DatabaseConstants.CycleLogsCollection);
+        // Two periods 28 days apart, plus a symptom logged on a day that is not one.
+        foreach (var i in Enumerable.Range(0, 4))
+        {
+            logs.Insert(new CycleLog { Date = new DateTime(2026, 2, 1).AddDays(i) });
+            logs.Insert(new CycleLog { Date = new DateTime(2026, 3, 1).AddDays(i) });
+        }
+        logs.Insert(new CycleLog
+        {
+            Date = new DateTime(2026, 2, 20),
+            IsSymptomOnly = true,
+            Symptoms = new List<string> { CycleSymptoms.Headache }
+        });
+
+        var md = await _service.BuildAsync(ExportFormat.Markdown);
+
+        md.Should().Contain("# Cycle");
+        md.Should().Contain("2026-02-01");
+        md.Should().Contain("28 days since the previous start");
+        md.Should().Contain("2026-02-20");
+        md.Should().Contain(CycleSymptoms.Headache);
+    }
+
+    [Fact]
+    public async Task Markdown_OmitsTheCycleSectionWhenNothingIsLogged()
+    {
+        var md = await _service.BuildAsync(ExportFormat.Markdown);
+
+        md.Should().NotContain("# Cycle");
+    }
+
+    [Fact]
     public async Task Markdown_HasDatedSectionAndFields()
     {
         var md = await _service.BuildAsync(ExportFormat.Markdown);

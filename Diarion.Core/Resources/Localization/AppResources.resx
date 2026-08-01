@@ -176,7 +176,7 @@
     <value>Notes</value>
   </data>
   <data name="TabGeneral" xml:space="preserve">
-    <value>General</value>
+    <value>Mood</value>
   </data>
   <data name="TabSleep" xml:space="preserve">
     <value>Sleep</value>
@@ -186,6 +186,57 @@
   </data>
   <data name="TabHabits" xml:space="preserve">
     <value>Habits</value>
+  </data>
+  <data name="TabCycle" xml:space="preserve">
+    <value>Cycle</value>
+  </data>
+  <data name="FactorSleepDuration" xml:space="preserve">
+    <value>Sleep duration</value>
+  </data>
+  <data name="FactorSleepQuality" xml:space="preserve">
+    <value>Sleep quality</value>
+  </data>
+  <data name="FactorCyclePeriodDay" xml:space="preserve">
+    <value>Period days</value>
+  </data>
+  <data name="FactorCycleSymptoms" xml:space="preserve">
+    <value>Cycle symptoms</value>
+  </data>
+  <data name="CycleStatsAllTimeNote" xml:space="preserve">
+    <value>Covers your whole log — a cycle does not fit inside the shorter ranges above.</value>
+  </data>
+  <data name="CycleStatsAverage" xml:space="preserve">
+    <value>Average cycle</value>
+  </data>
+  <data name="CycleStatsShortest" xml:space="preserve">
+    <value>Shortest</value>
+  </data>
+  <data name="CycleStatsLongest" xml:space="preserve">
+    <value>Longest</value>
+  </data>
+  <data name="CycleStatsPeriodLength" xml:space="preserve">
+    <value>Period length</value>
+  </data>
+  <data name="CycleStatsDaysCaption" xml:space="preserve">
+    <value>days</value>
+  </data>
+  <data name="CycleStatsLengthChart" xml:space="preserve">
+    <value>Cycle length</value>
+  </data>
+  <data name="CycleStatsCalendar" xml:space="preserve">
+    <value>Logged days</value>
+  </data>
+  <data name="CycleStatsSymptoms" xml:space="preserve">
+    <value>Most frequent symptoms</value>
+  </data>
+  <data name="CycleStatsBasisFormat" xml:space="preserve">
+    <value>Based on {0} recorded cycles.</value>
+  </data>
+  <data name="CycleStatsDiscardedFormat" xml:space="preserve">
+    <value>{0} gap(s) left out as implausible.</value>
+  </data>
+  <data name="CycleStatsNoCompleteCycle" xml:space="preserve">
+    <value>No complete cycle recorded yet — mark a second period to see the length.</value>
   </data>
   <data name="StatsHabitStrength" xml:space="preserve">
     <value>Strength</value>
@@ -876,6 +927,24 @@
   </data>
   <data name="PromptLibraryManage" xml:space="preserve">
     <value>Manage prompts</value>
+  </data>
+  <data name="PromptHistoryOpen" xml:space="preserve">
+    <value>Answer history</value>
+  </data>
+  <data name="PromptHistoryTitle" xml:space="preserve">
+    <value>Answer history</value>
+  </data>
+  <data name="PromptHistorySubtitle" xml:space="preserve">
+    <value>Everything you have answered, newest first</value>
+  </data>
+  <data name="PromptHistorySearch" xml:space="preserve">
+    <value>Search answers</value>
+  </data>
+  <data name="PromptHistoryEmpty" xml:space="preserve">
+    <value>No answers yet. Answer the question of the day and it will appear here.</value>
+  </data>
+  <data name="PromptHistoryNoMatches" xml:space="preserve">
+    <value>Nothing matches that search.</value>
   </data>
   <data name="PromptLibraryEmptyCategory" xml:space="preserve">
     <value>No prompts in this category yet</value>

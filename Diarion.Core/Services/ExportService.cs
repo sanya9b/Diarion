@@ -207,7 +207,62 @@ public class ExportService : IExportService
             sb.Append('\n');
         }
 
+        AppendCycleLog(sb);
+
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// The cycle as its own section rather than a line under each day: a logged period day very often has
+    /// no diary entry at all, and hanging it off the entries would drop exactly those days from the copy.
+    ///
+    /// Exported whenever rows exist, without consulting the gender gate. The gate hides the feature; it
+    /// does not disown the data, and an export that quietly omits part of the database is not portable.
+    /// This also keeps Markdown consistent with the JSON export, which carries `cycle_logs` unconditionally.
+    /// </summary>
+    private void AppendCycleLog(StringBuilder sb)
+    {
+        var logs = _dbContext.GetCollection<CycleLog>(DatabaseConstants.CycleLogsCollection)
+            .FindAll()
+            .OrderBy(l => l.Date)
+            .ToList();
+
+        if (logs.Count == 0) return;
+
+        sb.Append("# Cycle\n\n");
+
+        var history = CycleForecastCalculator.BuildHistory(
+            logs.Where(l => !l.IsSymptomOnly).Select(l => l.Date).ToList());
+
+        if (history.Episodes.Count > 0)
+        {
+            sb.Append("## Periods\n");
+            CycleEpisode? previous = null;
+            foreach (var episode in history.Episodes)
+            {
+                sb.Append("- ").Append(episode.Start.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))
+                  .Append(" — ").Append(episode.Length).Append(" day(s)");
+                if (previous != null)
+                {
+                    sb.Append(", ").Append((episode.Start - previous.Start).Days).Append(" days since the previous start");
+                }
+                sb.Append('\n');
+                previous = episode;
+            }
+            sb.Append('\n');
+        }
+
+        var withSymptoms = logs.Where(l => l.HasSymptoms).ToList();
+        if (withSymptoms.Count > 0)
+        {
+            sb.Append("## Symptoms\n");
+            foreach (var log in withSymptoms)
+            {
+                sb.Append("- ").Append(log.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))
+                  .Append(": ").Append(string.Join(", ", log.Symptoms)).Append('\n');
+            }
+            sb.Append('\n');
+        }
     }
 
     private static void AppendField(StringBuilder sb, string label, string value)

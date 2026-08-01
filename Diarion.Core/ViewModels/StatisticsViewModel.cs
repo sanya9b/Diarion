@@ -31,7 +31,8 @@ public enum StatisticsTabOption
     Sleep,
     Productivity,
     Finance,
-    Habits
+    Habits,
+    Cycle
 }
 
 public partial class StatisticsTabItem : ObservableObject
@@ -90,6 +91,9 @@ public partial class StatisticsViewModel : BaseViewModel
     private bool _isHabitsTabVisible;
 
     [ObservableProperty]
+    private bool _isCycleTabVisible;
+
+    [ObservableProperty]
     private TimeRangeItem? _selectedTimeRange;
 
     public ViewModels.Statistics.MoodStatsViewModel MoodStats { get; }
@@ -97,6 +101,7 @@ public partial class StatisticsViewModel : BaseViewModel
     public ViewModels.Statistics.ProductivityStatsViewModel ProductivityStats { get; }
     public ViewModels.Statistics.FinanceStatsViewModel FinanceStats { get; }
     public ViewModels.Statistics.HabitStatsViewModel HabitStats { get; }
+    public ViewModels.Statistics.CycleStatsViewModel CycleStats { get; }
 
     public StatisticsViewModel(
         Diarion.Services.IStatisticsService statisticsService,
@@ -107,7 +112,8 @@ public partial class StatisticsViewModel : BaseViewModel
         ViewModels.Statistics.SleepStatsViewModel sleepStats,
         ViewModels.Statistics.ProductivityStatsViewModel productivityStats,
         ViewModels.Statistics.FinanceStatsViewModel financeStats,
-        ViewModels.Statistics.HabitStatsViewModel habitStats)
+        ViewModels.Statistics.HabitStatsViewModel habitStats,
+        ViewModels.Statistics.CycleStatsViewModel cycleStats)
     {
         _statisticsService = statisticsService;
         _diaryService = diaryService;
@@ -118,10 +124,37 @@ public partial class StatisticsViewModel : BaseViewModel
         ProductivityStats = productivityStats;
         FinanceStats = financeStats;
         HabitStats = habitStats;
+        CycleStats = cycleStats;
 
         Title = AppResources.StatisticsTitle;
         InitializeTabs();
         InitializeTimeRanges();
+    }
+
+    /// <summary>
+    /// Adds or removes the cycle tab to match the profile. Called on every appearance rather than once in
+    /// the constructor, because the gate turns on and off from the settings screen while the app runs.
+    /// </summary>
+    public async Task RefreshCycleTabAvailabilityAsync()
+    {
+        bool available = await CycleStats.IsAvailableAsync();
+        var existing = Tabs.FirstOrDefault(t => t.Option == StatisticsTabOption.Cycle);
+
+        if (available && existing == null)
+        {
+            Tabs.Add(new StatisticsTabItem
+            {
+                Option = StatisticsTabOption.Cycle,
+                DisplayName = AppResources.TabCycle,
+                Icon = "🩸"
+            });
+        }
+        else if (!available && existing != null)
+        {
+            Tabs.Remove(existing);
+            // Standing on a tab that just disappeared would leave the page blank.
+            if (existing.IsSelected) SelectTab(Tabs[0]);
+        }
     }
 
     private void InitializeTabs()
@@ -154,7 +187,8 @@ public partial class StatisticsViewModel : BaseViewModel
         IsProductivityTabVisible = item.Option == StatisticsTabOption.Productivity;
         IsFinanceTabVisible = item.Option == StatisticsTabOption.Finance;
         IsHabitsTabVisible = item.Option == StatisticsTabOption.Habits;
-        
+        IsCycleTabVisible = item.Option == StatisticsTabOption.Cycle;
+
         // Load data for the selected tab when switched
         _ = LoadStatisticsAsync();
     }
@@ -222,6 +256,10 @@ public partial class StatisticsViewModel : BaseViewModel
             else if (IsHabitsTabVisible)
             {
                 await HabitStats.LoadDataAsync(days);
+            }
+            else if (IsCycleTabVisible)
+            {
+                await CycleStats.LoadDataAsync(days);
             }
         }
         finally

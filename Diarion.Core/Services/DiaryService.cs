@@ -109,4 +109,27 @@ public class DiaryService : IDiaryService
             return (IEnumerable<DiaryEntryStatsDto>)result;
         });
     }
+
+    public Task<IReadOnlyList<PromptAnswerDto>> GetPromptAnswersAsync()
+    {
+        return Task.Run(() =>
+        {
+            // Filtered server-side on the answer, so days where the app offered a question and the user
+            // never wrote anything never leave the database.
+            var items = EntriesCollection
+                .Find(x => x.PromptAnswer != null && x.PromptAnswer != string.Empty)
+                .Select(x => new PromptAnswerDto
+                {
+                    EntryId = x.Id,
+                    Date = x.Date,
+                    PromptReference = x.PromptResourceKey ?? string.Empty,
+                    Answer = x.PromptAnswer ?? string.Empty
+                })
+                .Where(x => !string.IsNullOrWhiteSpace(x.Answer))
+                .OrderByDescending(x => x.Date)
+                .ToList();
+
+            return (IReadOnlyList<PromptAnswerDto>)items;
+        });
+    }
 }

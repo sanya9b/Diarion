@@ -176,7 +176,7 @@
     <value>Нотатки</value>
   </data>
   <data name="TabGeneral" xml:space="preserve">
-    <value>Огляд</value>
+    <value>Настрій</value>
   </data>
   <data name="TabSleep" xml:space="preserve">
     <value>Сон</value>
@@ -186,6 +186,45 @@
   </data>
   <data name="TabHabits" xml:space="preserve">
     <value>Звички</value>
+  </data>
+  <data name="TabCycle" xml:space="preserve">
+    <value>Цикл</value>
+  </data>
+  <data name="CycleStatsAllTimeNote" xml:space="preserve">
+    <value>Показано за весь час — цикл не вміщається в коротші періоди вище.</value>
+  </data>
+  <data name="CycleStatsAverage" xml:space="preserve">
+    <value>Середній цикл</value>
+  </data>
+  <data name="CycleStatsShortest" xml:space="preserve">
+    <value>Найкоротший</value>
+  </data>
+  <data name="CycleStatsLongest" xml:space="preserve">
+    <value>Найдовший</value>
+  </data>
+  <data name="CycleStatsPeriodLength" xml:space="preserve">
+    <value>Тривалість місячних</value>
+  </data>
+  <data name="CycleStatsDaysCaption" xml:space="preserve">
+    <value>днів</value>
+  </data>
+  <data name="CycleStatsLengthChart" xml:space="preserve">
+    <value>Довжина циклів</value>
+  </data>
+  <data name="CycleStatsCalendar" xml:space="preserve">
+    <value>Позначені дні</value>
+  </data>
+  <data name="CycleStatsSymptoms" xml:space="preserve">
+    <value>Найчастіші симптоми</value>
+  </data>
+  <data name="CycleStatsBasisFormat" xml:space="preserve">
+    <value>Пораховано з {0} записаних циклів.</value>
+  </data>
+  <data name="CycleStatsDiscardedFormat" xml:space="preserve">
+    <value>{0} проміжок(-ки) відкинуто як неправдоподібні.</value>
+  </data>
+  <data name="CycleStatsNoCompleteCycle" xml:space="preserve">
+    <value>Жодного повного циклу ще не записано — позначте другі місячні, щоб побачити довжину.</value>
   </data>
   <data name="StatsHabitStrength" xml:space="preserve">
     <value>Сила</value>
@@ -877,6 +916,24 @@
   <data name="PromptLibraryManage" xml:space="preserve">
     <value>Керувати промптами</value>
   </data>
+  <data name="PromptHistoryOpen" xml:space="preserve">
+    <value>Історія відповідей</value>
+  </data>
+  <data name="PromptHistoryTitle" xml:space="preserve">
+    <value>Історія відповідей</value>
+  </data>
+  <data name="PromptHistorySubtitle" xml:space="preserve">
+    <value>Усе, що ви відповіли, від найновішого</value>
+  </data>
+  <data name="PromptHistorySearch" xml:space="preserve">
+    <value>Пошук у відповідях</value>
+  </data>
+  <data name="PromptHistoryEmpty" xml:space="preserve">
+    <value>Відповідей ще немає. Дайте відповідь на питання дня — і вона з'явиться тут.</value>
+  </data>
+  <data name="PromptHistoryNoMatches" xml:space="preserve">
+    <value>За цим запитом нічого не знайдено.</value>
+  </data>
   <data name="PromptLibraryEmptyCategory" xml:space="preserve">
     <value>У цій категорії ще немає промптів</value>
   </data>
@@ -1437,6 +1494,12 @@
   </data>
   <data name="FactorSleepQuality" xml:space="preserve">
     <value>Якість сну</value>
+  </data>
+  <data name="FactorCyclePeriodDay" xml:space="preserve">
+    <value>Дні місячних</value>
+  </data>
+  <data name="FactorCycleSymptoms" xml:space="preserve">
+    <value>Симптоми циклу</value>
   </data>
   <data name="ExportDataTitle" xml:space="preserve">
     <value>ЕКСПОРТ ДАНИХ</value>

@@ -36,12 +36,27 @@ public class CorrelationServiceTests
         _ => Emotion.Happy       // +2
     };
 
-    private static CorrelationService Build(IEnumerable<DiaryEntryStatsDto> data)
+    /// <summary>Cycle tracking off by default, so these cases keep measuring sleep alone.</summary>
+    private static CorrelationService Build(
+        IEnumerable<DiaryEntryStatsDto> data,
+        IEnumerable<CycleLog>? cycleLogs = null,
+        bool cycleTracking = false)
     {
         var diary = new Mock<IDiaryService>();
         diary.Setup(s => s.GetDiaryEntriesForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .ReturnsAsync(data.ToList());
-        return new CorrelationService(diary.Object);
+
+        var cycle = new Mock<ICycleLogService>();
+        cycle.Setup(s => s.GetLogsAsync()).ReturnsAsync((cycleLogs ?? Enumerable.Empty<CycleLog>()).ToList());
+
+        var profile = new Mock<IProfileService>();
+        profile.Setup(s => s.GetUserProfileAsync()).ReturnsAsync(new UserProfile
+        {
+            Gender = GenderType.Female,
+            IsMenstrualTrackingEnabled = cycleTracking
+        });
+
+        return new CorrelationService(diary.Object, cycle.Object, profile.Object);
     }
 
     [Fact]

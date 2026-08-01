@@ -24,6 +24,27 @@ public class TodoStatsDto
     public bool IsCompleted { get; set; }
 }
 
+/// <summary>
+/// One answered guided prompt. A projection rather than the whole entry: the history screen shows
+/// every answer the user has ever written, and hydrating each full diary document to read two strings
+/// is the kind of read spec 11 exists to prevent.
+/// </summary>
+public class PromptAnswerDto
+{
+    /// <summary>Id of the diary entry the answer lives in, so the row can open that day.</summary>
+    public Guid EntryId { get; set; }
+
+    public DateTime Date { get; set; }
+
+    /// <summary>
+    /// Either a <c>GuidedPrompt.Id</c> or a legacy resource key — resolve through
+    /// <c>PromptLibrary.Find</c>, never by parsing it here.
+    /// </summary>
+    public string PromptReference { get; set; } = string.Empty;
+
+    public string Answer { get; set; } = string.Empty;
+}
+
 public enum CorrelationStrength
 {
     Negligible,
