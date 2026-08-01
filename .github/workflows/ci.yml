@@ -1,0 +1,98 @@
+name: CI
+
+# The suite is fast and green and, until this file existed, ran nowhere except on the developer's
+# machine. Everything below is what `dotnet test` already does locally — the point is that it now
+# happens on every push, including the pushes made in a hurry.
+on:
+  push:
+  pull_request:
+    branches: [develop, main]
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      # Diarion.Core and Diarion.Tests are plain net10.0 but set UseMaui, so the MAUI SDK targets
+      # are still required. `workload restore` reads the project instead of guessing a workload id.
+      - name: Restore workloads
+        run: dotnet workload restore Diarion.Tests/Diarion.Tests.csproj
+
+      # No parallelism flags on purpose: xUnit parallelization is disabled in the test project
+      # because LiteDB's global mapper races. Plain `dotnet test` is the configuration that is
+      # known to be stable, so this runs exactly that.
+      - name: Test
+        run: dotnet test Diarion.Tests/Diarion.Tests.csproj --logger "trx;LogFileName=results.trx"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/results.trx'
+          if-no-files-found: ignore
+
+  android-permissions:
+    name: Android release asks for no network
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-android-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-android-${{ runner.os }}-
+
+      - name: Restore workloads
+        run: dotnet workload restore Diarion.csproj
+
+      # Release, not Debug: the debugger adds INTERNET to debug builds, so only the release
+      # manifest answers the question this job exists to ask.
+      - name: Build Android release
+        run: dotnet build Diarion.csproj -f net10.0-android -c Release
+
+      # The absence of INTERNET in the shipped APK is the product's main privacy claim, and it is
+      # the kind of thing a single added package can undo without anyone noticing — Google's ML Kit
+      # AAR, for one, declares INTERNET in its own manifest and the merger folds it in. A human
+      # reading a diff will not catch that. This will.
+      - name: Assert no network permissions
+        run: |
+          MANIFEST=obj/Release/net10.0-android/AndroidManifest.xml
+          if [ ! -f "$MANIFEST" ]; then
+            echo "::error::Generated manifest not found at $MANIFEST"
+            exit 1
+          fi
+          echo "Permissions in the release manifest:"
+          grep -o 'uses-permission android:name="[^"]*"' "$MANIFEST" | sort -u
+          for FORBIDDEN in INTERNET ACCESS_NETWORK_STATE; do
+            if grep -q "android.permission.$FORBIDDEN" "$MANIFEST"; then
+              echo "::error::The release manifest requests $FORBIDDEN. The app is offline by design;"
+              echo "::error::if a dependency pulled this in, that dependency cannot ship."
+              exit 1
+            fi
+          done
+          echo "No network permissions. Good."
