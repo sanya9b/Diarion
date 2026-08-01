@@ -72,7 +72,7 @@ public partial class PlannerSectionViewModel : ObservableObject
         // Which series are still running on this day. An ended one leaves its occurrences pointing at it
         // for ever, so the id alone cannot answer whether the row still repeats.
         var live = (await _todoService.GetRecurringTasksAsync())
-            .Where(rule => rule.Recurrence?.EndDate == null || rule.Recurrence.EndDate >= date.Date)
+            .Where(rule => rule.IsActiveOn(date))
             .Select(rule => rule.Id)
             .ToHashSet();
 
@@ -171,20 +171,35 @@ public partial class PlannerSectionViewModel : ObservableObject
                 if (choice == wholeSeries)
                 {
                     await _todoService.DeleteRecurringTaskAsync(todo.Model.RecurringTaskId.Value);
-                    Todos.Remove(todo);
+                    RemoveFromView(todo);
                     WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
                     return;
                 }
             }
 
             await _todoService.DeleteTodoAsync(todo.Id);
-            Todos.Remove(todo);
+            RemoveFromView(todo);
             WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine("Error deleting todo: " + ex.Message);
         }
+    }
+
+    /// <summary>
+    /// Takes a row off the screen. <see cref="Todos"/> is the source list, but nothing is bound to it —
+    /// the view reads the tray and the hour slots, and only <see cref="BuildHourGrid"/> refills those. So
+    /// removing from <see cref="Todos"/> alone left the deleted block sitting there until something else
+    /// happened to reload the day, which is what made deleting look like it worked on a delay.
+    ///
+    /// A rebuild rather than a reload: a rule contributes at most one occurrence per day, so exactly one
+    /// row leaves the current day either way, and no other row's state depends on it.
+    /// </summary>
+    private void RemoveFromView(TodoItemViewModel todo)
+    {
+        Todos.Remove(todo);
+        BuildHourGrid();
     }
 
     [RelayCommand]

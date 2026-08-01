@@ -397,8 +397,103 @@ public class DiaryServiceTests : IDisposable
         var reopened = await _todoService.GetTodosForDateAsync(day0.AddDays(2));
         reopened.Count(t => t.TaskDescription == "Stretch").Should().Be(1);
 
+        // The rule survives here only because the series was anchored eight days before it was switched
+        // off. Anchor the fixture on the same day it is switched off and the rule is deleted instead —
+        // see TurningOffARepeatOnItsFirstDayDeletesTheRule — and this line dereferences a null.
         var rule = await _todoService.GetRecurringTaskAsync(day2.RecurringTaskId!.Value);
         rule!.Recurrence.EndDate.Should().BeBefore(day2.TargetDate, "the series ended before the day it was switched off on");
+    }
+
+    [Fact]
+    public async Task SetRecurrenceAsync_TurningOffARepeatClearsTheDaysAlreadyWrittenAhead()
+    {
+        // Occurrences are materialized when a day is opened, so a user who scrolled forward has rows on
+        // disk for days the rule no longer reaches. Ending the series only stops it producing new ones —
+        // without clearing these, the task went on standing in next week after the repeat was switched off.
+        await ClearDatabaseAsync();
+        var day0 = DateTime.Today.AddDays(-10);
+        await StartDailySeriesAsync("Stretch", day0);
+
+        var day1 = (await _todoService.GetTodosForDateAsync(day0.AddDays(1))).Single();
+        var day2 = (await _todoService.GetTodosForDateAsync(day0.AddDays(2))).Single();
+        await _todoService.GetTodosForDateAsync(day0.AddDays(3));
+
+        // Day 2 was ticked off before the repeat was switched off on day 1.
+        day2.IsCompleted = true;
+        await _todoService.SaveTodoAsync(day2);
+
+        await _todoService.SetRecurrenceAsync(day1.Id, null);
+
+        (await _todoService.GetTodosForDateAsync(day0.AddDays(3)))
+            .Should().BeEmpty("a day written ahead of the switch-off must be cleared");
+        (await _todoService.GetTodosForDateAsync(day0.AddDays(2)))
+            .Should().ContainSingle(t => t.TaskDescription == "Stretch",
+                "a completed occurrence is what happened, and stays as history");
+        (await _todoService.GetTodosForDateAsync(day0.AddDays(1)))
+            .Should().ContainSingle(t => t.TaskDescription == "Stretch",
+                "the row the user was editing stays, as an ordinary one-off");
+    }
+
+    [Fact]
+    public async Task SetRecurrenceAsync_TurningOffARepeatOnItsFirstDayDeletesTheRule()
+    {
+        // Ended the day before it was anchored, the rule cannot produce a single day ever again. Keeping
+        // it would only leave a row for every day load to read past.
+        await ClearDatabaseAsync();
+        var today = DateTime.Today;
+        var todo = await StartDailySeriesAsync("Разове", today);
+        var ruleId = (await _todoService.GetTodoByIdAsync(todo.Id))!.RecurringTaskId!.Value;
+
+        await _todoService.SetRecurrenceAsync(todo.Id, null);
+
+        (await _todoService.GetRecurringTaskAsync(ruleId)).Should().BeNull();
+        (await _todoService.GetTodosForDateAsync(today))
+            .Should().ContainSingle(t => t.TaskDescription == "Разове", "the task itself is not what was cancelled");
+    }
+
+    [Fact]
+    public async Task DeleteTodoAsync_ARowLeftBehindByADeletedRuleStillDeletes()
+    {
+        // The row keeps pointing at a rule that is gone. DeleteTodoAsync looks that rule up to record a
+        // skipped day, and must cope with finding nothing — there is nothing left to regenerate it.
+        await ClearDatabaseAsync();
+        var today = DateTime.Today;
+        var todo = await StartDailySeriesAsync("Разове", today);
+        await _todoService.SetRecurrenceAsync(todo.Id, null);
+
+        await _todoService.DeleteTodoAsync(todo.Id);
+
+        (await _todoService.GetTodosForDateAsync(today)).Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task SetRecurrenceAsync_SwitchingRepeatBackOnStartsAFreshSeries()
+    {
+        // Reusing the ended rule would keep its original anchor and drop its end date, quietly bringing
+        // the whole of the last fortnight back the next time those days were opened.
+        await ClearDatabaseAsync();
+        var day0 = DateTime.Today.AddDays(-10);
+        await StartDailySeriesAsync("Stretch", day0);
+
+        var day5 = (await _todoService.GetTodosForDateAsync(day0.AddDays(5))).Single();
+        var originalRuleId = day5.RecurringTaskId!.Value;
+        await _todoService.SetRecurrenceAsync(day5.Id, null);
+
+        await _todoService.SetRecurrenceAsync(
+            day5.Id, new RecurrenceRule { Kind = RecurrenceKind.Daily, Anchor = day0.AddDays(5) });
+
+        var reloaded = (await _todoService.GetTodoByIdAsync(day5.Id))!;
+        reloaded.RecurringTaskId.Should().NotBe(originalRuleId, "switching repeat back on starts a new series");
+
+        var newRule = await _todoService.GetRecurringTaskAsync(reloaded.RecurringTaskId!.Value);
+        newRule!.Recurrence.Anchor.Date.Should().Be(day0.AddDays(5).Date);
+        newRule.Recurrence.EndDate.Should().BeNull();
+
+        var oldRule = await _todoService.GetRecurringTaskAsync(originalRuleId);
+        oldRule!.Recurrence.EndDate.Should().Be(day0.AddDays(4).Date, "the ended series stays ended");
+
+        (await _todoService.GetTodosForDateAsync(day0.AddDays(8)))
+            .Should().ContainSingle(t => t.TaskDescription == "Stretch", "one series runs, not two");
     }
 
     [Fact]

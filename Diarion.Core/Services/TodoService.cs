@@ -251,6 +251,29 @@ public class TodoService : ITodoService
         });
     }
 
+    /// <summary>
+    /// Clears the days a series had already been materialized onto beyond the given one. Ending a series
+    /// only stops the rule from producing new days; the rows for days the user had already scrolled to are
+    /// on disk, and without this the task goes on standing in next week after the repeat was switched off.
+    /// Completed rows stay, as they do when the whole series is deleted — they are what happened.
+    /// </summary>
+    private void DeleteOccurrencesAfter(Guid ruleId, DateTime lastKeptDate)
+    {
+        var cutoff = lastKeptDate.Date;
+
+        // In memory: nullable Guid comparisons are the ones LiteDB mistranslates, and a wrong empty
+        // result here would look exactly like a series that had nothing left to clean up.
+        var future = TodosCollection.FindAll()
+            .Where(t => t.RecurringTaskId == ruleId && !t.IsCompleted && t.TargetDate > cutoff)
+            .ToList();
+
+        foreach (var todo in future)
+        {
+            TodosCollection.Delete(todo.Id);
+            _notificationService?.CancelTodoReminder(todo.Id);
+        }
+    }
+
     public Task<RecurringTask?> GetRecurringTaskAsync(Guid ruleId)
         => Task.Run<RecurringTask?>(() => RecurringTasksCollection.FindById(ruleId));
 
@@ -276,10 +299,30 @@ public class TodoService : ITodoService
                 // ending today would have the rule claim an occurrence that is already there. Its own
                 // provenance keeps it pinned against auto-migration, and keeps it deleted if deleted.
                 rule.Recurrence.EndDate = todo.TargetDate.AddDays(-1);
+
+                DeleteOccurrencesAfter(rule.Id, todo.TargetDate);
+
+                // Ended before it ever began: the rule cannot produce a single day now, so keeping it
+                // would only leave a row for every day load to read past. Rows already written keep
+                // pointing at it, exactly as they do after the whole series is deleted.
+                if (rule.Recurrence.EndDate < rule.Recurrence.Anchor)
+                {
+                    RecurringTasksCollection.Delete(rule.Id);
+                    // Not SyncRuleReminder: cancelling clears every slot the rule owns, native repeat and
+                    // one-shots alike, and there is no longer a rule to schedule anything from.
+                    _notificationService?.CancelRepeatingTaskReminder(rule.Id);
+                    return;
+                }
+
                 RecurringTasksCollection.Update(rule);
                 SyncRuleReminder(rule);
                 return;
             }
+
+            // An ended series is history. Switching Repeat back on for a row it left behind means "start
+            // repeating again from here", not "undo the ending" — reusing the old rule would carry its
+            // original anchor and backfill every day in between the next time they were opened.
+            if (rule != null && !rule.IsActiveOn(todo.TargetDate)) rule = null;
 
             if (rule == null)
             {

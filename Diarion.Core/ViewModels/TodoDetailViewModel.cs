@@ -344,11 +344,16 @@ public partial class TodoDetailViewModel : BaseViewModel
             IsCompleted = _currentTodo.IsCompleted;
             HasTime = _currentTodo.HasTime;
             TargetTime = _currentTodo.TargetTime;
-            IsRecurring = _currentTodo.RecurringTaskId != null;
-            if (_currentTodo.RecurringTaskId != null)
-            {
-                await LoadRecurrenceAsync(_currentTodo.RecurringTaskId.Value);
-            }
+            // Through the rule, not the id. The id stays on the row after the series ends, so reading the
+            // checkbox off it made an ended series come back ticked — which is what switching the repeat
+            // off looked like never having worked.
+            var rule = _currentTodo.RecurringTaskId != null
+                ? await _todoService.GetRecurringTaskAsync(_currentTodo.RecurringTaskId.Value)
+                : null;
+            IsRecurring = rule != null && rule.IsActiveOn(_currentTodo.TargetDate);
+            // Only a live series fills the form. An ended one left an end date of the day before it
+            // stopped, and putting that on screen is how the next save wrote it straight back.
+            if (IsRecurring) ApplyRecurrence(rule!);
             HasReminder = _currentTodo.HasReminder;
             
             foreach (var item in PrioritiesList)
@@ -368,10 +373,9 @@ public partial class TodoDetailViewModel : BaseViewModel
         }
     }
 
-    private async Task LoadRecurrenceAsync(Guid ruleId)
+    private void ApplyRecurrence(RecurringTask rule)
     {
-        var rule = await _todoService.GetRecurringTaskAsync(ruleId);
-        if (rule?.Recurrence == null) return;
+        if (rule.Recurrence == null) return;
 
         RecurrenceKind = rule.Recurrence.Kind;
         // Only read the interval off a rule that actually has one. A daily rule leaves EveryN at 1, and
