@@ -7,12 +7,9 @@ using HealthKit;
 using Foundation;
 #endif
 
-#if ANDROID
-using AndroidX.Health.Connect.Client;
-using AndroidX.Health.Connect.Client.Records;
-using AndroidX.Health.Connect.Client.Request;
-using AndroidX.Health.Connect.Client.Time;
-#endif
+// No Android usings: every Android branch below returns unsupported, so the Health Connect client,
+// its NuGet package and the health.READ_SLEEP permission were all removed. Reviving the feature means
+// bringing back all three together — see the health row in PRODUCT_ROADMAP.md.
 
 namespace Diarion.Services;
 
