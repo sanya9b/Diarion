@@ -1630,4 +1630,16 @@
   <data name="CrashReportClearConfirm" xml:space="preserve">
     <value>Delete the stored crash report?</value>
   </data>
+  <data name="FactorHabitCompletion" xml:space="preserve">
+    <value>Habits done</value>
+  </data>
+  <data name="FactorMealsLogged" xml:space="preserve">
+    <value>Meals logged</value>
+  </data>
+  <data name="FactorTaskCompletion" xml:space="preserve">
+    <value>Tasks done</value>
+  </data>
+  <data name="FactorDailySpend" xml:space="preserve">
+    <value>Money spent</value>
+  </data>
 </root>

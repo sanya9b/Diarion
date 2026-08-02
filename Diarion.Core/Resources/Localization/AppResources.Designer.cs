@@ -1905,6 +1905,22 @@ public static string ClearAllDataSuccessMsg {
         public static string CrashReportClearConfirm {
             get { return ResourceManager.GetString("CrashReportClearConfirm", resourceCulture) ?? string.Empty; }
         }
+
+        public static string FactorHabitCompletion {
+            get { return ResourceManager.GetString("FactorHabitCompletion", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string FactorMealsLogged {
+            get { return ResourceManager.GetString("FactorMealsLogged", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string FactorTaskCompletion {
+            get { return ResourceManager.GetString("FactorTaskCompletion", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string FactorDailySpend {
+            get { return ResourceManager.GetString("FactorDailySpend", resourceCulture) ?? string.Empty; }
+        }
     }
 }
 

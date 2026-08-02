@@ -16,6 +16,17 @@ public class DiaryEntryStatsDto
 
     /// <summary>Per-hour moods. Read through <c>MoodAggregate</c>, never directly.</summary>
     public List<HourMood> HourlyMood { get; set; } = new();
+
+    /// <summary>
+    /// Share of the day's habits that were ticked, or null when none were configured. A fraction and
+    /// not a count, because the number of habits a person tracks drifts over time and a raw count
+    /// would read that drift as a change in behaviour. Reduced during projection rather than carried
+    /// as a list — the correlation engine wants one number per day, not the roster.
+    /// </summary>
+    public double? HabitCompletion { get; set; }
+
+    /// <summary>How many of the five meal slots were ticked. Zero also means "not filled in".</summary>
+    public int MealsLogged { get; set; }
 }
 
 public class TodoStatsDto
@@ -63,7 +74,22 @@ public class MoodCorrelation
     public string FactorKey { get; set; } = string.Empty;
     public double Coefficient { get; set; }
     public CorrelationStrength Strength { get; set; }
+
+    /// <summary>
+    /// One to five dots, read off <see cref="AdjustedPValue"/> rather than the raw p. With a wide
+    /// factor set the raw value overstates the evidence, and the dots are what the user actually sees.
+    /// </summary>
     public int Confidence { get; set; }
+
+    /// <summary>Two-sided p for this factor on its own, before accounting for the others.</summary>
+    public double PValue { get; set; }
+
+    /// <summary>
+    /// Benjamini-Hochberg adjusted p across every factor tested in the same pass — the number to
+    /// judge a finding by, because the app tests many factors against the same mood series at once.
+    /// </summary>
+    public double AdjustedPValue { get; set; }
+
     public int SampleSize { get; set; }
     public int LagDays { get; set; }
 }

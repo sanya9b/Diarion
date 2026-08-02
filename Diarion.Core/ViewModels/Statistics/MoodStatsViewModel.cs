@@ -90,10 +90,14 @@ public partial class MoodStatsViewModel : ObservableObject
         {
             var factorName = c.FactorKey switch
             {
-                "SleepDuration" => AppResources.FactorSleepDuration,
-                "SleepQuality" => AppResources.FactorSleepQuality,
-                "CyclePeriodDay" => AppResources.FactorCyclePeriodDay,
-                "CycleSymptomLoad" => AppResources.FactorCycleSymptoms,
+                CorrelationService.Factors.SleepDuration => AppResources.FactorSleepDuration,
+                CorrelationService.Factors.SleepQuality => AppResources.FactorSleepQuality,
+                CorrelationService.Factors.CyclePeriodDay => AppResources.FactorCyclePeriodDay,
+                CorrelationService.Factors.CycleSymptomLoad => AppResources.FactorCycleSymptoms,
+                CorrelationService.Factors.HabitCompletion => AppResources.FactorHabitCompletion,
+                CorrelationService.Factors.MealsLogged => AppResources.FactorMealsLogged,
+                CorrelationService.Factors.TaskCompletion => AppResources.FactorTaskCompletion,
+                CorrelationService.Factors.DailySpend => AppResources.FactorDailySpend,
                 _ => c.FactorKey
             };
             var arrow = c.Coefficient >= 0 ? "↑" : "↓";

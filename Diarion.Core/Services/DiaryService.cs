@@ -103,11 +103,26 @@ public class DiaryService : IDiaryService
                 SleepEnd = x.SleepEnd,
                 SleepQuality = x.SleepQuality,
                 Emotion = x.Emotion,
-                HourlyMood = x.HourlyMood
+                HourlyMood = x.HourlyMood,
+                HabitCompletion = x.HabitsList is { Count: > 0 }
+                    ? (double)x.HabitsList.Count(h => h.IsCompleted) / x.HabitsList.Count
+                    : null,
+                MealsLogged = CountMeals(x)
             }).ToList();
             
             return (IEnumerable<DiaryEntryStatsDto>)result;
         });
+    }
+
+    private static int CountMeals(DiaryEntry entry)
+    {
+        var count = 0;
+        if (entry.IsBreakfastDone) count++;
+        if (entry.IsSecondBreakfastDone) count++;
+        if (entry.IsLunchDone) count++;
+        if (entry.IsSnackDone) count++;
+        if (entry.IsDinnerDone) count++;
+        return count;
     }
 
     public Task<IReadOnlyList<PromptAnswerDto>> GetPromptAnswersAsync()

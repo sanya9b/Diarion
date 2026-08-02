@@ -1630,4 +1630,16 @@
   <data name="CrashReportClearConfirm" xml:space="preserve">
     <value>Видалити збережений звіт про збій?</value>
   </data>
+  <data name="FactorHabitCompletion" xml:space="preserve">
+    <value>Виконані звички</value>
+  </data>
+  <data name="FactorMealsLogged" xml:space="preserve">
+    <value>Записані прийоми їжі</value>
+  </data>
+  <data name="FactorTaskCompletion" xml:space="preserve">
+    <value>Виконані задачі</value>
+  </data>
+  <data name="FactorDailySpend" xml:space="preserve">
+    <value>Витрати</value>
+  </data>
 </root>

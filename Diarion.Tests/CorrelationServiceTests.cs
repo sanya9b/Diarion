@@ -56,7 +56,18 @@ public class CorrelationServiceTests
             IsMenstrualTrackingEnabled = cycleTracking
         });
 
-        return new CorrelationService(diary.Object, cycle.Object, profile.Object);
+        // Tasks and spending are not what these tests are about, but Moq hands back a null Task
+        // for an unconfigured async member, so both need an explicit empty result.
+        var todos = new Mock<ITodoService>();
+        todos.Setup(s => s.GetTodosForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+             .ReturnsAsync(Enumerable.Empty<TodoStatsDto>());
+
+        var finance = new Mock<IFinanceService>();
+        finance.Setup(s => s.GetFinanceTransactionsForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+               .ReturnsAsync(new List<FinanceTransaction>());
+
+        return new CorrelationService(
+            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object);
     }
 
     [Fact]
