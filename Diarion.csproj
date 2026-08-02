@@ -52,8 +52,22 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(Configuration)' == 'Release'">
-		<!-- Keep iPhone release builds stable while we narrow down the runtime crash path. -->
-		<MtouchLink>None</MtouchLink>
+		<!--
+		  Step one of walking back the workaround added in May, which set MtouchLink=None and
+		  UseInterpreter=true against a crash nobody wrote down. Both cost real IPA size and startup
+		  time, so they should not stay on faith.
+
+		  SdkOnly links the framework and leaves Diarion, Diarion.Core and LiteDB untouched. That
+		  keeps the likeliest culprit out of range: LiteDB maps documents by reflecting over model
+		  properties, and a trimmed setter fails at runtime, not at build. If this build is stable,
+		  the next step is UseInterpreter=false on its own — and if THAT is what breaks, the cause is
+		  Expression.Compile under full AOT, which means the interpreter stays for good and gets a
+		  comment saying so instead of a question mark.
+
+		  A managed crash now writes a report the settings screen can show and share, so a failure
+		  here comes back as a stack trace rather than as "it closed".
+		-->
+		<MtouchLink>SdkOnly</MtouchLink>
 		<UseInterpreter>true</UseInterpreter>
 	</PropertyGroup>
 

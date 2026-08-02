@@ -34,7 +34,7 @@ public class QuitTrackerViewModelTests
         var vm = new HabitTrackerViewModel(
             habit.Object,
             new Mock<IDialogService>().Object,
-            new Mock<INotificationService>().Object);
+            new Mock<INotificationService>().Object, TestProfiles.Service());
         await vm.LoadAsync();
 
         vm.EditTrackerCommand.Execute(vm.SelectedTracker);
@@ -67,11 +67,13 @@ public class QuitTrackerViewModelTests
         var vm = new HabitTrackerViewModel(
             habit.Object,
             new Mock<IDialogService>().Object,
-            new Mock<INotificationService>().Object);
+            new Mock<INotificationService>().Object, TestProfiles.Service());
         await vm.LoadAsync();
 
-        // 3 clean days since the relapse × 10 units × 2 — the relapse still resets the maths
+        // 3 clean days since the relapse × 10 units × 2 — the relapse still resets the maths.
+        // Money saved carries the profile's currency, like every other amount in the app.
         vm.SelectedTracker!.HasMoney.Should().BeTrue();
-        vm.SelectedTracker.MoneySavedText.Should().Be(60m.ToString("N2"));
+        vm.SelectedTracker.MoneySavedText.Should().Be(
+            MoneyFormatter.Format(60m, new UserProfile().GetEffectiveCurrencyCode()));
     }
 }

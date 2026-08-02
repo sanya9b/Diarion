@@ -44,6 +44,17 @@ public partial class MoodStatsViewModel : ObservableObject
 
     public bool HasCorrelations => Correlations.Count > 0;
 
+    /// <summary>
+    /// How close the data is to its first insight, shown only while there is none. Correlations need
+    /// fourteen paired days, and until then the card was simply absent — during exactly the fortnight
+    /// in which people decide whether an app is worth keeping.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasInsightProgress))]
+    private string _insightProgressText = string.Empty;
+
+    public bool HasInsightProgress => !string.IsNullOrEmpty(InsightProgressText);
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasMoodTrend))]
     private System.Collections.ObjectModel.ObservableCollection<MoodTrendPoint> _moodTrend = new();
@@ -90,10 +101,14 @@ public partial class MoodStatsViewModel : ObservableObject
         {
             var factorName = c.FactorKey switch
             {
-                "SleepDuration" => AppResources.FactorSleepDuration,
-                "SleepQuality" => AppResources.FactorSleepQuality,
-                "CyclePeriodDay" => AppResources.FactorCyclePeriodDay,
-                "CycleSymptomLoad" => AppResources.FactorCycleSymptoms,
+                CorrelationService.Factors.SleepDuration => AppResources.FactorSleepDuration,
+                CorrelationService.Factors.SleepQuality => AppResources.FactorSleepQuality,
+                CorrelationService.Factors.CyclePeriodDay => AppResources.FactorCyclePeriodDay,
+                CorrelationService.Factors.CycleSymptomLoad => AppResources.FactorCycleSymptoms,
+                CorrelationService.Factors.HabitCompletion => AppResources.FactorHabitCompletion,
+                CorrelationService.Factors.MealsLogged => AppResources.FactorMealsLogged,
+                CorrelationService.Factors.TaskCompletion => AppResources.FactorTaskCompletion,
+                CorrelationService.Factors.DailySpend => AppResources.FactorDailySpend,
                 _ => c.FactorKey
             };
             var arrow = c.Coefficient >= 0 ? "↑" : "↓";
@@ -106,6 +121,21 @@ public partial class MoodStatsViewModel : ObservableObject
         }
 
         Correlations = items;
+
+        // Nothing to show yet is the normal state for the first fortnight, and an empty space says
+        // nothing about why. Ask how far along the data is and say so instead.
+        if (items.Count == 0)
+        {
+            var readiness = await _correlationService.GetReadinessAsync(days);
+            InsightProgressText = string.Format(
+                AppResources.StatsInsightProgressFormat,
+                Math.Min(readiness.PairedDays, readiness.RequiredDays),
+                readiness.RequiredDays);
+        }
+        else
+        {
+            InsightProgressText = string.Empty;
+        }
     }
 
     public async Task LoadDataAsync(int days)
@@ -121,6 +151,8 @@ public partial class MoodStatsViewModel : ObservableObject
                 IsEmpty = true;
                 EmotionChartData.Clear();
                 Correlations = new System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem>();
+                InsightProgressText = string.Format(
+                    AppResources.StatsInsightProgressFormat, 0, CorrelationService.MinSampleSize);
                 TopEmotionText = AppResources.EmotionNone;
                 TopEmotionShareText = string.Empty;
                 EntriesCountText = "0";
@@ -152,8 +184,22 @@ public partial class MoodStatsViewModel : ObservableObject
             }
             EmotionChartData = newEmotionData;
 
-            var topShare = newEmotionData.Count > 0 ? newEmotionData[0].Percentage : 0;
-            TopEmotionShareText = topShare.ToString("P0", System.Globalization.CultureInfo.CurrentCulture);
+            // A share is only a "most common mood" if one mood actually leads. With three emotions
+            // tied at 33% the tile named whichever happened to sort first and the donut printed 33%
+            // with nothing to attach it to — both asserting a winner that the data does not have.
+            var hasSingleLeader = newEmotionData.Count == 1
+                || (newEmotionData.Count > 1 && newEmotionData[0].Percentage > newEmotionData[1].Percentage);
+
+            if (hasSingleLeader)
+            {
+                TopEmotionShareText = newEmotionData[0].Percentage
+                    .ToString("P0", System.Globalization.CultureInfo.CurrentCulture);
+            }
+            else
+            {
+                TopEmotionText = AppResources.StatsNoLeadingEmotion;
+                TopEmotionShareText = string.Empty;
+            }
 
             MoodTrend = new System.Collections.ObjectModel.ObservableCollection<MoodTrendPoint>(moodStats.DailyTrend);
             HourlyMoodProfile = new System.Collections.ObjectModel.ObservableCollection<MoodHourPoint>(moodStats.HourlyProfile);

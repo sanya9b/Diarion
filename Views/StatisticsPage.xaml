@@ -229,6 +229,7 @@
                             <Grid Grid.Column="1" WidthRequest="110" HeightRequest="110" VerticalOptions="Center" HorizontalOptions="Center">
                                 <controls:EmotionDonutChart Items="{Binding MoodStats.EmotionChartData}"
                                                             CenterText="{Binding MoodStats.TopEmotionShareText}"
+                                                            CenterCaption="{Binding MoodStats.TopEmotionText}"
                                                             SurfaceColor="{DynamicResource Theme_Snow_Black}"
                                                             TextColor="{DynamicResource Theme_Midnight_Snow}"
                                                             MutedColor="{DynamicResource Theme_Ocean_Dust}" />
@@ -270,6 +271,17 @@
                         </VerticalStackLayout>
 
                         <Label Text="{x:Static localization:AppResources.StatsCorrelationDisclaimer}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Progress towards the first insight. Takes the place of the card above while there
+                     is nothing to put in it, so a fortnight of waiting reads as progress rather than
+                     as a screen that does not work. -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasInsightProgress}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{x:Static localization:AppResources.StatsMoodInfluencesTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{Binding MoodStats.InsightProgressText}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Label Text="{x:Static localization:AppResources.StatsInsightProgressHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>

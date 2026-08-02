@@ -40,11 +40,11 @@
                         <Label FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="End">
                             <Label.Triggers>
                                 <DataTrigger TargetType="Label" Binding="{Binding Model.Type}" Value="Income">
-                                    <Setter Property="Text" Value="{Binding Model.Amount, StringFormat='+{0:N2}'}" />
+                                    <Setter Property="Text" Value="{Binding AmountText, StringFormat='+{0}'}" />
                                     <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
                                 </DataTrigger>
                                 <DataTrigger TargetType="Label" Binding="{Binding Model.Type}" Value="Expense">
-                                    <Setter Property="Text" Value="{Binding Model.Amount, StringFormat='-{0:N2}'}" />
+                                    <Setter Property="Text" Value="{Binding AmountText, StringFormat='-{0}'}" />
                                     <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
                                 </DataTrigger>
                             </Label.Triggers>
@@ -309,19 +309,19 @@
 
                         <VerticalStackLayout Spacing="4">
                             <Label Text="{localization:Translate Key=TotalBalanceLabel}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
-                            <Label Text="{Binding TotalBalance, StringFormat='{0:N2}'}" FontSize="36" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" Margin="0,0,0,12" />
+                            <Label Text="{Binding TotalBalanceText}" FontSize="36" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" Margin="0,0,0,12" />
 
                             <Grid ColumnDefinitions="*, Auto, *" ColumnSpacing="16">
                                 <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
                                     <Label Text="{localization:Translate Key=MonthIncomeLabel}" FontSize="10" TextColor="{DynamicResource Theme_Snow}" Opacity="0.8" HorizontalOptions="Center" />
-                                    <Label Text="{Binding MonthIncome, StringFormat='+{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
+                                    <Label Text="{Binding MonthIncomeText}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
 
                                 <BoxView Grid.Column="1" WidthRequest="1" BackgroundColor="{DynamicResource Theme_Snow}" Opacity="0.3" VerticalOptions="Fill" />
 
                                 <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
                                     <Label Text="{localization:Translate Key=MonthExpenseLabel}" FontSize="10" TextColor="{DynamicResource Theme_Snow}" Opacity="0.8" HorizontalOptions="Center" />
-                                    <Label Text="{Binding MonthExpense, StringFormat='-{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
+                                    <Label Text="{Binding MonthExpenseText}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Grid>
                         </VerticalStackLayout>

@@ -41,89 +41,89 @@ namespace Diarion.Resources.Localization {
             }
         }
         
-        public static string AppTitle => ResourceManager.GetString("AppTitle", resourceCulture) ?? "Diarion";
-        public static string Subtitle => ResourceManager.GetString("Subtitle", resourceCulture) ?? "Your personal emotion diary";
-        public static string NoEntries => ResourceManager.GetString("NoEntries", resourceCulture) ?? "No entries";
-        public static string NoEntriesDesc => ResourceManager.GetString("NoEntriesDesc", resourceCulture) ?? "Start writing your thoughts and tracking emotions right now.";
-        public static string TitleLabel => ResourceManager.GetString("TitleLabel", resourceCulture) ?? "Entry Title";
-        public static string TitlePlaceholder => ResourceManager.GetString("TitlePlaceholder", resourceCulture) ?? "What are you thinking about?";
-        public static string EmotionLabel => ResourceManager.GetString("EmotionLabel", resourceCulture) ?? "Your Emotional State";
-        public static string EmotionPlaceholder => ResourceManager.GetString("EmotionPlaceholder", resourceCulture) ?? "Choose an emotion...";
-        public static string ContentLabel => ResourceManager.GetString("ContentLabel", resourceCulture) ?? "Entry Content";
-        public static string ContentPlaceholder => ResourceManager.GetString("ContentPlaceholder", resourceCulture) ?? "Start writing here...";
-        public static string SaveButton => ResourceManager.GetString("SaveButton", resourceCulture) ?? "Save Entry";
-        public static string EditTaskTitle => ResourceManager.GetString("EditTaskTitle", resourceCulture) ?? "Edit Task";
-        public static string MaxHighPriorityAlertTitle => ResourceManager.GetString("MaxHighPriorityAlertTitle", resourceCulture) ?? "Priority Limit Reached";
-        public static string MaxHighPriorityAlertMessage => ResourceManager.GetString("MaxHighPriorityAlertMessage", resourceCulture) ?? "Psychologists recommend setting no more than 3 high-priority tasks per day to maintain focus and prevent burnout. Please change the priority or move tasks to another day.";
-        public static string SleepLabel => ResourceManager.GetString("SleepLabel", resourceCulture) ?? "SLEEP";
-        public static string SleepStartLabel => ResourceManager.GetString("SleepStartLabel", resourceCulture) ?? "Start:";
-        public static string SleepEndLabel => ResourceManager.GetString("SleepEndLabel", resourceCulture) ?? "Wake up:";
-        public static string SleepQualityLabel => ResourceManager.GetString("SleepQualityLabel", resourceCulture) ?? "Sleep quality:";
-        public static string HealthLabel => ResourceManager.GetString("HealthLabel", resourceCulture) ?? "PHYSIOLOGY & HEALTH";
-        public static string CycleDayLabel => ResourceManager.GetString("CycleDayLabel", resourceCulture) ?? "Cycle day:";
-        public static string HealthStatusLabel => ResourceManager.GetString("HealthStatusLabel", resourceCulture) ?? "Health status:";
-        public static string IntimateLifeLabel => ResourceManager.GetString("IntimateLifeLabel", resourceCulture) ?? "Intimate life:";
-        public static string HabitsLabel => ResourceManager.GetString("HabitsLabel", resourceCulture) ?? "HABITS";
-        public static string AddHabitPromptTitle => ResourceManager.GetString("AddHabitPromptTitle", resourceCulture) ?? "New habit";
-        public static string AddHabitPromptMessage => ResourceManager.GetString("AddHabitPromptMessage", resourceCulture) ?? "Enter the habit name:";
-        public static string AddHabitLabel => ResourceManager.GetString("AddHabitLabel", resourceCulture) ?? "+ Add habit";
-        public static string DeleteHabitConfirmTitle => ResourceManager.GetString("DeleteHabitConfirmTitle", resourceCulture) ?? "Delete habit?";
-        public static string DeleteHabitConfirmMessage => ResourceManager.GetString("DeleteHabitConfirmMessage", resourceCulture) ?? "Are you sure you want to delete '{0}'? It will disappear from this day onward, but remain in previous entries.";
-        public static string TriggersLabel => ResourceManager.GetString("TriggersLabel", resourceCulture) ?? "TRIGGERS:";
-        public static string GratitudeLabel => ResourceManager.GetString("GratitudeLabel", resourceCulture) ?? "GRATITUDE:";
-        public static string SoulFoodLabel => ResourceManager.GetString("SoulFoodLabel", resourceCulture) ?? "FOR MYSELF:";
-        public static string TriggersPlaceholder => ResourceManager.GetString("TriggersPlaceholder", resourceCulture) ?? "For example: work stress, a traffic jam...";
-        public static string GratitudePlaceholder => ResourceManager.GetString("GratitudePlaceholder", resourceCulture) ?? "For example: tasty morning coffee, a friend called...";
-        public static string SoulFoodPlaceholder => ResourceManager.GetString("SoulFoodPlaceholder", resourceCulture) ?? "For example: read a book, listened to music...";
-        public static string HomeBlocksTitle => ResourceManager.GetString("HomeBlocksTitle", resourceCulture) ?? "HOME SCREEN BLOCKS";
-        public static string BlockMoodLabel => ResourceManager.GetString("BlockMoodLabel", resourceCulture) ?? "Mood";
-        public static string BlockSleepLabel => ResourceManager.GetString("BlockSleepLabel", resourceCulture) ?? "Sleep";
-        public static string BlockHealthLabel => ResourceManager.GetString("BlockHealthLabel", resourceCulture) ?? "Health";
-        public static string BlockFoodLabel => ResourceManager.GetString("BlockFoodLabel", resourceCulture) ?? "Food";
-        public static string BlockHabitsLabel => ResourceManager.GetString("BlockHabitsLabel", resourceCulture) ?? "Habits";
-        public static string BlockGuidedPromptLabel => ResourceManager.GetString("BlockGuidedPromptLabel", resourceCulture) ?? "Question of the day";
-        public static string MoodHourAccessibility => ResourceManager.GetString("MoodHourAccessibility", resourceCulture) ?? "{0}:00 — {1}";
-        public static string MoodHourEmpty => ResourceManager.GetString("MoodHourEmpty", resourceCulture) ?? "not set";
-        public static string BlockReflectionLabel => ResourceManager.GetString("BlockReflectionLabel", resourceCulture) ?? "Reflection";
-        public static string SettingsTabProfile => ResourceManager.GetString("SettingsTabProfile", resourceCulture) ?? "Profile";
-        public static string SettingsTabScreen => ResourceManager.GetString("SettingsTabScreen", resourceCulture) ?? "Screen";
-        public static string SettingsTabData => ResourceManager.GetString("SettingsTabData", resourceCulture) ?? "Data";
-        public static string AddTimeLabel => ResourceManager.GetString("AddTimeLabel", resourceCulture) ?? "Add target time";
-        public static string TimeLabel => ResourceManager.GetString("TimeLabel", resourceCulture) ?? "Time:";
-        public static string TaskRepeatLabel => ResourceManager.GetString("TaskRepeatLabel", resourceCulture) ?? "Repeat";
-        public static string RecurrenceEndDateLabel => ResourceManager.GetString("RecurrenceEndDateLabel", resourceCulture) ?? "Repeat until";
-        public static string RecurrenceDaysRequired => ResourceManager.GetString("RecurrenceDaysRequired", resourceCulture) ?? "Pick at least one day.";
-        public static string RecurringTaskAccessibility => ResourceManager.GetString("RecurringTaskAccessibility", resourceCulture) ?? "Repeating task";
-        public static string ParseHintFormat => ResourceManager.GetString("ParseHintFormat", resourceCulture) ?? "Read from the text: {0}";
-        public static string ParseUndoLabel => ResourceManager.GetString("ParseUndoLabel", resourceCulture) ?? "Undo";
-        public static string CancelButtonLabel => ResourceManager.GetString("CancelButtonLabel", resourceCulture) ?? "Cancel";
-        public static string ToggleCalendarAccessibility => ResourceManager.GetString("ToggleCalendarAccessibility", resourceCulture) ?? "Show or hide the calendar";
-        public static string PlannerHoursAccessibility => ResourceManager.GetString("PlannerHoursAccessibility", resourceCulture) ?? "Planned by hour";
-        public static string PlannerByHourLabel => ResourceManager.GetString("PlannerByHourLabel", resourceCulture) ?? "By hour";
-        public static string DeleteTaskAccessibility => ResourceManager.GetString("DeleteTaskAccessibility", resourceCulture) ?? "Delete task";
-        public static string TaskWhenLabel => ResourceManager.GetString("TaskWhenLabel", resourceCulture) ?? "When";
-        public static string RecurrenceIntervalChip => ResourceManager.GetString("RecurrenceIntervalChip", resourceCulture) ?? "Every N days";
-        public static string DeleteRecurringTaskTitle => ResourceManager.GetString("DeleteRecurringTaskTitle", resourceCulture) ?? "This task repeats";
-        public static string DeleteThisOccurrenceOption => ResourceManager.GetString("DeleteThisOccurrenceOption", resourceCulture) ?? "Delete only this day";
-        public static string DeleteWholeSeriesOption => ResourceManager.GetString("DeleteWholeSeriesOption", resourceCulture) ?? "Delete the whole series";
-        public static string ReminderLabel => ResourceManager.GetString("ReminderLabel", resourceCulture) ?? "Enable reminder";
-        public static string ProfileMenuTitle => ResourceManager.GetString("ProfileMenuTitle", resourceCulture) ?? "Personal Settings";
-        public static string GeneralInfoLabel => ResourceManager.GetString("GeneralInfoLabel", resourceCulture) ?? "GENERAL INFORMATION";
-        public static string NameLabel => ResourceManager.GetString("NameLabel", resourceCulture) ?? "Name:";
-        public static string NamePlaceholder => ResourceManager.GetString("NamePlaceholder", resourceCulture) ?? "Your name";
-        public static string GenderLabel => ResourceManager.GetString("GenderLabel", resourceCulture) ?? "Gender:";
-        public static string GenderNotSpecified => ResourceManager.GetString("GenderNotSpecified", resourceCulture) ?? "Not specified";
-        public static string GenderMale => ResourceManager.GetString("GenderMale", resourceCulture) ?? "Male";
-        public static string GenderFemale => ResourceManager.GetString("GenderFemale", resourceCulture) ?? "Female";
-        public static string GenderOther => ResourceManager.GetString("GenderOther", resourceCulture) ?? "Other";
-        public static string AgeLabel => ResourceManager.GetString("AgeLabel", resourceCulture) ?? "Age:";
-        public static string WeightLabel => ResourceManager.GetString("WeightLabel", resourceCulture) ?? "Weight (kg):";
-        public static string HeightLabel => ResourceManager.GetString("HeightLabel", resourceCulture) ?? "Height (cm):";
-        public static string MenstrualTrackingTitle => ResourceManager.GetString("MenstrualTrackingTitle", resourceCulture) ?? "MENSTRUAL CALENDAR";
-        public static string EnableTrackingLabel => ResourceManager.GetString("EnableTrackingLabel", resourceCulture) ?? "Enable tracking";
-        public static string CycleLengthLabel => ResourceManager.GetString("CycleLengthLabel", resourceCulture) ?? "Average cycle length (days):";
-        public static string PeriodLengthLabel => ResourceManager.GetString("PeriodLengthLabel", resourceCulture) ?? "Average period length (days):";
-        public static string CycleDayFormat => ResourceManager.GetString("CycleDayFormat", resourceCulture) ?? "Day {0}";
+        public static string AppTitle => ResourceManager.GetString("AppTitle", resourceCulture) ?? string.Empty;
+        public static string Subtitle => ResourceManager.GetString("Subtitle", resourceCulture) ?? string.Empty;
+        public static string NoEntries => ResourceManager.GetString("NoEntries", resourceCulture) ?? string.Empty;
+        public static string NoEntriesDesc => ResourceManager.GetString("NoEntriesDesc", resourceCulture) ?? string.Empty;
+        public static string TitleLabel => ResourceManager.GetString("TitleLabel", resourceCulture) ?? string.Empty;
+        public static string TitlePlaceholder => ResourceManager.GetString("TitlePlaceholder", resourceCulture) ?? string.Empty;
+        public static string EmotionLabel => ResourceManager.GetString("EmotionLabel", resourceCulture) ?? string.Empty;
+        public static string EmotionPlaceholder => ResourceManager.GetString("EmotionPlaceholder", resourceCulture) ?? string.Empty;
+        public static string ContentLabel => ResourceManager.GetString("ContentLabel", resourceCulture) ?? string.Empty;
+        public static string ContentPlaceholder => ResourceManager.GetString("ContentPlaceholder", resourceCulture) ?? string.Empty;
+        public static string SaveButton => ResourceManager.GetString("SaveButton", resourceCulture) ?? string.Empty;
+        public static string EditTaskTitle => ResourceManager.GetString("EditTaskTitle", resourceCulture) ?? string.Empty;
+        public static string MaxHighPriorityAlertTitle => ResourceManager.GetString("MaxHighPriorityAlertTitle", resourceCulture) ?? string.Empty;
+        public static string MaxHighPriorityAlertMessage => ResourceManager.GetString("MaxHighPriorityAlertMessage", resourceCulture) ?? string.Empty;
+        public static string SleepLabel => ResourceManager.GetString("SleepLabel", resourceCulture) ?? string.Empty;
+        public static string SleepStartLabel => ResourceManager.GetString("SleepStartLabel", resourceCulture) ?? string.Empty;
+        public static string SleepEndLabel => ResourceManager.GetString("SleepEndLabel", resourceCulture) ?? string.Empty;
+        public static string SleepQualityLabel => ResourceManager.GetString("SleepQualityLabel", resourceCulture) ?? string.Empty;
+        public static string HealthLabel => ResourceManager.GetString("HealthLabel", resourceCulture) ?? string.Empty;
+        public static string CycleDayLabel => ResourceManager.GetString("CycleDayLabel", resourceCulture) ?? string.Empty;
+        public static string HealthStatusLabel => ResourceManager.GetString("HealthStatusLabel", resourceCulture) ?? string.Empty;
+        public static string IntimateLifeLabel => ResourceManager.GetString("IntimateLifeLabel", resourceCulture) ?? string.Empty;
+        public static string HabitsLabel => ResourceManager.GetString("HabitsLabel", resourceCulture) ?? string.Empty;
+        public static string AddHabitPromptTitle => ResourceManager.GetString("AddHabitPromptTitle", resourceCulture) ?? string.Empty;
+        public static string AddHabitPromptMessage => ResourceManager.GetString("AddHabitPromptMessage", resourceCulture) ?? string.Empty;
+        public static string AddHabitLabel => ResourceManager.GetString("AddHabitLabel", resourceCulture) ?? string.Empty;
+        public static string DeleteHabitConfirmTitle => ResourceManager.GetString("DeleteHabitConfirmTitle", resourceCulture) ?? string.Empty;
+        public static string DeleteHabitConfirmMessage => ResourceManager.GetString("DeleteHabitConfirmMessage", resourceCulture) ?? string.Empty;
+        public static string TriggersLabel => ResourceManager.GetString("TriggersLabel", resourceCulture) ?? string.Empty;
+        public static string GratitudeLabel => ResourceManager.GetString("GratitudeLabel", resourceCulture) ?? string.Empty;
+        public static string SoulFoodLabel => ResourceManager.GetString("SoulFoodLabel", resourceCulture) ?? string.Empty;
+        public static string TriggersPlaceholder => ResourceManager.GetString("TriggersPlaceholder", resourceCulture) ?? string.Empty;
+        public static string GratitudePlaceholder => ResourceManager.GetString("GratitudePlaceholder", resourceCulture) ?? string.Empty;
+        public static string SoulFoodPlaceholder => ResourceManager.GetString("SoulFoodPlaceholder", resourceCulture) ?? string.Empty;
+        public static string HomeBlocksTitle => ResourceManager.GetString("HomeBlocksTitle", resourceCulture) ?? string.Empty;
+        public static string BlockMoodLabel => ResourceManager.GetString("BlockMoodLabel", resourceCulture) ?? string.Empty;
+        public static string BlockSleepLabel => ResourceManager.GetString("BlockSleepLabel", resourceCulture) ?? string.Empty;
+        public static string BlockHealthLabel => ResourceManager.GetString("BlockHealthLabel", resourceCulture) ?? string.Empty;
+        public static string BlockFoodLabel => ResourceManager.GetString("BlockFoodLabel", resourceCulture) ?? string.Empty;
+        public static string BlockHabitsLabel => ResourceManager.GetString("BlockHabitsLabel", resourceCulture) ?? string.Empty;
+        public static string BlockGuidedPromptLabel => ResourceManager.GetString("BlockGuidedPromptLabel", resourceCulture) ?? string.Empty;
+        public static string MoodHourAccessibility => ResourceManager.GetString("MoodHourAccessibility", resourceCulture) ?? string.Empty;
+        public static string MoodHourEmpty => ResourceManager.GetString("MoodHourEmpty", resourceCulture) ?? string.Empty;
+        public static string BlockReflectionLabel => ResourceManager.GetString("BlockReflectionLabel", resourceCulture) ?? string.Empty;
+        public static string SettingsTabProfile => ResourceManager.GetString("SettingsTabProfile", resourceCulture) ?? string.Empty;
+        public static string SettingsTabScreen => ResourceManager.GetString("SettingsTabScreen", resourceCulture) ?? string.Empty;
+        public static string SettingsTabData => ResourceManager.GetString("SettingsTabData", resourceCulture) ?? string.Empty;
+        public static string AddTimeLabel => ResourceManager.GetString("AddTimeLabel", resourceCulture) ?? string.Empty;
+        public static string TimeLabel => ResourceManager.GetString("TimeLabel", resourceCulture) ?? string.Empty;
+        public static string TaskRepeatLabel => ResourceManager.GetString("TaskRepeatLabel", resourceCulture) ?? string.Empty;
+        public static string RecurrenceEndDateLabel => ResourceManager.GetString("RecurrenceEndDateLabel", resourceCulture) ?? string.Empty;
+        public static string RecurrenceDaysRequired => ResourceManager.GetString("RecurrenceDaysRequired", resourceCulture) ?? string.Empty;
+        public static string RecurringTaskAccessibility => ResourceManager.GetString("RecurringTaskAccessibility", resourceCulture) ?? string.Empty;
+        public static string ParseHintFormat => ResourceManager.GetString("ParseHintFormat", resourceCulture) ?? string.Empty;
+        public static string ParseUndoLabel => ResourceManager.GetString("ParseUndoLabel", resourceCulture) ?? string.Empty;
+        public static string CancelButtonLabel => ResourceManager.GetString("CancelButtonLabel", resourceCulture) ?? string.Empty;
+        public static string ToggleCalendarAccessibility => ResourceManager.GetString("ToggleCalendarAccessibility", resourceCulture) ?? string.Empty;
+        public static string PlannerHoursAccessibility => ResourceManager.GetString("PlannerHoursAccessibility", resourceCulture) ?? string.Empty;
+        public static string PlannerByHourLabel => ResourceManager.GetString("PlannerByHourLabel", resourceCulture) ?? string.Empty;
+        public static string DeleteTaskAccessibility => ResourceManager.GetString("DeleteTaskAccessibility", resourceCulture) ?? string.Empty;
+        public static string TaskWhenLabel => ResourceManager.GetString("TaskWhenLabel", resourceCulture) ?? string.Empty;
+        public static string RecurrenceIntervalChip => ResourceManager.GetString("RecurrenceIntervalChip", resourceCulture) ?? string.Empty;
+        public static string DeleteRecurringTaskTitle => ResourceManager.GetString("DeleteRecurringTaskTitle", resourceCulture) ?? string.Empty;
+        public static string DeleteThisOccurrenceOption => ResourceManager.GetString("DeleteThisOccurrenceOption", resourceCulture) ?? string.Empty;
+        public static string DeleteWholeSeriesOption => ResourceManager.GetString("DeleteWholeSeriesOption", resourceCulture) ?? string.Empty;
+        public static string ReminderLabel => ResourceManager.GetString("ReminderLabel", resourceCulture) ?? string.Empty;
+        public static string ProfileMenuTitle => ResourceManager.GetString("ProfileMenuTitle", resourceCulture) ?? string.Empty;
+        public static string GeneralInfoLabel => ResourceManager.GetString("GeneralInfoLabel", resourceCulture) ?? string.Empty;
+        public static string NameLabel => ResourceManager.GetString("NameLabel", resourceCulture) ?? string.Empty;
+        public static string NamePlaceholder => ResourceManager.GetString("NamePlaceholder", resourceCulture) ?? string.Empty;
+        public static string GenderLabel => ResourceManager.GetString("GenderLabel", resourceCulture) ?? string.Empty;
+        public static string GenderNotSpecified => ResourceManager.GetString("GenderNotSpecified", resourceCulture) ?? string.Empty;
+        public static string GenderMale => ResourceManager.GetString("GenderMale", resourceCulture) ?? string.Empty;
+        public static string GenderFemale => ResourceManager.GetString("GenderFemale", resourceCulture) ?? string.Empty;
+        public static string GenderOther => ResourceManager.GetString("GenderOther", resourceCulture) ?? string.Empty;
+        public static string AgeLabel => ResourceManager.GetString("AgeLabel", resourceCulture) ?? string.Empty;
+        public static string WeightLabel => ResourceManager.GetString("WeightLabel", resourceCulture) ?? string.Empty;
+        public static string HeightLabel => ResourceManager.GetString("HeightLabel", resourceCulture) ?? string.Empty;
+        public static string MenstrualTrackingTitle => ResourceManager.GetString("MenstrualTrackingTitle", resourceCulture) ?? string.Empty;
+        public static string EnableTrackingLabel => ResourceManager.GetString("EnableTrackingLabel", resourceCulture) ?? string.Empty;
+        public static string CycleLengthLabel => ResourceManager.GetString("CycleLengthLabel", resourceCulture) ?? string.Empty;
+        public static string PeriodLengthLabel => ResourceManager.GetString("PeriodLengthLabel", resourceCulture) ?? string.Empty;
+        public static string CycleDayFormat => ResourceManager.GetString("CycleDayFormat", resourceCulture) ?? string.Empty;
         public static string CycleTitle => ResourceManager.GetString("CycleTitle", resourceCulture);
         public static string CycleOpenLink => ResourceManager.GetString("CycleOpenLink", resourceCulture);
         public static string CycleForecastTitle => ResourceManager.GetString("CycleForecastTitle", resourceCulture);
@@ -145,27 +145,27 @@ namespace Diarion.Resources.Localization {
         public static string CycleLateFormat => ResourceManager.GetString("CycleLateFormat", resourceCulture);
         public static string CycleHighVariabilityNote => ResourceManager.GetString("CycleHighVariabilityNote", resourceCulture);
         public static string CycleDisclaimer => ResourceManager.GetString("CycleDisclaimer", resourceCulture);
-        public static string SaveProfileButton => ResourceManager.GetString("SaveProfileButton", resourceCulture) ?? "SAVE SETTINGS";
-        public static string ProfileSavedMessage => ResourceManager.GetString("ProfileSavedMessage", resourceCulture) ?? "Settings successfully saved!";
-        public static string DeleteButton => ResourceManager.GetString("DeleteButton", resourceCulture) ?? "Delete Entry";
-        public static string DeleteConfirmTitle => ResourceManager.GetString("DeleteConfirmTitle", resourceCulture) ?? "Confirmation";
-        public static string DeleteConfirmMsg => ResourceManager.GetString("DeleteConfirmMsg", resourceCulture) ?? "Are you sure you want to delete this entry?";
-        public static string DeleteConfirmYes => ResourceManager.GetString("DeleteConfirmYes", resourceCulture) ?? "Yes";
-        public static string DeleteConfirmNo => ResourceManager.GetString("DeleteConfirmNo", resourceCulture) ?? "No";
-        public static string AlertWarning => ResourceManager.GetString("AlertWarning", resourceCulture) ?? "Warning";
-        public static string AlertError => ResourceManager.GetString("AlertError", resourceCulture) ?? "Error";
-        public static string AlertEmptyContent => ResourceManager.GetString("AlertEmptyContent", resourceCulture) ?? "Entry content cannot be empty";
-        public static string AlertSaveError => ResourceManager.GetString("AlertSaveError", resourceCulture) ?? "Failed to save entry";
-        public static string AlertDeleteError => ResourceManager.GetString("AlertDeleteError", resourceCulture) ?? "Failed to delete entry";
-        public static string NewEntryTitle => ResourceManager.GetString("NewEntryTitle", resourceCulture) ?? "New Entry";
-        public static string EditEntryTitle => ResourceManager.GetString("EditEntryTitle", resourceCulture) ?? "Edit Entry";
-        public static string MyEntriesTitle => ResourceManager.GetString("MyEntriesTitle", resourceCulture) ?? "My Entries";
-        public static string EmotionNone => ResourceManager.GetString("EmotionNone", resourceCulture) ?? "None";
-        public static string EmotionHappy => ResourceManager.GetString("EmotionHappy", resourceCulture) ?? "Happy";
-        public static string EmotionCalm => ResourceManager.GetString("EmotionCalm", resourceCulture) ?? "Calm";
-        public static string EmotionAnxious => ResourceManager.GetString("EmotionAnxious", resourceCulture) ?? "Anxious";
-        public static string EmotionSad => ResourceManager.GetString("EmotionSad", resourceCulture) ?? "Sad";
-        public static string EmotionAngry => ResourceManager.GetString("EmotionAngry", resourceCulture) ?? "Angry";
+        public static string SaveProfileButton => ResourceManager.GetString("SaveProfileButton", resourceCulture) ?? string.Empty;
+        public static string ProfileSavedMessage => ResourceManager.GetString("ProfileSavedMessage", resourceCulture) ?? string.Empty;
+        public static string DeleteButton => ResourceManager.GetString("DeleteButton", resourceCulture) ?? string.Empty;
+        public static string DeleteConfirmTitle => ResourceManager.GetString("DeleteConfirmTitle", resourceCulture) ?? string.Empty;
+        public static string DeleteConfirmMsg => ResourceManager.GetString("DeleteConfirmMsg", resourceCulture) ?? string.Empty;
+        public static string DeleteConfirmYes => ResourceManager.GetString("DeleteConfirmYes", resourceCulture) ?? string.Empty;
+        public static string DeleteConfirmNo => ResourceManager.GetString("DeleteConfirmNo", resourceCulture) ?? string.Empty;
+        public static string AlertWarning => ResourceManager.GetString("AlertWarning", resourceCulture) ?? string.Empty;
+        public static string AlertError => ResourceManager.GetString("AlertError", resourceCulture) ?? string.Empty;
+        public static string AlertEmptyContent => ResourceManager.GetString("AlertEmptyContent", resourceCulture) ?? string.Empty;
+        public static string AlertSaveError => ResourceManager.GetString("AlertSaveError", resourceCulture) ?? string.Empty;
+        public static string AlertDeleteError => ResourceManager.GetString("AlertDeleteError", resourceCulture) ?? string.Empty;
+        public static string NewEntryTitle => ResourceManager.GetString("NewEntryTitle", resourceCulture) ?? string.Empty;
+        public static string EditEntryTitle => ResourceManager.GetString("EditEntryTitle", resourceCulture) ?? string.Empty;
+        public static string MyEntriesTitle => ResourceManager.GetString("MyEntriesTitle", resourceCulture) ?? string.Empty;
+        public static string EmotionNone => ResourceManager.GetString("EmotionNone", resourceCulture) ?? string.Empty;
+        public static string EmotionHappy => ResourceManager.GetString("EmotionHappy", resourceCulture) ?? string.Empty;
+        public static string EmotionCalm => ResourceManager.GetString("EmotionCalm", resourceCulture) ?? string.Empty;
+        public static string EmotionAnxious => ResourceManager.GetString("EmotionAnxious", resourceCulture) ?? string.Empty;
+        public static string EmotionSad => ResourceManager.GetString("EmotionSad", resourceCulture) ?? string.Empty;
+        public static string EmotionAngry => ResourceManager.GetString("EmotionAngry", resourceCulture) ?? string.Empty;
         /// <summary>
         ///   Looks up a localized string similar to Tasks.
         /// </summary>
@@ -912,97 +912,97 @@ namespace Diarion.Resources.Localization {
 
         public static string RecurrenceEveryNDaysFormat {
             get {
-                return ResourceManager.GetString("RecurrenceEveryNDaysFormat", resourceCulture) ?? "Every {0} days";
+                return ResourceManager.GetString("RecurrenceEveryNDaysFormat", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string RecurrenceMonthlyOnDayFormat {
             get {
-                return ResourceManager.GetString("RecurrenceMonthlyOnDayFormat", resourceCulture) ?? "Monthly on day {0}";
+                return ResourceManager.GetString("RecurrenceMonthlyOnDayFormat", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string PlannedTransactionsLabel {
             get {
-                return ResourceManager.GetString("PlannedTransactionsLabel", resourceCulture) ?? "Planned";
+                return ResourceManager.GetString("PlannedTransactionsLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string AddPlannedButton {
             get {
-                return ResourceManager.GetString("AddPlannedButton", resourceCulture) ?? "+ Planned";
+                return ResourceManager.GetString("AddPlannedButton", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string PlannedFormTitle {
             get {
-                return ResourceManager.GetString("PlannedFormTitle", resourceCulture) ?? "Planned transaction";
+                return ResourceManager.GetString("PlannedFormTitle", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string PlannedRepeatLabel {
             get {
-                return ResourceManager.GetString("PlannedRepeatLabel", resourceCulture) ?? "Repeats";
+                return ResourceManager.GetString("PlannedRepeatLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string PlannedStartsOnLabel {
             get {
-                return ResourceManager.GetString("PlannedStartsOnLabel", resourceCulture) ?? "Starts on";
+                return ResourceManager.GetString("PlannedStartsOnLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string PlannedAutoPostLabel {
             get {
-                return ResourceManager.GetString("PlannedAutoPostLabel", resourceCulture) ?? "Add automatically";
+                return ResourceManager.GetString("PlannedAutoPostLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string PlannedAutoPostHint {
             get {
-                return ResourceManager.GetString("PlannedAutoPostHint", resourceCulture) ?? "Off: each one waits for your confirmation.";
+                return ResourceManager.GetString("PlannedAutoPostHint", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string PlannedConfirmButton {
             get {
-                return ResourceManager.GetString("PlannedConfirmButton", resourceCulture) ?? "Confirm";
+                return ResourceManager.GetString("PlannedConfirmButton", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string PlannedSkipButton {
             get {
-                return ResourceManager.GetString("PlannedSkipButton", resourceCulture) ?? "Skip";
+                return ResourceManager.GetString("PlannedSkipButton", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string DeletePlannedConfirm {
             get {
-                return ResourceManager.GetString("DeletePlannedConfirm", resourceCulture) ?? "Delete this plan? Transactions it already added stay.";
+                return ResourceManager.GetString("DeletePlannedConfirm", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string SettingsPlannedToggle {
             get {
-                return ResourceManager.GetString("SettingsPlannedToggle", resourceCulture) ?? "Planned transactions";
+                return ResourceManager.GetString("SettingsPlannedToggle", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string RecurrenceMonthlyLabel {
             get {
-                return ResourceManager.GetString("RecurrenceMonthlyLabel", resourceCulture) ?? "Monthly";
+                return ResourceManager.GetString("RecurrenceMonthlyLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string RecurrenceWeeklyLabel {
             get {
-                return ResourceManager.GetString("RecurrenceWeeklyLabel", resourceCulture) ?? "Weekly";
+                return ResourceManager.GetString("RecurrenceWeeklyLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string RecurrenceDailyLabel {
             get {
-                return ResourceManager.GetString("RecurrenceDailyLabel", resourceCulture) ?? "Daily";
+                return ResourceManager.GetString("RecurrenceDailyLabel", resourceCulture) ?? string.Empty;
             }
         }
 
@@ -1278,340 +1278,340 @@ namespace Diarion.Resources.Localization {
         
         public static string FoodLabel {
             get {
-                return ResourceManager.GetString("FoodLabel", resourceCulture) ?? "FOOD";
+                return ResourceManager.GetString("FoodLabel", resourceCulture) ?? string.Empty;
             }
         }
         
         public static string BreakfastLabel {
             get {
-                return ResourceManager.GetString("BreakfastLabel", resourceCulture) ?? "Breakfast";
+                return ResourceManager.GetString("BreakfastLabel", resourceCulture) ?? string.Empty;
             }
         }
         
         public static string SecondBreakfastLabel {
             get {
-                return ResourceManager.GetString("SecondBreakfastLabel", resourceCulture) ?? "Second breakfast";
+                return ResourceManager.GetString("SecondBreakfastLabel", resourceCulture) ?? string.Empty;
             }
         }
         
         public static string LunchLabel {
             get {
-                return ResourceManager.GetString("LunchLabel", resourceCulture) ?? "Lunch";
+                return ResourceManager.GetString("LunchLabel", resourceCulture) ?? string.Empty;
             }
         }
         
         public static string SnackLabel {
             get {
-                return ResourceManager.GetString("SnackLabel", resourceCulture) ?? "Snack";
+                return ResourceManager.GetString("SnackLabel", resourceCulture) ?? string.Empty;
             }
         }
         
         public static string DinnerLabel {
             get {
-                return ResourceManager.GetString("DinnerLabel", resourceCulture) ?? "Dinner";
+                return ResourceManager.GetString("DinnerLabel", resourceCulture) ?? string.Empty;
             }
         }
         
         public static string FoodPlaceholder {
             get {
-                return ResourceManager.GetString("FoodPlaceholder", resourceCulture) ?? "What did you eat?";
+                return ResourceManager.GetString("FoodPlaceholder", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string TaskSettingsTitle {
             get {
-                return ResourceManager.GetString("TaskSettingsTitle", resourceCulture) ?? "TASKS";
+                return ResourceManager.GetString("TaskSettingsTitle", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string AutoMigrateTasksLabel {
             get {
-                return ResourceManager.GetString("AutoMigrateTasksLabel", resourceCulture) ?? "Auto-migrate uncompleted tasks to next day";
+                return ResourceManager.GetString("AutoMigrateTasksLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string WishlistTitle {
             get {
-                return ResourceManager.GetString("WishlistTitle", resourceCulture) ?? "Want, Wish, Get";
+                return ResourceManager.GetString("WishlistTitle", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string WantLabel {
             get {
-                return ResourceManager.GetString("WantLabel", resourceCulture) ?? "I Want...";
+                return ResourceManager.GetString("WantLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string WishLabel {
             get {
-                return ResourceManager.GetString("WishLabel", resourceCulture) ?? "I Wish...";
+                return ResourceManager.GetString("WishLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string GetLabel {
             get {
-                return ResourceManager.GetString("GetLabel", resourceCulture) ?? "I Will Get...";
+                return ResourceManager.GetString("GetLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string FinanceTitle {
             get {
-                return ResourceManager.GetString("FinanceTitle", resourceCulture) ?? "Income / Expenses";
+                return ResourceManager.GetString("FinanceTitle", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string TotalBalanceLabel {
             get {
-                return ResourceManager.GetString("TotalBalanceLabel", resourceCulture) ?? "Total Balance";
+                return ResourceManager.GetString("TotalBalanceLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string MonthIncomeLabel {
             get {
-                return ResourceManager.GetString("MonthIncomeLabel", resourceCulture) ?? "Income this month";
+                return ResourceManager.GetString("MonthIncomeLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string MonthExpenseLabel {
             get {
-                return ResourceManager.GetString("MonthExpenseLabel", resourceCulture) ?? "Expenses this month";
+                return ResourceManager.GetString("MonthExpenseLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string IncomeLabel {
             get {
-                return ResourceManager.GetString("IncomeLabel", resourceCulture) ?? "Income";
+                return ResourceManager.GetString("IncomeLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string ExpenseLabel {
             get {
-                return ResourceManager.GetString("ExpenseLabel", resourceCulture) ?? "Expense";
+                return ResourceManager.GetString("ExpenseLabel", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string AmountPlaceholder {
             get {
-                return ResourceManager.GetString("AmountPlaceholder", resourceCulture) ?? "0.00";
+                return ResourceManager.GetString("AmountPlaceholder", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string CategoryPlaceholder {
             get {
-                return ResourceManager.GetString("CategoryPlaceholder", resourceCulture) ?? "Category (e.g. Salary, Groceries)";
+                return ResourceManager.GetString("CategoryPlaceholder", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string NotePlaceholder {
             get {
-                return ResourceManager.GetString("NotePlaceholder", resourceCulture) ?? "Note (optional)";
+                return ResourceManager.GetString("NotePlaceholder", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string AddTransactionButton {
             get {
-                return ResourceManager.GetString("AddTransactionButton", resourceCulture) ?? "Add Transaction";
+                return ResourceManager.GetString("AddTransactionButton", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string EmptyDataMessage {
             get {
-                return ResourceManager.GetString("EmptyDataMessage", resourceCulture) ?? "Not enough data for this period.";
+                return ResourceManager.GetString("EmptyDataMessage", resourceCulture) ?? string.Empty;
             }
         }
 
         public static string BackupTitle {
-            get { return ResourceManager.GetString("BackupTitle", resourceCulture) ?? "Backup & Restore"; }
+            get { return ResourceManager.GetString("BackupTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string BackupDescription {
-            get { return ResourceManager.GetString("BackupDescription", resourceCulture) ?? "Export your data or restore from a backup file."; }
+            get { return ResourceManager.GetString("BackupDescription", resourceCulture) ?? string.Empty; }
         }
 
         public static string BackupExportButton {
-            get { return ResourceManager.GetString("BackupExportButton", resourceCulture) ?? "Export Backup"; }
+            get { return ResourceManager.GetString("BackupExportButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string BackupImportButton {
-            get { return ResourceManager.GetString("BackupImportButton", resourceCulture) ?? "Import Backup"; }
+            get { return ResourceManager.GetString("BackupImportButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string BackupExportSuccess {
-            get { return ResourceManager.GetString("BackupExportSuccess", resourceCulture) ?? "Backup created successfully."; }
+            get { return ResourceManager.GetString("BackupExportSuccess", resourceCulture) ?? string.Empty; }
         }
 
         public static string BackupImportWarning {
-            get { return ResourceManager.GetString("BackupImportWarning", resourceCulture) ?? "This will overwrite your current data. Are you sure?"; }
+            get { return ResourceManager.GetString("BackupImportWarning", resourceCulture) ?? string.Empty; }
         }
 public static string BackupImportSuccess {
-    get { return ResourceManager.GetString("BackupImportSuccess", resourceCulture) ?? "Backup restored. Please restart the app."; }
+    get { return ResourceManager.GetString("BackupImportSuccess", resourceCulture) ?? string.Empty; }
 }
 
 public static string ClearAllDataButton {
-    get { return ResourceManager.GetString("ClearAllDataButton", resourceCulture) ?? "Delete all my data"; }
+    get { return ResourceManager.GetString("ClearAllDataButton", resourceCulture) ?? string.Empty; }
 }
 
 public static string ClearAllDataConfirmTitle {
-    get { return ResourceManager.GetString("ClearAllDataConfirmTitle", resourceCulture) ?? "Warning"; }
+    get { return ResourceManager.GetString("ClearAllDataConfirmTitle", resourceCulture) ?? string.Empty; }
 }
 
 public static string ClearAllDataConfirmMsg {
-    get { return ResourceManager.GetString("ClearAllDataConfirmMsg", resourceCulture) ?? "Are you absolutely sure you want to delete all your data? This action cannot be undone."; }
+    get { return ResourceManager.GetString("ClearAllDataConfirmMsg", resourceCulture) ?? string.Empty; }
 }
 
 public static string ClearAllDataSuccessMsg {
-    get { return ResourceManager.GetString("ClearAllDataSuccessMsg", resourceCulture) ?? "All your data has been successfully deleted."; }
+    get { return ResourceManager.GetString("ClearAllDataSuccessMsg", resourceCulture) ?? string.Empty; }
 }
         public static string HoursShort {
-            get { return ResourceManager.GetString("HoursShort", resourceCulture) ?? "h"; }
+            get { return ResourceManager.GetString("HoursShort", resourceCulture) ?? string.Empty; }
         }
 
         public static string MinutesShort {
-            get { return ResourceManager.GetString("MinutesShort", resourceCulture) ?? "m"; }
+            get { return ResourceManager.GetString("MinutesShort", resourceCulture) ?? string.Empty; }
         }
 
         public static string SecurityLabel {
-            get { return ResourceManager.GetString("SecurityLabel", resourceCulture) ?? "SECURITY"; }
+            get { return ResourceManager.GetString("SecurityLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string EnableBiometricsLabel {
-            get { return ResourceManager.GetString("EnableBiometricsLabel", resourceCulture) ?? "Require Face ID / Passcode"; }
+            get { return ResourceManager.GetString("EnableBiometricsLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string BiometricPromptReason {
-            get { return ResourceManager.GetString("BiometricPromptReason", resourceCulture) ?? "Please authenticate to unlock Diarion"; }
+            get { return ResourceManager.GetString("BiometricPromptReason", resourceCulture) ?? string.Empty; }
         }
 
         public static string BiometricErrorTitle {
-            get { return ResourceManager.GetString("BiometricErrorTitle", resourceCulture) ?? "Authentication Failed"; }
+            get { return ResourceManager.GetString("BiometricErrorTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string BiometricErrorMessage {
-            get { return ResourceManager.GetString("BiometricErrorMessage", resourceCulture) ?? "Biometric authentication is not set up or not available on this device."; }
+            get { return ResourceManager.GetString("BiometricErrorMessage", resourceCulture) ?? string.Empty; }
         }
 
         public static string AppLockTitle {
-            get { return ResourceManager.GetString("AppLockTitle", resourceCulture) ?? "App Lock"; }
+            get { return ResourceManager.GetString("AppLockTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string EnterPinTitle {
-            get { return ResourceManager.GetString("EnterPinTitle", resourceCulture) ?? "Enter PIN"; }
+            get { return ResourceManager.GetString("EnterPinTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string EnterPinPrompt {
-            get { return ResourceManager.GetString("EnterPinPrompt", resourceCulture) ?? "Enter a 4-digit PIN"; }
+            get { return ResourceManager.GetString("EnterPinPrompt", resourceCulture) ?? string.Empty; }
         }
 
         public static string ConfirmPinPrompt {
-            get { return ResourceManager.GetString("ConfirmPinPrompt", resourceCulture) ?? "Confirm your PIN"; }
+            get { return ResourceManager.GetString("ConfirmPinPrompt", resourceCulture) ?? string.Empty; }
         }
 
         public static string EnterCurrentPinPrompt {
-            get { return ResourceManager.GetString("EnterCurrentPinPrompt", resourceCulture) ?? "Enter current PIN"; }
+            get { return ResourceManager.GetString("EnterCurrentPinPrompt", resourceCulture) ?? string.Empty; }
         }
 
         public static string EnterNewPinPrompt {
-            get { return ResourceManager.GetString("EnterNewPinPrompt", resourceCulture) ?? "Enter new PIN"; }
+            get { return ResourceManager.GetString("EnterNewPinPrompt", resourceCulture) ?? string.Empty; }
         }
 
         public static string PinInvalidMessage {
-            get { return ResourceManager.GetString("PinInvalidMessage", resourceCulture) ?? "The PIN must be 4 digits."; }
+            get { return ResourceManager.GetString("PinInvalidMessage", resourceCulture) ?? string.Empty; }
         }
 
         public static string PinMismatchMessage {
-            get { return ResourceManager.GetString("PinMismatchMessage", resourceCulture) ?? "The PINs do not match."; }
+            get { return ResourceManager.GetString("PinMismatchMessage", resourceCulture) ?? string.Empty; }
         }
 
         public static string PinSetSuccessMessage {
-            get { return ResourceManager.GetString("PinSetSuccessMessage", resourceCulture) ?? "App lock enabled."; }
+            get { return ResourceManager.GetString("PinSetSuccessMessage", resourceCulture) ?? string.Empty; }
         }
 
         public static string PinIncorrectMessage {
-            get { return ResourceManager.GetString("PinIncorrectMessage", resourceCulture) ?? "Incorrect PIN"; }
+            get { return ResourceManager.GetString("PinIncorrectMessage", resourceCulture) ?? string.Empty; }
         }
 
         public static string PinLockedOutMessage {
-            get { return ResourceManager.GetString("PinLockedOutMessage", resourceCulture) ?? "Too many attempts. Try again in {0}s."; }
+            get { return ResourceManager.GetString("PinLockedOutMessage", resourceCulture) ?? string.Empty; }
         }
 
         public static string RemovePinConfirmMessage {
-            get { return ResourceManager.GetString("RemovePinConfirmMessage", resourceCulture) ?? "Remove the app lock PIN?"; }
+            get { return ResourceManager.GetString("RemovePinConfirmMessage", resourceCulture) ?? string.Empty; }
         }
 
         public static string SetPinButton {
-            get { return ResourceManager.GetString("SetPinButton", resourceCulture) ?? "Set PIN"; }
+            get { return ResourceManager.GetString("SetPinButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string ChangePinButton {
-            get { return ResourceManager.GetString("ChangePinButton", resourceCulture) ?? "Change PIN"; }
+            get { return ResourceManager.GetString("ChangePinButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string RemovePinButton {
-            get { return ResourceManager.GetString("RemovePinButton", resourceCulture) ?? "Remove PIN"; }
+            get { return ResourceManager.GetString("RemovePinButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string UnlockWithBiometricsButton {
-            get { return ResourceManager.GetString("UnlockWithBiometricsButton", resourceCulture) ?? "Unlock with biometrics"; }
+            get { return ResourceManager.GetString("UnlockWithBiometricsButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string DeleteButtonLabel {
-            get { return ResourceManager.GetString("DeleteButtonLabel", resourceCulture) ?? "Delete"; }
+            get { return ResourceManager.GetString("DeleteButtonLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string OnboardingTitle {
-            get { return ResourceManager.GetString("OnboardingTitle", resourceCulture) ?? "Welcome to Diarion"; }
+            get { return ResourceManager.GetString("OnboardingTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string OnboardingSubtitle {
-            get { return ResourceManager.GetString("OnboardingSubtitle", resourceCulture) ?? "Your private, offline diary"; }
+            get { return ResourceManager.GetString("OnboardingSubtitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string OnboardingPrivacyText {
-            get { return ResourceManager.GetString("OnboardingPrivacyText", resourceCulture) ?? "Everything stays on your device. No cloud, no account — nothing to leak."; }
+            get { return ResourceManager.GetString("OnboardingPrivacyText", resourceCulture) ?? string.Empty; }
         }
 
         public static string OnboardingReminderLabel {
-            get { return ResourceManager.GetString("OnboardingReminderLabel", resourceCulture) ?? "Remind me to journal daily"; }
+            get { return ResourceManager.GetString("OnboardingReminderLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string OnboardingGetStartedButton {
-            get { return ResourceManager.GetString("OnboardingGetStartedButton", resourceCulture) ?? "Get started"; }
+            get { return ResourceManager.GetString("OnboardingGetStartedButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string RemindersTitle {
-            get { return ResourceManager.GetString("RemindersTitle", resourceCulture) ?? "REMINDERS"; }
+            get { return ResourceManager.GetString("RemindersTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string DailyReminderLabel {
-            get { return ResourceManager.GetString("DailyReminderLabel", resourceCulture) ?? "Daily journaling reminder"; }
+            get { return ResourceManager.GetString("DailyReminderLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string ReminderTimeLabel {
-            get { return ResourceManager.GetString("ReminderTimeLabel", resourceCulture) ?? "Time"; }
+            get { return ResourceManager.GetString("ReminderTimeLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string DailyReminderTitle {
-            get { return ResourceManager.GetString("DailyReminderTitle", resourceCulture) ?? "Time for your diary"; }
+            get { return ResourceManager.GetString("DailyReminderTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string DailyReminderMessage {
-            get { return ResourceManager.GetString("DailyReminderMessage", resourceCulture) ?? "A quiet minute for yourself?"; }
+            get { return ResourceManager.GetString("DailyReminderMessage", resourceCulture) ?? string.Empty; }
         }
 
         public static string StatsMoodInfluencesTitle {
-            get { return ResourceManager.GetString("StatsMoodInfluencesTitle", resourceCulture) ?? "WHAT AFFECTS YOUR MOOD"; }
+            get { return ResourceManager.GetString("StatsMoodInfluencesTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string StatsCorrelationDisclaimer {
-            get { return ResourceManager.GetString("StatsCorrelationDisclaimer", resourceCulture) ?? "Linked to your mood — not proven to cause it."; }
+            get { return ResourceManager.GetString("StatsCorrelationDisclaimer", resourceCulture) ?? string.Empty; }
         }
 
         public static string FactorSleepDuration {
-            get { return ResourceManager.GetString("FactorSleepDuration", resourceCulture) ?? "Sleep duration"; }
+            get { return ResourceManager.GetString("FactorSleepDuration", resourceCulture) ?? string.Empty; }
         }
 
         public static string FactorSleepQuality {
-            get { return ResourceManager.GetString("FactorSleepQuality", resourceCulture) ?? "Sleep quality"; }
+            get { return ResourceManager.GetString("FactorSleepQuality", resourceCulture) ?? string.Empty; }
         }
 
         public static string FactorCyclePeriodDay {
@@ -1627,231 +1627,315 @@ public static string ClearAllDataSuccessMsg {
         }
 
         public static string ExportDataTitle {
-            get { return ResourceManager.GetString("ExportDataTitle", resourceCulture) ?? "EXPORT DATA"; }
+            get { return ResourceManager.GetString("ExportDataTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string ExportDataDescription {
-            get { return ResourceManager.GetString("ExportDataDescription", resourceCulture) ?? "Export your data in open formats you can keep or move anywhere."; }
+            get { return ResourceManager.GetString("ExportDataDescription", resourceCulture) ?? string.Empty; }
         }
 
         public static string ExportJsonButton {
-            get { return ResourceManager.GetString("ExportJsonButton", resourceCulture) ?? "JSON"; }
+            get { return ResourceManager.GetString("ExportJsonButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string ExportCsvButton {
-            get { return ResourceManager.GetString("ExportCsvButton", resourceCulture) ?? "CSV"; }
+            get { return ResourceManager.GetString("ExportCsvButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string ExportMarkdownButton {
-            get { return ResourceManager.GetString("ExportMarkdownButton", resourceCulture) ?? "Markdown"; }
+            get { return ResourceManager.GetString("ExportMarkdownButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string ExportSuccessMessage {
-            get { return ResourceManager.GetString("ExportSuccessMessage", resourceCulture) ?? "Export ready to share."; }
+            get { return ResourceManager.GetString("ExportSuccessMessage", resourceCulture) ?? string.Empty; }
         }
 
         public static string CloseButtonLabel {
-            get { return ResourceManager.GetString("CloseButtonLabel", resourceCulture) ?? "Close"; }
+            get { return ResourceManager.GetString("CloseButtonLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string QuitLiveTimeFormat {
-            get { return ResourceManager.GetString("QuitLiveTimeFormat", resourceCulture) ?? "{0}d {1:D2}:{2:D2}:{3:D2}"; }
+            get { return ResourceManager.GetString("QuitLiveTimeFormat", resourceCulture) ?? string.Empty; }
         }
 
         public static string QuitNextMilestoneFormat {
-            get { return ResourceManager.GetString("QuitNextMilestoneFormat", resourceCulture) ?? "Next milestone: {0} days"; }
+            get { return ResourceManager.GetString("QuitNextMilestoneFormat", resourceCulture) ?? string.Empty; }
         }
 
         public static string QuitAllMilestones {
-            get { return ResourceManager.GetString("QuitAllMilestones", resourceCulture) ?? "All milestones reached"; }
+            get { return ResourceManager.GetString("QuitAllMilestones", resourceCulture) ?? string.Empty; }
         }
 
         public static string QuitRelapseConfirmTitle {
-            get { return ResourceManager.GetString("QuitRelapseConfirmTitle", resourceCulture) ?? "Log a relapse?"; }
+            get { return ResourceManager.GetString("QuitRelapseConfirmTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string QuitRelapseConfirmMessage {
-            get { return ResourceManager.GetString("QuitRelapseConfirmMessage", resourceCulture) ?? "This resets your clean-time counter."; }
+            get { return ResourceManager.GetString("QuitRelapseConfirmMessage", resourceCulture) ?? string.Empty; }
         }
 
         public static string HabitTrackerSaveButton {
-            get { return ResourceManager.GetString("HabitTrackerSaveButton", resourceCulture) ?? "Save"; }
+            get { return ResourceManager.GetString("HabitTrackerSaveButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string HabitTrackerEditTitle {
-            get { return ResourceManager.GetString("HabitTrackerEditTitle", resourceCulture) ?? "Edit tracker"; }
+            get { return ResourceManager.GetString("HabitTrackerEditTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string BudgetRemainingFormat {
-            get { return ResourceManager.GetString("BudgetRemainingFormat", resourceCulture) ?? "{0} left"; }
+            get { return ResourceManager.GetString("BudgetRemainingFormat", resourceCulture) ?? string.Empty; }
         }
 
         public static string BudgetOverspentFormat {
-            get { return ResourceManager.GetString("BudgetOverspentFormat", resourceCulture) ?? "Over by {0}"; }
+            get { return ResourceManager.GetString("BudgetOverspentFormat", resourceCulture) ?? string.Empty; }
         }
 
         public static string SettingsBudgetsToggle {
-            get { return ResourceManager.GetString("SettingsBudgetsToggle", resourceCulture) ?? "Show budgets in Finance"; }
+            get { return ResourceManager.GetString("SettingsBudgetsToggle", resourceCulture) ?? string.Empty; }
         }
 
         public static string DefaultAccountName {
-            get { return ResourceManager.GetString("DefaultAccountName", resourceCulture) ?? "Main"; }
+            get { return ResourceManager.GetString("DefaultAccountName", resourceCulture) ?? string.Empty; }
         }
 
         public static string AllAccounts {
-            get { return ResourceManager.GetString("AllAccounts", resourceCulture) ?? "All"; }
+            get { return ResourceManager.GetString("AllAccounts", resourceCulture) ?? string.Empty; }
         }
 
         public static string AccountsLabel {
-            get { return ResourceManager.GetString("AccountsLabel", resourceCulture) ?? "Accounts"; }
+            get { return ResourceManager.GetString("AccountsLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string AddAccountButton {
-            get { return ResourceManager.GetString("AddAccountButton", resourceCulture) ?? "+ Account"; }
+            get { return ResourceManager.GetString("AddAccountButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string AccountFormTitle {
-            get { return ResourceManager.GetString("AccountFormTitle", resourceCulture) ?? "Account"; }
+            get { return ResourceManager.GetString("AccountFormTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string AccountNamePlaceholder {
-            get { return ResourceManager.GetString("AccountNamePlaceholder", resourceCulture) ?? "Account name"; }
+            get { return ResourceManager.GetString("AccountNamePlaceholder", resourceCulture) ?? string.Empty; }
         }
 
         public static string InitialBalancePlaceholder {
-            get { return ResourceManager.GetString("InitialBalancePlaceholder", resourceCulture) ?? "Initial balance"; }
+            get { return ResourceManager.GetString("InitialBalancePlaceholder", resourceCulture) ?? string.Empty; }
         }
 
         public static string SelectAccountLabel {
-            get { return ResourceManager.GetString("SelectAccountLabel", resourceCulture) ?? "Account"; }
+            get { return ResourceManager.GetString("SelectAccountLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string DeleteAccountConfirm {
-            get { return ResourceManager.GetString("DeleteAccountConfirm", resourceCulture) ?? "Delete this account? Its transactions move to another account."; }
+            get { return ResourceManager.GetString("DeleteAccountConfirm", resourceCulture) ?? string.Empty; }
         }
 
         public static string DeleteAccountLastError {
-            get { return ResourceManager.GetString("DeleteAccountLastError", resourceCulture) ?? "You need at least one account."; }
+            get { return ResourceManager.GetString("DeleteAccountLastError", resourceCulture) ?? string.Empty; }
         }
 
         public static string AccountIconLabel {
-            get { return ResourceManager.GetString("AccountIconLabel", resourceCulture) ?? "Icon"; }
+            get { return ResourceManager.GetString("AccountIconLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string AccountColorLabel {
-            get { return ResourceManager.GetString("AccountColorLabel", resourceCulture) ?? "Colour"; }
+            get { return ResourceManager.GetString("AccountColorLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string DeleteAccountButton {
-            get { return ResourceManager.GetString("DeleteAccountButton", resourceCulture) ?? "Delete"; }
+            get { return ResourceManager.GetString("DeleteAccountButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string ArchiveAccountButton {
-            get { return ResourceManager.GetString("ArchiveAccountButton", resourceCulture) ?? "Archive"; }
+            get { return ResourceManager.GetString("ArchiveAccountButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string UnarchiveAccountButton {
-            get { return ResourceManager.GetString("UnarchiveAccountButton", resourceCulture) ?? "Unarchive"; }
+            get { return ResourceManager.GetString("UnarchiveAccountButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string ArchiveAccountLastError {
-            get { return ResourceManager.GetString("ArchiveAccountLastError", resourceCulture) ?? "You need at least one active account."; }
+            get { return ResourceManager.GetString("ArchiveAccountLastError", resourceCulture) ?? string.Empty; }
         }
 
         public static string ShowArchivedAccountsButton {
-            get { return ResourceManager.GetString("ShowArchivedAccountsButton", resourceCulture) ?? "Archived"; }
+            get { return ResourceManager.GetString("ShowArchivedAccountsButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string ReassignToLabel {
-            get { return ResourceManager.GetString("ReassignToLabel", resourceCulture) ?? "Move transactions to"; }
+            get { return ResourceManager.GetString("ReassignToLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string TransfersLabel {
-            get { return ResourceManager.GetString("TransfersLabel", resourceCulture) ?? "Transfers"; }
+            get { return ResourceManager.GetString("TransfersLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string AddTransferButton {
-            get { return ResourceManager.GetString("AddTransferButton", resourceCulture) ?? "+ Transfer"; }
+            get { return ResourceManager.GetString("AddTransferButton", resourceCulture) ?? string.Empty; }
         }
 
         public static string TransferFormTitle {
-            get { return ResourceManager.GetString("TransferFormTitle", resourceCulture) ?? "Transfer"; }
+            get { return ResourceManager.GetString("TransferFormTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string TransferFromLabel {
-            get { return ResourceManager.GetString("TransferFromLabel", resourceCulture) ?? "From"; }
+            get { return ResourceManager.GetString("TransferFromLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string TransferToLabel {
-            get { return ResourceManager.GetString("TransferToLabel", resourceCulture) ?? "To"; }
+            get { return ResourceManager.GetString("TransferToLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string TransferAmountError {
-            get { return ResourceManager.GetString("TransferAmountError", resourceCulture) ?? "Enter an amount greater than zero."; }
+            get { return ResourceManager.GetString("TransferAmountError", resourceCulture) ?? string.Empty; }
         }
 
         public static string TransferSameAccountError {
-            get { return ResourceManager.GetString("TransferSameAccountError", resourceCulture) ?? "Choose two different accounts."; }
+            get { return ResourceManager.GetString("TransferSameAccountError", resourceCulture) ?? string.Empty; }
         }
 
         public static string StatsTrendByMonth {
-            get { return ResourceManager.GetString("StatsTrendByMonth", resourceCulture) ?? "By month"; }
+            get { return ResourceManager.GetString("StatsTrendByMonth", resourceCulture) ?? string.Empty; }
         }
 
         public static string StatsTrendByWeek {
-            get { return ResourceManager.GetString("StatsTrendByWeek", resourceCulture) ?? "By week"; }
+            get { return ResourceManager.GetString("StatsTrendByWeek", resourceCulture) ?? string.Empty; }
         }
 
         public static string StatsComparisonTitle {
-            get { return ResourceManager.GetString("StatsComparisonTitle", resourceCulture) ?? "Compared with"; }
+            get { return ResourceManager.GetString("StatsComparisonTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string StatsNoBaseline {
-            get { return ResourceManager.GetString("StatsNoBaseline", resourceCulture) ?? "No earlier data to compare with yet."; }
+            get { return ResourceManager.GetString("StatsNoBaseline", resourceCulture) ?? string.Empty; }
         }
 
         public static string StatsAccountBreakdown {
-            get { return ResourceManager.GetString("StatsAccountBreakdown", resourceCulture) ?? "By account"; }
+            get { return ResourceManager.GetString("StatsAccountBreakdown", resourceCulture) ?? string.Empty; }
         }
 
         public static string StatsTransfersRow {
-            get { return ResourceManager.GetString("StatsTransfersRow", resourceCulture) ?? "Transfers"; }
+            get { return ResourceManager.GetString("StatsTransfersRow", resourceCulture) ?? string.Empty; }
         }
 
         public static string StatsMoverNew {
-            get { return ResourceManager.GetString("StatsMoverNew", resourceCulture) ?? "new"; }
+            get { return ResourceManager.GetString("StatsMoverNew", resourceCulture) ?? string.Empty; }
         }
 
         public static string StatsMoverGone {
-            get { return ResourceManager.GetString("StatsMoverGone", resourceCulture) ?? "gone"; }
+            get { return ResourceManager.GetString("StatsMoverGone", resourceCulture) ?? string.Empty; }
         }
 
         public static string StatsBiggestMoves {
-            get { return ResourceManager.GetString("StatsBiggestMoves", resourceCulture) ?? "Biggest moves"; }
+            get { return ResourceManager.GetString("StatsBiggestMoves", resourceCulture) ?? string.Empty; }
         }
 
         public static string AccountUnassigned {
-            get { return ResourceManager.GetString("AccountUnassigned", resourceCulture) ?? "No account"; }
+            get { return ResourceManager.GetString("AccountUnassigned", resourceCulture) ?? string.Empty; }
         }
 
         public static string CategoryOther {
-            get { return ResourceManager.GetString("CategoryOther", resourceCulture) ?? "Other"; }
+            get { return ResourceManager.GetString("CategoryOther", resourceCulture) ?? string.Empty; }
         }
 
         public static string HealthSyncUnsupported {
-            get { return ResourceManager.GetString("HealthSyncUnsupported", resourceCulture) ?? "Health sync is not available on this device yet."; }
+            get { return ResourceManager.GetString("HealthSyncUnsupported", resourceCulture) ?? string.Empty; }
         }
 
         public static string StreakHeldByGraceHint {
-            get { return ResourceManager.GetString("StreakHeldByGraceHint", resourceCulture) ?? "A forgiven day is holding this streak."; }
+            get { return ResourceManager.GetString("StreakHeldByGraceHint", resourceCulture) ?? string.Empty; }
         }
 
         public static string CycleSymptomsLabel {
-            get { return ResourceManager.GetString("CycleSymptomsLabel", resourceCulture) ?? "Symptoms"; }
+            get { return ResourceManager.GetString("CycleSymptomsLabel", resourceCulture) ?? string.Empty; }
         }
 
         public static string PlannerUntimedLabel {
-            get { return ResourceManager.GetString("PlannerUntimedLabel", resourceCulture) ?? "No time set"; }
+            get { return ResourceManager.GetString("PlannerUntimedLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string BackupPassphraseTitle {
+            get { return ResourceManager.GetString("BackupPassphraseTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string BackupPassphraseExportPrompt {
+            get { return ResourceManager.GetString("BackupPassphraseExportPrompt", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string BackupPassphraseRestorePrompt {
+            get { return ResourceManager.GetString("BackupPassphraseRestorePrompt", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string BackupWrongPassphrase {
+            get { return ResourceManager.GetString("BackupWrongPassphrase", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string BackupNotDiarionFile {
+            get { return ResourceManager.GetString("BackupNotDiarionFile", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string BackupNewerSchema {
+            get { return ResourceManager.GetString("BackupNewerSchema", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string BackupLegacyOtherDevice {
+            get { return ResourceManager.GetString("BackupLegacyOtherDevice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string BackupFailed {
+            get { return ResourceManager.GetString("BackupFailed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CrashReportTitle {
+            get { return ResourceManager.GetString("CrashReportTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CrashReportDescription {
+            get { return ResourceManager.GetString("CrashReportDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CrashReportShareButton {
+            get { return ResourceManager.GetString("CrashReportShareButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CrashReportClearButton {
+            get { return ResourceManager.GetString("CrashReportClearButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CrashReportClearConfirm {
+            get { return ResourceManager.GetString("CrashReportClearConfirm", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string FactorHabitCompletion {
+            get { return ResourceManager.GetString("FactorHabitCompletion", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string FactorMealsLogged {
+            get { return ResourceManager.GetString("FactorMealsLogged", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string FactorTaskCompletion {
+            get { return ResourceManager.GetString("FactorTaskCompletion", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string FactorDailySpend {
+            get { return ResourceManager.GetString("FactorDailySpend", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SettingsCurrencyLabel {
+            get { return ResourceManager.GetString("SettingsCurrencyLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsNoLeadingEmotion {
+            get { return ResourceManager.GetString("StatsNoLeadingEmotion", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsInsightProgressFormat {
+            get { return ResourceManager.GetString("StatsInsightProgressFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsInsightProgressHint {
+            get { return ResourceManager.GetString("StatsInsightProgressHint", resourceCulture) ?? string.Empty; }
         }
     }
 }

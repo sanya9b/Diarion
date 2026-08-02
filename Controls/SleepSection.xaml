@@ -32,7 +32,7 @@
                                 <Label Text="{Binding SleepStart, StringFormat='{0:hh\\:mm}'}" 
                                        IsVisible="{Binding HasSleepStart}"
                                        TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
-                                <Label Text="00:00" 
+                                <Label Text="--:--" 
                                        IsVisible="{Binding IsSleepStartEmpty}"
                                        TextColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Grid>
@@ -51,7 +51,7 @@
                                 <Label Text="{Binding SleepEnd, StringFormat='{0:hh\\:mm}'}" 
                                        IsVisible="{Binding HasSleepEnd}"
                                        TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
-                                <Label Text="00:00" 
+                                <Label Text="--:--" 
                                        IsVisible="{Binding IsSleepEndEmpty}"
                                        TextColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Grid>

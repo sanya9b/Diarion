@@ -6,4 +6,6 @@ namespace Diarion.Services;
 public class MauiFileSystemService : IFileSystemService
 {
     public string CacheDirectory => FileSystem.CacheDirectory;
+
+    public string AppDataDirectory => FileSystem.AppDataDirectory;
 }

@@ -37,7 +37,7 @@ public class HabitTrackerViewModelTests
         var viewModel = new HabitTrackerViewModel(
             habitServiceMock.Object,
             dialogServiceMock.Object,
-            new Mock<INotificationService>().Object)
+            new Mock<INotificationService>().Object, TestProfiles.Service())
         {
             NewTrackerName = "Smoking",
             NewTrackerStartDate = DateTime.Today.AddDays(-3)
@@ -78,7 +78,7 @@ public class HabitTrackerViewModelTests
         var viewModel = new HabitTrackerViewModel(
             habitServiceMock.Object,
             dialogServiceMock.Object,
-            new Mock<INotificationService>().Object);
+            new Mock<INotificationService>().Object, TestProfiles.Service());
         await viewModel.LoadAsync();
         var day = viewModel.TrackerDays[0];
 
@@ -145,7 +145,7 @@ public class HabitTrackerViewModelTests
         var viewModel = new HabitTrackerViewModel(
             habitServiceMock.Object,
             new Mock<IDialogService>().Object,
-            new Mock<INotificationService>().Object);
+            new Mock<INotificationService>().Object, TestProfiles.Service());
         await viewModel.LoadAsync();
         return (viewModel, habitServiceMock);
     }
@@ -208,7 +208,7 @@ public class HabitTrackerReminderTests
         var viewModel = new HabitTrackerViewModel(
             habitService.Object,
             new Mock<IDialogService>().Object,
-            new Mock<INotificationService>().Object);
+            new Mock<INotificationService>().Object, TestProfiles.Service());
         await viewModel.LoadAsync();
 
         viewModel.EditTrackerCommand.Execute(viewModel.SelectedTracker);
@@ -237,7 +237,7 @@ public class HabitTrackerReminderTests
             .ReturnsAsync(true);
 
         var notifications = new Mock<INotificationService>();
-        var viewModel = new HabitTrackerViewModel(habitService.Object, dialog.Object, notifications.Object);
+        var viewModel = new HabitTrackerViewModel(habitService.Object, dialog.Object, notifications.Object, TestProfiles.Service());
         await viewModel.LoadAsync();
 
         await viewModel.DeleteTrackerCommand.ExecuteAsync(viewModel.SelectedTracker);
@@ -268,7 +268,7 @@ public class HabitTrackerReminderTests
         var viewModel = new HabitTrackerViewModel(
             habitService.Object,
             new Mock<IDialogService>().Object,
-            notifications.Object);
+            notifications.Object, TestProfiles.Service());
 
         return (viewModel, habitService, notifications, saved);
     }

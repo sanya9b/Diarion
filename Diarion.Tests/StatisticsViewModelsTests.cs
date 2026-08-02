@@ -174,7 +174,7 @@ public class StatisticsViewModelsTests
         statsMock.Setup(s => s.GetFinanceStatisticsAsync(It.IsAny<int>(), It.IsAny<Guid?>()))
             .ReturnsAsync(new FinanceStatistics { TotalIncome = 1000m, TotalExpense = 350.5m });
 
-        var vm = new FinanceStatsViewModel(statsMock.Object);
+        var vm = new FinanceStatsViewModel(statsMock.Object, TestProfiles.Service());
 
         await vm.LoadDataAsync(30);
 
@@ -190,7 +190,7 @@ public class StatisticsViewModelsTests
         statsMock.Setup(s => s.GetFinanceStatisticsAsync(It.IsAny<int>(), It.IsAny<Guid?>()))
             .ReturnsAsync(new FinanceStatistics { TotalIncome = 100m, TotalExpense = 300m });
 
-        var vm = new FinanceStatsViewModel(statsMock.Object);
+        var vm = new FinanceStatsViewModel(statsMock.Object, TestProfiles.Service());
 
         await vm.LoadDataAsync(30);
 

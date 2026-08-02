@@ -60,17 +60,23 @@ public partial class HabitTrackerViewModel : BaseViewModel
 
     private readonly IDialogService _dialogService;
     private readonly INotificationService _notificationService;
+    private readonly IProfileService _profileService;
 
     public HabitTrackerViewModel(
         IHabitService habitService,
         IDialogService dialogService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IProfileService profileService)
     {
         _habitService = habitService;
         _dialogService = dialogService;
         _notificationService = notificationService;
+        _profileService = profileService;
         Title = AppResources.HabitTrackerTitle;
     }
+
+    /// <summary>Money saved is money, so it wears the same currency as the finance screens.</summary>
+    private string _currencyCode = MoneyFormatter.FallbackCode;
 
     public bool HasTrackers => Trackers.Count > 0;
     public bool HasNoTrackers => !HasTrackers;
@@ -265,11 +271,14 @@ public partial class HabitTrackerViewModel : BaseViewModel
 
         try
         {
+            _currencyCode = (await _profileService.GetUserProfileAsync())?.GetEffectiveCurrencyCode()
+                            ?? MoneyFormatter.FallbackCode;
+
             var trackers = await _habitService.GetHarmfulHabitTrackersAsync();
             var orderedTrackers = trackers
                 .OrderByDescending(x => x.CreatedAt)
                 .ThenByDescending(x => x.StartDate)
-                .Select(x => new HarmfulHabitTrackerItemViewModel(x))
+                .Select(x => new HarmfulHabitTrackerItemViewModel(x, _currencyCode))
                 .ToList();
 
             Trackers.Clear();
@@ -316,8 +325,12 @@ public partial class HabitTrackerViewModel : BaseViewModel
 
 public partial class HarmfulHabitTrackerItemViewModel : ObservableObject
 {
-    public HarmfulHabitTrackerItemViewModel(HarmfulHabitTracker tracker)
+    /// <summary>The currency the saved amount is shown in, handed down from the page's profile read.</summary>
+    private readonly string _currencyCode;
+
+    public HarmfulHabitTrackerItemViewModel(HarmfulHabitTracker tracker, string currencyCode)
     {
+        _currencyCode = currencyCode;
         Id = tracker.Id;
         HarmfulHabitName = tracker.HarmfulHabitName;
         StartDate = tracker.StartDate.Date;
@@ -373,7 +386,9 @@ public partial class HarmfulHabitTrackerItemViewModel : ObservableObject
     {
         var money = QuitTrackerCalculator.MoneySaved(BuildSnapshot(), DateTime.Today);
         HasMoney = money > 0m;
-        MoneySavedText = money.ToString("N2", CultureInfo.CurrentCulture);
+        // Formatted like every other amount in the app: a bare number here while the finance
+        // screens carry a symbol reads as a different unit rather than as restraint.
+        MoneySavedText = MoneyFormatter.Format(money, _currencyCode);
     }
 
     public void MarkDay(DateTime date)

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
+using Diarion.Resources.Localization;
 using Diarion.Services;
 using Microsoft.Maui.Controls;
 
@@ -22,6 +23,8 @@ public partial class ProfileViewModel : BaseViewModel
     private readonly INotificationService _notificationService;
     private readonly IExportService _exportService;
     private readonly INavigationService _navigationService;
+    private readonly Diarion.Diagnostics.ICrashReporter _crashReporter;
+    private readonly IShareService _shareService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
@@ -63,8 +66,12 @@ public partial class ProfileViewModel : BaseViewModel
         IDialogService dialogService,
         INotificationService notificationService,
         IExportService exportService,
-        INavigationService navigationService)
+        INavigationService navigationService,
+        Diarion.Diagnostics.ICrashReporter crashReporter,
+        IShareService shareService)
     {
+        _crashReporter = crashReporter;
+        _shareService = shareService;
         _profileService = profileService;
         _backupService = backupService;
         _appLockService = appLockService;
@@ -82,9 +89,76 @@ public partial class ProfileViewModel : BaseViewModel
         Profile = await _profileService.GetUserProfileAsync();
         SelectedGenderItem = GenderList.FirstOrDefault(g => g.Value == Profile.Gender) ?? GenderList[0];
 
+        SelectedCurrency = MoneyFormatter.Resolve(Profile.GetEffectiveCurrencyCode());
+
         NotifyLockState();
+        RefreshCrashReport();
 
         IsBusy = false;
+    }
+
+    // ---- Currency ----
+    // One currency for the whole profile, with no conversion anywhere. Per-account currencies would
+    // need exchange rates, rates need the network, and this app deliberately has none — a total
+    // converted at a rate the app invented would be worse than no feature.
+
+    public IReadOnlyList<Currency> CurrencyList { get; } = MoneyFormatter.Supported;
+
+    [ObservableProperty]
+    private Currency? _selectedCurrency;
+
+    partial void OnSelectedCurrencyChanged(Currency? value)
+    {
+        // Guard the load itself: LoadProfileAsync sets this from the profile, and writing back then
+        // would mark a profile dirty that nobody edited.
+        if (value == null || IsBusy || Profile.CurrencyCode == value.Code)
+        {
+            return;
+        }
+
+        Profile.CurrencyCode = value.Code;
+    }
+
+    // ---- Crash report ----
+    // The section stays invisible until something has actually crashed, so in the normal case this
+    // costs the settings screen nothing.
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCrashReport))]
+    private string? _crashReportText;
+
+    public bool HasCrashReport => !string.IsNullOrEmpty(CrashReportText);
+
+    public void RefreshCrashReport() => CrashReportText = _crashReporter.ReadLast();
+
+    [RelayCommand]
+    private async Task ShareCrashReportAsync()
+    {
+        var path = _crashReporter.ReportPath;
+        if (string.IsNullOrEmpty(path))
+        {
+            return;
+        }
+
+        await _shareService.ShareFileAsync(AppResources.CrashReportTitle, path);
+    }
+
+    [RelayCommand]
+    private async Task ClearCrashReportAsync()
+    {
+        var confirmed = await _dialogService.ShowConfirmationAsync(
+            AppResources.CrashReportTitle,
+            AppResources.CrashReportClearConfirm,
+            AppResources.DeleteConfirmYes,
+            AppResources.DeleteConfirmNo);
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+        _crashReporter.Clear();
+        RefreshCrashReport();
     }
 
     // ---- App lock (PIN + optional biometrics) ----
@@ -225,14 +299,12 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     public async Task ExportBackupAsync()
     {
-        bool success = await _backupService.ExportBackupAsync();
-        if (success)
-        {
-            await _dialogService.ShowAlertAsync(
-                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup",
-                Diarion.Resources.Localization.AppResources.BackupExportSuccess ?? "Backup created successfully.",
-                Diarion.Resources.Localization.AppResources.OkButtonLabel);
-        }
+        var outcome = await _backupService.ExportBackupAsync(
+            () => PromptForPassphraseAsync(AppResources.BackupPassphraseExportPrompt));
+
+        await ReportBackupOutcomeAsync(
+            outcome,
+            AppResources.BackupExportSuccess ?? "Backup created successfully.");
     }
 
     [RelayCommand]
@@ -243,17 +315,55 @@ public partial class ProfileViewModel : BaseViewModel
             Diarion.Resources.Localization.AppResources.BackupImportWarning ?? "This will overwrite your current data. Are you sure?",
             Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
             Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
-            
+
         if (!confirm) return;
 
-        bool success = await _backupService.ImportBackupAsync();
-        if (success)
+        var outcome = await _backupService.ImportBackupAsync(
+            () => PromptForPassphraseAsync(AppResources.BackupPassphraseRestorePrompt));
+
+        await ReportBackupOutcomeAsync(
+            outcome,
+            AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.");
+    }
+
+    private async Task<string?> PromptForPassphraseAsync(string message)
+    {
+        var entered = await _dialogService.ShowPromptAsync(
+            AppResources.BackupPassphraseTitle,
+            message,
+            AppResources.OkButtonLabel,
+            AppResources.DeleteConfirmNo);
+
+        // The prompt returns an empty string on cancel as well as on an empty entry; neither is a
+        // usable passphrase, so both mean "the user did not go through with it".
+        return string.IsNullOrWhiteSpace(entered) ? null : entered;
+    }
+
+    /// <summary>
+    /// Says what happened, including when it failed. The previous version reported only success, so a
+    /// restore that silently did nothing looked identical to one that worked.
+    /// </summary>
+    private Task ReportBackupOutcomeAsync(BackupOutcome outcome, string successMessage)
+    {
+        if (outcome == BackupOutcome.Cancelled)
         {
-            await _dialogService.ShowAlertAsync(
-                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup",
-                Diarion.Resources.Localization.AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.",
-                Diarion.Resources.Localization.AppResources.OkButtonLabel);
+            return Task.CompletedTask;
         }
+
+        var message = outcome switch
+        {
+            BackupOutcome.Success => successMessage,
+            BackupOutcome.WrongPassphrase => AppResources.BackupWrongPassphrase,
+            BackupOutcome.NotADiarionBackup => AppResources.BackupNotDiarionFile,
+            BackupOutcome.NewerSchema => AppResources.BackupNewerSchema,
+            BackupOutcome.LegacyBackupFromAnotherDevice => AppResources.BackupLegacyOtherDevice,
+            _ => AppResources.BackupFailed
+        };
+
+        return _dialogService.ShowAlertAsync(
+            AppResources.BackupTitle ?? "Backup",
+            message,
+            AppResources.OkButtonLabel);
     }
 
     [RelayCommand]

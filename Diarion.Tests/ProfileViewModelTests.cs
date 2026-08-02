@@ -20,7 +20,9 @@ public class ProfileViewModelTests
             new Mock<IDialogService>().Object,
             notif.Object,
             new Mock<IExportService>().Object,
-            new Mock<INavigationService>().Object);
+            new Mock<INavigationService>().Object,
+            new Mock<Diarion.Diagnostics.ICrashReporter>().Object,
+            new Mock<IShareService>().Object);
     }
 
     [Fact]

@@ -107,16 +107,7 @@ public static class EncryptedLiteDatabaseFactory
             using (var plain = new LiteDatabase(new ConnectionString { Filename = path }))
             using (var enc = new LiteDatabase(new ConnectionString { Filename = tempPath, Password = password }))
             {
-                foreach (var name in plain.GetCollectionNames())
-                {
-                    var docs = plain.GetCollection<BsonDocument>(name).FindAll().ToList();
-                    if (docs.Count > 0)
-                    {
-                        enc.GetCollection<BsonDocument>(name).InsertBulk(docs);
-                    }
-                }
-
-                enc.Checkpoint();
+                CopyAllCollections(plain, enc);
             }
 
             // Atomically replace the plaintext file with the encrypted one, keeping the original
@@ -148,6 +139,50 @@ public static class EncryptedLiteDatabaseFactory
 
             throw;
         }
+    }
+
+    /// <summary>
+    /// Writes a copy of the database at <paramref name="sourcePath"/> to <paramref name="destinationPath"/>
+    /// under a different key. Used to produce a portable backup, whose key comes from the user's
+    /// passphrase rather than from this device's keystore — a plain file copy would be readable only
+    /// on the device that made it, which is the whole defect this exists to fix.
+    /// <para>The caller is responsible for closing the live database first.</para>
+    /// </summary>
+    public static void ReencryptTo(string sourcePath, string? sourcePassword, string destinationPath, string destinationPassword)
+    {
+        if (string.IsNullOrEmpty(destinationPassword))
+        {
+            throw new ArgumentException("A portable backup must be encrypted.", nameof(destinationPassword));
+        }
+
+        var source = string.IsNullOrEmpty(sourcePassword)
+            ? new ConnectionString { Filename = sourcePath }
+            : new ConnectionString { Filename = sourcePath, Password = sourcePassword };
+
+        using var from = new LiteDatabase(source);
+        using var to = new LiteDatabase(new ConnectionString { Filename = destinationPath, Password = destinationPassword });
+
+        CopyAllCollections(from, to);
+    }
+
+    /// <summary>
+    /// Copies documents and the schema version. <c>UserVersion</c> has to travel with the data: the
+    /// migration runner reads it to decide what still needs applying, and a copy that lost it would be
+    /// re-migrated from zero on restore.
+    /// </summary>
+    private static void CopyAllCollections(LiteDatabase source, LiteDatabase destination)
+    {
+        foreach (var name in source.GetCollectionNames())
+        {
+            var docs = source.GetCollection<BsonDocument>(name).FindAll().ToList();
+            if (docs.Count > 0)
+            {
+                destination.GetCollection<BsonDocument>(name).InsertBulk(docs);
+            }
+        }
+
+        destination.UserVersion = source.UserVersion;
+        destination.Checkpoint();
     }
 
     private static void SafeDelete(string filePath)

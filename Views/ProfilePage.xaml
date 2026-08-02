@@ -294,6 +294,17 @@
                             <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsPlannedTransactionsEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.SettingsPlannedToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
+
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.SettingsCurrencyLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Picker Grid.Column="1"
+                                    ItemsSource="{Binding CurrencyList}"
+                                    ItemDisplayBinding="{Binding DisplayName}"
+                                    SelectedItem="{Binding SelectedCurrency}"
+                                    WidthRequest="130"
+                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                    TitleColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </Grid>
                     </VerticalStackLayout>
                 </Border>
 
@@ -450,6 +461,52 @@
                                     Command="{Binding ImportBackupCommand}"
                                     BackgroundColor="Transparent"
                                     BorderColor="{DynamicResource Theme_Amber}"
+                                    BorderWidth="1"
+                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                    CornerRadius="12"
+                                    HeightRequest="44" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Crash report. Hidden entirely until something has actually crashed. -->
+                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Coral}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16"
+                        IsVisible="{Binding HasCrashReport}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{x:Static localization:AppResources.CrashReportTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
+                        <Label Text="{x:Static localization:AppResources.CrashReportDescription}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,0,0,4" />
+
+                        <!-- The report itself, on screen. Whoever is holding the phone can read the
+                             exception without a Mac, a cable or a second tool. -->
+                        <Border StrokeShape="RoundRectangle 12" StrokeThickness="0"
+                                BackgroundColor="{DynamicResource Theme_Dust_Midnight}"
+                                Padding="10">
+                            <ScrollView Orientation="Both" MaximumHeightRequest="220">
+                                <Label Text="{Binding CrashReportText}"
+                                       FontSize="11"
+                                       FontFamily="Consolas"
+                                       LineBreakMode="NoWrap"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </ScrollView>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                            <Button Grid.Column="0" Text="{x:Static localization:AppResources.CrashReportShareButton}"
+                                    Command="{Binding ShareCrashReportCommand}"
+                                    BackgroundColor="Transparent"
+                                    BorderColor="{DynamicResource Theme_Ocean_Ocean}"
+                                    BorderWidth="1"
+                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                    CornerRadius="12"
+                                    HeightRequest="44" />
+
+                            <Button Grid.Column="1" Text="{x:Static localization:AppResources.CrashReportClearButton}"
+                                    Command="{Binding ClearCrashReportCommand}"
+                                    BackgroundColor="Transparent"
+                                    BorderColor="{DynamicResource Theme_Coral}"
                                     BorderWidth="1"
                                     TextColor="{DynamicResource Theme_Midnight_Snow}"
                                     CornerRadius="12"
