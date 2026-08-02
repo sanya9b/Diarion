@@ -1615,4 +1615,19 @@
   <data name="BackupFailed" xml:space="preserve">
     <value>Не вдалося виконати операцію. Нічого не змінено.</value>
   </data>
+  <data name="CrashReportTitle" xml:space="preserve">
+    <value>Звіт про збій</value>
+  </data>
+  <data name="CrashReportDescription" xml:space="preserve">
+    <value>Минулого разу застосунок закрився несподівано. Цей звіт описує, що сталося. Він лишається на телефоні, доки ви самі його не надішлете.</value>
+  </data>
+  <data name="CrashReportShareButton" xml:space="preserve">
+    <value>Надіслати звіт</value>
+  </data>
+  <data name="CrashReportClearButton" xml:space="preserve">
+    <value>Видалити звіт</value>
+  </data>
+  <data name="CrashReportClearConfirm" xml:space="preserve">
+    <value>Видалити збережений звіт про збій?</value>
+  </data>
 </root>

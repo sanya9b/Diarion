@@ -1885,6 +1885,26 @@ public static string ClearAllDataSuccessMsg {
         public static string BackupFailed {
             get { return ResourceManager.GetString("BackupFailed", resourceCulture) ?? string.Empty; }
         }
+
+        public static string CrashReportTitle {
+            get { return ResourceManager.GetString("CrashReportTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CrashReportDescription {
+            get { return ResourceManager.GetString("CrashReportDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CrashReportShareButton {
+            get { return ResourceManager.GetString("CrashReportShareButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CrashReportClearButton {
+            get { return ResourceManager.GetString("CrashReportClearButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CrashReportClearConfirm {
+            get { return ResourceManager.GetString("CrashReportClearConfirm", resourceCulture) ?? string.Empty; }
+        }
     }
 }
 

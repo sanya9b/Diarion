@@ -9,6 +9,15 @@ public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
 	{
+		// First thing, before any service is built: from here on a managed crash leaves a report
+		// behind instead of just a dead process. Constructed by hand rather than resolved, because
+		// the container it would come from does not exist yet — and the window where the app is
+		// still assembling itself is exactly where the interesting failures live.
+		var crashReporter = new Diarion.Diagnostics.CrashReporter(
+			new Diarion.Services.MauiFileSystemService(),
+			AppInfo.Current.VersionString);
+		Diarion.Services.CrashHandlerInstaller.Install(crashReporter);
+
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
@@ -28,6 +37,10 @@ public static class MauiProgram
 #endif
 
 		// -- DEPENDENCY INJECTION --
+		// The same instance the hooks above write through, so the settings screen reads the very
+		// report those hooks produced rather than a second view of the same file.
+		builder.Services.AddSingleton<Diarion.Diagnostics.ICrashReporter>(crashReporter);
+
 		builder.Services
 			.AddCoreServices()
 			.AddAppViewModels()

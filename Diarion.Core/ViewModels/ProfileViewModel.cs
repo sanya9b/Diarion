@@ -23,6 +23,8 @@ public partial class ProfileViewModel : BaseViewModel
     private readonly INotificationService _notificationService;
     private readonly IExportService _exportService;
     private readonly INavigationService _navigationService;
+    private readonly Diarion.Diagnostics.ICrashReporter _crashReporter;
+    private readonly IShareService _shareService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
@@ -64,8 +66,12 @@ public partial class ProfileViewModel : BaseViewModel
         IDialogService dialogService,
         INotificationService notificationService,
         IExportService exportService,
-        INavigationService navigationService)
+        INavigationService navigationService,
+        Diarion.Diagnostics.ICrashReporter crashReporter,
+        IShareService shareService)
     {
+        _crashReporter = crashReporter;
+        _shareService = shareService;
         _profileService = profileService;
         _backupService = backupService;
         _appLockService = appLockService;
@@ -84,8 +90,51 @@ public partial class ProfileViewModel : BaseViewModel
         SelectedGenderItem = GenderList.FirstOrDefault(g => g.Value == Profile.Gender) ?? GenderList[0];
 
         NotifyLockState();
+        RefreshCrashReport();
 
         IsBusy = false;
+    }
+
+    // ---- Crash report ----
+    // The section stays invisible until something has actually crashed, so in the normal case this
+    // costs the settings screen nothing.
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCrashReport))]
+    private string? _crashReportText;
+
+    public bool HasCrashReport => !string.IsNullOrEmpty(CrashReportText);
+
+    public void RefreshCrashReport() => CrashReportText = _crashReporter.ReadLast();
+
+    [RelayCommand]
+    private async Task ShareCrashReportAsync()
+    {
+        var path = _crashReporter.ReportPath;
+        if (string.IsNullOrEmpty(path))
+        {
+            return;
+        }
+
+        await _shareService.ShareFileAsync(AppResources.CrashReportTitle, path);
+    }
+
+    [RelayCommand]
+    private async Task ClearCrashReportAsync()
+    {
+        var confirmed = await _dialogService.ShowConfirmationAsync(
+            AppResources.CrashReportTitle,
+            AppResources.CrashReportClearConfirm,
+            AppResources.DeleteConfirmYes,
+            AppResources.DeleteConfirmNo);
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+        _crashReporter.Clear();
+        RefreshCrashReport();
     }
 
     // ---- App lock (PIN + optional biometrics) ----

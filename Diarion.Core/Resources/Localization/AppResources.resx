@@ -1615,4 +1615,19 @@
   <data name="CloseButtonLabel" xml:space="preserve">
     <value>Close</value>
   </data>
+  <data name="CrashReportTitle" xml:space="preserve">
+    <value>Crash report</value>
+  </data>
+  <data name="CrashReportDescription" xml:space="preserve">
+    <value>The app closed unexpectedly last time. This report describes what went wrong. It stays on your phone unless you share it.</value>
+  </data>
+  <data name="CrashReportShareButton" xml:space="preserve">
+    <value>Share report</value>
+  </data>
+  <data name="CrashReportClearButton" xml:space="preserve">
+    <value>Delete report</value>
+  </data>
+  <data name="CrashReportClearConfirm" xml:space="preserve">
+    <value>Delete the stored crash report?</value>
+  </data>
 </root>

@@ -44,6 +44,7 @@ public class PortableBackupTests : IDisposable
     {
         public FakeFileSystem(string cacheDirectory) => CacheDirectory = cacheDirectory;
         public string CacheDirectory { get; }
+        public string AppDataDirectory => CacheDirectory;
     }
 
     private sealed class FakeShareService : IShareService
