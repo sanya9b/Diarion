@@ -1645,4 +1645,13 @@
   <data name="SettingsCurrencyLabel" xml:space="preserve">
     <value>Валюта</value>
   </data>
+  <data name="StatsNoLeadingEmotion" xml:space="preserve">
+    <value>Порівну</value>
+  </data>
+  <data name="StatsInsightProgressFormat" xml:space="preserve">
+    <value>{0} з {1} днів записано</value>
+  </data>
+  <data name="StatsInsightProgressHint" xml:space="preserve">
+    <value>Зв’язки між настроєм і сном, звичками, їжею, задачами та витратами з’являться, коли буде що порівнювати.</value>
+  </data>
 </root>

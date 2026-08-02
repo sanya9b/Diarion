@@ -314,14 +314,14 @@
                             <Grid ColumnDefinitions="*, Auto, *" ColumnSpacing="16">
                                 <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
                                     <Label Text="{localization:Translate Key=MonthIncomeLabel}" FontSize="10" TextColor="{DynamicResource Theme_Snow}" Opacity="0.8" HorizontalOptions="Center" />
-                                    <Label Text="{Binding MonthIncomeText, StringFormat='+{0}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
+                                    <Label Text="{Binding MonthIncomeText}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
 
                                 <BoxView Grid.Column="1" WidthRequest="1" BackgroundColor="{DynamicResource Theme_Snow}" Opacity="0.3" VerticalOptions="Fill" />
 
                                 <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
                                     <Label Text="{localization:Translate Key=MonthExpenseLabel}" FontSize="10" TextColor="{DynamicResource Theme_Snow}" Opacity="0.8" HorizontalOptions="Center" />
-                                    <Label Text="{Binding MonthExpenseText, StringFormat='-{0}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
+                                    <Label Text="{Binding MonthExpenseText}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Snow}" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Grid>
                         </VerticalStackLayout>

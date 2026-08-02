@@ -57,11 +57,13 @@ public class CorrelationService : ICorrelationService
         _financeService = financeService;
     }
 
-    public async Task<IReadOnlyList<MoodCorrelation>> GetMoodCorrelationsAsync(int days, int lagDays = 0)
+    /// <summary>
+    /// Loads the mood series and every factor series for the window. Shared by the correlation pass
+    /// and the readiness check so the two can never disagree about how much data there is.
+    /// </summary>
+    private async Task<(Dictionary<DateTime, double> Mood, List<(string Key, Dictionary<DateTime, double> Values)> Factors)>
+        BuildSeriesAsync(int days, int lagDays)
     {
-        days = Math.Max(1, days);
-        lagDays = Math.Max(0, lagDays);
-
         // Fetch enough history to pair each factor day with a mood day `lagDays` later.
         var start = DateTime.Today.AddDays(-(days - 1) - lagDays);
         var entries = (await _diaryService.GetDiaryEntriesForStatsAsync(start, DateTime.Today)).ToList();
@@ -81,6 +83,36 @@ public class CorrelationService : ICorrelationService
         factors.AddRange(await BuildCycleFactorsAsync(start));
         factors.AddRange(await BuildTaskFactorAsync(start));
         factors.AddRange(await BuildSpendFactorAsync(start));
+
+        return (moodByDate, factors);
+    }
+
+    /// <summary>Days where this factor and a mood were both recorded, after applying the lag.</summary>
+    private static int PairedCount(Dictionary<DateTime, double> values, Dictionary<DateTime, double> mood, int lagDays)
+        => values.Count(kv => mood.ContainsKey(kv.Key.AddDays(lagDays)));
+
+    public async Task<CorrelationReadiness> GetReadinessAsync(int days, int lagDays = 0)
+    {
+        days = Math.Max(1, days);
+        lagDays = Math.Max(0, lagDays);
+
+        var (moodByDate, factors) = await BuildSeriesAsync(days, lagDays);
+
+        // The best any single factor manages, because one factor clearing the bar is enough to show
+        // a first insight.
+        var best = factors.Count == 0
+            ? 0
+            : factors.Max(f => PairedCount(f.Values, moodByDate, lagDays));
+
+        return new CorrelationReadiness(best, MinSampleSize);
+    }
+
+    public async Task<IReadOnlyList<MoodCorrelation>> GetMoodCorrelationsAsync(int days, int lagDays = 0)
+    {
+        days = Math.Max(1, days);
+        lagDays = Math.Max(0, lagDays);
+
+        var (moodByDate, factors) = await BuildSeriesAsync(days, lagDays);
 
         var candidates = new List<MoodCorrelation>();
         foreach (var (key, values) in factors)

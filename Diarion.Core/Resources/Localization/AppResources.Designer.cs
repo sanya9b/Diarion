@@ -1925,6 +1925,18 @@ public static string ClearAllDataSuccessMsg {
         public static string SettingsCurrencyLabel {
             get { return ResourceManager.GetString("SettingsCurrencyLabel", resourceCulture) ?? string.Empty; }
         }
+
+        public static string StatsNoLeadingEmotion {
+            get { return ResourceManager.GetString("StatsNoLeadingEmotion", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsInsightProgressFormat {
+            get { return ResourceManager.GetString("StatsInsightProgressFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsInsightProgressHint {
+            get { return ResourceManager.GetString("StatsInsightProgressHint", resourceCulture) ?? string.Empty; }
+        }
     }
 }
 

@@ -582,8 +582,15 @@ public partial class FinanceViewModel : BaseViewModel
     private string Money(decimal amount) => MoneyFormatter.Format(amount, CurrencyCode);
 
     public string TotalBalanceText => Money(TotalBalance);
-    public string MonthIncomeText => Money(MonthIncome);
-    public string MonthExpenseText => Money(MonthExpense);
+
+    // The sign lives here rather than in the XAML format string, because only here is it possible to
+    // tell "nothing came in" from "money came in". A prefixed zero read as -0,00, which announces a
+    // direction that did not happen.
+    public string MonthIncomeText => Signed(MonthIncome, "+");
+    public string MonthExpenseText => Signed(MonthExpense, "-");
+
+    private string Signed(decimal amount, string sign)
+        => amount == 0 ? Money(0) : sign + Money(amount);
 
     private void CalculateBalances()
     {

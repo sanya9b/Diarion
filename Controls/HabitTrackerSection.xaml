@@ -27,7 +27,11 @@
             <FlexLayout BindableLayout.ItemsSource="{Binding Habits}" Wrap="Wrap" Direction="Row" JustifyContent="SpaceBetween">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:HabitItemViewModel">
-                        <ContentView FlexLayout.Basis="48%">
+                        <!-- One per row. Two columns clipped every habit whose name ran past ~150px, and WordWrap
+                             cannot rescue it: FlexLayout measures a child against infinite width, so the label
+                             reports a full single line and is then cut to the 48% it was actually given.
+                             Reading the name matters more than the density; revert by putting the basis back. -->
+                        <ContentView FlexLayout.Basis="100%">
                             <ContentView.GestureRecognizers>
                                 <DragGestureRecognizer CanDrag="{Binding BindingContext.HabitsSection.IsEditHabitsMode, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                        DragStartingCommand="{Binding BindingContext.HabitsSection.DragHabitStartingCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
@@ -37,9 +41,9 @@
                                                        DropCommand="{Binding BindingContext.HabitsSection.ReorderHabitsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                        DropCommandParameter="{Binding .}" />
                             </ContentView.GestureRecognizers>
-                            <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="8" HeightRequest="32">
+                            <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="8" MinimumHeightRequest="32">
                                 <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
-                                <Label Grid.Column="1" Text="{Binding Name}" VerticalOptions="Center" FontSize="12" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Label Grid.Column="1" Text="{Binding Name}" VerticalOptions="Center" FontSize="12" LineBreakMode="WordWrap" TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
                                 <Grid Grid.Column="2"
                                       WidthRequest="20" HeightRequest="20"

@@ -806,4 +806,36 @@ public class FinanceViewModelTests
         viewModel.HasRecurringError.Should().BeTrue();
         viewModel.IsRecurringFormVisible.Should().BeTrue();
     }
+
+    [Fact]
+    public void A_month_with_no_movement_shows_a_plain_zero_not_a_signed_one()
+    {
+        // The sign used to come from a XAML format string, which cannot tell "nothing came in" from
+        // "money came in": an empty month rendered as -0,00, announcing a direction that never happened.
+        var vm = new FinanceViewModel(
+            FinanceMock().Object,
+            new Mock<IDialogService>().Object,
+            new Mock<IProfileService>().Object);
+
+        vm.MonthIncome = 0m;
+        vm.MonthExpense = 0m;
+
+        vm.MonthIncomeText.Should().NotStartWith("+").And.NotStartWith("-");
+        vm.MonthExpenseText.Should().NotStartWith("+").And.NotStartWith("-");
+    }
+
+    [Fact]
+    public void Real_movement_still_carries_its_direction()
+    {
+        var vm = new FinanceViewModel(
+            FinanceMock().Object,
+            new Mock<IDialogService>().Object,
+            new Mock<IProfileService>().Object);
+
+        vm.MonthIncome = 120m;
+        vm.MonthExpense = 45m;
+
+        vm.MonthIncomeText.Should().StartWith("+");
+        vm.MonthExpenseText.Should().StartWith("-");
+    }
 }
