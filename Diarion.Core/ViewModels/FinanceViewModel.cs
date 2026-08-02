@@ -215,12 +215,15 @@ public partial class FinanceViewModel : BaseViewModel
     public bool IsEditingBudget => _editingBudget != null;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TotalBalanceText))]
     private decimal _totalBalance;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(MonthIncomeText))]
     private decimal _monthIncome;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(MonthExpenseText))]
     private decimal _monthExpense;
 
     [ObservableProperty]
@@ -343,6 +346,7 @@ public partial class FinanceViewModel : BaseViewModel
 
             var profile = await _profileService.GetUserProfileAsync();
             ShowBudgets = profile?.IsBudgetsEnabled ?? true;
+            CurrencyCode = profile?.GetEffectiveCurrencyCode() ?? MoneyFormatter.FallbackCode;
             ShowPlanned = profile?.IsPlannedTransactionsEnabled ?? true;
 
             // Post what has come due before reading, so freshly materialized rows appear in this load
@@ -430,13 +434,13 @@ public partial class FinanceViewModel : BaseViewModel
             {
                 Id = p.Budget.Id,
                 Category = p.Budget.Category,
-                AmountText = $"{p.Spent:N2} / {p.Limit:N2}",
+                AmountText = $"{Money(p.Spent)} / {Money(p.Limit)}",
                 Progress = p.Progress,
                 ProgressPercentText = p.Fraction.ToString("P0", System.Globalization.CultureInfo.CurrentCulture),
                 IsOverspent = p.IsOverspent,
                 RemainingText = p.IsOverspent
-                    ? string.Format(Diarion.Resources.Localization.AppResources.BudgetOverspentFormat, Math.Abs(p.Remaining).ToString("N2"))
-                    : string.Format(Diarion.Resources.Localization.AppResources.BudgetRemainingFormat, p.Remaining.ToString("N2"))
+                    ? string.Format(Diarion.Resources.Localization.AppResources.BudgetOverspentFormat, Money(Math.Abs(p.Remaining)))
+                    : string.Format(Diarion.Resources.Localization.AppResources.BudgetRemainingFormat, Money(p.Remaining))
             });
         }
 
@@ -455,9 +459,8 @@ public partial class FinanceViewModel : BaseViewModel
                 Icon = a.Icon,
                 ColorHex = a.ColorHex,
                 IsArchived = a.IsArchived,
-                BalanceText = AccountBalanceCalculator
-                    .ComputeBalance(a, _allTransactions, _transfers)
-                    .ToString("N2", System.Globalization.CultureInfo.CurrentCulture)
+                BalanceText = Money(AccountBalanceCalculator
+                    .ComputeBalance(a, _allTransactions, _transfers))
             });
         }
         OnPropertyChanged(nameof(HasAccounts));
@@ -487,6 +490,7 @@ public partial class FinanceViewModel : BaseViewModel
                 Date = t.Date,
                 CreatedAt = t.CreatedAt,
                 Model = t,
+                AmountText = Money(t.Amount),
                 IsFromPlan = t.RecurringTransactionId != null
             });
         }
@@ -506,7 +510,7 @@ public partial class FinanceViewModel : BaseViewModel
                 CreatedAt = t.CreatedAt,
                 FromName = ResolveAccountName(t.FromAccountId),
                 ToName = ResolveAccountName(t.ToAccountId),
-                AmountText = t.Amount.ToString("N2", culture),
+                AmountText = Money(t.Amount),
                 DateText = t.Date.ToString("dd.MM.yyyy", culture),
                 Note = t.Note
             });
@@ -525,7 +529,7 @@ public partial class FinanceViewModel : BaseViewModel
                 Date = p.Date,
                 CreatedAt = p.Rule.CreatedAt,
                 Category = p.Rule.Category,
-                AmountText = p.Rule.Amount.ToString("N2", culture),
+                AmountText = Money(p.Rule.Amount),
                 RecurrenceText = RecurrenceFormatter.Describe(p.Rule.Recurrence),
                 DateText = p.Date.ToString("dd.MM.yyyy", culture),
                 IsExpense = p.Rule.Type == TransactionType.Expense
@@ -564,6 +568,22 @@ public partial class FinanceViewModel : BaseViewModel
             a.IsPickerSelected = a.Id == NewAccountId;
         }
     }
+
+    /// <summary>
+    /// The currency every amount on this page is rendered in. Held on the view model rather than read
+    /// per row so a single load cannot show two different currencies if the profile changes mid-flight.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TotalBalanceText))]
+    [NotifyPropertyChangedFor(nameof(MonthIncomeText))]
+    [NotifyPropertyChangedFor(nameof(MonthExpenseText))]
+    private string _currencyCode = MoneyFormatter.FallbackCode;
+
+    private string Money(decimal amount) => MoneyFormatter.Format(amount, CurrencyCode);
+
+    public string TotalBalanceText => Money(TotalBalance);
+    public string MonthIncomeText => Money(MonthIncome);
+    public string MonthExpenseText => Money(MonthExpense);
 
     private void CalculateBalances()
     {

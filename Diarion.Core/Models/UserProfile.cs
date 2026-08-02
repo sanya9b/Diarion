@@ -40,6 +40,13 @@ public partial class UserProfile : ObservableObject
     // Фінанси: показувати бюджети (за замовчуванням увімкнено)
     [ObservableProperty] private bool _isBudgetsEnabled = true;
 
+    /// <summary>
+    /// ISO code of the single currency every amount is shown in. Empty means the user has not chosen,
+    /// and the device region answers instead — so existing profiles, which have no such field, pick up
+    /// something sensible without a migration.
+    /// </summary>
+    [ObservableProperty] private string _currencyCode = string.Empty;
+
     // Фінанси: планові транзакції. Увімкнено, бо без створеного правила фіча не робить нічого;
     // тумблер потрібен, щоб її можна було зупинити, не видаляючи правил.
     [ObservableProperty] private bool _isPlannedTransactionsEnabled = true;
@@ -75,6 +82,12 @@ public partial class UserProfile : ObservableObject
 
     /// <summary>The one flag every consumer should read — availability and the user's choice together.</summary>
     public bool IsCycleTrackingActive => IsCycleFeatureAvailable && IsMenstrualTrackingEnabled;
+
+    /// <summary>The currency to display in: the chosen one, or what the device suggests.</summary>
+    public string GetEffectiveCurrencyCode()
+        => string.IsNullOrWhiteSpace(CurrencyCode)
+            ? Services.MoneyFormatter.DeviceDefaultCode()
+            : CurrencyCode;
 
     public int GetNormalizedCycleLength()
     {

@@ -69,14 +69,23 @@ public partial class FinanceStatsViewModel : BaseViewModel
     [ObservableProperty]
     private bool _hasAccountBreakdown;
 
-    public FinanceStatsViewModel(IStatisticsService statisticsService)
+    private readonly IProfileService _profileService;
+    private string _currencyCode = MoneyFormatter.FallbackCode;
+
+    public FinanceStatsViewModel(IStatisticsService statisticsService, IProfileService profileService)
     {
         _statisticsService = statisticsService;
+        _profileService = profileService;
     }
+
+    private string Money(decimal amount) => MoneyFormatter.Format(amount, _currencyCode);
+    private string MoneySigned(decimal amount) => MoneyFormatter.FormatSigned(amount, _currencyCode);
 
     public async Task LoadDataAsync(int days, Guid? accountId = null)
     {
         var culture = CultureInfo.CurrentCulture;
+        _currencyCode = (await _profileService.GetUserProfileAsync())?.GetEffectiveCurrencyCode()
+                        ?? MoneyFormatter.FallbackCode;
         var stats = await _statisticsService.GetFinanceStatisticsAsync(days, accountId);
 
         IsEmpty = stats.IsEmpty;
@@ -137,10 +146,10 @@ public partial class FinanceStatsViewModel : BaseViewModel
         ComparisonMetrics.Add(new MetricDeltaItem
         {
             Label = AppResources.StatsKpiBalance,
-            ValueText = comparison.Net.Current.ToString("N2", culture),
+            ValueText = Money(comparison.Net.Current),
             // No percentage on net: it crosses zero, and "+150%" on a swing from −100 to +50 is
             // arithmetically fine and cognitively useless.
-            DeltaText = $"{(comparison.Net.Change >= 0 ? "+" : "-")}{Math.Abs(comparison.Net.Change).ToString("N2", culture)}",
+            DeltaText = MoneySigned(comparison.Net.Change),
             IsGood = comparison.Net.Change >= 0
         });
 
@@ -149,7 +158,7 @@ public partial class FinanceStatsViewModel : BaseViewModel
             ExpenseMovers.Add(new CategoryMoverItem
             {
                 Category = string.IsNullOrWhiteSpace(mover.Category) ? AppResources.CategoryOther : mover.Category,
-                ChangeText = $"{(mover.Change >= 0 ? "+" : "-")}{Math.Abs(mover.Change).ToString("N2", culture)}",
+                ChangeText = MoneySigned(mover.Change),
                 Badge = mover.IsNew ? AppResources.StatsMoverNew
                       : mover.IsGone ? AppResources.StatsMoverGone
                       : string.Empty,
@@ -159,11 +168,11 @@ public partial class FinanceStatsViewModel : BaseViewModel
         }
     }
 
-    private static MetricDeltaItem Metric(string label, FinanceMetricDelta delta, bool higherIsBetter, CultureInfo culture)
+    private MetricDeltaItem Metric(string label, FinanceMetricDelta delta, bool higherIsBetter, CultureInfo culture)
         => new()
         {
             Label = label,
-            ValueText = delta.Current.ToString("N2", culture),
+            ValueText = Money(delta.Current),
             // Null fraction means there was no baseline at all — a "new" badge, not a fabricated percent.
             DeltaText = delta.Fraction is { } fraction
                 ? fraction.ToString("+0%;-0%;0%", culture)
@@ -183,9 +192,9 @@ public partial class FinanceStatsViewModel : BaseViewModel
                     : AccountLocalization.ResolveName(row.Account),
                 Icon = row.Account?.Icon ?? "❓",
                 ColorHex = row.Account?.ColorHex ?? "#929FA7",
-                IncomeText = row.Income.ToString("N2", culture),
-                ExpenseText = row.Expense.ToString("N2", culture),
-                TransferText = $"{(row.TransferNet >= 0 ? "+" : "-")}{Math.Abs(row.TransferNet).ToString("N2", culture)}",
+                IncomeText = Money(row.Income),
+                ExpenseText = Money(row.Expense),
+                TransferText = MoneySigned(row.TransferNet),
                 HasTransfers = row.HasTransfers,
                 IsArchived = row.IsArchived
             });

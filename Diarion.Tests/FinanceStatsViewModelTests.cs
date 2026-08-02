@@ -28,7 +28,7 @@ public class FinanceStatsViewModelTests : IDisposable
         _finance = new FinanceService(_dbContext);
         var statistics = new StatisticsService(
             new Mock<IDiaryService>().Object, new Mock<ITodoService>().Object, _finance);
-        _viewModel = new FinanceStatsViewModel(statistics);
+        _viewModel = new FinanceStatsViewModel(statistics, TestProfiles.Service());
     }
 
     public void Dispose() => _dbContext.Dispose();

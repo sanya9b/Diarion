@@ -294,6 +294,17 @@
                             <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsPlannedTransactionsEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.SettingsPlannedToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
+
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.SettingsCurrencyLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Picker Grid.Column="1"
+                                    ItemsSource="{Binding CurrencyList}"
+                                    ItemDisplayBinding="{Binding DisplayName}"
+                                    SelectedItem="{Binding SelectedCurrency}"
+                                    WidthRequest="130"
+                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                    TitleColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </Grid>
                     </VerticalStackLayout>
                 </Border>
 

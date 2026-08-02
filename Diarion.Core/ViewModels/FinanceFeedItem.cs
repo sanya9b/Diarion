@@ -27,6 +27,12 @@ public class TransactionFeedItem : FinanceFeedItem
 {
     public FinanceTransaction Model { get; init; } = new();
 
+    /// <summary>
+    /// The amount with its currency. The template used to bind <c>Model.Amount</c> and format it in
+    /// XAML, which left no room for a symbol the model does not carry.
+    /// </summary>
+    public string AmountText { get; init; } = string.Empty;
+
     /// <summary>Materialized by a recurring rule rather than typed in.</summary>
     public bool IsFromPlan { get; init; }
 }

@@ -1921,6 +1921,10 @@ public static string ClearAllDataSuccessMsg {
         public static string FactorDailySpend {
             get { return ResourceManager.GetString("FactorDailySpend", resourceCulture) ?? string.Empty; }
         }
+
+        public static string SettingsCurrencyLabel {
+            get { return ResourceManager.GetString("SettingsCurrencyLabel", resourceCulture) ?? string.Empty; }
+        }
     }
 }
 

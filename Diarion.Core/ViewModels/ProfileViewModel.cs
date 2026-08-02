@@ -89,10 +89,34 @@ public partial class ProfileViewModel : BaseViewModel
         Profile = await _profileService.GetUserProfileAsync();
         SelectedGenderItem = GenderList.FirstOrDefault(g => g.Value == Profile.Gender) ?? GenderList[0];
 
+        SelectedCurrency = MoneyFormatter.Resolve(Profile.GetEffectiveCurrencyCode());
+
         NotifyLockState();
         RefreshCrashReport();
 
         IsBusy = false;
+    }
+
+    // ---- Currency ----
+    // One currency for the whole profile, with no conversion anywhere. Per-account currencies would
+    // need exchange rates, rates need the network, and this app deliberately has none — a total
+    // converted at a rate the app invented would be worse than no feature.
+
+    public IReadOnlyList<Currency> CurrencyList { get; } = MoneyFormatter.Supported;
+
+    [ObservableProperty]
+    private Currency? _selectedCurrency;
+
+    partial void OnSelectedCurrencyChanged(Currency? value)
+    {
+        // Guard the load itself: LoadProfileAsync sets this from the profile, and writing back then
+        // would mark a profile dirty that nobody edited.
+        if (value == null || IsBusy || Profile.CurrencyCode == value.Code)
+        {
+            return;
+        }
+
+        Profile.CurrencyCode = value.Code;
     }
 
     // ---- Crash report ----
