@@ -55,7 +55,15 @@ public static class ServiceCollectionExtensions
     /// </summary>
     private static IServiceCollection AddAiServices(this IServiceCollection services)
     {
-        services.AddSingleton<IEmbeddingModelLocator, AppDataEmbeddingModelLocator>();
+        // The one HttpClient in the app. It only ever GETs pinned model URLs from HuggingFace —
+        // no user data, no identifiers, no telemetry — which is the entire justification for the
+        // INTERNET permission.
+        services.AddSingleton(_ => new HttpClient { Timeout = TimeSpan.FromMinutes(30) });
+
+        services.AddSingleton<IAiModelPathProvider, AppDataModelPaths>();
+        services.AddSingleton<IModelDownloadService, ModelDownloadService>();
+        services.AddSingleton<IEmbeddingModelLocator, InstalledEmbeddingModelLocator>();
+        services.AddSingleton<IDeviceCapabilityProbe, MauiDeviceCapabilityProbe>();
         services.AddSingleton<ITextEmbedder, OnnxTextEmbedder>();
         services.AddSingleton<IVectorStore, LiteDbVectorStore>();
         services.AddSingleton<IEmbeddingIndexService, EmbeddingIndexService>();
