@@ -134,8 +134,10 @@ public partial class App : Application
         var services = IPlatformApplication.Current?.Services;
         _ = services?.GetService<IEmbeddingIndexService>()?.StopAsync();
 
-        // The graph is tens of megabytes resident and nothing needs it while the user is elsewhere.
+        // Both graphs are resident megabytes — the generative one over a gigabyte — and nothing
+        // needs either while the user is elsewhere.
         (services?.GetService<ITextEmbedder>() as OnnxTextEmbedder)?.Unload();
+        (services?.GetService<ITextGenerator>() as OnnxGenAiTextGenerator)?.Unload();
     }
 
     private async Task CheckSecurityAsync(Window window, bool coldStart)

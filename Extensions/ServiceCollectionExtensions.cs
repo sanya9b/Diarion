@@ -70,9 +70,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
         services.AddSingleton<IDigestService, DigestService>();
         services.AddSingleton<IThemeClusterService, ThemeClusterService>();
-        // No generative model exists in the catalogue yet, so chat resolves to the stand-in and
-        // hides itself. Swapped for OnnxGenAiTextGenerator once a model ships.
-        services.AddSingleton<ITextGenerator, NullTextGenerator>();
+        services.AddSingleton<IGenerativeModelLocator, InstalledGenerativeModelLocator>();
+        // Resolves to the real generator, which reports IsAvailable=false until a generative model
+        // is installed — so chat hides itself rather than the container deciding whether it exists.
+        services.AddSingleton<ITextGenerator, OnnxGenAiTextGenerator>();
         services.AddSingleton<IDiaryChatService, DiaryChatService>();
 
         return services;
