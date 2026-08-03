@@ -67,6 +67,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ITextEmbedder, OnnxTextEmbedder>();
         services.AddSingleton<IVectorStore, LiteDbVectorStore>();
         services.AddSingleton<IEmbeddingIndexService, EmbeddingIndexService>();
+        services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
 
         return services;
     }
@@ -101,6 +102,7 @@ public static class ServiceCollectionExtensions
         
         services.AddTransient<WishlistViewModel>();
         services.AddTransient<FinanceViewModel>();
+        services.AddTransient<SearchViewModel>();
         services.AddTransient<NotesViewModel>();
         services.AddTransient<NoteDetailViewModel>();
         services.AddTransient<HabitEditorViewModel>();
@@ -128,6 +130,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<StatisticsPage>();
         services.AddTransient<WishlistPage>();
         services.AddTransient<FinancePage>();
+        services.AddTransient<SearchPage>();
         services.AddTransient<NotesPage>();
         services.AddTransient<NoteDetailPage>();
         services.AddTransient<HabitEditorPage>();

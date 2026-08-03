@@ -29,5 +29,6 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("PromptEditor", typeof(Views.PromptEditorPage));
         Routing.RegisterRoute("PromptHistory", typeof(Views.PromptHistoryPage));
         Routing.RegisterRoute("Cycle", typeof(Views.CyclePage));
+        Routing.RegisterRoute("Search", typeof(Views.SearchPage));
     }
 }

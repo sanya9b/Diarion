@@ -1771,4 +1771,40 @@
   <data name="UnitTerabyte" xml:space="preserve">
     <value>TB</value>
   </data>
+  <data name="SearchTitle" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>What are you looking for?</value>
+  </data>
+  <data name="SearchHintPhrase" xml:space="preserve">
+    <value>A phrase works better than a single word — the model reads sentences.</value>
+  </data>
+  <data name="SearchScopeAll" xml:space="preserve">
+    <value>Everything</value>
+  </data>
+  <data name="SearchScopeDiary" xml:space="preserve">
+    <value>Diary</value>
+  </data>
+  <data name="SearchScopeNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="SearchNoResults" xml:space="preserve">
+    <value>Nothing found</value>
+  </data>
+  <data name="SearchLexicalOnlyNotice" xml:space="preserve">
+    <value>Searching words only. Turn on AI in settings to search by meaning.</value>
+  </data>
+  <data name="SearchResultsCountFormat" xml:space="preserve">
+    <value>{0} found</value>
+  </data>
+  <data name="SearchSourceDiary" xml:space="preserve">
+    <value>Diary</value>
+  </data>
+  <data name="SearchSourceNote" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="QuickMenuSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
 </root>

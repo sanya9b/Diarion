@@ -1771,4 +1771,40 @@
   <data name="UnitTerabyte" xml:space="preserve">
     <value>ТБ</value>
   </data>
+  <data name="SearchTitle" xml:space="preserve">
+    <value>Пошук</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Що ви шукаєте?</value>
+  </data>
+  <data name="SearchHintPhrase" xml:space="preserve">
+    <value>Фраза працює краще за одне слово — модель читає речення.</value>
+  </data>
+  <data name="SearchScopeAll" xml:space="preserve">
+    <value>Усе</value>
+  </data>
+  <data name="SearchScopeDiary" xml:space="preserve">
+    <value>Щоденник</value>
+  </data>
+  <data name="SearchScopeNotes" xml:space="preserve">
+    <value>Нотатки</value>
+  </data>
+  <data name="SearchNoResults" xml:space="preserve">
+    <value>Нічого не знайдено</value>
+  </data>
+  <data name="SearchLexicalOnlyNotice" xml:space="preserve">
+    <value>Шукаю лише за словами. Увімкніть ШІ в налаштуваннях, щоб шукати за змістом.</value>
+  </data>
+  <data name="SearchResultsCountFormat" xml:space="preserve">
+    <value>Знайдено: {0}</value>
+  </data>
+  <data name="SearchSourceDiary" xml:space="preserve">
+    <value>Щоденник</value>
+  </data>
+  <data name="SearchSourceNote" xml:space="preserve">
+    <value>Нотатка</value>
+  </data>
+  <data name="QuickMenuSearch" xml:space="preserve">
+    <value>Пошук</value>
+  </data>
 </root>

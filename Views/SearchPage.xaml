@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Views.SearchPage"
+             x:DataType="viewmodels:SearchViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <Grid RowDefinitions="Auto, *" Padding="20,16,20,0" RowSpacing="14">
+
+        <VerticalStackLayout Grid.Row="0" Spacing="12">
+
+            <SearchBar Text="{Binding Query}"
+                       Placeholder="{x:Static localization:AppResources.SearchPlaceholder}"
+                       BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                       TextColor="{DynamicResource Theme_Midnight_Snow}"
+                       PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" />
+
+            <!-- Measured, not decorative: a single word scores barely above noise because the
+                 encoder reads sentences. Saying so is cheaper than a bad first result. -->
+            <Label Text="{x:Static localization:AppResources.SearchHintPhrase}"
+                   FontSize="12"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+            <Label Text="{x:Static localization:AppResources.SearchLexicalOnlyNotice}"
+                   IsVisible="{Binding ShowLexicalOnlyNotice}"
+                   FontSize="12"
+                   TextColor="{DynamicResource Theme_Amber}" />
+
+            <HorizontalStackLayout Spacing="8">
+                <Border StrokeShape="RoundRectangle 14" StrokeThickness="0" Padding="14,7"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding IsAllScope}" Value="True">
+                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetScopeCommand}" CommandParameter="all" />
+                    </Border.GestureRecognizers>
+                    <Label Text="{x:Static localization:AppResources.SearchScopeAll}" InputTransparent="True"
+                           FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                </Border>
+
+                <Border StrokeShape="RoundRectangle 14" StrokeThickness="0" Padding="14,7"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding IsDiaryScope}" Value="True">
+                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetScopeCommand}" CommandParameter="diary" />
+                    </Border.GestureRecognizers>
+                    <Label Text="{x:Static localization:AppResources.SearchScopeDiary}" InputTransparent="True"
+                           FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                </Border>
+
+                <Border StrokeShape="RoundRectangle 14" StrokeThickness="0" Padding="14,7"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding IsNotesScope}" Value="True">
+                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetScopeCommand}" CommandParameter="notes" />
+                    </Border.GestureRecognizers>
+                    <Label Text="{x:Static localization:AppResources.SearchScopeNotes}" InputTransparent="True"
+                           FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                </Border>
+            </HorizontalStackLayout>
+
+            <Label Text="{Binding ResultsSummary}" FontSize="12"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="{DynamicResource Theme_Ocean_Dust}" />
+
+            <Label Text="{x:Static localization:AppResources.SearchNoResults}"
+                   IsVisible="{Binding ShowEmptyState}"
+                   FontSize="14" HorizontalOptions="Center" Margin="0,20"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+        </VerticalStackLayout>
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Results}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="viewmodels:SearchResultItem">
+                    <Border StrokeShape="RoundRectangle 18" StrokeThickness="1"
+                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                            Padding="14" Margin="0,0,0,10">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SearchViewModel}}, Path=OpenCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
+                                <Label Grid.Column="0" Text="{Binding SourceLabel}" FontSize="11"
+                                       FontAttributes="Bold" CharacterSpacing="1"
+                                       TextColor="{DynamicResource Theme_Coral}" />
+                                <Label Grid.Column="1" Text="{Binding DateLabel}" FontSize="11"
+                                       HorizontalOptions="End"
+                                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            </Grid>
+                            <Label Text="{Binding Snippet}" FontSize="14"
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

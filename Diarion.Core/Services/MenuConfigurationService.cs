@@ -10,6 +10,18 @@ public class MenuConfigurationService : IMenuConfigurationService
     {
         return new List<QuickMenuItem>
         {
+            new QuickMenuItem
+            {
+                Id = "Search",
+                // Must be one of Sage/Berry/Amber/Coral: QuickMenuView.xaml resolves the stroke
+                // through DataTriggers on exactly those four, and any other key leaves the icon
+                // with no stroke at all — drawn, but invisible.
+                StrokeColorKey = "Theme_Sage",
+                UsesUniformAspect = true,
+                // Two semicircular arcs rather than one full circle, matching Wishlist: an arc
+                // command that returns to its own start point is degenerate and draws nothing.
+                PathData = "M 28,16 A 12,12 0 0 1 28,40 A 12,12 0 0 1 28,16 M 37,37 L 48,48"
+            },
             new QuickMenuItem 
             { 
                 Id = "Notes", 

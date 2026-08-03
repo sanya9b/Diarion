@@ -12,6 +12,21 @@ public class DateSelectedMessage
     }
 }
 
+/// <summary>
+/// Asks the calendar to move to a date, as opposed to <see cref="DateSelectedMessage"/>, which
+/// reports that it already has. Sent by search when a result is opened; the calendar answers by
+/// selecting the day, which then raises DateSelectedMessage for everyone else.
+/// </summary>
+public class NavigateToDateMessage
+{
+    public DateTime Date { get; }
+
+    public NavigateToDateMessage(DateTime date)
+    {
+        Date = date;
+    }
+}
+
 public class TodoChangedMessage
 {
     public DateTime Date { get; }

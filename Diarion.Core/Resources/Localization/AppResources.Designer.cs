@@ -2093,6 +2093,54 @@ public static string ClearAllDataSuccessMsg {
         public static string UnitTerabyte {
             get { return ResourceManager.GetString("UnitTerabyte", resourceCulture) ?? string.Empty; }
         }
+
+        public static string SearchTitle {
+            get { return ResourceManager.GetString("SearchTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchPlaceholder {
+            get { return ResourceManager.GetString("SearchPlaceholder", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchHintPhrase {
+            get { return ResourceManager.GetString("SearchHintPhrase", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchScopeAll {
+            get { return ResourceManager.GetString("SearchScopeAll", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchScopeDiary {
+            get { return ResourceManager.GetString("SearchScopeDiary", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchScopeNotes {
+            get { return ResourceManager.GetString("SearchScopeNotes", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchNoResults {
+            get { return ResourceManager.GetString("SearchNoResults", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchLexicalOnlyNotice {
+            get { return ResourceManager.GetString("SearchLexicalOnlyNotice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchResultsCountFormat {
+            get { return ResourceManager.GetString("SearchResultsCountFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchSourceDiary {
+            get { return ResourceManager.GetString("SearchSourceDiary", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchSourceNote {
+            get { return ResourceManager.GetString("SearchSourceNote", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickMenuSearch {
+            get { return ResourceManager.GetString("QuickMenuSearch", resourceCulture) ?? string.Empty; }
+        }
     }
 }
 
