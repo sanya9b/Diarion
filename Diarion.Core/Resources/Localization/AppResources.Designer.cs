@@ -2157,6 +2157,42 @@ public static string ClearAllDataSuccessMsg {
         public static string StatsThemeDaysFormat {
             get { return ResourceManager.GetString("StatsThemeDaysFormat", resourceCulture) ?? string.Empty; }
         }
+
+        public static string AiChatTitle {
+            get { return ResourceManager.GetString("AiChatTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatPlaceholder {
+            get { return ResourceManager.GetString("AiChatPlaceholder", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatIntro {
+            get { return ResourceManager.GetString("AiChatIntro", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatUnavailable {
+            get { return ResourceManager.GetString("AiChatUnavailable", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatNothingRelevant {
+            get { return ResourceManager.GetString("AiChatNothingRelevant", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatUngrounded {
+            get { return ResourceManager.GetString("AiChatUngrounded", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatSourcesLabel {
+            get { return ResourceManager.GetString("AiChatSourcesLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatStop {
+            get { return ResourceManager.GetString("AiChatStop", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickMenuAiChat {
+            get { return ResourceManager.GetString("QuickMenuAiChat", resourceCulture) ?? string.Empty; }
+        }
     }
 }
 

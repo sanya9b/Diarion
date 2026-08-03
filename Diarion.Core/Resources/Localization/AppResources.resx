@@ -1819,4 +1819,31 @@
   <data name="StatsThemeDaysFormat" xml:space="preserve">
     <value>{0} days</value>
   </data>
+  <data name="AiChatTitle" xml:space="preserve">
+    <value>Ask your diary</value>
+  </data>
+  <data name="AiChatPlaceholder" xml:space="preserve">
+    <value>Ask about your entries…</value>
+  </data>
+  <data name="AiChatIntro" xml:space="preserve">
+    <value>Answers come only from what you wrote, with the entries they came from shown underneath.</value>
+  </data>
+  <data name="AiChatUnavailable" xml:space="preserve">
+    <value>No chat model is installed. You can add one in Settings → AI.</value>
+  </data>
+  <data name="AiChatNothingRelevant" xml:space="preserve">
+    <value>I did not find entries to answer this from.</value>
+  </data>
+  <data name="AiChatUngrounded" xml:space="preserve">
+    <value>I could not answer this from your entries without guessing, so I would rather not.</value>
+  </data>
+  <data name="AiChatSourcesLabel" xml:space="preserve">
+    <value>Sources</value>
+  </data>
+  <data name="AiChatStop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="QuickMenuAiChat" xml:space="preserve">
+    <value>Ask diary</value>
+  </data>
 </root>

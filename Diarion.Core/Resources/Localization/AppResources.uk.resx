@@ -1819,4 +1819,31 @@
   <data name="StatsThemeDaysFormat" xml:space="preserve">
     <value>днів: {0}</value>
   </data>
+  <data name="AiChatTitle" xml:space="preserve">
+    <value>Спитати щоденник</value>
+  </data>
+  <data name="AiChatPlaceholder" xml:space="preserve">
+    <value>Запитайте про свої записи…</value>
+  </data>
+  <data name="AiChatIntro" xml:space="preserve">
+    <value>Відповіді складаються лише з написаного вами, а під ними — записи, з яких вони взяті.</value>
+  </data>
+  <data name="AiChatUnavailable" xml:space="preserve">
+    <value>Модель для чату не встановлено. Її можна додати в Налаштуваннях → ШІ.</value>
+  </data>
+  <data name="AiChatNothingRelevant" xml:space="preserve">
+    <value>Не знайшов записів, щоб відповісти на це.</value>
+  </data>
+  <data name="AiChatUngrounded" xml:space="preserve">
+    <value>Я не зміг відповісти на це з ваших записів, не вигадуючи, тому краще не буду.</value>
+  </data>
+  <data name="AiChatSourcesLabel" xml:space="preserve">
+    <value>Джерела</value>
+  </data>
+  <data name="AiChatStop" xml:space="preserve">
+    <value>Зупинити</value>
+  </data>
+  <data name="QuickMenuAiChat" xml:space="preserve">
+    <value>Спитати</value>
+  </data>
 </root>
