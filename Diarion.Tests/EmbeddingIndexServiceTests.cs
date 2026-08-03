@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
+using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Models.Ai;
 using Diarion.Services;
@@ -36,10 +38,19 @@ public class EmbeddingIndexServiceTests : IDisposable
         _notes.Setup(n => n.GetAllNotesAsync()).ReturnsAsync(new List<Note>());
         _profiles.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile { IsAiEnabled = true });
 
-        _service = new EmbeddingIndexService(_store, _embedder, _diary.Object, _notes.Object, _profiles.Object);
+        // A short debounce so the save hook can be exercised without the real two-second wait.
+        _service = new EmbeddingIndexService(
+            _store, _embedder, _diary.Object, _notes.Object, _profiles.Object,
+            reindexDelay: TimeSpan.FromMilliseconds(20));
     }
 
-    public void Dispose() => _dbContext.Dispose();
+    public void Dispose()
+    {
+        // The messenger is a static singleton and xUnit builds a fresh instance per test, so a
+        // service left subscribed would keep reindexing into a database this test already closed.
+        WeakReferenceMessenger.Default.UnregisterAll(_service);
+        _dbContext.Dispose();
+    }
 
     private void HasEntries(params DiaryEntry[] entries) =>
         _diary.Setup(d => d.GetAllEntriesAsync()).ReturnsAsync(entries.ToList());
@@ -304,6 +315,56 @@ public class EmbeddingIndexServiceTests : IDisposable
         await _service.ReindexSourceAsync(EmbeddingSourceKind.Diary, id.ToString());
 
         _store.Search(_embedder.Embed("за каву"), FakeEmbedder.Id, limit: 5)[0].Chunk.Text.Should().Be("за каву");
+    }
+
+    [Fact]
+    public async Task SavingAnEntry_ReindexesItWithoutWaitingForAResume()
+    {
+        // Without this hook the index only caught up on resume, so an entry written and searched
+        // for in the same sitting would not be found.
+        var id = Guid.NewGuid();
+        HasEntries(Entry("за каву", id));
+        await _service.RunOnceAsync();
+        _diary.Setup(d => d.GetEntryByIdAsync(id)).ReturnsAsync(Entry("за тишу", id));
+
+        WeakReferenceMessenger.Default.Send(
+            new DocumentChangedMessage(EmbeddingSourceKind.Diary, id.ToString()));
+        await WaitForIndexAsync(() => _store
+            .Search(_embedder.Embed("за тишу"), FakeEmbedder.Id, limit: 1)
+            .FirstOrDefault()?.Chunk.Text == "за тишу");
+
+        _store.Search(_embedder.Embed("за тишу"), FakeEmbedder.Id, limit: 1)[0].Chunk.Text.Should().Be("за тишу");
+    }
+
+    [Fact]
+    public async Task RapidSaves_CoalesceIntoOneReindex()
+    {
+        // Autosave fires on every property change in the entry view model; unthrottled, this would
+        // re-embed the same day on every keystroke.
+        var id = Guid.NewGuid();
+        HasEntries(Entry("за каву", id));
+        await _service.RunOnceAsync();
+        var callsAfterFirstPass = _embedder.CallCount;
+        _diary.Setup(d => d.GetEntryByIdAsync(id)).ReturnsAsync(Entry("за тишу", id));
+
+        for (var i = 0; i < 5; i++)
+        {
+            WeakReferenceMessenger.Default.Send(
+                new DocumentChangedMessage(EmbeddingSourceKind.Diary, id.ToString()));
+        }
+
+        await WaitForIndexAsync(() => _embedder.CallCount > callsAfterFirstPass);
+        await Task.Delay(120);
+
+        (_embedder.CallCount - callsAfterFirstPass).Should().Be(1);
+    }
+
+    private static async Task WaitForIndexAsync(Func<bool> condition)
+    {
+        for (var attempt = 0; attempt < 100 && !condition(); attempt++)
+        {
+            await Task.Delay(20);
+        }
     }
 
     [Fact]

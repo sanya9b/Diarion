@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
+using Diarion.Helpers;
+using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Models.Ai;
 
@@ -22,6 +25,15 @@ public class EmbeddingIndexService : IEmbeddingIndexService
     private readonly IProfileService _profileService;
 
     private readonly SemaphoreSlim _gate = new(1, 1);
+
+    /// <summary>
+    /// Coalesces the flurry of saves autosave produces. It fires on every property change in the
+    /// entry view model, so an unthrottled hook would re-embed the same day on every keystroke.
+    /// Keyed by document, so editing one entry never delays re-indexing another.
+    /// </summary>
+    private readonly Dictionary<string, AsyncDebouncer> _pendingReindex = new();
+    private readonly object _pendingLock = new();
+    private readonly TimeSpan _reindexDelay;
     private CancellationTokenSource? _cts;
     private Task _running = Task.CompletedTask;
 
@@ -30,13 +42,35 @@ public class EmbeddingIndexService : IEmbeddingIndexService
         ITextEmbedder embedder,
         IDiaryService diaryService,
         INoteService noteService,
-        IProfileService profileService)
+        IProfileService profileService,
+        TimeSpan? reindexDelay = null)
     {
+        _reindexDelay = reindexDelay ?? TimeSpan.FromSeconds(2);
         _store = store;
         _embedder = embedder;
         _diaryService = diaryService;
         _noteService = noteService;
         _profileService = profileService;
+
+        WeakReferenceMessenger.Default.Register<DocumentChangedMessage>(this, (r, m) =>
+            QueueReindex(m.SourceKind, m.SourceId));
+    }
+
+    private void QueueReindex(string sourceKind, string sourceId)
+    {
+        AsyncDebouncer debouncer;
+        var key = LiteDbVectorStore.SourceKey(sourceKind, sourceId);
+
+        lock (_pendingLock)
+        {
+            if (!_pendingReindex.TryGetValue(key, out debouncer!))
+            {
+                debouncer = new AsyncDebouncer(_reindexDelay);
+                _pendingReindex[key] = debouncer;
+            }
+        }
+
+        debouncer.Debounce(() => ReindexSourceAsync(sourceKind, sourceId));
     }
 
     public AiIndexProgress Progress { get; private set; } = AiIndexProgress.Idle;

@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
+using Diarion.Messages;
 using Diarion.Models;
+using Diarion.Models.Ai;
 using Diarion.Services.Database;
 using LiteDB;
 
@@ -90,6 +93,7 @@ public class NoteService : INoteService
         note.LinkedTitles = NoteParser.ExtractLinks(note.Content);
 
         col.Upsert(note);
+        Announce(note.Id.ToString());
 
         return Task.CompletedTask;
     }
@@ -118,8 +122,14 @@ public class NoteService : INoteService
             // Invalid ObjectId, nothing to delete
         }
 
+        Announce(id);
+
         return Task.CompletedTask;
     }
+
+    private static void Announce(string id) =>
+        WeakReferenceMessenger.Default.Send(
+            new DocumentChangedMessage(EmbeddingSourceKind.Note, id));
 
     public Task<List<Note>> GetBacklinksAsync(string title, string? excludeId = null)
     {

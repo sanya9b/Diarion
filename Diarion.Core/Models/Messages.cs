@@ -27,6 +27,24 @@ public class NavigateToDateMessage
     }
 }
 
+/// <summary>
+/// A diary entry or note was written or deleted. Announced by the services rather than by their
+/// callers, so every save path is covered by one hook instead of one per view model — and sent as
+/// a message rather than a method call because the indexer already depends on those services.
+/// </summary>
+public class DocumentChangedMessage
+{
+    public string SourceKind { get; }
+
+    public string SourceId { get; }
+
+    public DocumentChangedMessage(string sourceKind, string sourceId)
+    {
+        SourceKind = sourceKind;
+        SourceId = sourceId;
+    }
+}
+
 public class TodoChangedMessage
 {
     public DateTime Date { get; }
