@@ -24,7 +24,7 @@
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
                     BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="4">
-                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="4">
+                <Grid ColumnDefinitions="*,*,*,Auto" ColumnSpacing="4">
                     <!-- Profile tab -->
                     <Border Grid.Column="0" StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="Transparent" Padding="0,10">
                         <Border.Triggers>
@@ -85,6 +85,29 @@
                                     <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
                                 </DataTrigger>
                                 <DataTrigger TargetType="Label" Binding="{Binding IsDataTab}" Value="False">
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Border>
+
+                    <!-- AI tab. Auto-width, not a fourth equal column: the label is two characters
+                         in Ukrainian and stealing a third of the bar for it would squeeze the rest. -->
+                    <Border Grid.Column="3" StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="Transparent" Padding="14,10">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsAiTab}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="3" />
+                        </Border.GestureRecognizers>
+                        <Label Text="{x:Static localization:AppResources.SettingsTabAi}" InputTransparent="True" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsAiTab}" Value="True">
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsAiTab}" Value="False">
                                     <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
                                 </DataTrigger>
                             </Label.Triggers>
@@ -555,6 +578,174 @@
                         CornerRadius="12"
                         HeightRequest="48"
                         Margin="0,0,0,4" />
+            </VerticalStackLayout>
+
+            <!-- ============ AI TAB ============ -->
+            <VerticalStackLayout Spacing="20" IsVisible="{Binding IsAiTab}">
+
+                <!-- Увімкнення та пояснення -->
+                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.AiSectionTitle}"
+                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsAiEnabled}"
+                                      Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AiEnableToggle}"
+                                   VerticalOptions="Center"
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Grid>
+
+                        <Label Text="{x:Static localization:AppResources.AiIntro}"
+                               FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <!-- The permission list says INTERNET, so the reason has to be visible here
+                             rather than only in the store listing. -->
+                        <Label Text="{x:Static localization:AppResources.AiNetworkNotice}"
+                               FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Пристрій -->
+                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{x:Static localization:AppResources.AiDeviceHeader}"
+                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{Binding Ai.DeviceSummary}" FontSize="14"
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Label Text="{Binding Ai.TierDescription}" FontSize="13"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Моделі -->
+                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.AiModelsHeader}"
+                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Ai.Models}" Spacing="16">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:AiModelItemViewModel">
+                                    <VerticalStackLayout Spacing="6">
+                                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                            <Label Grid.Column="0" Text="{Binding DisplayName}"
+                                                   FontSize="14" FontAttributes="Bold"
+                                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AiRecommendedBadge}"
+                                                   IsVisible="{Binding IsRecommended}"
+                                                   FontSize="11" VerticalOptions="Center"
+                                                   TextColor="{DynamicResource Theme_Sage}" />
+                                        </Grid>
+
+                                        <Label FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}">
+                                            <Label.Text>
+                                                <MultiBinding StringFormat="{}{0} · {1} · {2}">
+                                                    <Binding Path="SizeText" />
+                                                    <Binding Path="LicenseText" />
+                                                    <Binding Path="StateText" />
+                                                </MultiBinding>
+                                            </Label.Text>
+                                        </Label>
+
+                                        <Label Text="{Binding UnavailableReason}" FontSize="12"
+                                               IsVisible="{Binding ShowUnavailableReason}"
+                                               TextColor="{DynamicResource Theme_Amber}" />
+
+                                        <ProgressBar Progress="{Binding ProgressFraction}"
+                                                     IsVisible="{Binding IsDownloading}"
+                                                     ProgressColor="{DynamicResource Theme_Ocean_Ocean}" />
+
+                                        <Label Text="{x:Static localization:AppResources.AiKeepOpenNotice}"
+                                               IsVisible="{Binding IsDownloading}"
+                                               FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                                        <Label Text="{Binding ErrorMessage}" FontSize="12"
+                                               IsVisible="{Binding HasError}"
+                                               TextColor="{DynamicResource Theme_Coral}" />
+
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Button Text="{x:Static localization:AppResources.AiDownloadAction}"
+                                                    Command="{Binding DownloadCommand}"
+                                                    IsVisible="{Binding CanDownload}"
+                                                    BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
+                                                    TextColor="{DynamicResource Theme_Snow}"
+                                                    CornerRadius="10" HeightRequest="40" Padding="16,0" />
+                                            <Button Text="{x:Static localization:AppResources.AiCancelAction}"
+                                                    Command="{Binding CancelCommand}"
+                                                    IsVisible="{Binding IsDownloading}"
+                                                    BackgroundColor="Transparent"
+                                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                                    CornerRadius="10" HeightRequest="40" Padding="16,0" />
+                                            <Button Text="{x:Static localization:AppResources.AiDeleteAction}"
+                                                    Command="{Binding DeleteCommand}"
+                                                    IsVisible="{Binding CanDelete}"
+                                                    BackgroundColor="Transparent"
+                                                    TextColor="{DynamicResource Theme_Coral}"
+                                                    CornerRadius="10" HeightRequest="40" Padding="16,0" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsWifiOnlyModelDownload}"
+                                      Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AiWifiOnlyToggle}"
+                                   VerticalOptions="Center"
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Індекс -->
+                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{x:Static localization:AppResources.AiIndexHeader}"
+                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Label Text="{Binding Ai.IndexStatus}" FontSize="14"
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                        <ProgressBar Progress="{Binding Ai.IndexFraction}"
+                                     IsVisible="{Binding Ai.IsIndexing}"
+                                     ProgressColor="{DynamicResource Theme_Ocean_Ocean}" />
+
+                        <Label Text="{Binding Ai.IndexedChunks}" FontSize="12"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <HorizontalStackLayout Spacing="8">
+                            <Button Text="{x:Static localization:AppResources.AiIndexRebuildAction}"
+                                    Command="{Binding Ai.RebuildIndexCommand}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                    CornerRadius="10" HeightRequest="40" Padding="16,0" />
+                            <Button Text="{x:Static localization:AppResources.AiIndexClearAction}"
+                                    Command="{Binding Ai.ClearIndexCommand}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{DynamicResource Theme_Coral}"
+                                    CornerRadius="10" HeightRequest="40" Padding="16,0" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
 
             <!-- Save Button (applies to all tabs) -->

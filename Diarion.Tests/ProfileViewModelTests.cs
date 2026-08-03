@@ -22,7 +22,28 @@ public class ProfileViewModelTests
             new Mock<IExportService>().Object,
             new Mock<INavigationService>().Object,
             new Mock<Diarion.Diagnostics.ICrashReporter>().Object,
-            new Mock<IShareService>().Object);
+            new Mock<IShareService>().Object,
+            CreateAiSection());
+    }
+
+    /// <summary>
+    /// The AI tab is a section view model rather than more fields on ProfileViewModel. Its own
+    /// behaviour is covered elsewhere; here it only has to exist and survive <c>Load</c>.
+    /// </summary>
+    private static AiSettingsViewModel CreateAiSection()
+    {
+        var dispatcher = new Mock<IDispatcherService>();
+        dispatcher.Setup(d => d.InvokeOnMainThread(It.IsAny<Action>()))
+            .Callback<Action>(action => action());
+
+        return new AiSettingsViewModel(
+            new Mock<Diarion.Services.Ai.IModelDownloadService>().Object,
+            new Mock<Diarion.Services.Ai.IDeviceCapabilityProbe>().Object,
+            new Mock<Diarion.Services.Ai.IEmbeddingIndexService>().Object,
+            new Mock<Diarion.Services.Ai.IVectorStore>().Object,
+            new Mock<Diarion.Services.Ai.ITextEmbedder>().Object,
+            new Mock<IDialogService>().Object,
+            dispatcher.Object);
     }
 
     [Fact]

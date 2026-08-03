@@ -84,6 +84,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<OnboardingViewModel>();
         services.AddTransient<DiaryDetailViewModel>();
         services.AddTransient<TodoDetailViewModel>();
+        services.AddTransient<AiSettingsViewModel>();
         services.AddTransient<ProfileViewModel>();
         services.AddTransient<HabitTrackerViewModel>();
         services.AddTransient<GoodDeedsViewModel>();

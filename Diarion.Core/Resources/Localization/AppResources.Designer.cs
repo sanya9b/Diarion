@@ -1937,6 +1937,162 @@ public static string ClearAllDataSuccessMsg {
         public static string StatsInsightProgressHint {
             get { return ResourceManager.GetString("StatsInsightProgressHint", resourceCulture) ?? string.Empty; }
         }
+
+        public static string SettingsTabAi {
+            get { return ResourceManager.GetString("SettingsTabAi", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiSectionTitle {
+            get { return ResourceManager.GetString("AiSectionTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiEnableToggle {
+            get { return ResourceManager.GetString("AiEnableToggle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIntro {
+            get { return ResourceManager.GetString("AiIntro", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiNetworkNotice {
+            get { return ResourceManager.GetString("AiNetworkNotice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDeviceHeader {
+            get { return ResourceManager.GetString("AiDeviceHeader", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDeviceSummaryFormat {
+            get { return ResourceManager.GetString("AiDeviceSummaryFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiTierLow {
+            get { return ResourceManager.GetString("AiTierLow", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiTierMid {
+            get { return ResourceManager.GetString("AiTierMid", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiTierHigh {
+            get { return ResourceManager.GetString("AiTierHigh", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiModelsHeader {
+            get { return ResourceManager.GetString("AiModelsHeader", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiRecommendedBadge {
+            get { return ResourceManager.GetString("AiRecommendedBadge", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiModelTooLargeForDevice {
+            get { return ResourceManager.GetString("AiModelTooLargeForDevice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadAction {
+            get { return ResourceManager.GetString("AiDownloadAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDeleteAction {
+            get { return ResourceManager.GetString("AiDeleteAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiCancelAction {
+            get { return ResourceManager.GetString("AiCancelAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiRetryAction {
+            get { return ResourceManager.GetString("AiRetryAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateNotInstalled {
+            get { return ResourceManager.GetString("AiStateNotInstalled", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateDownloading {
+            get { return ResourceManager.GetString("AiStateDownloading", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateInstalled {
+            get { return ResourceManager.GetString("AiStateInstalled", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateCorrupt {
+            get { return ResourceManager.GetString("AiStateCorrupt", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadFailed {
+            get { return ResourceManager.GetString("AiDownloadFailed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiWifiOnlyToggle {
+            get { return ResourceManager.GetString("AiWifiOnlyToggle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiKeepOpenNotice {
+            get { return ResourceManager.GetString("AiKeepOpenNotice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexHeader {
+            get { return ResourceManager.GetString("AiIndexHeader", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexIdle {
+            get { return ResourceManager.GetString("AiIndexIdle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexScanning {
+            get { return ResourceManager.GetString("AiIndexScanning", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexEmbeddingFormat {
+            get { return ResourceManager.GetString("AiIndexEmbeddingFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexComplete {
+            get { return ResourceManager.GetString("AiIndexComplete", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexCancelled {
+            get { return ResourceManager.GetString("AiIndexCancelled", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexChunksFormat {
+            get { return ResourceManager.GetString("AiIndexChunksFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexRebuildAction {
+            get { return ResourceManager.GetString("AiIndexRebuildAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexClearAction {
+            get { return ResourceManager.GetString("AiIndexClearAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexClearConfirm {
+            get { return ResourceManager.GetString("AiIndexClearConfirm", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string UnitByte {
+            get { return ResourceManager.GetString("UnitByte", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string UnitKilobyte {
+            get { return ResourceManager.GetString("UnitKilobyte", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string UnitMegabyte {
+            get { return ResourceManager.GetString("UnitMegabyte", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string UnitGigabyte {
+            get { return ResourceManager.GetString("UnitGigabyte", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string UnitTerabyte {
+            get { return ResourceManager.GetString("UnitTerabyte", resourceCulture) ?? string.Empty; }
+        }
     }
 }
 

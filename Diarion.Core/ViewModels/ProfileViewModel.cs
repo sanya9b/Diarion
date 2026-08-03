@@ -32,16 +32,21 @@ public partial class ProfileViewModel : BaseViewModel
     [ObservableProperty]
     private GenderItem? _selectedGenderItem;
 
-    // Settings tabs: 0 = Profile, 1 = Screen, 2 = Data.
+    /// <summary>The AI tab's own state. A section view model rather than more fields here.</summary>
+    public AiSettingsViewModel Ai { get; }
+
+    // Settings tabs: 0 = Profile, 1 = Screen, 2 = Data, 3 = AI.
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsProfileTab))]
     [NotifyPropertyChangedFor(nameof(IsScreenTab))]
     [NotifyPropertyChangedFor(nameof(IsDataTab))]
+    [NotifyPropertyChangedFor(nameof(IsAiTab))]
     private int _selectedTabIndex;
 
     public bool IsProfileTab => SelectedTabIndex == 0;
     public bool IsScreenTab => SelectedTabIndex == 1;
     public bool IsDataTab => SelectedTabIndex == 2;
+    public bool IsAiTab => SelectedTabIndex == 3;
 
     [RelayCommand]
     private void SelectTab(string index)
@@ -68,8 +73,10 @@ public partial class ProfileViewModel : BaseViewModel
         IExportService exportService,
         INavigationService navigationService,
         Diarion.Diagnostics.ICrashReporter crashReporter,
-        IShareService shareService)
+        IShareService shareService,
+        AiSettingsViewModel ai)
     {
+        Ai = ai;
         _crashReporter = crashReporter;
         _shareService = shareService;
         _profileService = profileService;
@@ -93,6 +100,7 @@ public partial class ProfileViewModel : BaseViewModel
 
         NotifyLockState();
         RefreshCrashReport();
+        Ai.Load();
 
         IsBusy = false;
     }

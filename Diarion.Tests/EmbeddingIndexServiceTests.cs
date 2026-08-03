@@ -24,6 +24,7 @@ public class EmbeddingIndexServiceTests : IDisposable
     private readonly FakeEmbedder _embedder = new();
     private readonly Mock<IDiaryService> _diary = new();
     private readonly Mock<INoteService> _notes = new();
+    private readonly Mock<IProfileService> _profiles = new();
     private readonly EmbeddingIndexService _service;
 
     public EmbeddingIndexServiceTests()
@@ -33,8 +34,9 @@ public class EmbeddingIndexServiceTests : IDisposable
 
         _diary.Setup(d => d.GetAllEntriesAsync()).ReturnsAsync(new List<DiaryEntry>());
         _notes.Setup(n => n.GetAllNotesAsync()).ReturnsAsync(new List<Note>());
+        _profiles.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile { IsAiEnabled = true });
 
-        _service = new EmbeddingIndexService(_store, _embedder, _diary.Object, _notes.Object);
+        _service = new EmbeddingIndexService(_store, _embedder, _diary.Object, _notes.Object, _profiles.Object);
     }
 
     public void Dispose() => _dbContext.Dispose();
@@ -175,7 +177,7 @@ public class EmbeddingIndexServiceTests : IDisposable
     public async Task RunOnce_NoModelInstalled_IsAnIdleNoOp()
     {
         HasEntries(Entry("за каву"));
-        var service = new EmbeddingIndexService(_store, new NullTextEmbedder(), _diary.Object, _notes.Object);
+        var service = new EmbeddingIndexService(_store, new NullTextEmbedder(), _diary.Object, _notes.Object, _profiles.Object);
 
         var progress = await service.RunOnceAsync();
 
@@ -274,6 +276,34 @@ public class EmbeddingIndexServiceTests : IDisposable
 
         _store.CountForModel(FakeEmbedder.Id).Should().Be(0);
         _service.Progress.Phase.Should().Be(AiIndexPhase.Idle);
+    }
+
+    [Fact]
+    public async Task RunOnce_AiSwitchedOff_ReadsNothing_EvenWithAModelInstalled()
+    {
+        // Downloading a model is not consent. Without this the opt-in toggle would be decorative.
+        _profiles.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile { IsAiEnabled = false });
+        HasEntries(Entry("за каву"));
+
+        var progress = await _service.RunOnceAsync();
+
+        progress.Phase.Should().Be(AiIndexPhase.Idle);
+        _embedder.CallCount.Should().Be(0);
+        _store.CountForModel(FakeEmbedder.Id).Should().Be(0);
+    }
+
+    [Fact]
+    public async Task ReindexSource_AiSwitchedOff_DoesNothing()
+    {
+        var id = Guid.NewGuid();
+        HasEntries(Entry("за каву", id));
+        await _service.RunOnceAsync();
+        _profiles.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile { IsAiEnabled = false });
+        _diary.Setup(d => d.GetEntryByIdAsync(id)).ReturnsAsync(Entry("за тишу", id));
+
+        await _service.ReindexSourceAsync(EmbeddingSourceKind.Diary, id.ToString());
+
+        _store.Search(_embedder.Embed("за каву"), FakeEmbedder.Id, limit: 5)[0].Chunk.Text.Should().Be("за каву");
     }
 
     [Fact]

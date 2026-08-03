@@ -19,6 +19,7 @@ public class EmbeddingIndexService : IEmbeddingIndexService
     private readonly ITextEmbedder _embedder;
     private readonly IDiaryService _diaryService;
     private readonly INoteService _noteService;
+    private readonly IProfileService _profileService;
 
     private readonly SemaphoreSlim _gate = new(1, 1);
     private CancellationTokenSource? _cts;
@@ -28,12 +29,14 @@ public class EmbeddingIndexService : IEmbeddingIndexService
         IVectorStore store,
         ITextEmbedder embedder,
         IDiaryService diaryService,
-        INoteService noteService)
+        INoteService noteService,
+        IProfileService profileService)
     {
         _store = store;
         _embedder = embedder;
         _diaryService = diaryService;
         _noteService = noteService;
+        _profileService = profileService;
     }
 
     public AiIndexProgress Progress { get; private set; } = AiIndexProgress.Idle;
@@ -42,6 +45,8 @@ public class EmbeddingIndexService : IEmbeddingIndexService
 
     public void Start()
     {
+        // Availability is checked again inside the run, together with consent. This early exit is
+        // only to avoid spawning a task per resume once one is already going.
         if (!_embedder.IsAvailable || !_running.IsCompleted)
         {
             return;
@@ -86,7 +91,7 @@ public class EmbeddingIndexService : IEmbeddingIndexService
 
     public async Task<AiIndexProgress> RunOnceAsync(CancellationToken cancellationToken = default)
     {
-        if (!_embedder.IsAvailable)
+        if (!await IsEnabledAsync().ConfigureAwait(false))
         {
             return Report(AiIndexProgress.Idle);
         }
@@ -133,7 +138,7 @@ public class EmbeddingIndexService : IEmbeddingIndexService
 
     public async Task ReindexSourceAsync(string sourceKind, string sourceId, CancellationToken cancellationToken = default)
     {
-        if (!_embedder.IsAvailable)
+        if (!await IsEnabledAsync().ConfigureAwait(false))
         {
             return;
         }
@@ -164,6 +169,21 @@ public class EmbeddingIndexService : IEmbeddingIndexService
         await StopAsync().ConfigureAwait(false);
         _store.Clear();
         Report(AiIndexProgress.Idle);
+    }
+
+    /// <summary>
+    /// Both conditions, always together. An installed model is not consent: the user can download
+    /// one, leave the toggle off, and must then see nothing at all read their diary.
+    /// </summary>
+    private async Task<bool> IsEnabledAsync()
+    {
+        if (!_embedder.IsAvailable)
+        {
+            return false;
+        }
+
+        var profile = await _profileService.GetUserProfileAsync().ConfigureAwait(false);
+        return profile.IsAiEnabled;
     }
 
     private async Task<IReadOnlyList<IndexableDocument>> FindStaleDocumentsAsync(
