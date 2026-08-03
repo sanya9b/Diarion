@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Diarion.Services;
 using Diarion.Services.Database;
 using Diarion.Core.Services;
+using Diarion.Services.Ai;
 using Diarion.ViewModels;
 using Diarion.ViewModels.Statistics;
 using Diarion.Views;
@@ -42,7 +43,23 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IShareService, MauiShareService>();
         services.AddSingleton<IFilePickerService, MauiFilePickerService>();
         services.AddSingleton<IDispatcherService, MauiDispatcherService>();
-        
+
+        services.AddAiServices();
+
+        return services;
+    }
+
+    /// <summary>
+    /// On-device AI (specs/13). Singletons throughout: the ONNX session and the vector matrix are
+    /// expensive enough that a second copy would be felt.
+    /// </summary>
+    private static IServiceCollection AddAiServices(this IServiceCollection services)
+    {
+        services.AddSingleton<IEmbeddingModelLocator, AppDataEmbeddingModelLocator>();
+        services.AddSingleton<ITextEmbedder, OnnxTextEmbedder>();
+        services.AddSingleton<IVectorStore, LiteDbVectorStore>();
+        services.AddSingleton<IEmbeddingIndexService, EmbeddingIndexService>();
+
         return services;
     }
 
