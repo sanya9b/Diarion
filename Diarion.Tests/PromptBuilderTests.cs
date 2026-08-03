@@ -143,6 +143,19 @@ public class PromptBuilderTests
     }
 
     [Fact]
+    public void Build_CarriesAWorkedExample()
+    {
+        // Measured, not stylistic: without it Qwen3-1.7B echoed all four passages back and scored
+        // 1/4 on the Ukrainian evaluation; with it, 4/4. The block format invites enumeration and
+        // only an example shows the model what an answer looks like.
+        var prompt = PromptBuilder.Build("кава", [Chunk(0.6f, "про каву", 3), Chunk(0.6f, "ще кава", 4)]);
+
+        prompt.Text.Should().Contain("Приклад.");
+        prompt.Text.Should().Contain("Ви гуляли містом з Олегом [2].");
+        prompt.Text.Should().Contain("Не перелічуй записи");
+    }
+
+    [Fact]
     public void Build_HonoursTheCharacterBudget()
     {
         var huge = new string('я', 3000);

@@ -139,7 +139,20 @@ public static class PromptBuilder
         builder.AppendLine("1. Використовуй лише те, що написано в записах. Нічого не додавай від себе.");
         builder.AppendLine("2. Після кожного твердження став номер запису у квадратних дужках, напр. [1].");
         builder.AppendLine("3. Якщо у записах немає відповіді — так і скажи, не вигадуй.");
-        builder.AppendLine("4. Відповідай українською, стисло.");
+        builder.AppendLine("4. Відповідай українською, стисло, ОДНИМ реченням.");
+        builder.AppendLine("5. Не перелічуй записи. Обери лише ті, що справді відповідають на питання.");
+        builder.AppendLine();
+
+        // The example is the single most valuable line in this method. Without it Qwen3-1.7B
+        // answered every question by echoing all four passages back — the block format invites
+        // enumeration — and scored 1/4 on the Ukrainian evaluation. With it, 4/4. Nothing about the
+        // model changed; the instruction alone could not convey the shape of an answer.
+        builder.AppendLine("Приклад.");
+        builder.AppendLine("ЗАПИСИ:");
+        builder.AppendLine("[1] 2 травня 2026: Цілий день дощ, нікуди не виходив.");
+        builder.AppendLine("[2] 5 травня 2026: Зустрівся з Олегом, довго гуляли містом.");
+        builder.AppendLine("ПИТАННЯ: З ким я бачився?");
+        builder.AppendLine("ВІДПОВІДЬ: Ви гуляли містом з Олегом [2].");
         builder.AppendLine();
         builder.AppendLine("ЗАПИСИ:");
 
