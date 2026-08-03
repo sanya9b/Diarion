@@ -39,6 +39,9 @@ public class ExportService : IExportService
         DatabaseConstants.GuidedPromptsCollection,
         DatabaseConstants.CycleLogsCollection,
         DatabaseConstants.RecurringTasksCollection,
+        // Deliberately absent: DatabaseConstants.EmbeddingsCollection. Embeddings are derived data,
+        // rebuildable from the entries and notes above, and unreadable to a human — exporting them
+        // would add megabytes of base64 to a file whose whole point is that the user can read it.
     };
 
     private readonly IDatabaseContext _dbContext;

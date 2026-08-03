@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Diarion.Models;
+using Diarion.Models.Ai;
 using Diarion.Services;
+using Diarion.Services.Ai;
 using Diarion.Services.Database;
 using FluentAssertions;
 using Moq;
@@ -48,6 +50,27 @@ public class ExportServiceTests : IDisposable
         json.Should().Contain("\"finance_transactions\"");
         json.Should().Contain("Sunny morning");
         json.Should().Contain("Food");
+    }
+
+    [Fact]
+    public async Task Json_OmitsEmbeddings_EvenWhenTheIndexIsPopulated()
+    {
+        // Embeddings are derived data: rebuildable from the entries, unreadable to a human, and
+        // megabytes of base64 in a file whose whole point is that the user can read it.
+        _dbContext.GetCollection<EmbeddingChunk>(DatabaseConstants.EmbeddingsCollection).Insert(new EmbeddingChunk
+        {
+            Id = EmbeddingChunk.BuildId(EmbeddingSourceKind.Diary, "e1", 0),
+            SourceKind = EmbeddingSourceKind.Diary,
+            SourceId = "e1",
+            Text = "Sunny morning",
+            ModelId = "minilm-v1",
+            Dim = 2,
+            Vector = EmbeddingMath.ToBytes(new[] { 1f, 0f }),
+        });
+
+        var json = await _service.BuildAsync(ExportFormat.Json);
+
+        json.Should().NotContain(DatabaseConstants.EmbeddingsCollection);
     }
 
     [Fact]

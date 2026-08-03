@@ -51,7 +51,7 @@ jobs:
           if-no-files-found: ignore
 
   android-permissions:
-    name: Android release asks for no network
+    name: Android release asks for exactly the approved permissions
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,29 +70,66 @@ jobs:
       - name: Restore workloads
         run: dotnet workload restore Diarion.csproj
 
-      # Release, not Debug: the debugger adds INTERNET to debug builds, so only the release
-      # manifest answers the question this job exists to ask.
+      # Release, not Debug: debug builds get extra permissions injected for the debugger, so only
+      # the release manifest describes what users actually install.
       - name: Build Android release
         run: dotnet build Diarion.csproj -f net10.0-android -c Release
 
-      # The absence of INTERNET in the shipped APK is the product's main privacy claim, and it is
-      # the kind of thing a single added package can undo without anyone noticing — Google's ML Kit
-      # AAR, for one, declares INTERNET in its own manifest and the merger folds it in. A human
-      # reading a diff will not catch that. This will.
-      - name: Assert no network permissions
+      # What the shipped APK asks for is the product's main privacy claim, and it is the kind of
+      # thing a single added package can undo without anyone noticing — a dependency's own manifest
+      # gets folded in by the merger, and a human reading a diff will not catch that. This will.
+      #
+      # This is an allowlist, not a ban on two names. Until 2026-08-02 the app asked for no network
+      # permission at all; INTERNET now exists solely to download AI model files (specs/13). That
+      # made the exact-set check more important, not less: it is what catches an accidental unpin of
+      # Microsoft.ML.OnnxRuntimeGenAI 0.14.1, whose 0.15.1 AAR declares INTERNET *and* installs a
+      # telemetry ContentProvider.
+      #
+      # Adding a permission here is a deliberate act. It should show up in a diff, be justified in
+      # the PR, and be reflected in the store listing — never arrive as a side effect of a package.
+      - name: Assert the release manifest asks for exactly the approved permissions
         run: |
           MANIFEST=obj/Release/net10.0-android/AndroidManifest.xml
           if [ ! -f "$MANIFEST" ]; then
             echo "::error::Generated manifest not found at $MANIFEST"
             exit 1
           fi
+
+          cat > /tmp/allowed-permissions.txt <<'EOF'
+          android.permission.ACCESS_NETWORK_STATE
+          android.permission.INTERNET
+          android.permission.POST_NOTIFICATIONS
+          android.permission.RECEIVE_BOOT_COMPLETED
+          android.permission.USE_BIOMETRIC
+          android.permission.USE_FINGERPRINT
+          android.permission.VIBRATE
+          EOF
+          sort -u -o /tmp/allowed-permissions.txt /tmp/allowed-permissions.txt
+
+          grep -o 'uses-permission android:name="[^"]*"' "$MANIFEST" \
+            | sed 's/.*android:name="//; s/"$//' \
+            | sort -u > /tmp/actual-permissions.txt
+
           echo "Permissions in the release manifest:"
-          grep -o 'uses-permission android:name="[^"]*"' "$MANIFEST" | sort -u
-          for FORBIDDEN in INTERNET ACCESS_NETWORK_STATE; do
-            if grep -q "android.permission.$FORBIDDEN" "$MANIFEST"; then
-              echo "::error::The release manifest requests $FORBIDDEN. The app is offline by design;"
-              echo "::error::if a dependency pulled this in, that dependency cannot ship."
-              exit 1
-            fi
-          done
-          echo "No network permissions. Good."
+          cat /tmp/actual-permissions.txt
+
+          UNEXPECTED=$(comm -13 /tmp/allowed-permissions.txt /tmp/actual-permissions.txt)
+          MISSING=$(comm -23 /tmp/allowed-permissions.txt /tmp/actual-permissions.txt)
+
+          STATUS=0
+          if [ -n "$UNEXPECTED" ]; then
+            echo "::error::The release manifest requests permissions that are not on the allowlist:"
+            echo "$UNEXPECTED" | while read -r P; do echo "::error::  + $P"; done
+            echo "::error::A dependency probably injected these. Either drop the dependency, or add"
+            echo "::error::the permission here deliberately and update the store listing to match."
+            STATUS=1
+          fi
+          if [ -n "$MISSING" ]; then
+            echo "::error::Allowlisted permissions are missing from the manifest:"
+            echo "$MISSING" | while read -r P; do echo "::error::  - $P"; done
+            echo "::error::If a feature was removed, shrink the allowlist in the same commit."
+            STATUS=1
+          fi
+
+          [ "$STATUS" -eq 0 ] && echo "Exactly the approved permissions. Good."
+          exit "$STATUS"

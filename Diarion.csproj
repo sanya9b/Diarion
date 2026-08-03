@@ -94,6 +94,9 @@
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="LiteDB" Version="5.0.21" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.60" />
+		<!-- Native ONNX Runtime. Its Android AAR manifest is 196 bytes and declares no permissions;
+		     verify that stays true after any bump — the android-permissions CI job is the check. -->
+		<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.28.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 		<PackageReference Include="Plugin.Fingerprint" Version="3.0.0-beta.1" />
 		<PackageReference Include="Plugin.LocalNotification" Version="14.1.1" />
