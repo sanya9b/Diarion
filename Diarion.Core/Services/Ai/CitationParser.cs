@@ -22,6 +22,13 @@ public static partial class CitationParser
     [GeneratedRegex(@"\[(\d{1,2})\]")]
     private static partial Regex MarkerPattern { get; }
 
+    /// <summary>
+    /// Prose left after the markers are removed, below which the answer says nothing. Qwen3-0.6B
+    /// answered two of four evaluation questions with the literal text "[1]" — grounded by every
+    /// mechanical measure and of no use to anyone reading it.
+    /// </summary>
+    private const int MinProseChars = 15;
+
     public static ChatAnswer Parse(string? answer, IReadOnlyList<ChatCitation> offered)
     {
         ArgumentNullException.ThrowIfNull(offered);
@@ -49,7 +56,14 @@ public static partial class CitationParser
             }
         }
 
-        return cited.Count == 0
+        if (cited.Count == 0)
+        {
+            return new ChatAnswer(true, string.Empty, []);
+        }
+
+        // Citations without a sentence around them are not an answer to anything.
+        var prose = MarkerPattern.Replace(answer, string.Empty).Trim();
+        return prose.Length < MinProseChars
             ? new ChatAnswer(true, string.Empty, [])
             : new ChatAnswer(false, answer.Trim(), cited);
     }

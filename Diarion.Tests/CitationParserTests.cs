@@ -103,8 +103,23 @@ public class CitationParserTests
     }
 
     [Fact]
+    public void Parse_BareMarkersWithNoProse_AreNotAnAnswer()
+    {
+        // Qwen3-0.6B answered two of four evaluation questions with exactly this: grounded by every
+        // mechanical measure, and of no use to anyone reading it.
+        CitationParser.Parse("[1]", Offered).IsRefusal.Should().BeTrue();
+        CitationParser.Parse("[1], [2], [3]", Offered).IsRefusal.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Parse_ShortButRealSentence_IsKept()
+    {
+        CitationParser.Parse("Так, ви бігали вранці [1].", Offered).IsRefusal.Should().BeFalse();
+    }
+
+    [Fact]
     public void Parse_TrimsTheAnswer()
     {
-        CitationParser.Parse("  Відповідь [1].  ", Offered).Text.Should().Be("Відповідь [1].");
+        CitationParser.Parse("  Достатньо довга відповідь [1].  ", Offered).Text.Should().Be("Достатньо довга відповідь [1].");
     }
 }
