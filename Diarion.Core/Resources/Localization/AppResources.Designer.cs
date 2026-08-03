@@ -2141,6 +2141,14 @@ public static string ClearAllDataSuccessMsg {
         public static string QuickMenuSearch {
             get { return ResourceManager.GetString("QuickMenuSearch", resourceCulture) ?? string.Empty; }
         }
+
+        public static string StatsDigestHeader {
+            get { return ResourceManager.GetString("StatsDigestHeader", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsDigestHint {
+            get { return ResourceManager.GetString("StatsDigestHint", resourceCulture) ?? string.Empty; }
+        }
     }
 }
 

@@ -68,6 +68,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IVectorStore, LiteDbVectorStore>();
         services.AddSingleton<IEmbeddingIndexService, EmbeddingIndexService>();
         services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
+        services.AddSingleton<IDigestService, DigestService>();
 
         return services;
     }

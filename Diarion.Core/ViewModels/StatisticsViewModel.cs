@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -97,6 +98,12 @@ public partial class StatisticsViewModel : BaseViewModel
     private TimeRangeItem? _selectedTimeRange;
 
     public ViewModels.Statistics.MoodStatsViewModel MoodStats { get; }
+
+    /// <summary>Verbatim passages describing what the selected window was about. Empty when AI is off.</summary>
+    public ObservableCollection<DigestExcerptItem> DigestExcerpts { get; } = [];
+
+    [ObservableProperty]
+    private bool _hasDigest;
     public ViewModels.Statistics.SleepStatsViewModel SleepStats { get; }
     public ViewModels.Statistics.ProductivityStatsViewModel ProductivityStats { get; }
     public ViewModels.Statistics.FinanceStatsViewModel FinanceStats { get; }
@@ -109,6 +116,7 @@ public partial class StatisticsViewModel : BaseViewModel
         Diarion.Services.IFinanceService financeService,
         Diarion.Services.INavigationService navigationService,
         ViewModels.Statistics.MoodStatsViewModel moodStats,
+        Services.Ai.IDigestService digestService,
         ViewModels.Statistics.SleepStatsViewModel sleepStats,
         ViewModels.Statistics.ProductivityStatsViewModel productivityStats,
         ViewModels.Statistics.FinanceStatsViewModel financeStats,
@@ -120,6 +128,7 @@ public partial class StatisticsViewModel : BaseViewModel
         _financeService = financeService;
         _navigationService = navigationService;
         MoodStats = moodStats;
+        _digestService = digestService;
         SleepStats = sleepStats;
         ProductivityStats = productivityStats;
         FinanceStats = financeStats;
@@ -239,6 +248,7 @@ public partial class StatisticsViewModel : BaseViewModel
             if (IsGeneralTabVisible)
             {
                 await MoodStats.LoadDataAsync(days);
+                await LoadDigestAsync(days);
             }
             else if (IsSleepTabVisible)
             {
@@ -338,4 +348,39 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         _ = _navigationService.OpenFlyoutAsync();
     }
+    private readonly Services.Ai.IDigestService _digestService;
+
+    /// <summary>
+    /// The digest quotes the user's own sentences rather than paraphrasing them. That is what lets
+    /// weekly and monthly reports work on every device with no generative model at all.
+    /// </summary>
+    private async Task LoadDigestAsync(int days)
+    {
+        var end = DateTime.Today;
+        var start = end.AddDays(-(days - 1));
+
+        var digest = await _digestService.BuildAsync(start, end);
+
+        DigestExcerpts.Clear();
+        foreach (var excerpt in digest.Excerpts)
+        {
+            DigestExcerpts.Add(new DigestExcerptItem(excerpt));
+        }
+
+        HasDigest = digest.HasContent;
+    }
+}
+
+/// <summary>A digest line with its date already formatted for display.</summary>
+public sealed class DigestExcerptItem
+{
+    public DigestExcerptItem(Services.Ai.DigestExcerpt excerpt)
+    {
+        Text = excerpt.Text;
+        DateLabel = excerpt.Date.ToString("d MMMM", System.Globalization.CultureInfo.CurrentCulture);
+    }
+
+    public string Text { get; }
+
+    public string DateLabel { get; }
 }

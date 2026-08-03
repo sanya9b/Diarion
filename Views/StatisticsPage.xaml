@@ -115,6 +115,37 @@
             <!-- ================= GENERAL TAB (Mood) ================= -->
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsGeneralTabVisible}">
 
+                <!-- Digest. Extractive by design: these are the user's own sentences, chosen by
+                     closeness to the period's centroid, so the card works with no generative model
+                     and cannot misrepresent what was written. -->
+                <Border IsVisible="{Binding HasDigest}"
+                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.StatsDigestHeader}"
+                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding DigestExcerpts}" Spacing="12">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:DigestExcerptItem">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="{Binding DateLabel}" FontSize="11"
+                                               TextColor="{DynamicResource Theme_Coral}" />
+                                        <Label Text="{Binding Text}" FontSize="14"
+                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <Label Text="{x:Static localization:AppResources.StatsDigestHint}"
+                               FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <VerticalStackLayout IsVisible="{Binding MoodStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
                     <Label Text="😶" FontSize="48" HorizontalOptions="Center" />
                     <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />

@@ -1807,4 +1807,10 @@
   <data name="QuickMenuSearch" xml:space="preserve">
     <value>Search</value>
   </data>
+  <data name="StatsDigestHeader" xml:space="preserve">
+    <value>WHAT THIS PERIOD WAS ABOUT</value>
+  </data>
+  <data name="StatsDigestHint" xml:space="preserve">
+    <value>Your own words, picked as the most typical of the period — nothing here is generated.</value>
+  </data>
 </root>

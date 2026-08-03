@@ -40,6 +40,16 @@ public interface IVectorStore
     int CountForModel(string modelId);
 
     /// <summary>
+    /// Every chunk filed under a date in [<paramref name="start"/>, <paramref name="end"/>], both
+    /// ends inclusive. Used by the digest, which reasons about a period rather than a query.
+    /// </summary>
+    IReadOnlyList<EmbeddingChunk> GetByDateRange(
+        string modelId,
+        DateTime start,
+        DateTime end,
+        SearchScope scope = SearchScope.All);
+
+    /// <summary>
     /// Top <paramref name="limit"/> chunks by cosine similarity against an already-normalized query
     /// vector. Brute force over the whole collection: at diary scale this is a few milliseconds,
     /// and an ANN index would cost a native dependency plus an invalidation problem to save them.

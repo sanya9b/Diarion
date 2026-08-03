@@ -57,6 +57,22 @@ public class LiteDbVectorStore : IVectorStore
 
     public int CountForModel(string modelId) => Collection.Count(c => c.ModelId == modelId);
 
+    public IReadOnlyList<EmbeddingChunk> GetByDateRange(
+        string modelId,
+        DateTime start,
+        DateTime end,
+        SearchScope scope = SearchScope.All)
+    {
+        var from = start.Date;
+        var to = end.Date;
+
+        return Collection
+            .Find(c => c.ModelId == modelId)
+            .Where(c => IsInScope(c.SourceKind, scope))
+            .Where(c => c.SourceDate.Date >= from && c.SourceDate.Date <= to)
+            .ToList();
+    }
+
     public IReadOnlyList<ScoredChunk> Search(
         float[] queryVector,
         string modelId,
