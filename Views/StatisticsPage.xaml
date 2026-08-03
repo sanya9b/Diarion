@@ -115,6 +115,35 @@
             <!-- ================= GENERAL TAB (Mood) ================= -->
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsGeneralTabVisible}">
 
+                <!-- Recurring themes. Labels are the user's own leading sentences, so this needs
+                     only the encoder; day counts, not passage counts, because one long evening
+                     about a subject is one day of it. -->
+                <Border IsVisible="{Binding HasThemes}"
+                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.StatsThemesHeader}"
+                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Themes}" Spacing="10">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:ThemeItem">
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                                        <Label Grid.Column="0" Text="{Binding Label}" FontSize="14"
+                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Grid.Column="1" Text="{Binding DaysLabel}" FontSize="12"
+                                               VerticalOptions="Center"
+                                               TextColor="{DynamicResource Theme_Sage}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Digest. Extractive by design: these are the user's own sentences, chosen by
                      closeness to the period's centroid, so the card works with no generative model
                      and cannot misrepresent what was written. -->

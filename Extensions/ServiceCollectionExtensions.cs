@@ -69,6 +69,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IEmbeddingIndexService, EmbeddingIndexService>();
         services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
         services.AddSingleton<IDigestService, DigestService>();
+        services.AddSingleton<IThemeClusterService, ThemeClusterService>();
 
         return services;
     }

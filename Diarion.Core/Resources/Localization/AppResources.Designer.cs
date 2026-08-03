@@ -2149,6 +2149,14 @@ public static string ClearAllDataSuccessMsg {
         public static string StatsDigestHint {
             get { return ResourceManager.GetString("StatsDigestHint", resourceCulture) ?? string.Empty; }
         }
+
+        public static string StatsThemesHeader {
+            get { return ResourceManager.GetString("StatsThemesHeader", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsThemeDaysFormat {
+            get { return ResourceManager.GetString("StatsThemeDaysFormat", resourceCulture) ?? string.Empty; }
+        }
     }
 }
 

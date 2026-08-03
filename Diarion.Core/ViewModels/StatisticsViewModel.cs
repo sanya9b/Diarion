@@ -102,6 +102,12 @@ public partial class StatisticsViewModel : BaseViewModel
     /// <summary>Verbatim passages describing what the selected window was about. Empty when AI is off.</summary>
     public ObservableCollection<DigestExcerptItem> DigestExcerpts { get; } = [];
 
+    /// <summary>Subjects the window kept coming back to. Empty when AI is off.</summary>
+    public ObservableCollection<ThemeItem> Themes { get; } = [];
+
+    [ObservableProperty]
+    private bool _hasThemes;
+
     [ObservableProperty]
     private bool _hasDigest;
     public ViewModels.Statistics.SleepStatsViewModel SleepStats { get; }
@@ -117,6 +123,7 @@ public partial class StatisticsViewModel : BaseViewModel
         Diarion.Services.INavigationService navigationService,
         ViewModels.Statistics.MoodStatsViewModel moodStats,
         Services.Ai.IDigestService digestService,
+        Services.Ai.IThemeClusterService themeService,
         ViewModels.Statistics.SleepStatsViewModel sleepStats,
         ViewModels.Statistics.ProductivityStatsViewModel productivityStats,
         ViewModels.Statistics.FinanceStatsViewModel financeStats,
@@ -129,6 +136,7 @@ public partial class StatisticsViewModel : BaseViewModel
         _navigationService = navigationService;
         MoodStats = moodStats;
         _digestService = digestService;
+        _themeService = themeService;
         SleepStats = sleepStats;
         ProductivityStats = productivityStats;
         FinanceStats = financeStats;
@@ -349,6 +357,7 @@ public partial class StatisticsViewModel : BaseViewModel
         _ = _navigationService.OpenFlyoutAsync();
     }
     private readonly Services.Ai.IDigestService _digestService;
+    private readonly Services.Ai.IThemeClusterService _themeService;
 
     /// <summary>
     /// The digest quotes the user's own sentences rather than paraphrasing them. That is what lets
@@ -368,7 +377,31 @@ public partial class StatisticsViewModel : BaseViewModel
         }
 
         HasDigest = digest.HasContent;
+
+        var themes = await _themeService.ClusterAsync(start, end);
+
+        Themes.Clear();
+        foreach (var theme in themes)
+        {
+            Themes.Add(new ThemeItem(theme));
+        }
+
+        HasThemes = themes.Count > 0;
     }
+}
+
+/// <summary>A recurring theme, with its day count already phrased.</summary>
+public sealed class ThemeItem
+{
+    public ThemeItem(Services.Ai.DiaryTheme theme)
+    {
+        Label = theme.Label;
+        DaysLabel = string.Format(Resources.Localization.AppResources.StatsThemeDaysFormat, theme.DayCount);
+    }
+
+    public string Label { get; }
+
+    public string DaysLabel { get; }
 }
 
 /// <summary>A digest line with its date already formatted for display.</summary>

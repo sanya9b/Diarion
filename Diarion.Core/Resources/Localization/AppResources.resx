@@ -1813,4 +1813,10 @@
   <data name="StatsDigestHint" xml:space="preserve">
     <value>Your own words, picked as the most typical of the period — nothing here is generated.</value>
   </data>
+  <data name="StatsThemesHeader" xml:space="preserve">
+    <value>RECURRING THEMES</value>
+  </data>
+  <data name="StatsThemeDaysFormat" xml:space="preserve">
+    <value>{0} days</value>
+  </data>
 </root>

@@ -1813,4 +1813,10 @@
   <data name="StatsDigestHint" xml:space="preserve">
     <value>Ваші власні слова, обрані як найтиповіші для періоду — тут нічого не згенеровано.</value>
   </data>
+  <data name="StatsThemesHeader" xml:space="preserve">
+    <value>ЩО ПОВТОРЮВАЛОСЬ</value>
+  </data>
+  <data name="StatsThemeDaysFormat" xml:space="preserve">
+    <value>днів: {0}</value>
+  </data>
 </root>
