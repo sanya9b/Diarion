@@ -30,11 +30,14 @@ public partial class AiChatViewModel : BaseViewModel
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSend))]
+    [NotifyPropertyChangedFor(nameof(IsNotAnswering))]
     private bool _isAnswering;
 
     public ObservableCollection<ChatTurn> Turns { get; } = [];
 
     public bool IsAvailable => _chat.IsAvailable;
+
+    public bool IsNotAnswering => !IsAnswering;
 
     public bool CanSend => !IsAnswering && !string.IsNullOrWhiteSpace(Question);
 

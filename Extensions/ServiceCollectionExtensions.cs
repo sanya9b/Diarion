@@ -70,6 +70,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
         services.AddSingleton<IDigestService, DigestService>();
         services.AddSingleton<IThemeClusterService, ThemeClusterService>();
+        // No generative model exists in the catalogue yet, so chat resolves to the stand-in and
+        // hides itself. Swapped for OnnxGenAiTextGenerator once a model ships.
+        services.AddSingleton<ITextGenerator, NullTextGenerator>();
+        services.AddSingleton<IDiaryChatService, DiaryChatService>();
 
         return services;
     }
@@ -105,6 +109,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<WishlistViewModel>();
         services.AddTransient<FinanceViewModel>();
         services.AddTransient<SearchViewModel>();
+        services.AddTransient<AiChatViewModel>();
         services.AddTransient<NotesViewModel>();
         services.AddTransient<NoteDetailViewModel>();
         services.AddTransient<HabitEditorViewModel>();
@@ -133,6 +138,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<WishlistPage>();
         services.AddTransient<FinancePage>();
         services.AddTransient<SearchPage>();
+        services.AddTransient<AiChatPage>();
         services.AddTransient<NotesPage>();
         services.AddTransient<NoteDetailPage>();
         services.AddTransient<HabitEditorPage>();

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Views.AiChatPage"
+             x:DataType="viewmodels:AiChatViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="20,16" RowSpacing="12">
+
+        <Label Grid.Row="0"
+               Text="{x:Static localization:AppResources.AiChatIntro}"
+               FontSize="12"
+               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Turns}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="viewmodels:ChatTurn">
+                    <Grid Margin="0,0,0,12">
+                        <!-- User: aligned right, accent border. -->
+                        <Border IsVisible="{Binding IsFromUser}"
+                                StrokeShape="RoundRectangle 16" StrokeThickness="0"
+                                BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
+                                Padding="14,10" Margin="48,0,0,0"
+                                HorizontalOptions="End">
+                            <Label Text="{Binding Text}" FontSize="14"
+                                   TextColor="{DynamicResource Theme_Snow}" />
+                        </Border>
+
+                        <Border IsVisible="{Binding IsFromAssistant}"
+                                StrokeShape="RoundRectangle 16" StrokeThickness="1"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                Padding="14,10" Margin="0,0,48,0"
+                                HorizontalOptions="Start">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="{Binding Text}" FontSize="14"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                    <Label.Triggers>
+                                        <!-- A refusal is not an error, but it should not read as an answer either. -->
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsRefusal}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                            <Setter Property="FontAttributes" Value="Italic" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <VerticalStackLayout IsVisible="{Binding HasCitations}" Spacing="6">
+                                    <Label Text="{x:Static localization:AppResources.AiChatSourcesLabel}"
+                                           FontSize="11" FontAttributes="Bold" CharacterSpacing="1"
+                                           TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                    <FlexLayout BindableLayout.ItemsSource="{Binding Citations}"
+                                                Wrap="Wrap" JustifyContent="Start">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="viewmodels:CitationChip">
+                                                <Border StrokeShape="RoundRectangle 12" StrokeThickness="1"
+                                                        Stroke="{DynamicResource Theme_Coral}"
+                                                        BackgroundColor="Transparent"
+                                                        Padding="10,5" Margin="0,0,6,6">
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer
+                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AiChatViewModel}}, Path=OpenCitationCommand}"
+                                                            CommandParameter="{Binding Citation}" />
+                                                    </Border.GestureRecognizers>
+                                                    <Label Text="{Binding Label}" InputTransparent="True"
+                                                           FontSize="11"
+                                                           TextColor="{DynamicResource Theme_Coral}" />
+                                                </Border>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </FlexLayout>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*, Auto" ColumnSpacing="8">
+            <Entry Grid.Column="0"
+                   Text="{Binding Question}"
+                   Placeholder="{x:Static localization:AppResources.AiChatPlaceholder}"
+                   ReturnCommand="{Binding SendCommand}"
+                   BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                   TextColor="{DynamicResource Theme_Midnight_Snow}"
+                   PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" />
+
+            <Button Grid.Column="1"
+                    Text="→"
+                    Command="{Binding SendCommand}"
+                    IsVisible="{Binding IsNotAnswering}"
+                    IsEnabled="{Binding CanSend}"
+                    BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
+                    TextColor="{DynamicResource Theme_Snow}"
+                    CornerRadius="12" WidthRequest="52" HeightRequest="46" />
+
+            <!-- On a phone CPU an answer takes long enough that being able to abandon it matters. -->
+            <Button Grid.Column="1"
+                    Text="{x:Static localization:AppResources.AiChatStop}"
+                    Command="{Binding StopCommand}"
+                    IsVisible="{Binding IsAnswering}"
+                    BackgroundColor="Transparent"
+                    TextColor="{DynamicResource Theme_Coral}"
+                    CornerRadius="12" HeightRequest="46" Padding="10,0" />
+        </Grid>
+    </Grid>
+</ContentPage>

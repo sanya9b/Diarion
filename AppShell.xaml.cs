@@ -30,5 +30,6 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("PromptHistory", typeof(Views.PromptHistoryPage));
         Routing.RegisterRoute("Cycle", typeof(Views.CyclePage));
         Routing.RegisterRoute("Search", typeof(Views.SearchPage));
+        Routing.RegisterRoute("AiChat", typeof(Views.AiChatPage));
     }
 }
