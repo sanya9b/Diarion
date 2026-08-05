@@ -45,9 +45,37 @@ public class AiModelCatalogTests
     }
 
     [Fact]
-    public void Recommend_NoGenerativeModelYet_ReturnsNull()
+    public void Recommend_HighEndDevice_GetsTheGenerativeModel()
     {
-        AiModelCatalog.Recommend(AiModelKind.Generation, Device(8192)).Should().BeNull();
+        AiModelCatalog.Recommend(AiModelKind.Generation, Device(8192))
+            .Should().Be(AiModelCatalog.Qwen3Generator);
+    }
+
+    [Theory]
+    [InlineData(2048)]  // Low tier
+    [InlineData(4096)]  // Mid tier
+    public void Recommend_BelowHighTier_GetsNoGenerativeModel(int ramMb)
+    {
+        // 1.1 GB resident is not something a mid-range phone should hold while the user types.
+        AiModelCatalog.Recommend(AiModelKind.Generation, Device(ramMb)).Should().BeNull();
+    }
+
+    [Fact]
+    public void Recommend_HighEndButFullDisk_GetsNothing()
+    {
+        var barelyOneCopy = AiModelCatalog.Qwen3Generator.TotalSizeBytes + 1;
+
+        AiModelCatalog.Recommend(AiModelKind.Generation, Device(8192, freeBytes: barelyOneCopy))
+            .Should().BeNull();
+    }
+
+    [Fact]
+    public void TheGenerativeModelShipsItsChatTemplate()
+    {
+        // Without it the model continues the prompt instead of answering, and the failure looks
+        // like the model being bad rather than a file being absent.
+        AiModelCatalog.Qwen3Generator.Files.Select(f => f.LocalName)
+            .Should().Contain(["genai_config.json", "chat_template.jinja"]);
     }
 
     [Fact]

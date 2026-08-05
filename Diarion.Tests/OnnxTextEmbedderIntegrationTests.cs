@@ -80,6 +80,24 @@ public class OnnxTextEmbedderIntegrationTests
         EmbeddingMath.DotNormalized(vector, vector).Should().BeApproximately(1f, 1e-4f);
     }
 
+    [EnvironmentGatedFact(EnableVariable, "Downloads ~1.1 GB.")]
+    public async Task TheGenerativeModelIsReachableAndItsDigestsMatch()
+    {
+        // Catalogue entries are written by hand from API metadata, so the only thing that proves
+        // them is fetching the files and verifying every hash — which DownloadAsync does, deleting
+        // anything that fails. A true return is the assertion.
+        using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(40) };
+        var service = new ModelDownloadService(http, new CachePathProvider());
+        var model = AiModelCatalog.Qwen3Generator;
+
+        if (service.GetState(model) != ModelInstallState.Installed)
+        {
+            (await service.DownloadAsync(model)).Should().BeTrue();
+        }
+
+        service.GetState(model).Should().Be(ModelInstallState.Installed);
+    }
+
     [EnvironmentGatedFact(EnableVariable, "Downloads ~123 MB.")]
     public async Task TheCatalogueDigestsMatchWhatHuggingFaceServes()
     {
