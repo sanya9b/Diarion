@@ -20,13 +20,14 @@ public class ThemeClusterServiceTests : IDisposable
     private readonly DatabaseContext _dbContext;
     private readonly LiteDbVectorStore _store;
     private readonly StubEmbedder _embedder = new();
+    private readonly FakeAiAvailability _availability = new();
     private readonly ThemeClusterService _service;
 
     public ThemeClusterServiceTests()
     {
         _dbContext = new DatabaseContext(useInMemory: true);
         _store = new LiteDbVectorStore(_dbContext);
-        _service = new ThemeClusterService(_store, _embedder);
+        _service = new ThemeClusterService(_store, _embedder, _availability);
     }
 
     public void Dispose() => _dbContext.Dispose();
@@ -55,11 +56,26 @@ public class ThemeClusterServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task Cluster_NoEncoder_ReturnsNothing()
+    public async Task Cluster_AiUnavailable_ReturnsNothing()
     {
-        var service = new ThemeClusterService(_store, new NullTextEmbedder());
+        _availability.CanEmbed = false;
 
-        (await service.ClusterAsync(Start, End)).Should().BeEmpty();
+        (await _service.ClusterAsync(Start, End)).Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Cluster_AiSwitchedOff_TakesThemesOffTheDashboard()
+    {
+        // Themes are the most visible AI output in the app — they sit on the statistics screen
+        // without being asked for. Leaving them there after the toggle went off would be the
+        // clearest possible contradiction of it.
+        Indexed(3, "робота і дедлайни", [1f, 0f]);
+        Indexed(5, "знову про роботу", [1f, 0f]);
+        (await _service.ClusterAsync(Start, End)).Should().NotBeEmpty("otherwise the test proves nothing");
+
+        _availability.CanEmbed = false;
+
+        (await _service.ClusterAsync(Start, End)).Should().BeEmpty();
     }
 
     [Fact]

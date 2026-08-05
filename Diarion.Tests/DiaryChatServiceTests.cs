@@ -20,13 +20,14 @@ public class DiaryChatServiceTests : IDisposable
     private readonly LiteDbVectorStore _store;
     private readonly StubEmbedder _embedder = new();
     private readonly StubGenerator _generator = new();
+    private readonly FakeAiAvailability _availability = new();
     private readonly DiaryChatService _service;
 
     public DiaryChatServiceTests()
     {
         _dbContext = new DatabaseContext(useInMemory: true);
         _store = new LiteDbVectorStore(_dbContext);
-        _service = new DiaryChatService(_store, _embedder, _generator);
+        _service = new DiaryChatService(_store, _embedder, _generator, _availability);
     }
 
     public void Dispose() => _dbContext.Dispose();
@@ -68,17 +69,39 @@ public class DiaryChatServiceTests : IDisposable
     [Fact]
     public async Task Ask_NoGenerativeModel_RefusesAsUnavailable()
     {
-        var service = new DiaryChatService(_store, _embedder, new NullTextGenerator());
+        _availability.CanGenerate = false;
 
-        service.IsAvailable.Should().BeFalse();
+        (await _service.IsAvailableAsync()).Should().BeFalse();
 
         ChatResult? result = null;
-        await foreach (var delta in service.AskAsync("щось"))
+        await foreach (var delta in _service.AskAsync("щось"))
         {
             result = delta.Answer;
         }
 
         result!.Refusal.Should().Be(ChatRefusalReason.Unavailable);
+    }
+
+    [Fact]
+    public async Task Ask_AiSwitchedOff_RefusesEvenThoughTheIndexIsStillThere()
+    {
+        // The index survives the toggle — deleting it on every switch-off would mean an hour of
+        // re-embedding to switch back on. So the toggle has to be honoured on the way out, here,
+        // or the diary stays readable by a feature the user turned off.
+        _embedder.Map("кава", [1f, 0f]);
+        Indexed("вранці пив каву на балконі, було тихо", [1f, 0f]);
+        Indexed("ще про каву та ранок", [1f, 0f]);
+
+        _availability.CanEmbed = false;
+
+        ChatResult? result = null;
+        await foreach (var delta in _service.AskAsync("кава"))
+        {
+            result = delta.Answer;
+        }
+
+        result!.Refusal.Should().Be(ChatRefusalReason.Unavailable);
+        _generator.CallCount.Should().Be(0);
     }
 
     [Fact]

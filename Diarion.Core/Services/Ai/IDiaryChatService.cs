@@ -9,7 +9,7 @@ public enum ChatRefusalReason
 {
     None,
 
-    /// <summary>No generative model installed.</summary>
+    /// <summary>No generative model installed, or AI is switched off in settings.</summary>
     Unavailable,
 
     /// <summary>Nothing in the diary came close enough to the question.</summary>
@@ -40,7 +40,11 @@ public sealed record ChatResult(string Text, IReadOnlyList<ChatCitation> Citatio
 /// </remarks>
 public interface IDiaryChatService
 {
-    bool IsAvailable { get; }
+    /// <summary>
+    /// Whether asking is possible at all. Asynchronous because consent lives in the database beside
+    /// the diary, and a synchronous answer could only have reported the half of it that is a file.
+    /// </summary>
+    Task<bool> IsAvailableAsync();
 
     IAsyncEnumerable<ChatDelta> AskAsync(string question, CancellationToken cancellationToken = default);
 }

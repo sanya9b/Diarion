@@ -12,8 +12,17 @@
 
         <Label Grid.Row="0"
                Text="{x:Static localization:AppResources.AiChatIntro}"
+               IsVisible="{Binding IsAvailable}"
                FontSize="12"
                TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+        <!-- Said before the question is typed rather than after it is refused: letting someone
+             compose a question for a model that is not there wastes their effort to no purpose. -->
+        <Label Grid.Row="0"
+               Text="{x:Static localization:AppResources.AiChatUnavailable}"
+               IsVisible="{Binding IsUnavailable}"
+               FontSize="12"
+               TextColor="{DynamicResource Theme_Coral}" />
 
         <CollectionView Grid.Row="1" ItemsSource="{Binding Turns}">
             <CollectionView.ItemTemplate>

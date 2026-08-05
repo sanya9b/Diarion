@@ -26,7 +26,7 @@ public class EmbeddingIndexServiceTests : IDisposable
     private readonly FakeEmbedder _embedder = new();
     private readonly Mock<IDiaryService> _diary = new();
     private readonly Mock<INoteService> _notes = new();
-    private readonly Mock<IProfileService> _profiles = new();
+    private readonly FakeAiAvailability _availability = new();
     private readonly EmbeddingIndexService _service;
 
     public EmbeddingIndexServiceTests()
@@ -36,11 +36,9 @@ public class EmbeddingIndexServiceTests : IDisposable
 
         _diary.Setup(d => d.GetAllEntriesAsync()).ReturnsAsync(new List<DiaryEntry>());
         _notes.Setup(n => n.GetAllNotesAsync()).ReturnsAsync(new List<Note>());
-        _profiles.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile { IsAiEnabled = true });
-
         // A short debounce so the save hook can be exercised without the real two-second wait.
         _service = new EmbeddingIndexService(
-            _store, _embedder, _diary.Object, _notes.Object, _profiles.Object,
+            _store, _embedder, _diary.Object, _notes.Object, _availability,
             reindexDelay: TimeSpan.FromMilliseconds(20));
     }
 
@@ -188,7 +186,15 @@ public class EmbeddingIndexServiceTests : IDisposable
     public async Task RunOnce_NoModelInstalled_IsAnIdleNoOp()
     {
         HasEntries(Entry("за каву"));
-        var service = new EmbeddingIndexService(_store, new NullTextEmbedder(), _diary.Object, _notes.Object, _profiles.Object);
+
+        // No model on disk is one of the two things availability reports, so the fake has to say so
+        // too — the real AiAvailability derives it from the very embedder passed in here.
+        var service = new EmbeddingIndexService(
+            _store,
+            new NullTextEmbedder(),
+            _diary.Object,
+            _notes.Object,
+            new FakeAiAvailability { CanEmbed = false });
 
         var progress = await service.RunOnceAsync();
 
@@ -293,7 +299,7 @@ public class EmbeddingIndexServiceTests : IDisposable
     public async Task RunOnce_AiSwitchedOff_ReadsNothing_EvenWithAModelInstalled()
     {
         // Downloading a model is not consent. Without this the opt-in toggle would be decorative.
-        _profiles.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile { IsAiEnabled = false });
+        _availability.CanEmbed = false;
         HasEntries(Entry("за каву"));
 
         var progress = await _service.RunOnceAsync();
@@ -309,7 +315,7 @@ public class EmbeddingIndexServiceTests : IDisposable
         var id = Guid.NewGuid();
         HasEntries(Entry("за каву", id));
         await _service.RunOnceAsync();
-        _profiles.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile { IsAiEnabled = false });
+        _availability.CanEmbed = false;
         _diary.Setup(d => d.GetEntryByIdAsync(id)).ReturnsAsync(Entry("за тишу", id));
 
         await _service.ReindexSourceAsync(EmbeddingSourceKind.Diary, id.ToString());

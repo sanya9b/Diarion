@@ -17,14 +17,16 @@ public class DigestService : IDigestService
 
     private readonly IVectorStore _store;
     private readonly ITextEmbedder _embedder;
+    private readonly IAiAvailability _availability;
 
-    public DigestService(IVectorStore store, ITextEmbedder embedder)
+    public DigestService(IVectorStore store, ITextEmbedder embedder, IAiAvailability availability)
     {
         _store = store;
         _embedder = embedder;
+        _availability = availability;
     }
 
-    public Task<Digest> BuildAsync(
+    public async Task<Digest> BuildAsync(
         DateTime start,
         DateTime end,
         int maxExcerpts = 3,
@@ -36,15 +38,15 @@ public class DigestService : IDigestService
         var to = end.Date;
         var daysInPeriod = Math.Max(1, (to - from).Days + 1);
 
-        if (!_embedder.IsAvailable)
+        if (!await _availability.CanEmbedAsync().ConfigureAwait(false))
         {
-            return Task.FromResult(new Digest(from, to, 0, daysInPeriod, []));
+            return new Digest(from, to, 0, daysInPeriod, []);
         }
 
         var chunks = _store.GetByDateRange(_embedder.ModelId, from, to, SearchScope.Diary);
         if (chunks.Count == 0)
         {
-            return Task.FromResult(new Digest(from, to, 0, daysInPeriod, []));
+            return new Digest(from, to, 0, daysInPeriod, []);
         }
 
         var daysWritten = chunks.Select(c => c.SourceDate.Date).Distinct().Count();
@@ -60,7 +62,7 @@ public class DigestService : IDigestService
 
         var excerpts = SelectCentral(candidates, maxExcerpts, cancellationToken);
 
-        return Task.FromResult(new Digest(from, to, daysWritten, daysInPeriod, excerpts));
+        return new Digest(from, to, daysWritten, daysInPeriod, excerpts);
     }
 
     /// <summary>

@@ -23,21 +23,27 @@ public class DiaryChatService : IDiaryChatService
     private readonly IVectorStore _store;
     private readonly ITextEmbedder _embedder;
     private readonly ITextGenerator _generator;
+    private readonly IAiAvailability _availability;
 
-    public DiaryChatService(IVectorStore store, ITextEmbedder embedder, ITextGenerator generator)
+    public DiaryChatService(
+        IVectorStore store,
+        ITextEmbedder embedder,
+        ITextGenerator generator,
+        IAiAvailability availability)
     {
         _store = store;
         _embedder = embedder;
         _generator = generator;
+        _availability = availability;
     }
 
-    public bool IsAvailable => _embedder.IsAvailable && _generator.IsAvailable;
+    public Task<bool> IsAvailableAsync() => _availability.CanGenerateAsync();
 
     public async IAsyncEnumerable<ChatDelta> AskAsync(
         string question,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        if (!IsAvailable)
+        if (!await _availability.CanGenerateAsync().ConfigureAwait(false))
         {
             yield return Refusal(ChatRefusalReason.Unavailable);
             yield break;

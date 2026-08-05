@@ -34,14 +34,16 @@ public class ThemeClusterService : IThemeClusterService
 
     private readonly IVectorStore _store;
     private readonly ITextEmbedder _embedder;
+    private readonly IAiAvailability _availability;
 
-    public ThemeClusterService(IVectorStore store, ITextEmbedder embedder)
+    public ThemeClusterService(IVectorStore store, ITextEmbedder embedder, IAiAvailability availability)
     {
         _store = store;
         _embedder = embedder;
+        _availability = availability;
     }
 
-    public Task<IReadOnlyList<DiaryTheme>> ClusterAsync(
+    public async Task<IReadOnlyList<DiaryTheme>> ClusterAsync(
         DateTime start,
         DateTime end,
         int maxThemes = 5,
@@ -49,15 +51,15 @@ public class ThemeClusterService : IThemeClusterService
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(maxThemes, 1);
 
-        if (!_embedder.IsAvailable)
+        if (!await _availability.CanEmbedAsync().ConfigureAwait(false))
         {
-            return Task.FromResult<IReadOnlyList<DiaryTheme>>([]);
+            return [];
         }
 
         var chunks = _store.GetByDateRange(_embedder.ModelId, start.Date, end.Date, SearchScope.Diary);
         if (chunks.Count == 0)
         {
-            return Task.FromResult<IReadOnlyList<DiaryTheme>>([]);
+            return [];
         }
 
         var dimensions = chunks[0].Dim;
@@ -67,7 +69,7 @@ public class ThemeClusterService : IThemeClusterService
             .Select(c => new Point(c, EmbeddingMath.FromBytes(c.Vector)))
             .ToList();
 
-        return Task.FromResult(Cluster(points, maxThemes, cancellationToken));
+        return Cluster(points, maxThemes, cancellationToken);
     }
 
     /// <summary>

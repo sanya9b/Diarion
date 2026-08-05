@@ -37,6 +37,15 @@ public partial class SearchViewModel : BaseViewModel
     [ObservableProperty]
     private bool _showEmptyState;
 
+    /// <summary>
+    /// Shown when the results are lexical only — no encoder installed, or AI switched off. The
+    /// results are still real, and saying so beats letting the user conclude search is broken.
+    /// Refreshed per search rather than at construction: the toggle is two taps away in settings,
+    /// and this page does not get rebuilt when the user comes back from there.
+    /// </summary>
+    [ObservableProperty]
+    private bool _showLexicalOnlyNotice;
+
     public ObservableCollection<SearchResultItem> Results { get; } = [];
 
     public bool HasResults => Results.Count > 0;
@@ -44,12 +53,6 @@ public partial class SearchViewModel : BaseViewModel
     public bool IsAllScope => Scope == SearchScope.All;
     public bool IsDiaryScope => Scope == SearchScope.Diary;
     public bool IsNotesScope => Scope == SearchScope.Notes;
-
-    /// <summary>
-    /// Shown when no encoder is installed. The results are still real, just lexical — saying so
-    /// beats letting the user conclude that search is broken.
-    /// </summary>
-    public bool ShowLexicalOnlyNotice => !_search.IsSemanticAvailable;
 
     public SearchViewModel(ISemanticSearchService search, INavigationService navigation)
     {
@@ -85,6 +88,8 @@ public partial class SearchViewModel : BaseViewModel
         IsBusy = true;
         try
         {
+            ShowLexicalOnlyNotice = !await _search.IsSemanticAvailableAsync();
+
             var hits = await _search.SearchAsync(Query, Scope);
 
             Results.Clear();

@@ -23,6 +23,7 @@ public class SemanticSearchServiceTests : IDisposable
     private readonly StubEmbedder _embedder = new();
     private readonly Mock<IDiaryService> _diary = new();
     private readonly Mock<INoteService> _notes = new();
+    private readonly FakeAiAvailability _availability = new();
     private readonly SemanticSearchService _service;
 
     public SemanticSearchServiceTests()
@@ -33,7 +34,7 @@ public class SemanticSearchServiceTests : IDisposable
         _diary.Setup(d => d.GetAllEntriesAsync()).ReturnsAsync(new List<DiaryEntry>());
         _notes.Setup(n => n.SearchNotesAsync(It.IsAny<string>())).ReturnsAsync(new List<Note>());
 
-        _service = new SemanticSearchService(_store, _embedder, _diary.Object, _notes.Object);
+        _service = new SemanticSearchService(_store, _embedder, _diary.Object, _notes.Object, _availability);
     }
 
     public void Dispose() => _dbContext.Dispose();
@@ -104,14 +105,33 @@ public class SemanticSearchServiceTests : IDisposable
     public async Task Search_WithoutAnEncoder_StillMatchesWords()
     {
         // Degradation, not failure: with no model installed the app is a keyword search, not broken.
-        var embedderless = new SemanticSearchService(_store, new NullTextEmbedder(), _diary.Object, _notes.Object);
+        _availability.CanEmbed = false;
         _diary.Setup(d => d.GetAllEntriesAsync())
             .ReturnsAsync([new DiaryEntry { Id = Guid.NewGuid(), Date = Day, Gratitude = "за каву вранці" }]);
 
-        var hits = await embedderless.SearchAsync("каву");
+        var hits = await _service.SearchAsync("каву");
 
         hits.Should().ContainSingle();
-        embedderless.IsSemanticAvailable.Should().BeFalse();
+        (await _service.IsSemanticAvailableAsync()).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Search_AiSwitchedOff_LosesTheSemanticHalfAndKeepsTheLexicalOne()
+    {
+        // Note search by substring existed before any of this and is not part of the AI module.
+        // Switching AI off has to narrow the results, not break the screen — so the meaning match
+        // disappears and the word match stays.
+        _embedder.Map("робота", [1f, 0f]);
+        Indexed("e1", "засидівся в офісі до ночі", [1f, 0.05f]);
+        _diary.Setup(d => d.GetAllEntriesAsync())
+            .ReturnsAsync([new DiaryEntry { Id = Guid.NewGuid(), Date = Day, Gratitude = "робота була важка" }]);
+
+        _availability.CanEmbed = false;
+        var hits = await _service.SearchAsync("робота");
+
+        hits.Should().ContainSingle("the meaning match is gone and the word match remains");
+        hits[0].SourceKind.Should().Be(EmbeddingSourceKind.Diary);
+        hits[0].Snippet.Should().Contain("робота була важка");
     }
 
     [Fact]

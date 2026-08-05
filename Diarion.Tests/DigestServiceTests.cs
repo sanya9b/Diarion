@@ -20,13 +20,14 @@ public class DigestServiceTests : IDisposable
     private readonly DatabaseContext _dbContext;
     private readonly LiteDbVectorStore _store;
     private readonly StubEmbedder _embedder = new();
+    private readonly FakeAiAvailability _availability = new();
     private readonly DigestService _service;
 
     public DigestServiceTests()
     {
         _dbContext = new DatabaseContext(useInMemory: true);
         _store = new LiteDbVectorStore(_dbContext);
-        _service = new DigestService(_store, _embedder);
+        _service = new DigestService(_store, _embedder, _availability);
     }
 
     public void Dispose() => _dbContext.Dispose();
@@ -59,14 +60,29 @@ public class DigestServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task Build_NoEncoder_ReturnsAnEmptyDigestRatherThanThrowing()
+    public async Task Build_AiUnavailable_ReturnsAnEmptyDigestRatherThanThrowing()
     {
-        var service = new DigestService(_store, new NullTextEmbedder());
+        _availability.CanEmbed = false;
 
-        var digest = await service.BuildAsync(Start, End);
+        var digest = await _service.BuildAsync(Start, End);
 
         digest.HasContent.Should().BeFalse();
         digest.DaysWritten.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Build_AiSwitchedOff_StopsQuotingAnIndexThatIsStillOnDisk()
+    {
+        // Switching AI off does not erase the index — rebuilding it costs a long pass over the
+        // whole diary. So the only thing standing between a disabled feature and the user's own
+        // words being quoted back at them is this check.
+        Indexed(new DateTime(2026, 6, 3), Long("довгий запис про роботу і втому"), [1f, 0f]);
+        Indexed(new DateTime(2026, 6, 4), Long("ще один довгий запис про те саме"), [1f, 0f]);
+        (await _service.BuildAsync(Start, End)).HasContent.Should().BeTrue("otherwise the test proves nothing");
+
+        _availability.CanEmbed = false;
+
+        (await _service.BuildAsync(Start, End)).HasContent.Should().BeFalse();
     }
 
     [Fact]

@@ -15,8 +15,12 @@ namespace Diarion.Services.Ai;
 /// </remarks>
 public interface ISemanticSearchService
 {
-    /// <summary>True when the encoder is installed, so callers can say why results look lexical.</summary>
-    bool IsSemanticAvailable { get; }
+    /// <summary>
+    /// True when the encoder is installed and AI is switched on, so callers can say why results
+    /// look lexical. Both halves matter: an encoder sitting on disk under a switched-off toggle
+    /// produces exactly the same lexical-only results as no encoder at all.
+    /// </summary>
+    Task<bool> IsSemanticAvailableAsync();
 
     Task<IReadOnlyList<SearchHit>> SearchAsync(
         string query,

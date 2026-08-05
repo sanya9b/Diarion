@@ -33,13 +33,23 @@ public partial class AiChatViewModel : BaseViewModel
     [NotifyPropertyChangedFor(nameof(IsNotAnswering))]
     private bool _isAnswering;
 
+    /// <summary>
+    /// Starts true so the composer is not hidden for the instant before the check completes.
+    /// Asking while unavailable is refused by the service anyway, so an optimistic default costs
+    /// nothing and a pessimistic one would flicker on every open.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSend))]
+    [NotifyPropertyChangedFor(nameof(IsUnavailable))]
+    private bool _isAvailable = true;
+
     public ObservableCollection<ChatTurn> Turns { get; } = [];
 
-    public bool IsAvailable => _chat.IsAvailable;
+    public bool IsUnavailable => !IsAvailable;
 
     public bool IsNotAnswering => !IsAnswering;
 
-    public bool CanSend => !IsAnswering && !string.IsNullOrWhiteSpace(Question);
+    public bool CanSend => IsAvailable && !IsAnswering && !string.IsNullOrWhiteSpace(Question);
 
     public AiChatViewModel(IDiaryChatService chat, INavigationService navigation, IDispatcherService dispatcher)
     {
@@ -48,6 +58,12 @@ public partial class AiChatViewModel : BaseViewModel
         _dispatcher = dispatcher;
         Title = AppResources.AiChatTitle;
     }
+
+    /// <summary>
+    /// Re-checked on every appearance, not once at construction: the model can be deleted and AI
+    /// can be switched off in settings, which is one back-navigation away from this page.
+    /// </summary>
+    public async Task RefreshAvailabilityAsync() => IsAvailable = await _chat.IsAvailableAsync();
 
     [RelayCommand]
     private async Task SendAsync()

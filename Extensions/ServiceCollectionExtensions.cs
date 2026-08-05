@@ -66,6 +66,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IDeviceCapabilityProbe, MauiDeviceCapabilityProbe>();
         services.AddSingleton<ITextEmbedder, OnnxTextEmbedder>();
         services.AddSingleton<IVectorStore, LiteDbVectorStore>();
+        // The single answer to "may the AI read this diary". Every consumer asks it, so consent
+        // cannot be honoured in one place and forgotten in the next four.
+        services.AddSingleton<IAiAvailability, AiAvailability>();
         services.AddSingleton<IEmbeddingIndexService, EmbeddingIndexService>();
         services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
         services.AddSingleton<IDigestService, DigestService>();

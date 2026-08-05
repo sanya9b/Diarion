@@ -30,20 +30,23 @@ public class SemanticSearchService : ISemanticSearchService
     private readonly ITextEmbedder _embedder;
     private readonly IDiaryService _diaryService;
     private readonly INoteService _noteService;
+    private readonly IAiAvailability _availability;
 
     public SemanticSearchService(
         IVectorStore store,
         ITextEmbedder embedder,
         IDiaryService diaryService,
-        INoteService noteService)
+        INoteService noteService,
+        IAiAvailability availability)
     {
         _store = store;
         _embedder = embedder;
         _diaryService = diaryService;
         _noteService = noteService;
+        _availability = availability;
     }
 
-    public bool IsSemanticAvailable => _embedder.IsAvailable;
+    public Task<bool> IsSemanticAvailableAsync() => _availability.CanEmbedAsync();
 
     public async Task<IReadOnlyList<SearchHit>> SearchAsync(
         string query,
@@ -112,7 +115,9 @@ public class SemanticSearchService : ISemanticSearchService
         SearchScope scope,
         CancellationToken cancellationToken)
     {
-        if (!_embedder.IsAvailable)
+        // Only this half is gated. Lexical search over notes predates the AI module and is not part
+        // of it, so switching AI off must narrow the results, not break the screen.
+        if (!await _availability.CanEmbedAsync().ConfigureAwait(false))
         {
             return [];
         }
