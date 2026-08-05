@@ -53,10 +53,39 @@ public class PromptBuilderTests
     }
 
     [Fact]
-    public void Build_ASingleGoodMatch_IsStillUnanswerable()
+    public void Build_ASingleMiddlingMatch_IsStillUnanswerable()
     {
-        // One passage above the floor is a coincidence often enough to be worth refusing.
-        PromptBuilder.Build("тривога", [Chunk(0.9f), Chunk(0.1f)]).IsAnswerable.Should().BeFalse();
+        // One passage barely above the floor is a coincidence often enough to be worth refusing.
+        PromptBuilder.Build("тривога", [Chunk(0.35f), Chunk(0.1f)]).IsAnswerable.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Build_ASingleVeryStrongMatch_AnswersOnItsOwn()
+    {
+        // The diary keeps most specific facts in exactly one entry. «Скільки коштував велосипед?»
+        // matched its entry at 0.646 and was refused for want of a second passage; that is the
+        // question retrieval handles best, not worst.
+        var prompt = PromptBuilder.Build("скільки коштував велосипед", [Chunk(0.646f), Chunk(0.1f)]);
+
+        prompt.IsAnswerable.Should().BeTrue();
+        prompt.Citations.Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Build_ASingleMatchExactlyAtTheStandaloneBar_Answers()
+    {
+        PromptBuilder.Build("щось", [Chunk(PromptBuilder.MinStandaloneRelevance)])
+            .IsAnswerable.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Build_TheStandaloneBarAdmitsOnlyThePassagesThatEarnedIt()
+    {
+        // Opening the gate does not lower the floor: the weak chunk stays out of the prompt.
+        var prompt = PromptBuilder.Build("велосипед", [Chunk(0.6f, "про велосипед", 3), Chunk(0.2f, "щось інше", 4)]);
+
+        prompt.Citations.Should().ContainSingle();
+        prompt.Text.Should().NotContain("щось інше");
     }
 
     [Fact]

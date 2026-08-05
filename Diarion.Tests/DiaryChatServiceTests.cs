@@ -118,16 +118,34 @@ public class DiaryChatServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task Ask_OnlyOneRelevantPassage_StillRefuses()
+    public async Task Ask_OnlyOneMiddlingPassage_StillRefuses()
     {
+        // 0.35 — above the noise floor, below the bar that lets a lone passage answer.
         _embedder.Map("кава", [1f, 0f]);
-        Indexed("ранкова кава", [1f, 0f]);
+        Indexed("ранкова кава", [0.35f, 0.937f]);
         Indexed("зовсім про інше", [0f, 1f]);
 
         var result = await AskAsync("кава");
 
         result.Refusal.Should().Be(ChatRefusalReason.NothingRelevant);
         _generator.CallCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Ask_OneVeryStrongPassage_ReachesTheModel()
+    {
+        // A fact the diary records exactly once. Demanding a second passage refused «Скільки
+        // коштував велосипед?» at a score of 0.646 — see specs/13-on-device-ai.md.
+        _embedder.Map("кава", [1f, 0f]);
+        Indexed("ранкова кава", [1f, 0f]);
+        Indexed("зовсім про інше", [0f, 1f]);
+        _generator.Respond("Ви пили каву вранці [1].");
+
+        var result = await AskAsync("кава");
+
+        result.Refusal.Should().Be(ChatRefusalReason.None);
+        _generator.CallCount.Should().Be(1);
+        result.Citations.Should().ContainSingle();
     }
 
     [Fact]

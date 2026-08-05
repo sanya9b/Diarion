@@ -36,6 +36,21 @@ public static class PromptBuilder
     /// </summary>
     public const int MinPassages = 2;
 
+    /// <summary>
+    /// The exception to <see cref="MinPassages"/>: one passage this close answers on its own.
+    ///
+    /// <remarks>
+    /// A diary keeps most specific facts in exactly one entry, so demanding a second passage
+    /// refuses the questions retrieval handles best. In the 2026-08-05 evaluation four answerable
+    /// questions died at the gate in 0.2 s with the right entry ranked first — «Скільки коштував
+    /// велосипед?» scored 0.646 and was still refused. The ten unanswerable questions never got
+    /// past 0.445, so the bar sits in the gap between them: it admits three of those four and none
+    /// of the unanswerable ones. The gap is 0.044 wide on forty questions, which is thin — this is
+    /// the constant to re-measure once there is real usage.
+    /// </remarks>
+    /// </summary>
+    public const float MinStandaloneRelevance = 0.47f;
+
     /// <summary>How many passages reach the prompt after diversification.</summary>
     public const int MaxPassages = 8;
 
@@ -69,7 +84,7 @@ public static class PromptBuilder
         }
 
         var relevant = retrieved.Where(c => c.Score >= MinRelevance).ToList();
-        if (relevant.Count < MinPassages)
+        if (relevant.Count < MinPassages && !relevant.Any(c => c.Score >= MinStandaloneRelevance))
         {
             return new ChatPrompt(false, string.Empty, []);
         }
