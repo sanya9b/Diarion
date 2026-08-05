@@ -208,6 +208,39 @@ public class DiaryChatServiceTests : IDisposable
 
         _generator.LastPrompt.Should().Contain("ранкова кава була смачна");
         _generator.LastPrompt.Should().Contain("ПИТАННЯ: кава");
+
+        // The reasoning switch has to reach the model, or the whole answer budget goes to a
+        // monologue. It travels in the message because ORT-GenAI 0.14.1 cannot set the template flag.
+        _generator.LastPrompt.Should().Contain("/no_think");
+    }
+
+    [Fact]
+    public async Task Ask_AReasoningModelsMonologue_ReachesNeitherTheScreenNorTheCitations()
+    {
+        // Seen in the running app: the model deliberated in English over markers it did not commit
+        // to, and all of it was shown and cited. The wiring is what these two assertions cover —
+        // ReasoningFilterTests covers the filter itself.
+        _embedder.Map("кава", [1f, 0f]);
+        Indexed("ранкова кава була смачна", [1f, 0f], day: 7);
+        Indexed("знову пив каву зранку", [1f, 0.05f], day: 8);
+        _generator.Respond("<think> Records [1] and [2] both mention it, but [2] is closer. </think> Так, ви пили ранкову каву [1].");
+
+        var streamed = new List<string>();
+        ChatResult? result = null;
+        await foreach (var delta in _service.AskAsync("кава"))
+        {
+            if (delta.IsComplete)
+            {
+                result = delta.Answer;
+                continue;
+            }
+
+            streamed.Add(delta.Delta);
+        }
+
+        string.Concat(streamed).Should().NotContain("Records").And.NotContain("<think>");
+        result!.Text.Should().Be("Так, ви пили ранкову каву [1].");
+        result.Citations.Select(c => c.Marker).Should().Equal(1);
     }
 
     private sealed class StubEmbedder : ITextEmbedder

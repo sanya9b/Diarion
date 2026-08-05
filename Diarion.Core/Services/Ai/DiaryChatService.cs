@@ -67,16 +67,30 @@ public class DiaryChatService : IDiaryChatService
         }
 
         var full = new StringBuilder();
+        var reasoning = new ReasoningFilter();
 
         await foreach (var token in _generator
                            .StreamAsync(prompt.Text, MaxAnswerTokens, cancellationToken)
                            .ConfigureAwait(false))
         {
+            // Raw for the record, filtered for the screen: a reasoning model narrates its way to an
+            // answer, and neither the user nor the citation parser should be reading that.
             full.Append(token);
-            yield return new ChatDelta(token);
+
+            var visible = reasoning.Push(token);
+            if (visible.Length > 0)
+            {
+                yield return new ChatDelta(visible);
+            }
         }
 
-        var parsed = CitationParser.Parse(full.ToString(), prompt.Citations);
+        var tail = reasoning.Flush();
+        if (tail.Length > 0)
+        {
+            yield return new ChatDelta(tail);
+        }
+
+        var parsed = CitationParser.Parse(ReasoningFilter.Strip(full.ToString()), prompt.Citations);
 
         yield return parsed.IsRefusal
             // Streamed text is discarded here on purpose: the UI shows the answer arriving and then

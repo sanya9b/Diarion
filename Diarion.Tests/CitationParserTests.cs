@@ -122,4 +122,30 @@ public class CitationParserTests
     {
         CitationParser.Parse("  Достатньо довга відповідь [1].  ", Offered).Text.Should().Be("Достатньо довга відповідь [1].");
     }
+
+    [Fact]
+    public void Parse_MarkerClosedTwice_LosesTheStrayBracket()
+    {
+        // Verbatim from the first grounded answer the running app produced.
+        CitationParser.Parse("Яка книга я читав? [1]]", Offered)
+            .Text.Should().Be("Яка книга я читав? [1]");
+    }
+
+    [Fact]
+    public void Parse_LoneBracketsAnywhere_AreDropped()
+    {
+        CitationParser.Parse("Ви бігали [ вранці ] уздовж набережної [2].", Offered)
+            .Text.Should().Be("Ви бігали  вранці  уздовж набережної [2].");
+    }
+
+    [Fact]
+    public void Parse_OutOfRangeMarker_StaysInTheProse()
+    {
+        // It is already absent from the chips; rewriting the sentence around it would cost more
+        // than the stray marker does.
+        var answer = CitationParser.Parse("Спершу було так [1], а потім інакше [7].", Offered);
+
+        answer.Text.Should().Be("Спершу було так [1], а потім інакше [7].");
+        answer.Used.Select(c => c.Marker).Should().Equal(1);
+    }
 }

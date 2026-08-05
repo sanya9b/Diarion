@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Diarion.Services.Ai;
@@ -65,6 +66,40 @@ public static partial class CitationParser
         var prose = MarkerPattern.Replace(answer, string.Empty).Trim();
         return prose.Length < MinProseChars
             ? new ChatAnswer(true, string.Empty, [])
-            : new ChatAnswer(false, answer.Trim(), cited);
+            : new ChatAnswer(false, Tidy(answer), cited);
+    }
+
+    /// <summary>
+    /// Drops bracket characters left over from degenerate decoding, keeping the markers themselves.
+    /// </summary>
+    /// <remarks>
+    /// Qwen3-1.7B at int4 closes a marker twice often enough to be seen: the first grounded answer
+    /// in the running app read "Яка книга я читав? [1]]". The stray bracket is noise from the
+    /// quantised decoder, not something the user wrote or the model meant, and it reads as a bug.
+    /// Only lone brackets go — an out-of-range marker stays in the prose, because rewriting the
+    /// sentence around it would do more damage than leaving it.
+    /// </remarks>
+    private static string Tidy(string answer)
+    {
+        var partOfAMarker = new HashSet<int>();
+        foreach (Match match in MarkerPattern.Matches(answer))
+        {
+            partOfAMarker.Add(match.Index);
+            partOfAMarker.Add(match.Index + match.Length - 1);
+        }
+
+        var builder = new StringBuilder(answer.Length);
+        for (var i = 0; i < answer.Length; i++)
+        {
+            var c = answer[i];
+            if ((c is '[' or ']') && !partOfAMarker.Contains(i))
+            {
+                continue;
+            }
+
+            builder.Append(c);
+        }
+
+        return builder.ToString().Trim();
     }
 }

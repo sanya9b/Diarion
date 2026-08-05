@@ -49,6 +49,16 @@ public static class PromptBuilder
     /// <summary>Rough character budget for the context blocks — the model's window is not ours to fill.</summary>
     public const int MaxContextChars = 6000;
 
+    /// <summary>
+    /// Qwen3's soft switch out of its reasoning mode. Its chat template only inserts the empty
+    /// think block when <c>enable_thinking</c> is defined and false, and ORT-GenAI 0.14.1 offers no
+    /// way to define it, so the switch travels in the message. Without it the whole 320-token budget
+    /// went to an English monologue that ran out mid-sentence before reaching an answer.
+    /// A model that has never heard of it reads nine stray characters; <see cref="ReasoningFilter"/>
+    /// is what makes the outcome certain either way.
+    /// </summary>
+    private const string NoThinkSwitch = " /no_think";
+
     public static ChatPrompt Build(string question, IReadOnlyList<ScoredChunk> retrieved)
     {
         ArgumentNullException.ThrowIfNull(retrieved);
@@ -174,7 +184,9 @@ public static class PromptBuilder
         }
 
         builder.AppendLine();
-        builder.AppendLine($"ПИТАННЯ: {question.Trim()}");
+        // On the question line, where the evaluation run measured it, not after "ВІДПОВІДЬ:" —
+        // there it would sit exactly where the answer is supposed to begin.
+        builder.AppendLine($"ПИТАННЯ: {question.Trim()}{NoThinkSwitch}");
         builder.AppendLine("ВІДПОВІДЬ:");
 
         return builder.ToString();
