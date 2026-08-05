@@ -88,7 +88,8 @@ public class MainViewModelTests
         _quickMenuSection = new QuickMenuViewModel(
             _menuConfigServiceMock.Object,
             _profileServiceMock.Object,
-            _navigationServiceMock.Object);
+            _navigationServiceMock.Object,
+            new FakeAiAvailability());
 
         _habitsSection = new HabitsSectionViewModel(
             _habitServiceMock.Object,
