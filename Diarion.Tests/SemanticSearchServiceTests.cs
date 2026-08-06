@@ -228,5 +228,9 @@ public class SemanticSearchServiceTests : IDisposable
 
         public Task<IReadOnlyList<float[]>> EmbedBatchAsync(IReadOnlyList<string> texts, CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<float[]>>(texts.Select(t => EmbedAsync(t, cancellationToken).Result).ToList());
+
+        public void Unload()
+        {
+        }
     }
 }

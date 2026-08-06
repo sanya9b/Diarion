@@ -7,6 +7,8 @@ using Microsoft.Maui.Storage;
 #if ANDROID
 using Android.App;
 using Android.Content;
+#elif IOS || MACCATALYST
+using Foundation;
 #endif
 
 namespace Diarion.Services.Ai;
@@ -20,6 +22,12 @@ namespace Diarion.Services.Ai;
 /// different question. Accelerator availability is deliberately not probed — NNAPI is deprecated as
 /// of Android 15, and ONNX Runtime offers no reliable pre-flight check for a GPU delegate anyway;
 /// the CPU path is the one that always works.
+///
+/// The two mobile platforms do not agree on what "4 GB" means, and the difference is not a bug to
+/// be reconciled here. Android's <c>TotalMem</c> excludes memory the kernel reserved before the
+/// system booted, so a nominal 4 GB phone reports 3.6-3.8 GB; iOS <c>PhysicalMemory</c> reports the
+/// number on the spec sheet. That ~10% gap is why the tier thresholds sit below the round figures
+/// rather than on them — see <see cref="DeviceCapabilities.Tier"/>.
 /// </remarks>
 public sealed class MauiDeviceCapabilityProbe : IDeviceCapabilityProbe
 {
@@ -47,9 +55,15 @@ public sealed class MauiDeviceCapabilityProbe : IDeviceCapabilityProbe
         }
 
         return 0;
+#elif IOS || MACCATALYST
+        // NSProcessInfo, not the GC. The GC's number on iOS is a heap budget, and once the bar for
+        // the generative model came down to within a phone's reach, tiering on it meant a 4 GB
+        // iPhone could silently land in Low and be offered nothing at all — not even the encoder,
+        // whose own 512 MB bar fails against an under-reported total.
+        return (int)(NSProcessInfo.ProcessInfo.PhysicalMemory / (1024 * 1024));
 #else
-        // Desktop and iOS: GC's view of physical memory is close enough to tier a device, and both
-        // are development or secondary targets where the answer is "plenty" in practice.
+        // Desktop: the GC's view of physical memory is close enough to tier a development machine,
+        // where the answer is "plenty" in practice.
         var total = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
         return total > 0 ? (int)(total / (1024 * 1024)) : 0;
 #endif

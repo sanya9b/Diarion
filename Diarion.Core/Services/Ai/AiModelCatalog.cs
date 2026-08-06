@@ -71,6 +71,14 @@ public static class AiModelCatalog
     /// for the trade is that the generator unloads on sleep alongside the encoder; if 4 GB phones
     /// start dying during chat, this is the line to move back up.
     ///
+    /// Then 4 GB to 3.5, to reach an iPhone 11 Pro Max. Not a further concession on headroom so
+    /// much as an admission that 4096 was never the number it looked like: iOS reports exactly
+    /// 4096 for that phone, so it qualified on strict equality, while an Android device with the
+    /// same hardware reports 3.6-3.8 GB and did not qualify at all. On the tight tier the chat path
+    /// also drops the encoder and halves the context before decoding — see
+    /// <c>PromptBudget.Tight</c>, which is what makes the smaller device a defensible target rather
+    /// than merely a permitted one.
+    ///
     /// Built with builder 0.15.x — 0.14.1 segfaults on this model — and verified to load under the
     /// 0.14.1 runtime the app pins. Building happens on a desktop and never touches the manifest,
     /// so the version that protects the permission list does not constrain the model.
@@ -101,7 +109,7 @@ public static class AiModelCatalog
             new AiModelFile("chat_template.jinja", "chat_template.jinja", 4_256,
                 "51fa65c79bb57f058dc7ef8734884bd325fe9d45bb03a61bfef59785d3bc2da9"),
         ],
-        RequiredRamMb = 4096,
+        RequiredRamMb = 3584,
         MinTier = DeviceTier.Mid,
         LicenseSpdx = "Apache-2.0",
         Quantization = "int4",

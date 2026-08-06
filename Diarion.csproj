@@ -51,6 +51,16 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+		<!--
+		  Asks iOS for a higher per-app memory ceiling. Every configuration, not just Release: a
+		  debug build on a device runs into the same jetsam limit, and finding that out only in
+		  Release is the expensive order to learn it in. See the file for what it does and does not
+		  guarantee.
+		-->
+		<CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(Configuration)' == 'Release'">
 		<!--
 		  Step one of walking back the workaround added in May, which set MtouchLink=None and

@@ -67,7 +67,10 @@ public class UkrainianChatEvaluationTests
         generator.IsAvailable.Should().BeTrue(
             "the generative model has to be installed before its Ukrainian can be measured");
 
-        var chat = new DiaryChatService(store, embedder, generator, new AlwaysAvailable());
+        // High tier deliberately, not the real machine: this run is the baseline for PromptBudget.Full,
+        // and letting the developer's hardware pick the budget would mean the recorded score depends
+        // on who ran it. The tight budget is a separate question, and answering it means measuring it.
+        var chat = new DiaryChatService(store, embedder, generator, new AlwaysAvailable(), new HighEndDevice());
 
         var report = new StringBuilder();
         var answerable = Questions.Where(q => q.Sources.Length > 0).ToList();
@@ -471,5 +474,10 @@ public class UkrainianChatEvaluationTests
         public Task<bool> CanEmbedAsync() => Task.FromResult(true);
 
         public Task<bool> CanGenerateAsync() => Task.FromResult(true);
+    }
+
+    private sealed class HighEndDevice : IDeviceCapabilityProbe
+    {
+        public DeviceCapabilities Probe() => new(16384, 200L * 1024 * 1024 * 1024, 8, Is64Bit: true);
     }
 }

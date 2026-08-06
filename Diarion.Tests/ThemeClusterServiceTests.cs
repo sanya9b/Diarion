@@ -363,5 +363,9 @@ public class ThemeClusterServiceTests : IDisposable
 
         public Task<IReadOnlyList<float[]>> EmbedBatchAsync(IReadOnlyList<string> texts, CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<float[]>>(texts.Select(_ => new[] { 1f, 0f }).ToList());
+
+        public void Unload()
+        {
+        }
     }
 }

@@ -423,5 +423,9 @@ public class EmbeddingIndexServiceTests : IDisposable
             OnEmbed?.Invoke();
             return Task.FromResult<IReadOnlyList<float[]>>(texts.Select(Embed).ToList());
         }
+
+        public void Unload()
+        {
+        }
     }
 }

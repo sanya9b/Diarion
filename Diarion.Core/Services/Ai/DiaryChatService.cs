@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Diarion.Models.Ai;
 
 namespace Diarion.Services.Ai;
 
@@ -14,27 +15,24 @@ public class DiaryChatService : IDiaryChatService
     /// </summary>
     private const int Candidates = 24;
 
-    /// <summary>
-    /// Long enough for a paragraph with citations, short enough that a phone CPU finishes. A small
-    /// model given a larger budget does not answer better, it repeats itself for longer.
-    /// </summary>
-    private const int MaxAnswerTokens = 320;
-
     private readonly IVectorStore _store;
     private readonly ITextEmbedder _embedder;
     private readonly ITextGenerator _generator;
     private readonly IAiAvailability _availability;
+    private readonly IDeviceCapabilityProbe _probe;
 
     public DiaryChatService(
         IVectorStore store,
         ITextEmbedder embedder,
         ITextGenerator generator,
-        IAiAvailability availability)
+        IAiAvailability availability,
+        IDeviceCapabilityProbe probe)
     {
         _store = store;
         _embedder = embedder;
         _generator = generator;
         _availability = availability;
+        _probe = probe;
     }
 
     public Task<bool> IsAvailableAsync() => _availability.CanGenerateAsync();
@@ -49,6 +47,11 @@ public class DiaryChatService : IDiaryChatService
             yield break;
         }
 
+        // What this phone can afford to spend on one answer. Read per question rather than cached:
+        // free storage moves, and the probe is a couple of syscalls against a decode measured in
+        // seconds.
+        var budget = BudgetFor(_probe.Probe().Tier);
+
         var queryVector = await _embedder.EmbedAsync(question, cancellationToken).ConfigureAwait(false);
         var retrieved = _store.Search(
             queryVector,
@@ -57,7 +60,7 @@ public class DiaryChatService : IDiaryChatService
             SearchScope.All,
             PromptBuilder.MinRelevance);
 
-        var prompt = PromptBuilder.Build(question, retrieved);
+        var prompt = PromptBuilder.Build(question, retrieved, budget);
         if (!prompt.IsAnswerable)
         {
             // The model is never invoked. A small model told to say "I do not know" will sometimes
@@ -66,11 +69,18 @@ public class DiaryChatService : IDiaryChatService
             yield break;
         }
 
+        if (budget.UnloadEncoderBeforeGenerating)
+        {
+            // After the refusal gate on purpose: a refused question never loads the generator, so
+            // dropping the encoder there would buy nothing and cost a reload on the next question.
+            _embedder.Unload();
+        }
+
         var full = new StringBuilder();
         var reasoning = new ReasoningFilter();
 
         await foreach (var token in _generator
-                           .StreamAsync(prompt.Text, MaxAnswerTokens, cancellationToken)
+                           .StreamAsync(prompt.Text, budget.MaxAnswerTokens, cancellationToken)
                            .ConfigureAwait(false))
         {
             // Raw for the record, filtered for the screen: a reasoning model narrates its way to an
@@ -98,6 +108,15 @@ public class DiaryChatService : IDiaryChatService
             ? Refusal(ChatRefusalReason.Ungrounded)
             : new ChatDelta(string.Empty, IsComplete: true, new ChatResult(parsed.Text, parsed.Used, ChatRefusalReason.None));
     }
+
+    /// <summary>
+    /// Only the top tier gets the measured budget. Mid is where the generator now reaches — a
+    /// 3.5-4 GB phone holding 1.1 GB of weights — and there the context is halved and the encoder
+    /// dropped, because the alternative on those devices is not a better answer but no answer and a
+    /// killed process. Low never gets here: the catalogue offers it no generative model at all.
+    /// </summary>
+    private static PromptBudget BudgetFor(DeviceTier tier) =>
+        tier == DeviceTier.High ? PromptBudget.Full : PromptBudget.Tight;
 
     private static ChatDelta Refusal(ChatRefusalReason reason) =>
         new(string.Empty, IsComplete: true, new ChatResult(string.Empty, [], reason));

@@ -27,6 +27,13 @@ public interface ITextEmbedder
 
     /// <summary>Embeds several texts, in the same order. Results are L2-normalized.</summary>
     Task<IReadOnlyList<float[]>> EmbedBatchAsync(IReadOnlyList<string> texts, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Frees the native model. The next call reloads it, so this is a memory decision rather than a
+    /// lifecycle one: on app sleep, and on a tight device between retrieval and generation, where
+    /// the encoder is finished for the turn and the generator is about to want every megabyte.
+    /// </summary>
+    void Unload();
 }
 
 /// <summary>
@@ -46,4 +53,9 @@ public sealed class NullTextEmbedder : ITextEmbedder
 
     public Task<IReadOnlyList<float[]>> EmbedBatchAsync(IReadOnlyList<string> texts, CancellationToken cancellationToken = default) =>
         throw new InvalidOperationException("No embedding model is installed. Check IsAvailable before embedding.");
+
+    /// <summary>Nothing is loaded, so nothing to free.</summary>
+    public void Unload()
+    {
+    }
 }

@@ -168,8 +168,10 @@ public sealed class OnnxTextEmbedder : ITextEmbedder, IDisposable
     }
 
     /// <summary>
-    /// Drops the native session. Called when the app sleeps: the graph is tens of megabytes of
-    /// resident memory that nothing needs while the user is elsewhere.
+    /// Drops the native session. Called when the app sleeps — the graph is tens of megabytes of
+    /// resident memory that nothing needs while the user is elsewhere — and, on a device tight
+    /// enough for <see cref="PromptBudget.Tight"/>, once a question has been embedded and the
+    /// generator is about to load something twenty times larger.
     /// </summary>
     public void Unload()
     {

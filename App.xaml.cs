@@ -136,7 +136,7 @@ public partial class App : Application
 
         // Both graphs are resident megabytes — the generative one over a gigabyte — and nothing
         // needs either while the user is elsewhere.
-        (services?.GetService<ITextEmbedder>() as OnnxTextEmbedder)?.Unload();
+        services?.GetService<ITextEmbedder>()?.Unload();
         (services?.GetService<ITextGenerator>() as OnnxGenAiTextGenerator)?.Unload();
     }
 

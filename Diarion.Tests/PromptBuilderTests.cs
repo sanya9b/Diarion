@@ -153,7 +153,7 @@ public class PromptBuilderTests
             .Select(d => Chunk(0.6f, $"день {d}", d, [1f, d * 0.05f]))
             .ToList();
 
-        PromptBuilder.Build("щось", many).Citations.Should().HaveCount(PromptBuilder.MaxPassages);
+        PromptBuilder.Build("щось", many).Citations.Should().HaveCount(PromptBudget.Full.MaxPassages);
     }
 
     [Fact]
@@ -226,6 +226,54 @@ public class PromptBuilderTests
 
         var prompt = PromptBuilder.Build("щось", candidates);
 
-        prompt.Text.Length.Should().BeLessThan(PromptBuilder.MaxContextChars + 1500);
+        prompt.Text.Length.Should().BeLessThan(PromptBudget.Full.MaxContextChars + 1500);
+    }
+
+    [Fact]
+    public void Build_WithoutABudget_IsWhatTheEvaluationMeasured()
+    {
+        // Every other test in this file omits the budget, and this is what makes that meaningful:
+        // the default is Full, so the suite that measured 22/30 and 10/10 still describes the path
+        // a well-provisioned device takes.
+        var candidates = Enumerable.Range(1, 20)
+            .Select(d => Chunk(0.6f, $"день {d}, і трохи тексту щоб запис не був порожнім", d, [1f, d * 0.05f]))
+            .ToList();
+
+        var implicitBudget = PromptBuilder.Build("щось", candidates);
+        var explicitFull = PromptBuilder.Build("щось", candidates, PromptBudget.Full);
+
+        implicitBudget.Text.Should().Be(explicitFull.Text);
+        implicitBudget.Citations.Should().BeEquivalentTo(explicitFull.Citations);
+    }
+
+    [Fact]
+    public void Build_TightBudget_SendsFewerPassagesAndLessText()
+    {
+        var candidates = Enumerable.Range(1, 20)
+            .Select(d => Chunk(0.6f, $"день {d}, " + new string('я', 600), d, [1f, d * 0.05f]))
+            .ToList();
+
+        var full = PromptBuilder.Build("щось", candidates);
+        var tight = PromptBuilder.Build("щось", candidates, PromptBudget.Tight);
+
+        tight.Citations.Should().HaveCount(PromptBudget.Tight.MaxPassages).And.HaveCount(4);
+        tight.Citations.Should().HaveCountLessThan(full.Citations.Count);
+        tight.Text.Length.Should().BeLessThan(full.Text.Length);
+    }
+
+    [Fact]
+    public void Build_TightBudget_DoesNotMoveTheRefusalThreshold()
+    {
+        // A cheap phone must not get a confident answer that a better one would have refused. What
+        // counts as answerable is a property of the diary; the budget only says how much of an
+        // answerable question fits.
+        var tooWeak = new List<ScoredChunk> { Chunk(0.35f, "ранкова кава"), Chunk(0.1f, "інше") };
+        var strong = new List<ScoredChunk> { Chunk(0.9f, "ранкова кава"), Chunk(0.7f, "знову кава", 4, [1f, 0.2f]) };
+
+        PromptBuilder.Build("кава", tooWeak, PromptBudget.Tight).IsAnswerable
+            .Should().Be(PromptBuilder.Build("кава", tooWeak).IsAnswerable).And.BeFalse();
+
+        PromptBuilder.Build("кава", strong, PromptBudget.Tight).IsAnswerable
+            .Should().Be(PromptBuilder.Build("кава", strong).IsAnswerable).And.BeTrue();
     }
 }

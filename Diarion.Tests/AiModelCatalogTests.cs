@@ -13,7 +13,9 @@ public class AiModelCatalogTests
 
     [Theory]
     [InlineData(2048, 8, true, DeviceTier.Low)]
-    [InlineData(3999, 8, true, DeviceTier.Low)]
+    [InlineData(3583, 8, true, DeviceTier.Low)]  // one megabyte below the line
+    [InlineData(3584, 8, true, DeviceTier.Mid)]  // and one megabyte is all it takes to cross it
+    [InlineData(3700, 8, true, DeviceTier.Mid)]  // what Android reports for a nominal 4 GB phone
     [InlineData(4096, 4, true, DeviceTier.Mid)]
     [InlineData(6144, 4, true, DeviceTier.Mid)]  // enough memory, too few cores for the top tier
     [InlineData(6144, 6, true, DeviceTier.High)]
@@ -61,12 +63,34 @@ public class AiModelCatalogTests
             .Should().Be(AiModelCatalog.Qwen3Generator);
     }
 
+    [Fact]
+    public void Recommend_IPhone11ProMax_GetsTheGenerativeModel()
+    {
+        // The device the bar came down for, spelled out rather than left implicit in a number: A13,
+        // six cores, and iOS reporting exactly 4096 MB. Mid rather than High — six cores are enough
+        // for the top tier but 4 GB is not — so this phone answers on PromptBudget.Tight.
+        var iPhone11ProMax = Device(4096, cores: 6);
+
+        iPhone11ProMax.Tier.Should().Be(DeviceTier.Mid);
+        AiModelCatalog.Recommend(AiModelKind.Generation, iPhone11ProMax)
+            .Should().Be(AiModelCatalog.Qwen3Generator);
+    }
+
     [Theory]
     [InlineData(2048)]  // Low tier by any measure
-    [InlineData(4095)]  // one megabyte short — and a "4 GB" phone routinely reports 3.6-3.8 GB
+    [InlineData(3583)]  // one megabyte short of the line the iPhone 11 Pro Max brought down
     public void Recommend_BelowMidTier_GetsNoGenerativeModel(int ramMb)
     {
         AiModelCatalog.Recommend(AiModelKind.Generation, Device(ramMb)).Should().BeNull();
+    }
+
+    [Fact]
+    public void Recommend_JustBelowTheLine_StillGetsTheEncoder()
+    {
+        // Losing the generator must not cost a device its search index. The 3 GB iPhone XR and 11
+        // land here, and the encoder's own bar is 512 MB, nowhere near this boundary.
+        AiModelCatalog.Recommend(AiModelKind.Embedding, Device(3072))
+            .Should().Be(AiModelCatalog.MiniLmEncoder);
     }
 
     [Fact]

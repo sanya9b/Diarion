@@ -15,6 +15,50 @@ public sealed record ChatCitation(int Marker, string SourceKind, string SourceId
 public sealed record ChatPrompt(bool IsAnswerable, string Text, IReadOnlyList<ChatCitation> Citations);
 
 /// <summary>
+/// How much of the model's context, and of the device's memory, one answer may spend.
+/// </summary>
+/// <remarks>
+/// Everything here is memory, not quality-for-its-own-sake. ORT-GenAI sizes the KV cache from
+/// <c>max_length</c>, which is the prompt plus the answer, and Qwen3-1.7B spends roughly 112 KiB
+/// per token on it — 28 layers by 8 KV heads by 128, in fp16. A full-budget prompt reaches about
+/// 2800 tokens, so the cache alone is around 340 MB on top of 1.1 GB of weights. On a phone with a
+/// hard per-app ceiling that is the difference between an answer and the system killing the app
+/// without a diagnostic.
+///
+/// The refusal thresholds are deliberately not in here. What counts as an answerable question is a
+/// property of the diary, not of the phone, and a cheap device must not get confident answers a
+/// better one would have refused.
+/// </remarks>
+/// <param name="MaxPassages">How many passages reach the prompt after diversification.</param>
+/// <param name="MaxContextChars">Rough character budget for the context blocks.</param>
+/// <param name="MaxAnswerTokens">Ceiling on the generated answer.</param>
+/// <param name="UnloadEncoderBeforeGenerating">
+/// Drop the encoder once the question has become a vector. Costs a reload on the next question and
+/// hands back its memory for the length of the decode, which is when the generator wants it most.
+/// </param>
+public sealed record PromptBudget(
+    int MaxPassages,
+    int MaxContextChars,
+    int MaxAnswerTokens,
+    bool UnloadEncoderBeforeGenerating)
+{
+    /// <summary>
+    /// What the 2026-08-05 evaluation measured: 22/30 answerable and 10/10 refusals. Any change to
+    /// these numbers invalidates that run, so they are the baseline rather than a default anyone
+    /// should tune casually.
+    /// </summary>
+    public static readonly PromptBudget Full = new(8, 6000, 320, UnloadEncoderBeforeGenerating: false);
+
+    /// <summary>
+    /// For devices at the bottom of what can run the generator at all. Halving the context takes
+    /// the KV cache from roughly 340 MB to 170, and dropping the encoder returns another ~150 MB
+    /// for the decode. Four passages instead of eight is a real cost to breadth — the trade is
+    /// against not offering chat on these devices, not against offering it in full.
+    /// </summary>
+    public static readonly PromptBudget Tight = new(4, 2600, 224, UnloadEncoderBeforeGenerating: true);
+}
+
+/// <summary>
 /// Turns a question plus retrieved passages into the exact text the model sees.
 /// </summary>
 /// <remarks>
@@ -67,18 +111,12 @@ public static class PromptBuilder
     /// </summary>
     public const float SubstantialRelevance = 0.35f;
 
-    /// <summary>How many passages reach the prompt after diversification.</summary>
-    public const int MaxPassages = 8;
-
     /// <summary>
     /// Trade-off between relevance and variety when picking passages. Pure relevance returns eight
     /// paraphrases of the same evening; this keeps most of the relevance and spends the rest on
     /// covering different days.
     /// </summary>
     public const float MmrLambda = 0.7f;
-
-    /// <summary>Rough character budget for the context blocks — the model's window is not ours to fill.</summary>
-    public const int MaxContextChars = 6000;
 
     /// <summary>
     /// Qwen3's soft switch out of its reasoning mode. Its chat template only inserts the empty
@@ -90,9 +128,16 @@ public static class PromptBuilder
     /// </summary>
     private const string NoThinkSwitch = " /no_think";
 
-    public static ChatPrompt Build(string question, IReadOnlyList<ScoredChunk> retrieved)
+    /// <param name="budget">
+    /// How much context and memory this device may spend. Optional, and defaulting to
+    /// <see cref="PromptBudget.Full"/>, because that is what the evaluation measured — a caller
+    /// that says nothing gets the measured behaviour.
+    /// </param>
+    public static ChatPrompt Build(string question, IReadOnlyList<ScoredChunk> retrieved, PromptBudget? budget = null)
     {
         ArgumentNullException.ThrowIfNull(retrieved);
+
+        budget ??= PromptBudget.Full;
 
         if (string.IsNullOrWhiteSpace(question))
         {
@@ -113,7 +158,7 @@ public static class PromptBuilder
             return new ChatPrompt(false, string.Empty, []);
         }
 
-        var selected = Diversify(relevant, MaxPassages);
+        var selected = Diversify(relevant, budget.MaxPassages);
         var citations = selected
             .Select((c, i) => new ChatCitation(
                 i + 1,
@@ -123,7 +168,7 @@ public static class PromptBuilder
                 c.Chunk.Text))
             .ToList();
 
-        return new ChatPrompt(true, Compose(question, citations), citations);
+        return new ChatPrompt(true, Compose(question, citations, budget.MaxContextChars), citations);
     }
 
     /// <summary>
@@ -177,7 +222,7 @@ public static class PromptBuilder
         return chosen.OrderBy(c => c.Chunk.SourceDate).ToList();
     }
 
-    private static string Compose(string question, IReadOnlyList<ChatCitation> citations)
+    private static string Compose(string question, IReadOnlyList<ChatCitation> citations, int maxContextChars)
     {
         var builder = new StringBuilder();
 
@@ -213,7 +258,7 @@ public static class PromptBuilder
 
             // The date is what makes a "when did I..." question answerable at all.
             var block = $"[{citation.Marker}] {date}: {text}";
-            if (used + block.Length > MaxContextChars)
+            if (used + block.Length > maxContextChars)
             {
                 break;
             }

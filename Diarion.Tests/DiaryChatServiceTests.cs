@@ -16,18 +16,28 @@ public class DiaryChatServiceTests : IDisposable
 {
     private const string Model = "stub";
 
+    /// <summary>
+    /// What the service did, in the order it did it. On a tight device the turn is a sequence —
+    /// embed, drop the encoder, decode — and counting calls without ordering them would pass on the
+    /// arrangement that frees nothing, because the encoder was already gone by the time it mattered.
+    /// </summary>
+    private readonly List<string> _calls = [];
+
     private readonly DatabaseContext _dbContext;
     private readonly LiteDbVectorStore _store;
-    private readonly StubEmbedder _embedder = new();
-    private readonly StubGenerator _generator = new();
+    private readonly StubEmbedder _embedder;
+    private readonly StubGenerator _generator;
     private readonly FakeAiAvailability _availability = new();
+    private readonly StubProbe _probe = new();
     private readonly DiaryChatService _service;
 
     public DiaryChatServiceTests()
     {
+        _embedder = new StubEmbedder(_calls);
+        _generator = new StubGenerator(_calls);
         _dbContext = new DatabaseContext(useInMemory: true);
         _store = new LiteDbVectorStore(_dbContext);
-        _service = new DiaryChatService(_store, _embedder, _generator, _availability);
+        _service = new DiaryChatService(_store, _embedder, _generator, _availability, _probe);
     }
 
     public void Dispose() => _dbContext.Dispose();
@@ -261,9 +271,103 @@ public class DiaryChatServiceTests : IDisposable
         result.Citations.Select(c => c.Marker).Should().Equal(1);
     }
 
+    [Fact]
+    public async Task Ask_OnAHighTierDevice_SpendsTheMeasuredBudgetAndKeepsTheEncoder()
+    {
+        // 320 tokens and no unload is what the 2026-08-05 evaluation ran on. A device with room to
+        // spare pays nothing for the tight path, including its reload on the next question.
+        Grounded();
+
+        await AskAsync("кава");
+
+        _generator.LastMaxTokens.Should().Be(PromptBudget.Full.MaxAnswerTokens).And.Be(320);
+        _embedder.UnloadCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Ask_OnAMidTierDevice_TightensTheBudgetAndDropsTheEncoderBeforeDecoding()
+    {
+        // An iPhone 11 Pro Max: 4 GB, six cores, exactly the device the bar came down for. The
+        // ordering is the point — freeing the encoder after the generator has already loaded gives
+        // the decode nothing, and jetsam does not wait for a tidier moment.
+        _probe.Capabilities = new DeviceCapabilities(4096, 100L * 1024 * 1024 * 1024, 6, true);
+        Grounded();
+
+        await AskAsync("кава");
+
+        _generator.LastMaxTokens.Should().Be(PromptBudget.Tight.MaxAnswerTokens).And.Be(224);
+        _calls.Should().Equal("embed", "unload", "stream");
+    }
+
+    [Fact]
+    public async Task Ask_OnAMidTierDevice_ARefusedQuestionKeepsTheEncoder()
+    {
+        // Nothing was loaded that needs freeing: a refused question never reaches the generator, so
+        // unloading here would only buy a reload on the next question.
+        _probe.Capabilities = new DeviceCapabilities(4096, 100L * 1024 * 1024 * 1024, 6, true);
+        _embedder.Map("тривога", [1f, 0f]);
+        Indexed("зовсім про інше", [0f, 1f]);
+
+        (await AskAsync("тривога")).Refusal.Should().Be(ChatRefusalReason.NothingRelevant);
+
+        _embedder.UnloadCount.Should().Be(0);
+        _calls.Should().Equal("embed");
+    }
+
+    [Fact]
+    public async Task Ask_TheTightBudget_SendsTheModelLessToRead()
+    {
+        // Half the context is half the KV cache, and on a phone with a hard per-app ceiling that is
+        // the difference between an answer and the process disappearing. Measured against the same
+        // diary rather than asserted in the abstract.
+        Grounded(passages: 10);
+        var full = await PromptLengthAsync(new DeviceCapabilities(8192, 100L * 1024 * 1024 * 1024, 8, true));
+        var tight = await PromptLengthAsync(new DeviceCapabilities(4096, 100L * 1024 * 1024 * 1024, 6, true));
+
+        tight.Should().BeLessThan(full);
+    }
+
+    private async Task<int> PromptLengthAsync(DeviceCapabilities device)
+    {
+        _probe.Capabilities = device;
+        await AskAsync("кава");
+        return _generator.LastPrompt.Length;
+    }
+
+    /// <summary>
+    /// A question the diary can answer, with as many passages as asked for. Two is the minimum the
+    /// refusal gate accepts at these scores; more of them is how the two budgets come to differ.
+    /// </summary>
+    private void Grounded(int passages = 2)
+    {
+        _embedder.Map("кава", [1f, 0f]);
+        for (var i = 0; i < passages; i++)
+        {
+            // Long enough that eight of them exceed the tight character budget, and each distinct so
+            // MMR keeps them apart instead of collapsing them into one.
+            Indexed($"ранкова кава номер {i}, довгий запис про те, як минав той ранок і що було далі", [1f, 0.01f * i], day: 3 + i);
+        }
+
+        _generator.Respond("Так [1].");
+    }
+
+    /// <summary>Answers whatever the test set; High tier by default, so the budget is Full.</summary>
+    private sealed class StubProbe : IDeviceCapabilityProbe
+    {
+        public DeviceCapabilities Capabilities { get; set; } = new(8192, 100L * 1024 * 1024 * 1024, 8, true);
+
+        public DeviceCapabilities Probe() => Capabilities;
+    }
+
     private sealed class StubEmbedder : ITextEmbedder
     {
         private readonly Dictionary<string, float[]> _vectors = new();
+        private readonly List<string> _calls;
+
+        public StubEmbedder(List<string> calls)
+        {
+            _calls = calls;
+        }
 
         public string ModelId => Model;
 
@@ -271,22 +375,39 @@ public class DiaryChatServiceTests : IDisposable
 
         public bool IsAvailable => true;
 
+        public int UnloadCount { get; private set; }
+
         public void Map(string text, float[] vector)
         {
             EmbeddingMath.NormalizeInPlace(vector);
             _vectors[text] = vector;
         }
 
-        public Task<float[]> EmbedAsync(string text, CancellationToken cancellationToken = default) =>
-            Task.FromResult(_vectors.TryGetValue(text, out var v) ? v : [0f, 1f]);
+        public Task<float[]> EmbedAsync(string text, CancellationToken cancellationToken = default)
+        {
+            _calls.Add("embed");
+            return Task.FromResult(_vectors.TryGetValue(text, out var v) ? v : [0f, 1f]);
+        }
 
         public Task<IReadOnlyList<float[]>> EmbedBatchAsync(IReadOnlyList<string> texts, CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<float[]>>(texts.Select(_ => new[] { 0f, 1f }).ToList());
+
+        public void Unload()
+        {
+            UnloadCount++;
+            _calls.Add("unload");
+        }
     }
 
     private sealed class StubGenerator : ITextGenerator
     {
+        private readonly List<string> _calls;
         private string _response = string.Empty;
+
+        public StubGenerator(List<string> calls)
+        {
+            _calls = calls;
+        }
 
         public string ModelId => "stub-gen";
 
@@ -295,6 +416,8 @@ public class DiaryChatServiceTests : IDisposable
         public int CallCount { get; private set; }
 
         public string LastPrompt { get; private set; } = string.Empty;
+
+        public int LastMaxTokens { get; private set; }
 
         public void Respond(string text) => _response = text;
 
@@ -305,6 +428,8 @@ public class DiaryChatServiceTests : IDisposable
         {
             CallCount++;
             LastPrompt = prompt;
+            LastMaxTokens = maxTokens;
+            _calls.Add("stream");
 
             // Word by word, the way a real decoder arrives.
             var parts = _response.Split(' ');

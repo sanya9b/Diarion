@@ -105,6 +105,10 @@ public class AiAvailabilityTests
 
         public Task<IReadOnlyList<float[]>> EmbedBatchAsync(IReadOnlyList<string> texts, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
+
+        public void Unload()
+        {
+        }
     }
 
     private sealed class StubAvailableGenerator : ITextGenerator

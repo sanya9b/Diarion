@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- The generative model is 1.1 GB of weights, and iOS gives a 4 GB device roughly 2 GB before
+	     jetsam kills the process outright - no exception, no crash report, the app simply vanishes.
+	     This entitlement raises that ceiling on devices with 3 GB or more.
+
+	     It is not a guarantee. The entitlement only takes effect if the provisioning profile the app
+	     was signed with carries it, and this app is published from CI with CodesignKey="-" and
+	     re-signed afterwards by whatever the installing account allows, which may drop it silently.
+	     Costs one file; buys several hundred megabytes when it survives. -->
+	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<true/>
+</dict>
+</plist>
