@@ -40,12 +40,19 @@ public class UkrainianChatEvaluationTests
         ?? Path.Combine(Path.GetTempPath(), "diarion-ua-eval.txt");
 
     /// <summary>
-    /// Floors set just under what was measured on 2026-08-05 — 20/30 and 8/10 — so a regression
-    /// trips and the ordinary wobble of a quantised model does not.
+    /// Floor set just under the 22/30 measured on 2026-08-06, so a regression trips and the
+    /// ordinary wobble of a quantised model does not.
     /// </summary>
     private const double MinAnswerAccuracy = 0.60;
 
-    private const double MinRefusalRate = 0.70;
+    /// <summary>
+    /// The measured 10/10, less the one question that depends on the model. After
+    /// <see cref="PromptBuilder.SubstantialRelevance"/> nine of the ten refusals happen at the gate,
+    /// on the encoder alone, and those are deterministic; only «Як звали мою першу вчительку?»
+    /// reaches the generator. So this is not a guess about model wobble — it is the line below
+    /// which the gate itself has regressed.
+    /// </summary>
+    private const double MinRefusalRate = 0.90;
 
     [EnvironmentGatedFact(EnableVariable, "Runs the real 1.7B model over 40 questions; takes minutes.")]
     public async Task TheModelAnswersUkrainianFromTheDiaryOrRefuses()
@@ -134,13 +141,14 @@ public class UkrainianChatEvaluationTests
     [EnvironmentGatedFact(EnableVariable, "Encoder only; seconds.")]
     public async Task TheRetrievalGateAdmitsAndRefusesAtEachThreshold()
     {
+        // The real index, not one entry per vector: production chunks the text, and chunking is
+        // what decides the marker numbers the model sees. Guessing them from whole-entry vectors
+        // was close enough to mislead — one wrong-citation case turned out to hinge on it.
+        using var database = new DatabaseContext(useInMemory: true);
+        var store = new LiteDbVectorStore(database);
         var embedder = await LoadEmbedderAsync();
-        var vectors = new Dictionary<string, float[]>();
 
-        foreach (var entry in Diary)
-        {
-            vectors[entry.Id] = await embedder.EmbedAsync(entry.Text);
-        }
+        await IndexAsync(store, embedder);
 
         float[] thresholds = [0.34f, 0.31f, PromptBuilder.MinRelevance, 0.25f, 0.22f, 0.19f];
         var report = new StringBuilder();
@@ -152,8 +160,9 @@ public class UkrainianChatEvaluationTests
         foreach (var question in Questions)
         {
             var query = await embedder.EmbedAsync(question.Text);
-            var scored = Diary
-                .Select(e => (e.Id, Score: EmbeddingMath.DotNormalized(query, vectors[e.Id])))
+            var retrieved = store.Search(query, embedder.ModelId, 24, SearchScope.All, 0f);
+            var scored = retrieved
+                .Select(r => (Id: r.Chunk.SourceId, r.Score))
                 .OrderByDescending(s => s.Score)
                 .ToList();
 
@@ -164,9 +173,13 @@ public class UkrainianChatEvaluationTests
             var passes = new List<string>();
             foreach (var threshold in thresholds)
             {
-                // The gate as PromptBuilder applies it: enough passages, not just a good one.
-                var above = scored.Count(s => s.Score >= threshold);
-                var open = above >= PromptBuilder.MinPassages;
+                // The gate as PromptBuilder applies it: enough corroborating passages, or one
+                // strong enough to stand alone. The threshold under sweep is the inclusion floor;
+                // what counts as corroboration is a separate, higher bar.
+                var above = scored.Count(s =>
+                    s.Score >= Math.Max(threshold, PromptBuilder.SubstantialRelevance));
+                var open = above >= PromptBuilder.MinPassages
+                    || scored[0].Score >= PromptBuilder.MinStandaloneRelevance;
                 passes.Add(open ? "y" : "·");
 
                 if (!open)
@@ -183,6 +196,17 @@ public class UkrainianChatEvaluationTests
             report.AppendLine(
                 $"{string.Join(string.Empty, passes)}  best={scored[0].Score:F3} " +
                 $"expected@{expectedRank,-2} {question.Text}");
+
+            // The blocks exactly as the model is handed them, marker numbers included. A wrong
+            // citation is always one of these, and MMR reorders, so the marker a mistake lands on
+            // cannot be read off the score ranking.
+            var prompt = PromptBuilder.Build(
+                question.Text,
+                retrieved.Where(r => r.Score >= PromptBuilder.MinRelevance).ToList());
+            var byScore = scored.ToLookup(s => s.Id);
+            var offered = prompt.Citations.Select(c =>
+                $"[{c.Marker}]{c.SourceId}:{byScore[c.SourceId].Max(s => s.Score):F3}");
+            report.AppendLine($"        offered: {string.Join("  ", offered)}");
         }
 
         report.AppendLine();
@@ -197,8 +221,12 @@ public class UkrainianChatEvaluationTests
         File.WriteAllText(
             Path.ChangeExtension(ReportPath, ".gate.txt"), report.ToString(), Encoding.UTF8);
 
-        // Whatever the tuning says, the shipped threshold has to keep letting real questions through.
-        admitted[PromptBuilder.MinRelevance].Answerable.Should().BeGreaterThan(20);
+        // Whatever the tuning says, the shipped thresholds have to keep letting real questions
+        // through — and keep the false-presupposition ones out. Both sides are the encoder alone,
+        // so both are deterministic: 27 and 1 as measured on 2026-08-06.
+        var shipped = admitted[PromptBuilder.MinRelevance];
+        shipped.Answerable.Should().BeGreaterThan(20);
+        shipped.Unanswerable.Should().BeLessThanOrEqualTo(2);
     }
 
     private static string Describe(IReadOnlyCollection<string> sources) =>

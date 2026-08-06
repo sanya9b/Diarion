@@ -60,6 +60,23 @@ public class PromptBuilderTests
     }
 
     [Fact]
+    public void Build_AMiddlingMatchPlusANearNoiseOne_IsStillUnanswerable()
+    {
+        // «Яку машину я купив?» — 0.445 alongside 0.311, and the answer came back as the bicycle.
+        // Both passages clear MinRelevance, so the old rule called that two corroborating sources.
+        PromptBuilder.Build("яку машину я купив", [Chunk(0.445f, "велосипед", 3), Chunk(0.311f, "інше", 4)])
+            .IsAnswerable.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Build_TwoSubstantialMatches_AreEnoughWithoutEitherStandingAlone()
+    {
+        // Neither reaches MinStandaloneRelevance; together they corroborate.
+        PromptBuilder.Build("кава", [Chunk(0.42f, "про каву", 3), Chunk(0.36f, "знову кава", 4)])
+            .IsAnswerable.Should().BeTrue();
+    }
+
+    [Fact]
     public void Build_ASingleVeryStrongMatch_AnswersOnItsOwn()
     {
         // The diary keeps most specific facts in exactly one entry. «Скільки коштував велосипед?»
@@ -98,10 +115,27 @@ public class PromptBuilderTests
     }
 
     [Fact]
-    public void Build_ExactlyAtTheFloor_Counts()
+    public void Build_ExactlyAtTheCorroborationBar_Counts()
     {
-        PromptBuilder.Build("щось", [Chunk(PromptBuilder.MinRelevance), Chunk(PromptBuilder.MinRelevance)])
-            .IsAnswerable.Should().BeTrue();
+        PromptBuilder.Build("щось", [
+            Chunk(PromptBuilder.SubstantialRelevance),
+            Chunk(PromptBuilder.SubstantialRelevance),
+        ]).IsAnswerable.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Build_ExactlyAtTheFloor_ReachesThePromptOnceTheGateIsOpen()
+    {
+        // The floor decides what is worth showing, not what opens the gate. A passage at 0.28 is
+        // context for an answer two other passages already corroborated.
+        var prompt = PromptBuilder.Build("кава", [
+            Chunk(0.6f, "про каву", 3),
+            Chunk(0.5f, "знову кава", 4),
+            Chunk(PromptBuilder.MinRelevance, "дотичне", 5),
+        ]);
+
+        prompt.Citations.Should().HaveCount(3);
+        prompt.Text.Should().Contain("дотичне");
     }
 
     [Fact]

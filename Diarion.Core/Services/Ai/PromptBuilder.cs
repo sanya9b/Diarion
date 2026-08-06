@@ -51,6 +51,22 @@ public static class PromptBuilder
     /// </summary>
     public const float MinStandaloneRelevance = 0.47f;
 
+    /// <summary>
+    /// What a passage must score to count as support for opening the gate, as opposed to merely
+    /// being worth showing.
+    ///
+    /// <remarks>
+    /// <see cref="MinRelevance"/> answers "is this worth putting in the prompt"; this answers "does
+    /// this corroborate anything". Conflating them let a question the diary cannot answer through
+    /// on one mediocre match plus one near-noise one: «Яку машину я купив?» (0.445 + 0.311) was
+    /// answered with the bicycle, «Куди я їздив у відпустку за кордон?» (0.397 + 0.281) with Lviv.
+    /// Of the nine evaluation questions that retrieved exactly two passages, the five answerable
+    /// ones all scored 0.49 or better and the four unanswerable ones 0.445 or worse — the weak
+    /// second passage was never what made the difference, so it should not be what opens the gate.
+    /// </remarks>
+    /// </summary>
+    public const float SubstantialRelevance = 0.35f;
+
     /// <summary>How many passages reach the prompt after diversification.</summary>
     public const int MaxPassages = 8;
 
@@ -84,7 +100,15 @@ public static class PromptBuilder
         }
 
         var relevant = retrieved.Where(c => c.Score >= MinRelevance).ToList();
-        if (relevant.Count < MinPassages && !relevant.Any(c => c.Score >= MinStandaloneRelevance))
+
+        // Two corroborating passages, or one strong enough to stand alone. Passages between
+        // MinRelevance and SubstantialRelevance still reach the prompt as context; they just do
+        // not get a vote on whether the question is answerable at all.
+        var supporting = relevant.Count(c => c.Score >= SubstantialRelevance);
+        var answerable = supporting >= MinPassages
+            || relevant.Any(c => c.Score >= MinStandaloneRelevance);
+
+        if (!answerable)
         {
             return new ChatPrompt(false, string.Empty, []);
         }
