@@ -99,23 +99,11 @@ public partial class MoodStatsViewModel : ObservableObject
         // Only surface associations that are statistically significant (p < 0.05, i.e. >= 3 dots).
         foreach (var c in correlations.Where(c => c.Confidence >= 3))
         {
-            var factorName = c.FactorKey switch
-            {
-                CorrelationService.Factors.SleepDuration => AppResources.FactorSleepDuration,
-                CorrelationService.Factors.SleepQuality => AppResources.FactorSleepQuality,
-                CorrelationService.Factors.CyclePeriodDay => AppResources.FactorCyclePeriodDay,
-                CorrelationService.Factors.CycleSymptomLoad => AppResources.FactorCycleSymptoms,
-                CorrelationService.Factors.HabitCompletion => AppResources.FactorHabitCompletion,
-                CorrelationService.Factors.MealsLogged => AppResources.FactorMealsLogged,
-                CorrelationService.Factors.TaskCompletion => AppResources.FactorTaskCompletion,
-                CorrelationService.Factors.DailySpend => AppResources.FactorDailySpend,
-                _ => c.FactorKey
-            };
             var arrow = c.Coefficient >= 0 ? "↑" : "↓";
 
             items.Add(new MoodCorrelationItem
             {
-                Description = $"{arrow}  {factorName}",
+                Description = $"{arrow}  {FactorName(c.FactorKey)}",
                 Dots = new string('●', c.Confidence) + new string('○', 5 - c.Confidence)
             });
         }
@@ -136,6 +124,33 @@ public partial class MoodStatsViewModel : ObservableObject
         {
             InsightProgressText = string.Empty;
         }
+    }
+
+    /// <summary>
+    /// The user-facing name of a factor. Structured factors are looked up; a theme cannot be,
+    /// because the key carries the user's own sentence and the list is different every window.
+    /// </summary>
+    private static string FactorName(string key)
+    {
+        if (key.StartsWith(CorrelationService.Factors.ThemePrefix, StringComparison.Ordinal))
+        {
+            return string.Format(
+                AppResources.FactorThemeFormat,
+                key[CorrelationService.Factors.ThemePrefix.Length..]);
+        }
+
+        return key switch
+        {
+            CorrelationService.Factors.SleepDuration => AppResources.FactorSleepDuration,
+            CorrelationService.Factors.SleepQuality => AppResources.FactorSleepQuality,
+            CorrelationService.Factors.CyclePeriodDay => AppResources.FactorCyclePeriodDay,
+            CorrelationService.Factors.CycleSymptomLoad => AppResources.FactorCycleSymptoms,
+            CorrelationService.Factors.HabitCompletion => AppResources.FactorHabitCompletion,
+            CorrelationService.Factors.MealsLogged => AppResources.FactorMealsLogged,
+            CorrelationService.Factors.TaskCompletion => AppResources.FactorTaskCompletion,
+            CorrelationService.Factors.DailySpend => AppResources.FactorDailySpend,
+            _ => key
+        };
     }
 
     public async Task LoadDataAsync(int days)

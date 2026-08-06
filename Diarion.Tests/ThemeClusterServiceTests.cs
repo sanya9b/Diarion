@@ -197,16 +197,138 @@ public class ThemeClusterServiceTests : IDisposable
     [Fact]
     public async Task Cluster_IsDeterministic()
     {
-        // No random initialisation anywhere, which is the reason k-means was not used.
+        // No random initialisation anywhere, which is the reason k-means was not used. Asked of a
+        // second instance on purpose: the same one would answer from its memo and prove nothing.
         Indexed(3, "робота", [1f, 0f]);
         Indexed(4, "робота знову", [1f, 0.05f]);
         Indexed(10, "спорт", [0f, 1f]);
         Indexed(11, "спорт знову", [0.05f, 1f]);
 
         var first = await _service.ClusterAsync(Start, End);
-        var second = await _service.ClusterAsync(Start, End);
+        var second = await new ThemeClusterService(_store, _embedder, _availability).ClusterAsync(Start, End);
 
         second.Should().BeEquivalentTo(first, options => options.WithStrictOrdering());
+    }
+
+    [Fact]
+    public async Task Cluster_DaysAreDistinctAndAscending()
+    {
+        // The correlation pass reads these days directly, and a series built from an unsorted or
+        // duplicated list would silently count one day twice.
+        Indexed(5, "робота допізна", [1f, 0f]);
+        Indexed(3, "робота і дедлайни", [1f, 0.02f]);
+        Indexed(3, "робота, ще раз про неї", [1f, 0.03f]);
+        Indexed(4, "знову дедлайни", [1f, 0.05f]);
+
+        var theme = (await _service.ClusterAsync(Start, End))[0];
+
+        theme.Days.Should().Equal(
+            new DateTime(2026, 6, 3),
+            new DateTime(2026, 6, 4),
+            new DateTime(2026, 6, 5));
+        theme.DayCount.Should().Be(theme.Days.Count);
+        theme.FirstSeen.Should().Be(theme.Days[0]);
+        theme.LastSeen.Should().Be(theme.Days[^1]);
+    }
+
+    [Fact]
+    public async Task Summarise_IndexedDaysCoverEveryDayWritten_EvenWhenNothingWasThemed()
+    {
+        // The denominator for "the theme was absent". A day of one-word answers is still a day the
+        // user wrote and this theme was not what they wrote about; a day with no entry at all is
+        // not, and must stay out or absence gets invented.
+        Indexed(3, "робота і дедлайни", [1f, 0f]);
+        Indexed(4, "знову дедлайни", [1f, 0.05f]);
+        IndexedRaw(7, "Ні", [0f, 1f]);
+
+        var summary = await _service.SummariseAsync(Start, End);
+
+        summary.Themes.Should().ContainSingle();
+        summary.Themes[0].Days.Should().NotContain(new DateTime(2026, 6, 7));
+        summary.IndexedDays.Should().Equal(
+            new DateTime(2026, 6, 3),
+            new DateTime(2026, 6, 4),
+            new DateTime(2026, 6, 7));
+    }
+
+    [Fact]
+    public async Task Summarise_NothingIndexed_HasNoDaysEither()
+    {
+        var summary = await _service.SummariseAsync(Start, End);
+
+        summary.Themes.Should().BeEmpty();
+        summary.IndexedDays.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Summarise_SameWindowTwice_ClustersOnce()
+    {
+        // The statistics screen asks for this window twice in a row — the digest, then the mood
+        // correlations. Re-reading the rows is cheap; re-clustering them is O(k·n²).
+        var counting = new CountingVectorStore(_store);
+        var service = new ThemeClusterService(counting, _embedder, _availability);
+        Indexed(3, "робота і дедлайни", [1f, 0f]);
+        Indexed(4, "знову дедлайни", [1f, 0.05f]);
+
+        var first = await service.SummariseAsync(Start, End);
+        var second = await service.SummariseAsync(Start, End);
+
+        second.Should().BeSameAs(first);
+        counting.RangeReads.Should().Be(2, "the rows are re-read; only the clustering is reused");
+    }
+
+    [Fact]
+    public async Task Summarise_AfterTheDiaryChanges_ClustersAgain()
+    {
+        Indexed(3, "робота і дедлайни", [1f, 0f]);
+        Indexed(4, "знову дедлайни", [1f, 0.05f]);
+        var first = await _service.SummariseAsync(Start, End);
+
+        Indexed(10, "зовсім інша тема, про спорт", [0f, 1f]);
+        Indexed(11, "спорт знову, про біг зранку", [0.05f, 1f]);
+
+        (await _service.SummariseAsync(Start, End)).Themes.Should().HaveCount(2)
+            .And.NotBeSameAs(first.Themes);
+    }
+
+    [Fact]
+    public async Task Summarise_ADifferentWindow_IsNotServedFromTheMemo()
+    {
+        Indexed(3, "робота і дедлайни", [1f, 0f]);
+        Indexed(4, "знову дедлайни", [1f, 0.05f]);
+
+        (await _service.SummariseAsync(Start, End)).Themes.Should().ContainSingle();
+        (await _service.SummariseAsync(new DateTime(2026, 6, 20), End)).Themes.Should().BeEmpty();
+    }
+
+    /// <summary>Counts the reads the memo is supposed to keep cheap, and passes everything through.</summary>
+    private sealed class CountingVectorStore(IVectorStore inner) : IVectorStore
+    {
+        public int RangeReads { get; private set; }
+
+        public IReadOnlyList<EmbeddingChunk> GetByDateRange(
+            string modelId, DateTime start, DateTime end, SearchScope scope = SearchScope.All)
+        {
+            RangeReads++;
+            return inner.GetByDateRange(modelId, start, end, scope);
+        }
+
+        public void UpsertBatch(IEnumerable<EmbeddingChunk> chunks) => inner.UpsertBatch(chunks);
+
+        public int DeleteBySource(string sourceKind, string sourceId) => inner.DeleteBySource(sourceKind, sourceId);
+
+        public int DeleteForeignModels(string modelId) => inner.DeleteForeignModels(modelId);
+
+        public void Clear() => inner.Clear();
+
+        public IReadOnlyDictionary<string, string> GetIndexedHashes(string modelId) => inner.GetIndexedHashes(modelId);
+
+        public int CountForModel(string modelId) => inner.CountForModel(modelId);
+
+        public IReadOnlyList<ScoredChunk> Search(
+            float[] queryVector, string modelId, int limit,
+            SearchScope scope = SearchScope.All, float minScore = float.NegativeInfinity) =>
+            inner.Search(queryVector, modelId, limit, scope, minScore);
     }
 
     private void IndexedRaw(int day, string text, float[] vector)

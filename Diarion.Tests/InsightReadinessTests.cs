@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Services.Ai;
 using Diarion.ViewModels.Statistics;
 using FluentAssertions;
 using Moq;
@@ -43,7 +44,9 @@ public class InsightReadinessTests
         finance.Setup(s => s.GetFinanceTransactionsForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                .ReturnsAsync(new List<FinanceTransaction>());
 
-        return new CorrelationService(diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object);
+        return new CorrelationService(
+            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object,
+            new NullThemeClusterService());
     }
 
     /// <summary>Days carrying both a mood and a sleep quality, which is one paired day each.</summary>

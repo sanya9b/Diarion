@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Services.Ai;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -67,7 +68,8 @@ public class CorrelationServiceTests
                .ReturnsAsync(new List<FinanceTransaction>());
 
         return new CorrelationService(
-            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object);
+            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object,
+            new NullThemeClusterService());
     }
 
     [Fact]

@@ -1642,6 +1642,9 @@
   <data name="FactorDailySpend" xml:space="preserve">
     <value>Money spent</value>
   </data>
+  <data name="FactorThemeFormat" xml:space="preserve">
+    <value>Theme: {0}</value>
+  </data>
   <data name="SettingsCurrencyLabel" xml:space="preserve">
     <value>Currency</value>
   </data>

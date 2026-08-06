@@ -1642,6 +1642,9 @@
   <data name="FactorDailySpend" xml:space="preserve">
     <value>Витрати</value>
   </data>
+  <data name="FactorThemeFormat" xml:space="preserve">
+    <value>Тема: {0}</value>
+  </data>
   <data name="SettingsCurrencyLabel" xml:space="preserve">
     <value>Валюта</value>
   </data>

@@ -36,6 +36,9 @@ public class ThemeClusterService : IThemeClusterService
     private readonly ITextEmbedder _embedder;
     private readonly IAiAvailability _availability;
 
+    private readonly object _memoLock = new();
+    private (string Key, ThemeSummary Result)? _memo;
+
     public ThemeClusterService(IVectorStore store, ITextEmbedder embedder, IAiAvailability availability)
     {
         _store = store;
@@ -47,20 +50,43 @@ public class ThemeClusterService : IThemeClusterService
         DateTime start,
         DateTime end,
         int maxThemes = 5,
+        CancellationToken cancellationToken = default) =>
+        (await SummariseAsync(start, end, maxThemes, cancellationToken).ConfigureAwait(false)).Themes;
+
+    public async Task<ThemeSummary> SummariseAsync(
+        DateTime start,
+        DateTime end,
+        int maxThemes = 5,
         CancellationToken cancellationToken = default)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(maxThemes, 1);
 
+        var empty = new ThemeSummary([], []);
+
         if (!await _availability.CanEmbedAsync().ConfigureAwait(false))
         {
-            return [];
+            return empty;
         }
 
         var chunks = _store.GetByDateRange(_embedder.ModelId, start.Date, end.Date, SearchScope.Diary);
         if (chunks.Count == 0)
         {
-            return [];
+            return empty;
         }
+
+        var key = MemoKey(start, end, maxThemes, chunks);
+        lock (_memoLock)
+        {
+            if (_memo is { } memo && memo.Key == key)
+            {
+                return memo.Result;
+            }
+        }
+
+        // Every day that was written on, whatever it was written about — including days whose
+        // passages are all below MinThemeChars. Those are days the theme could have appeared on and
+        // did not, which is exactly what a correlation needs.
+        var indexedDays = chunks.Select(c => c.SourceDate.Date).Distinct().Order().ToList();
 
         var dimensions = chunks[0].Dim;
         var points = chunks
@@ -69,7 +95,38 @@ public class ThemeClusterService : IThemeClusterService
             .Select(c => new Point(c, EmbeddingMath.FromBytes(c.Vector)))
             .ToList();
 
-        return Cluster(points, maxThemes, cancellationToken);
+        // Clustering runs outside the lock: it is the second or two this memo exists to avoid, and
+        // two callers racing here duplicate work rather than corrupt anything.
+        var result = new ThemeSummary(Cluster(points, maxThemes, cancellationToken), indexedDays);
+
+        lock (_memoLock)
+        {
+            _memo = (key, result);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Identifies a window and its contents well enough to reuse the clustering. The statistics
+    /// screen asks for the same window twice in a row — once for the digest, once for the mood
+    /// correlations — and re-reading the rows is cheap while re-clustering them is O(k·n²).
+    /// </summary>
+    /// <remarks>
+    /// Chunk count and total length are a heuristic signature, not a hash: an edit that replaces a
+    /// passage with one of exactly the same length leaves the themes stale until the window or the
+    /// count changes. That is an acceptable trade on a statistics screen, and cheaper than hashing
+    /// every vector on every call.
+    /// </remarks>
+    private string MemoKey(DateTime start, DateTime end, int maxThemes, IReadOnlyList<EmbeddingChunk> chunks)
+    {
+        long totalChars = 0;
+        foreach (var c in chunks)
+        {
+            totalChars += c.Text.Length;
+        }
+
+        return $"{_embedder.ModelId}|{start.Date:O}|{end.Date:O}|{maxThemes}|{chunks.Count}|{totalChars}";
     }
 
     /// <summary>
@@ -106,18 +163,14 @@ public class ThemeClusterService : IThemeClusterService
                 .ThenBy(c => c.Seed.Chunk.SourceDate)
                 .First();
 
-            var days = best.Members.Select(m => m.Chunk.SourceDate.Date).Distinct().ToList();
+            var days = best.Members.Select(m => m.Chunk.SourceDate.Date).Distinct().Order().ToList();
             if (days.Count < MinDaysPerTheme)
             {
                 // The densest cluster left does not recur, so nothing after it will either.
                 break;
             }
 
-            themes.Add(new DiaryTheme(
-                Label(best.Seed.Chunk.Text),
-                days.Count,
-                days.Min(),
-                days.Max()));
+            themes.Add(new DiaryTheme(Label(best.Seed.Chunk.Text), days));
 
             var claimed = best.Members.ToHashSet();
             remaining = remaining.Where(p => !claimed.Contains(p)).ToList();
