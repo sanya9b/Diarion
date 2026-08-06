@@ -51,12 +51,21 @@ public class AiModelCatalogTests
             .Should().Be(AiModelCatalog.Qwen3Generator);
     }
 
-    [Theory]
-    [InlineData(2048)]  // Low tier
-    [InlineData(4096)]  // Mid tier
-    public void Recommend_BelowHighTier_GetsNoGenerativeModel(int ramMb)
+    [Fact]
+    public void Recommend_MidTierDevice_AlsoGetsTheGenerativeModel()
     {
-        // 1.1 GB resident is not something a mid-range phone should hold while the user types.
+        // The bar was High/6 GB until the owner lowered it: with 0.6B out of the catalogue, holding
+        // it there meant mid-range phones got no generation at all. 1.1 GB resident on 4 GB is
+        // tight, and the generator unloading on sleep is what pays for it.
+        AiModelCatalog.Recommend(AiModelKind.Generation, Device(4096))
+            .Should().Be(AiModelCatalog.Qwen3Generator);
+    }
+
+    [Theory]
+    [InlineData(2048)]  // Low tier by any measure
+    [InlineData(4095)]  // one megabyte short — and a "4 GB" phone routinely reports 3.6-3.8 GB
+    public void Recommend_BelowMidTier_GetsNoGenerativeModel(int ramMb)
+    {
         AiModelCatalog.Recommend(AiModelKind.Generation, Device(ramMb)).Should().BeNull();
     }
 

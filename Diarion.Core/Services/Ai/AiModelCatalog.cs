@@ -62,8 +62,14 @@ public static class AiModelCatalog
     /// <remarks>
     /// Chosen over Qwen3-0.6B on measurement, not size. On a Ukrainian retrieval-QA set 0.6B scored
     /// 1/4 and answered "when did I sleep best" with the worst night in the set, correctly cited;
-    /// this one scores 4/4 once the prompt carries a worked example. It is High tier because 1.1 GB
-    /// resident is not something a 4 GB phone should be asked to hold while the user is typing.
+    /// this one scores 4/4 once the prompt carries a worked example.
+    ///
+    /// It sat at High tier / 6 GB until the owner lowered the bar to Mid / 4 GB: with 0.6B out of
+    /// the catalogue, the choice was between a mid-range phone getting no generation at all and a
+    /// mid-range phone getting this. The reason for the old bar has not gone away — 1.1 GB resident
+    /// leaves a 4 GB device little headroom and the system may kill the app mid-answer. What pays
+    /// for the trade is that the generator unloads on sleep alongside the encoder; if 4 GB phones
+    /// start dying during chat, this is the line to move back up.
     ///
     /// Built with builder 0.15.x — 0.14.1 segfaults on this model — and verified to load under the
     /// 0.14.1 runtime the app pins. Building happens on a desktop and never touches the manifest,
@@ -95,8 +101,8 @@ public static class AiModelCatalog
             new AiModelFile("chat_template.jinja", "chat_template.jinja", 4_256,
                 "51fa65c79bb57f058dc7ef8734884bd325fe9d45bb03a61bfef59785d3bc2da9"),
         ],
-        RequiredRamMb = 6144,
-        MinTier = DeviceTier.High,
+        RequiredRamMb = 4096,
+        MinTier = DeviceTier.Mid,
         LicenseSpdx = "Apache-2.0",
         Quantization = "int4",
     };
