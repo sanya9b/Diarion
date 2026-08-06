@@ -17,15 +17,13 @@ public class IndexableTextComposerTests
             SleepQuality = 5,
             HealthStatus = 4,
             Emotion = Emotion.Happy,
-            AiSummary = "згенерований підсумок",
         };
 
         var segments = IndexableTextComposer.ComposeEntry(entry);
 
-        segments.Should().Equal("за каву");
         // Ratings and mood are searchable as numbers through statistics; as prose they would let a
-        // question about feelings match on a sleep score. AiSummary is our own output, not input.
-        segments.Should().NotContain(s => s.Contains("згенерований"));
+        // question about feelings match on a sleep score.
+        segments.Should().Equal("за каву");
     }
 
     [Fact]

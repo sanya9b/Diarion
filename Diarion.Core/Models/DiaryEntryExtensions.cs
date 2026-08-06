@@ -8,8 +8,8 @@ public static class DiaryEntryExtensions
     /// Whether the user actually put something in this day, as opposed to merely opening it. Rows are
     /// created as a side effect of browsing — the day screen writes <see cref="DiaryEntry.CycleDay"/>
     /// whenever cycle tracking is on — so "a row exists for this date" is not the same as "journaled".
-    /// <see cref="DiaryEntry.CycleDay"/>, <see cref="DiaryEntry.AiSummary"/> and the identity fields are
-    /// therefore deliberately excluded: none of them is something the user typed.
+    /// <see cref="DiaryEntry.CycleDay"/> and the identity fields are therefore deliberately
+    /// excluded: none of them is something the user typed.
     /// </summary>
     public static bool HasContent(this DiaryEntry? entry)
     {

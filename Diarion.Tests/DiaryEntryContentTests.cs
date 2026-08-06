@@ -28,12 +28,6 @@ public class DiaryEntryContentTests
     }
 
     [Fact]
-    public void HasContent_AiSummaryOnly_IsFalse()
-    {
-        new DiaryEntry { Date = DateTime.Today, AiSummary = "generated" }.HasContent().Should().BeFalse();
-    }
-
-    [Fact]
     public void HasContent_WhitespaceOnlyText_IsFalse()
     {
         new DiaryEntry { Gratitude = "   ", Triggers = "\t" }.HasContent().Should().BeFalse();
