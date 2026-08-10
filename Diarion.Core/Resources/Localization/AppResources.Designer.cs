@@ -1228,6 +1228,18 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string StatsRangeStartHint {
+            get {
+                return ResourceManager.GetString("StatsRangeStartHint", resourceCulture);
+            }
+        }
+
+        public static string StatsRangeEndHint {
+            get {
+                return ResourceManager.GetString("StatsRangeEndHint", resourceCulture);
+            }
+        }
+
         public static string NotesFilterAll {
             get {
                 return ResourceManager.GetString("NotesFilterAll", resourceCulture);

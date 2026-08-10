@@ -5,13 +5,13 @@ namespace Diarion.Services;
 
 public interface IStatisticsService
 {
-    Task<SleepStatistics> GetSleepStatisticsAsync(int days);
-    Task<MoodStatistics> GetMoodStatisticsAsync(int days);
-    Task<TodoStatistics> GetTodoStatisticsAsync(int days);
+    Task<SleepStatistics> GetSleepStatisticsAsync(StatsRange range);
+    Task<MoodStatistics> GetMoodStatisticsAsync(StatsRange range);
+    Task<TodoStatistics> GetTodoStatisticsAsync(StatsRange range);
     /// <summary>
-    /// Finance figures for the last <paramref name="days"/> days. <paramref name="accountId"/> null means
-    /// every account; a value scopes the KPIs, the category donut and the trend to that one account and
+    /// Finance figures for <paramref name="range"/>. <paramref name="accountId"/> null means every
+    /// account; a value scopes the KPIs, the category donut and the trend to that one account and
     /// leaves the per-account breakdown empty.
     /// </summary>
-    Task<FinanceStatistics> GetFinanceStatisticsAsync(int days, Guid? accountId = null);
+    Task<FinanceStatistics> GetFinanceStatisticsAsync(StatsRange range, Guid? accountId = null);
 }

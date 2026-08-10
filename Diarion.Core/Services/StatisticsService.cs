@@ -19,13 +19,10 @@ public class StatisticsService : IStatisticsService
         _financeService = financeService;
     }
 
-    // A "N day" window means exactly N calendar days INCLUDING today: [today-(N-1), today].
-    private static DateTime GetStartDate(int days) => DateTime.Today.AddDays(-(Math.Max(1, days) - 1));
-
-    public async Task<SleepStatistics> GetSleepStatisticsAsync(int days)
+    public async Task<SleepStatistics> GetSleepStatisticsAsync(StatsRange range)
     {
-        var startDate = GetStartDate(days);
-        var entries = await _diaryService.GetDiaryEntriesForStatsAsync(startDate, DateTime.Today);
+        range = range.Normalized();
+        var entries = await _diaryService.GetDiaryEntriesForStatsAsync(range.Start, range.End);
         var entriesList = entries.ToList();
 
         var validSleepEntries = entriesList.Where(x => x.HasSleepStart && x.HasSleepEnd).ToList();
@@ -68,7 +65,7 @@ public class StatisticsService : IStatisticsService
         }
 
         var fullDataPoints = new List<SleepDataPoint>();
-        for (var d = startDate.Date; d <= DateTime.Today; d = d.AddDays(1))
+        for (var d = range.Start; d <= range.End; d = d.AddDays(1))
         {
             fullDataPoints.Add(byDate.TryGetValue(d, out var pt)
                 ? pt
@@ -83,10 +80,10 @@ public class StatisticsService : IStatisticsService
         };
     }
 
-    public async Task<MoodStatistics> GetMoodStatisticsAsync(int days)
+    public async Task<MoodStatistics> GetMoodStatisticsAsync(StatsRange range)
     {
-        var startDate = GetStartDate(days);
-        var entries = await _diaryService.GetDiaryEntriesForStatsAsync(startDate, DateTime.Today);
+        range = range.Normalized();
+        var entries = await _diaryService.GetDiaryEntriesForStatsAsync(range.Start, range.End);
         var entriesList = entries.ToList();
 
         var counts = new Dictionary<Emotion, int>();
@@ -129,7 +126,7 @@ public class StatisticsService : IStatisticsService
             }
         }
 
-        // Daily mood series (gap-filled so it spans exactly N days): average valence for the trend line
+        // Daily mood series (gap-filled so it spans exactly the window): average valence for the trend line
         // plus the day's dominant emotion (mode, deterministic tie-break) for the Year-in-Pixels heatmap.
         var moodByDate = entriesList
             .Where(e => MoodAggregate.HasAny(e.Emotion, e.HourlyMood))
@@ -145,7 +142,7 @@ public class StatisticsService : IStatisticsService
                         g.SelectMany(e => e.HourlyMood).ToList())));
 
         var dailyTrend = new List<MoodTrendPoint>();
-        for (var d = startDate.Date; d <= DateTime.Today; d = d.AddDays(1))
+        for (var d = range.Start; d <= range.End; d = d.AddDays(1))
         {
             dailyTrend.Add(moodByDate.TryGetValue(d, out var info)
                 ? new MoodTrendPoint { Date = d, Valence = info.Valence, HasData = true, DominantEmotion = info.Dominant }
@@ -189,22 +186,23 @@ public class StatisticsService : IStatisticsService
         };
     }
 
-    public async Task<TodoStatistics> GetTodoStatisticsAsync(int days)
+    public async Task<TodoStatistics> GetTodoStatisticsAsync(StatsRange range)
     {
-        var startDate = GetStartDate(days);
+        range = range.Normalized();
         // Using the optimized summary method that counts directly in DB
-        return await _todoService.GetTodoStatsSummaryAsync(startDate, DateTime.Today);
+        return await _todoService.GetTodoStatsSummaryAsync(range.Start, range.End);
     }
 
-    public async Task<FinanceStatistics> GetFinanceStatisticsAsync(int days, Guid? accountId = null)
+    public async Task<FinanceStatistics> GetFinanceStatisticsAsync(StatsRange range, Guid? accountId = null)
     {
-        var today = DateTime.Today;
-        var startDate = GetStartDate(days);
+        range = range.Normalized();
+        var startDate = range.Start;
+        var end = range.End;
 
         // Twice the selected window: the comparison card needs the preceding period as a baseline, and
         // fetching it here keeps everything on this screen derived from one read of one set of rows.
-        var fetchStart = startDate.AddDays(-days);
-        var fetched = await _financeService.GetFinanceTransactionsForStatsAsync(fetchStart, today);
+        var (fetchStart, _) = ReportPeriod.PreviousWindow(startDate, end);
+        var fetched = await _financeService.GetFinanceTransactionsForStatsAsync(fetchStart, end);
 
         // Scoped in memory rather than in the query on purpose. AccountId is a nullable Guid and LiteDB's
         // LINQ translation is broken for those (see FinanceService.DeleteAccountAsync) — and it fails by
@@ -265,8 +263,8 @@ public class StatisticsService : IStatisticsService
             stats.IncomeByCategory = grouped;
         }
 
-        stats.Trend = FinanceReportCalculator.ComputeTrend(transactions, startDate, today);
-        stats.Comparison = FinanceReportCalculator.ComputeComparison(scoped, startDate, today);
+        stats.Trend = FinanceReportCalculator.ComputeTrend(transactions, startDate, end);
+        stats.Comparison = FinanceReportCalculator.ComputeComparison(scoped, startDate, end);
 
         // One account is not a breakdown — the card hides itself rather than showing a single bar.
         if (accountId == null)
@@ -274,7 +272,7 @@ public class StatisticsService : IStatisticsService
             var accounts = await _financeService.GetAccountsAsync(includeArchived: true);
             var transfers = await _financeService.GetTransfersAsync();
             stats.AccountBreakdown = FinanceReportCalculator.ComputeAccountBreakdown(
-                accounts, transactions, transfers, startDate, today);
+                accounts, transactions, transfers, startDate, end);
         }
 
         return stats;

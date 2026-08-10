@@ -81,12 +81,12 @@ public partial class FinanceStatsViewModel : BaseViewModel
     private string Money(decimal amount) => MoneyFormatter.Format(amount, _currencyCode);
     private string MoneySigned(decimal amount) => MoneyFormatter.FormatSigned(amount, _currencyCode);
 
-    public async Task LoadDataAsync(int days, Guid? accountId = null)
+    public async Task LoadDataAsync(StatsRange range, Guid? accountId = null)
     {
         var culture = CultureInfo.CurrentCulture;
         _currencyCode = (await _profileService.GetUserProfileAsync())?.GetEffectiveCurrencyCode()
                         ?? MoneyFormatter.FallbackCode;
-        var stats = await _statisticsService.GetFinanceStatisticsAsync(days, accountId);
+        var stats = await _statisticsService.GetFinanceStatisticsAsync(range, accountId);
 
         IsEmpty = stats.IsEmpty;
 

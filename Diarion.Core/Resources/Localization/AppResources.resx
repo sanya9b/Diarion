@@ -997,6 +997,12 @@
   <data name="StatsPeriod" xml:space="preserve">
     <value>Period</value>
   </data>
+  <data name="StatsRangeStartHint" xml:space="preserve">
+    <value>Start of the period</value>
+  </data>
+  <data name="StatsRangeEndHint" xml:space="preserve">
+    <value>End of the period</value>
+  </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Week</value>
   </data>

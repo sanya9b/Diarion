@@ -76,7 +76,7 @@ public class CorrelationFactorsTests
             entries[i].HabitCompletion = i / (double)(Days - 1);
         }
 
-        var result = await Build(entries).GetMoodCorrelationsAsync(Days);
+        var result = await Build(entries).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         var habit = Find(result, CorrelationService.Factors.HabitCompletion);
         habit.Should().NotBeNull();
@@ -95,7 +95,7 @@ public class CorrelationFactorsTests
             entries[i].HabitCompletion = i < 4 ? null : 1.0 - (i / (double)Days);
         }
 
-        var result = await Build(entries).GetMoodCorrelationsAsync(Days);
+        var result = await Build(entries).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         Find(result, CorrelationService.Factors.HabitCompletion)!
             .SampleSize.Should().Be(Days - 4);
@@ -110,7 +110,7 @@ public class CorrelationFactorsTests
             entries[i].MealsLogged = i < 3 ? 0 : 1 + i % 5;
         }
 
-        var result = await Build(entries).GetMoodCorrelationsAsync(Days);
+        var result = await Build(entries).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         var meals = Find(result, CorrelationService.Factors.MealsLogged);
         meals.Should().NotBeNull();
@@ -131,7 +131,7 @@ public class CorrelationFactorsTests
             }
         }
 
-        var result = await Build(MoodOnly(), todos: todos).GetMoodCorrelationsAsync(Days);
+        var result = await Build(MoodOnly(), todos: todos).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         var tasks = Find(result, CorrelationService.Factors.TaskCompletion);
         tasks.Should().NotBeNull();
@@ -145,7 +145,7 @@ public class CorrelationFactorsTests
             .Select(i => new TodoStatsDto { TargetDate = DateFor(i), IsCompleted = i % 2 == 0 })
             .ToList();
 
-        var result = await Build(MoodOnly(), todos: todos).GetMoodCorrelationsAsync(Days);
+        var result = await Build(MoodOnly(), todos: todos).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         Find(result, CorrelationService.Factors.TaskCompletion)!
             .SampleSize.Should().Be(Days - 5, "a day with no tasks was not a day of failing at them");
@@ -169,7 +169,7 @@ public class CorrelationFactorsTests
             }
         }
 
-        var result = await Build(MoodOnly(), transactions: transactions).GetMoodCorrelationsAsync(Days);
+        var result = await Build(MoodOnly(), transactions: transactions).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         var spend = Find(result, CorrelationService.Factors.DailySpend);
         spend.Should().NotBeNull();
@@ -189,7 +189,7 @@ public class CorrelationFactorsTests
             })
             .ToList();
 
-        var result = await Build(MoodOnly(), transactions: transactions).GetMoodCorrelationsAsync(Days);
+        var result = await Build(MoodOnly(), transactions: transactions).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         // Half the window has no history at all, so the series is too short to report on.
         Find(result, CorrelationService.Factors.DailySpend).Should().BeNull();
@@ -207,7 +207,7 @@ public class CorrelationFactorsTests
             })
             .ToList();
 
-        var result = await Build(MoodOnly(), transactions: transactions).GetMoodCorrelationsAsync(Days);
+        var result = await Build(MoodOnly(), transactions: transactions).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         Find(result, CorrelationService.Factors.DailySpend).Should().BeNull();
     }
@@ -223,7 +223,7 @@ public class CorrelationFactorsTests
             entries[i].SleepQuality = 1 + i % 5;
         }
 
-        var result = await Build(entries).GetMoodCorrelationsAsync(Days);
+        var result = await Build(entries).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         result.Should().HaveCountGreaterThan(1);
         result.Should().AllSatisfy(c =>

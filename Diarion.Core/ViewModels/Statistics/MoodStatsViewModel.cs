@@ -91,9 +91,9 @@ public partial class MoodStatsViewModel : ObservableObject
         _correlationService = correlationService;
     }
 
-    private async Task LoadCorrelationsAsync(int days)
+    private async Task LoadCorrelationsAsync(StatsRange range)
     {
-        var correlations = await _correlationService.GetMoodCorrelationsAsync(days);
+        var correlations = await _correlationService.GetMoodCorrelationsAsync(range);
         var items = new System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem>();
 
         // Only surface associations that are statistically significant (p < 0.05, i.e. >= 3 dots).
@@ -114,7 +114,7 @@ public partial class MoodStatsViewModel : ObservableObject
         // nothing about why. Ask how far along the data is and say so instead.
         if (items.Count == 0)
         {
-            var readiness = await _correlationService.GetReadinessAsync(days);
+            var readiness = await _correlationService.GetReadinessAsync(range);
             InsightProgressText = string.Format(
                 AppResources.StatsInsightProgressFormat,
                 Math.Min(readiness.PairedDays, readiness.RequiredDays),
@@ -153,12 +153,12 @@ public partial class MoodStatsViewModel : ObservableObject
         };
     }
 
-    public async Task LoadDataAsync(int days)
+    public async Task LoadDataAsync(StatsRange range)
     {
         IsBusy = true;
         try
         {
-            var moodStats = await _statisticsService.GetMoodStatisticsAsync(days);
+            var moodStats = await _statisticsService.GetMoodStatisticsAsync(range);
             
             var totalEmotions = moodStats.EmotionCounts.Values.Sum();
             if (totalEmotions == 0)
@@ -228,7 +228,7 @@ public partial class MoodStatsViewModel : ObservableObject
                     ColorHex = p.DominantEmotion.ToColorHex()
                 }));
 
-            await LoadCorrelationsAsync(days);
+            await LoadCorrelationsAsync(range);
         }
         finally
         {

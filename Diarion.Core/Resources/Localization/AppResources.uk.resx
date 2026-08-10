@@ -985,6 +985,12 @@
   <data name="StatsPeriod" xml:space="preserve">
     <value>Період</value>
   </data>
+  <data name="StatsRangeStartHint" xml:space="preserve">
+    <value>Початок періоду</value>
+  </data>
+  <data name="StatsRangeEndHint" xml:space="preserve">
+    <value>Кінець періоду</value>
+  </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Тиждень</value>
   </data>

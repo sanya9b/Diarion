@@ -90,11 +90,11 @@ public class CorrelationService : ICorrelationService
     /// and the readiness check so the two can never disagree about how much data there is.
     /// </summary>
     private async Task<(Dictionary<DateTime, double> Mood, List<(string Key, Dictionary<DateTime, double> Values)> Factors)>
-        BuildSeriesAsync(int days, int lagDays)
+        BuildSeriesAsync(StatsRange range, int lagDays)
     {
         // Fetch enough history to pair each factor day with a mood day `lagDays` later.
-        var start = DateTime.Today.AddDays(-(days - 1) - lagDays);
-        var entries = (await _diaryService.GetDiaryEntriesForStatsAsync(start, DateTime.Today)).ToList();
+        var start = range.Start.AddDays(-lagDays);
+        var entries = (await _diaryService.GetDiaryEntriesForStatsAsync(start, range.End)).ToList();
 
         var moodByDate = new Dictionary<DateTime, double>();
         foreach (var e in entries)
@@ -108,10 +108,10 @@ public class CorrelationService : ICorrelationService
         }
 
         var factors = BuildDiaryFactors(entries);
-        factors.AddRange(await BuildCycleFactorsAsync(start));
-        factors.AddRange(await BuildTaskFactorAsync(start));
-        factors.AddRange(await BuildSpendFactorAsync(start));
-        factors.AddRange(await BuildThemeFactorsAsync(start));
+        factors.AddRange(await BuildCycleFactorsAsync(start, range.End));
+        factors.AddRange(await BuildTaskFactorAsync(start, range.End));
+        factors.AddRange(await BuildSpendFactorAsync(start, range.End));
+        factors.AddRange(await BuildThemeFactorsAsync(start, range.End));
 
         return (moodByDate, factors);
     }
@@ -137,12 +137,12 @@ public class CorrelationService : ICorrelationService
         return (xs, ys);
     }
 
-    public async Task<CorrelationReadiness> GetReadinessAsync(int days, int lagDays = 0)
+    public async Task<CorrelationReadiness> GetReadinessAsync(StatsRange range, int lagDays = 0)
     {
-        days = Math.Max(1, days);
+        range = range.Normalized();
         lagDays = Math.Max(0, lagDays);
 
-        var (moodByDate, factors) = await BuildSeriesAsync(days, lagDays);
+        var (moodByDate, factors) = await BuildSeriesAsync(range, lagDays);
 
         // The best any single factor manages, because one factor clearing the bar is enough to show
         // a first insight. Factors that would be skipped for want of spread count for nothing here
@@ -161,12 +161,12 @@ public class CorrelationService : ICorrelationService
         return new CorrelationReadiness(best, MinSampleSize);
     }
 
-    public async Task<IReadOnlyList<MoodCorrelation>> GetMoodCorrelationsAsync(int days, int lagDays = 0)
+    public async Task<IReadOnlyList<MoodCorrelation>> GetMoodCorrelationsAsync(StatsRange range, int lagDays = 0)
     {
-        days = Math.Max(1, days);
+        range = range.Normalized();
         lagDays = Math.Max(0, lagDays);
 
-        var (moodByDate, factors) = await BuildSeriesAsync(days, lagDays);
+        var (moodByDate, factors) = await BuildSeriesAsync(range, lagDays);
 
         var candidates = new List<MoodCorrelation>();
         foreach (var (key, values) in factors)
@@ -256,9 +256,9 @@ public class CorrelationService : ICorrelationService
     /// a day with nothing planned has no completion rate, and scoring it zero would say the user
     /// failed at something they never set out to do.
     /// </summary>
-    private async Task<List<(string Key, Dictionary<DateTime, double> Values)>> BuildTaskFactorAsync(DateTime start)
+    private async Task<List<(string Key, Dictionary<DateTime, double> Values)>> BuildTaskFactorAsync(DateTime start, DateTime end)
     {
-        var todos = (await _todoService.GetTodosForStatsAsync(start, DateTime.Today)).ToList();
+        var todos = (await _todoService.GetTodosForStatsAsync(start, end)).ToList();
         if (todos.Count == 0)
         {
             return new List<(string, Dictionary<DateTime, double>)>();
@@ -279,9 +279,9 @@ public class CorrelationService : ICorrelationService
     /// is filled in — but only from the first transaction the user ever recorded. Padding zeros back
     /// before that would invent frugal days out of days when the feature was simply unused.
     /// </summary>
-    private async Task<List<(string Key, Dictionary<DateTime, double> Values)>> BuildSpendFactorAsync(DateTime start)
+    private async Task<List<(string Key, Dictionary<DateTime, double> Values)>> BuildSpendFactorAsync(DateTime start, DateTime end)
     {
-        var transactions = (await _financeService.GetFinanceTransactionsForStatsAsync(start, DateTime.Today))
+        var transactions = (await _financeService.GetFinanceTransactionsForStatsAsync(start, end))
             .Where(t => t.Type == TransactionType.Expense)
             .ToList();
 
@@ -320,7 +320,7 @@ public class CorrelationService : ICorrelationService
     /// day is only meaningful against the days that were not one, and a dictionary of nothing but ones
     /// has no variance for Pearson to work with.
     /// </summary>
-    private async Task<List<(string Key, Dictionary<DateTime, double> Values)>> BuildCycleFactorsAsync(DateTime start)
+    private async Task<List<(string Key, Dictionary<DateTime, double> Values)>> BuildCycleFactorsAsync(DateTime start, DateTime end)
     {
         var empty = new List<(string, Dictionary<DateTime, double>)>();
 
@@ -346,7 +346,7 @@ public class CorrelationService : ICorrelationService
         var periodDay = new Dictionary<DateTime, double>();
         var symptomLoad = new Dictionary<DateTime, double>();
 
-        for (var d = from; d <= DateTime.Today; d = d.AddDays(1))
+        for (var d = from; d <= end; d = d.AddDays(1))
         {
             byDate.TryGetValue(d, out var log);
             periodDay[d] = log is { IsSymptomOnly: false } ? 1 : 0;
@@ -372,13 +372,13 @@ public class CorrelationService : ICorrelationService
     /// has not reached yet is likewise unknown, which is why the denominator comes from the index
     /// rather than from the entries.
     /// </remarks>
-    private async Task<List<(string Key, Dictionary<DateTime, double> Values)>> BuildThemeFactorsAsync(DateTime start)
+    private async Task<List<(string Key, Dictionary<DateTime, double> Values)>> BuildThemeFactorsAsync(DateTime start, DateTime end)
     {
         var factors = new List<(string, Dictionary<DateTime, double>)>();
 
         // Empty whenever AI is off or nothing is indexed, so the correlation pass is unchanged for
         // everyone who has not opted in.
-        var summary = await _themeClusterService.SummariseAsync(start.Date, DateTime.Today, MaxThemeFactors);
+        var summary = await _themeClusterService.SummariseAsync(start.Date, end, MaxThemeFactors);
         if (summary.Themes.Count == 0 || summary.IndexedDays.Count == 0)
         {
             return factors;

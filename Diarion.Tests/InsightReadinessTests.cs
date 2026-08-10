@@ -63,7 +63,7 @@ public class InsightReadinessTests
     [Fact]
     public async Task Readiness_counts_the_days_that_actually_pair()
     {
-        var readiness = await BuildService(PairedDays(6)).GetReadinessAsync(Days);
+        var readiness = await BuildService(PairedDays(6)).GetReadinessAsync(StatsRange.LastDays(Days));
 
         readiness.PairedDays.Should().Be(6);
         readiness.RequiredDays.Should().Be(CorrelationService.MinSampleSize);
@@ -79,7 +79,7 @@ public class InsightReadinessTests
             .Select(i => new DiaryEntryStatsDto { Date = DateFor(i), SleepQuality = 3 })
             .ToList();
 
-        var readiness = await BuildService(entries).GetReadinessAsync(Days);
+        var readiness = await BuildService(entries).GetReadinessAsync(StatsRange.LastDays(Days));
 
         readiness.PairedDays.Should().Be(0);
     }
@@ -96,7 +96,7 @@ public class InsightReadinessTests
             entries[i].SleepEnd = new TimeSpan(7, 0, 0);
         }
 
-        var readiness = await BuildService(entries).GetReadinessAsync(Days);
+        var readiness = await BuildService(entries).GetReadinessAsync(StatsRange.LastDays(Days));
 
         readiness.PairedDays.Should().Be(20);
         readiness.IsReady.Should().BeTrue();
@@ -105,7 +105,7 @@ public class InsightReadinessTests
     [Fact]
     public async Task Readiness_survives_a_diary_with_nothing_in_it()
     {
-        var readiness = await BuildService(new List<DiaryEntryStatsDto>()).GetReadinessAsync(Days);
+        var readiness = await BuildService(new List<DiaryEntryStatsDto>()).GetReadinessAsync(StatsRange.LastDays(Days));
 
         readiness.PairedDays.Should().Be(0);
         readiness.IsReady.Should().BeFalse();
@@ -120,13 +120,13 @@ public class InsightReadinessTests
         CorrelationReadiness readiness = default)
     {
         var stats = new Mock<IStatisticsService>();
-        stats.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<int>()))
+        stats.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>()))
              .ReturnsAsync(new MoodStatistics { EmotionCounts = emotionCounts, TopEmotion = topEmotion });
 
         var correlation = new Mock<ICorrelationService>();
-        correlation.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<int>(), It.IsAny<int>()))
+        correlation.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
                    .ReturnsAsync(correlations ?? new List<MoodCorrelation>());
-        correlation.Setup(c => c.GetReadinessAsync(It.IsAny<int>(), It.IsAny<int>()))
+        correlation.Setup(c => c.GetReadinessAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
                    .ReturnsAsync(readiness);
 
         return new MoodStatsViewModel(stats.Object, correlation.Object);
@@ -140,7 +140,7 @@ public class InsightReadinessTests
             Emotion.Happy,
             readiness: new CorrelationReadiness(6, 14));
 
-        await vm.LoadDataAsync(30);
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
 
         vm.HasCorrelations.Should().BeFalse();
         vm.HasInsightProgress.Should().BeTrue();
@@ -160,7 +160,7 @@ public class InsightReadinessTests
             Emotion.Happy,
             correlations: found);
 
-        await vm.LoadDataAsync(30);
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
 
         vm.HasCorrelations.Should().BeTrue();
         vm.HasInsightProgress.Should().BeFalse();
@@ -171,7 +171,7 @@ public class InsightReadinessTests
     {
         var vm = BuildViewModel(new Dictionary<Emotion, int>(), Emotion.None);
 
-        await vm.LoadDataAsync(30);
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
 
         vm.IsEmpty.Should().BeTrue();
         vm.HasInsightProgress.Should().BeTrue();
@@ -186,7 +186,7 @@ public class InsightReadinessTests
             new Dictionary<Emotion, int> { { Emotion.Calm, 1 }, { Emotion.Sad, 1 }, { Emotion.Angry, 1 } },
             Emotion.Calm);
 
-        await vm.LoadDataAsync(30);
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
 
         vm.TopEmotionShareText.Should().BeEmpty("a share with no leader has nothing to attach to");
         vm.TopEmotionText.Should().Be(Diarion.Resources.Localization.AppResources.StatsNoLeadingEmotion);
@@ -199,7 +199,7 @@ public class InsightReadinessTests
             new Dictionary<Emotion, int> { { Emotion.Happy, 6 }, { Emotion.Calm, 4 } },
             Emotion.Happy);
 
-        await vm.LoadDataAsync(30);
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
 
         vm.TopEmotionShareText.Should().Contain("60");
         vm.TopEmotionText.Should().Be(Emotion.Happy.ToLocalizedName());

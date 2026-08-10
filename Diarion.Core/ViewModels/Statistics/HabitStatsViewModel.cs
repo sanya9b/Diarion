@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Diarion.Models;
 using Diarion.Services;
 
 namespace Diarion.ViewModels.Statistics;
@@ -48,13 +49,19 @@ public partial class HabitStatsViewModel : ObservableObject
         _profileService = profileService;
     }
 
-    public async Task LoadDataAsync(int days)
+    public async Task LoadDataAsync(StatsRange range)
     {
         IsBusy = true;
         try
         {
+            range = range.Normalized();
             var today = DateTime.Today;
-            var rangeStart = today.AddDays(-(Math.Max(1, days) - 1)); // heatmap window (matches the stats period)
+
+            // The heatmap follows the selected period, but strength and streak stay anchored to today
+            // on purpose: they answer "where is this habit now", which is a fact about the present and
+            // not a property of whatever window happens to be on screen. Reading a chosen March would
+            // otherwise report a streak that ended in March as if it were still running.
+            var rangeStart = range.Start;
             var strengthStart = today.AddDays(-(StrengthLookbackDays - 1));
             var fetchStart = rangeStart < strengthStart ? rangeStart : strengthStart;
 
@@ -82,7 +89,7 @@ public partial class HabitStatsViewModel : ObservableObject
                     StreakText = streakText,
                     CompletedDates = h.CompletedDates.ToList(),
                     RangeStart = rangeStart,
-                    RangeEnd = today
+                    RangeEnd = range.End
                 });
             }
 

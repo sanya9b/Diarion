@@ -17,7 +17,7 @@ public class StatisticsViewModelsTests
     {
         // Arrange: 6 Happy + 4 Calm = 10 entries; top emotion share = 60%.
         var statsMock = new Mock<IStatisticsService>();
-        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<int>()))
+        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>()))
             .ReturnsAsync(new MoodStatistics
             {
                 TopEmotion = Emotion.Happy,
@@ -29,13 +29,13 @@ public class StatisticsViewModelsTests
             });
 
         var correlationMock = new Mock<ICorrelationService>();
-        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<int>(), It.IsAny<int>()))
+        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
             .ReturnsAsync(new List<MoodCorrelation>());
 
         var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
 
         // Act
-        await vm.LoadDataAsync(30);
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
 
         // Assert
         vm.IsEmpty.Should().BeFalse();
@@ -47,16 +47,16 @@ public class StatisticsViewModelsTests
     public async Task MoodStats_LoadData_WhenNoEmotions_ResetsKpiText()
     {
         var statsMock = new Mock<IStatisticsService>();
-        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<int>()))
+        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>()))
             .ReturnsAsync(new MoodStatistics { EmotionCounts = new Dictionary<Emotion, int>() });
 
         var correlationMock = new Mock<ICorrelationService>();
-        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<int>(), It.IsAny<int>()))
+        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
             .ReturnsAsync(new List<MoodCorrelation>());
 
         var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
 
-        await vm.LoadDataAsync(30);
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
 
         vm.IsEmpty.Should().BeTrue();
         vm.EntriesCountText.Should().Be("0");
@@ -68,7 +68,7 @@ public class StatisticsViewModelsTests
     {
         var today = DateTime.Today;
         var statsMock = new Mock<IStatisticsService>();
-        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<int>()))
+        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>()))
             .ReturnsAsync(new MoodStatistics
             {
                 TopEmotion = Emotion.Happy,
@@ -82,12 +82,12 @@ public class StatisticsViewModelsTests
             });
 
         var correlationMock = new Mock<ICorrelationService>();
-        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<int>(), It.IsAny<int>()))
+        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
             .ReturnsAsync(new List<MoodCorrelation>());
 
         var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
 
-        await vm.LoadDataAsync(7);
+        await vm.LoadDataAsync(StatsRange.LastDays(7));
 
         vm.MoodTrend.Should().HaveCount(3);
         vm.HasMoodTrend.Should().BeTrue(); // two days have data
@@ -119,7 +119,7 @@ public class StatisticsViewModelsTests
         }
 
         var statsMock = new Mock<IStatisticsService>();
-        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<int>()))
+        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>()))
             .ReturnsAsync(new MoodStatistics
             {
                 TopEmotion = Emotion.Happy,
@@ -128,12 +128,12 @@ public class StatisticsViewModelsTests
             });
 
         var correlationMock = new Mock<ICorrelationService>();
-        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<int>(), It.IsAny<int>()))
+        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
             .ReturnsAsync(new List<MoodCorrelation>());
 
         var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
 
-        await vm.LoadDataAsync(30);
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
 
         vm.MoodCalendar.Should().HaveCount(30);
         vm.HasMoodCalendar.Should().BeTrue();
@@ -145,7 +145,7 @@ public class StatisticsViewModelsTests
     {
         var today = DateTime.Today;
         var statsMock = new Mock<IStatisticsService>();
-        statsMock.Setup(s => s.GetSleepStatisticsAsync(It.IsAny<int>()))
+        statsMock.Setup(s => s.GetSleepStatisticsAsync(It.IsAny<StatsRange>()))
             .ReturnsAsync(new SleepStatistics
             {
                 AverageSleepDuration = TimeSpan.FromHours(7),
@@ -160,7 +160,7 @@ public class StatisticsViewModelsTests
 
         var vm = new SleepStatsViewModel(statsMock.Object);
 
-        await vm.LoadDataAsync(7);
+        await vm.LoadDataAsync(StatsRange.LastDays(7));
 
         vm.IsEmpty.Should().BeFalse();
         vm.DurationSparkline.Should().Equal(new double?[] { 8, null, 6 });
@@ -171,12 +171,12 @@ public class StatisticsViewModelsTests
     public async Task FinanceStats_LoadData_PositiveBalance_HasLeadingPlus()
     {
         var statsMock = new Mock<IStatisticsService>();
-        statsMock.Setup(s => s.GetFinanceStatisticsAsync(It.IsAny<int>(), It.IsAny<Guid?>()))
+        statsMock.Setup(s => s.GetFinanceStatisticsAsync(It.IsAny<StatsRange>(), It.IsAny<Guid?>()))
             .ReturnsAsync(new FinanceStatistics { TotalIncome = 1000m, TotalExpense = 350.5m });
 
         var vm = new FinanceStatsViewModel(statsMock.Object, TestProfiles.Service());
 
-        await vm.LoadDataAsync(30);
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
 
         vm.NetBalance.Should().Be(649.5m);
         vm.NetBalanceText.Should().StartWith("+");
@@ -187,12 +187,12 @@ public class StatisticsViewModelsTests
     public async Task FinanceStats_LoadData_NegativeBalance_HasLeadingMinus()
     {
         var statsMock = new Mock<IStatisticsService>();
-        statsMock.Setup(s => s.GetFinanceStatisticsAsync(It.IsAny<int>(), It.IsAny<Guid?>()))
+        statsMock.Setup(s => s.GetFinanceStatisticsAsync(It.IsAny<StatsRange>(), It.IsAny<Guid?>()))
             .ReturnsAsync(new FinanceStatistics { TotalIncome = 100m, TotalExpense = 300m });
 
         var vm = new FinanceStatsViewModel(statsMock.Object, TestProfiles.Service());
 
-        await vm.LoadDataAsync(30);
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
 
         vm.NetBalance.Should().Be(-200m);
         vm.NetBalanceText.Should().StartWith("-");

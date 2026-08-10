@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Diarion.Models;
 using Diarion.Services;
 
 namespace Diarion.ViewModels.Statistics;
@@ -32,12 +33,12 @@ public partial class ProductivityStatsViewModel : ObservableObject
         _statisticsService = statisticsService;
     }
 
-    public async Task LoadDataAsync(int days)
+    public async Task LoadDataAsync(StatsRange range)
     {
         IsBusy = true;
         try
         {
-            var todoStats = await _statisticsService.GetTodoStatisticsAsync(days);
+            var todoStats = await _statisticsService.GetTodoStatisticsAsync(range);
             
             if (todoStats.TotalCount == 0)
             {

@@ -77,7 +77,7 @@ public class CorrelationThemeFactorTests
     {
         // Mood rises with the day index, so a theme confined to the early half runs against it.
         var result = await Build(MoodOnly(), Themes("Стрес на роботі", Enumerable.Range(0, 12)))
-            .GetMoodCorrelationsAsync(Days);
+            .GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         var theme = Find(result, "Стрес на роботі");
         theme.Should().NotBeNull();
@@ -91,7 +91,7 @@ public class CorrelationThemeFactorTests
         // The label is the user's own sentence, so it cannot be looked up in a resource table — the
         // key has to carry it, and the prefix is what tells the view model to format rather than map.
         var result = await Build(MoodOnly(), Themes("Ранкові пробіжки", Enumerable.Range(0, 12)))
-            .GetMoodCorrelationsAsync(Days);
+            .GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         result.Select(c => c.FactorKey).Should().Contain("Theme:Ранкові пробіжки");
     }
@@ -102,7 +102,7 @@ public class CorrelationThemeFactorTests
         // Twenty-four paired days where the theme appeared on three is not twenty-four observations
         // of anything: the coefficient would be three days against a baseline.
         var result = await Build(MoodOnly(), Themes("Зубний біль", [0, 1, 2]))
-            .GetMoodCorrelationsAsync(Days);
+            .GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         Find(result, "Зубний біль").Should().BeNull();
     }
@@ -113,7 +113,7 @@ public class CorrelationThemeFactorTests
         // The mirror image, and the more likely one: something written about constantly has almost
         // no days to compare against.
         var result = await Build(MoodOnly(), Themes("Робота", Enumerable.Range(0, Days - 3)))
-            .GetMoodCorrelationsAsync(Days);
+            .GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         Find(result, "Робота").Should().BeNull();
     }
@@ -124,7 +124,7 @@ public class CorrelationThemeFactorTests
         var result = await Build(
                 MoodOnly(),
                 Themes("Прогулянки", Enumerable.Range(0, CorrelationService.MinBinaryGroup)))
-            .GetMoodCorrelationsAsync(Days);
+            .GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         Find(result, "Прогулянки").Should().NotBeNull();
     }
@@ -134,7 +134,7 @@ public class CorrelationThemeFactorTests
     {
         // The theme spans every written day, but only the first fourteen recorded a mood.
         var result = await Build(MoodOnly(count: 14), Themes("Сон", Enumerable.Range(0, 7)))
-            .GetMoodCorrelationsAsync(Days);
+            .GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         Find(result, "Сон")!.SampleSize.Should().Be(14);
     }
@@ -148,7 +148,7 @@ public class CorrelationThemeFactorTests
             [new DiaryTheme("Настрій", Enumerable.Range(0, 3).Select(DateFor).ToList())],
             Enumerable.Range(0, 5).Select(DateFor).ToList());
 
-        var result = await Build(MoodOnly(), themes).GetMoodCorrelationsAsync(Days);
+        var result = await Build(MoodOnly(), themes).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         Find(result, "Настрій").Should().BeNull("five written days cannot clear the fourteen-pair floor");
     }
@@ -162,8 +162,8 @@ public class CorrelationThemeFactorTests
             entries[i].HabitCompletion = i / (double)(Days - 1);
         }
 
-        var without = await Build(entries, new NullThemeClusterService()).GetMoodCorrelationsAsync(Days);
-        var withEmpty = await Build(entries, new StubThemes([], [])).GetMoodCorrelationsAsync(Days);
+        var without = await Build(entries, new NullThemeClusterService()).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
+        var withEmpty = await Build(entries, new StubThemes([], [])).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         without.Should().ContainSingle();
         withEmpty.Should().BeEquivalentTo(without);
@@ -175,7 +175,7 @@ public class CorrelationThemeFactorTests
         // Otherwise the empty state promises an insight that the correlation pass then refuses to
         // show — worse than the blank it exists to explain.
         var entries = MoodOnly();
-        var readiness = await Build(entries, Themes("Зубний біль", [0, 1, 2])).GetReadinessAsync(Days);
+        var readiness = await Build(entries, Themes("Зубний біль", [0, 1, 2])).GetReadinessAsync(StatsRange.LastDays(Days));
 
         readiness.PairedDays.Should().Be(0);
     }
@@ -197,9 +197,9 @@ public class CorrelationThemeFactorTests
 
         // Present on eight days spread evenly across the mood range, so the theme itself correlates
         // with nothing — it costs a test without earning one.
-        var alone = await Build(entries, new NullThemeClusterService()).GetMoodCorrelationsAsync(Days);
+        var alone = await Build(entries, new NullThemeClusterService()).GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
         var alongside = await Build(entries, Themes("Робота", [0, 1, 6, 7, 12, 13, 18, 19]))
-            .GetMoodCorrelationsAsync(Days);
+            .GetMoodCorrelationsAsync(StatsRange.LastDays(Days));
 
         var habitAlone = alone.Single(c => c.FactorKey == CorrelationService.Factors.HabitCompletion);
         var habitAlongside = alongside.Single(c => c.FactorKey == CorrelationService.Factors.HabitCompletion);
