@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.Services.Ai;
 using Microsoft.Maui.Controls;
 
 namespace Diarion.ViewModels;
@@ -46,7 +47,17 @@ public partial class ProfileViewModel : BaseViewModel
     public bool IsProfileTab => SelectedTabIndex == 0;
     public bool IsScreenTab => SelectedTabIndex == 1;
     public bool IsDataTab => SelectedTabIndex == 2;
-    public bool IsAiTab => SelectedTabIndex == 3;
+    public bool IsAiTab => SelectedTabIndex == 3 && IsAiTabAvailable;
+
+    /// <summary>
+    /// Whether the AI tab is shown at all. False while the on-device models are retired.
+    /// </summary>
+    /// <remarks>
+    /// Without this the tab would still offer a 1.1 GB download for an encoder that nothing is
+    /// allowed to call — the worst of both, a long wait for a feature that stays switched off.
+    /// It is the last tab, so hiding it renumbers nothing.
+    /// </remarks>
+    public bool IsAiTabAvailable => OnDeviceAi.IsOffered;
 
     [RelayCommand]
     private void SelectTab(string index)
@@ -100,7 +111,13 @@ public partial class ProfileViewModel : BaseViewModel
 
         NotifyLockState();
         RefreshCrashReport();
-        Ai.Load();
+
+        // Load() stats the model directory and subscribes to download progress. Neither is free, and
+        // neither leads anywhere while the tab is hidden.
+        if (IsAiTabAvailable)
+        {
+            Ai.Load();
+        }
 
         IsBusy = false;
     }

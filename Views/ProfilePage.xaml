@@ -92,8 +92,11 @@
                     </Border>
 
                     <!-- AI tab. Auto-width, not a fourth equal column: the label is two characters
-                         in Ukrainian and stealing a third of the bar for it would squeeze the rest. -->
-                    <Border Grid.Column="3" StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="Transparent" Padding="14,10">
+                         in Ukrainian and stealing a third of the bar for it would squeeze the rest.
+                         Hidden while the on-device models are retired — the Auto column collapses to
+                         nothing and the other three share the bar, so no ColumnDefinitions change. -->
+                    <Border Grid.Column="3" StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="Transparent" Padding="14,10"
+                            IsVisible="{Binding IsAiTabAvailable}">
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding IsAiTab}" Value="True">
                                 <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />

@@ -46,6 +46,14 @@ public partial class SearchViewModel : BaseViewModel
     [ObservableProperty]
     private bool _showLexicalOnlyNotice;
 
+    /// <summary>
+    /// Whether to talk about meaning-based search at all. False while the on-device models are
+    /// retired, and then both notices go: one advises phrasing for an encoder that will not read
+    /// it, the other points at a settings tab that no longer exists. Search still works — it is
+    /// keyword search, and keyword search does not need an apology on every query.
+    /// </summary>
+    public bool IsSemanticOffered => OnDeviceAi.IsOffered;
+
     public ObservableCollection<SearchResultItem> Results { get; } = [];
 
     public bool HasResults => Results.Count > 0;
@@ -88,7 +96,7 @@ public partial class SearchViewModel : BaseViewModel
         IsBusy = true;
         try
         {
-            ShowLexicalOnlyNotice = !await _search.IsSemanticAvailableAsync();
+            ShowLexicalOnlyNotice = IsSemanticOffered && !await _search.IsSemanticAvailableAsync();
 
             var hits = await _search.SearchAsync(Query, Scope);
 

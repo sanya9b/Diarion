@@ -91,6 +91,25 @@ public class AiAvailabilityTests
         _profiles.Verify(p => p.GetUserProfileAsync(), Times.Never);
     }
 
+    [Fact]
+    public async Task Disabled_SaysNoToBoth_WhateverIsInstalled()
+    {
+        // What the container hands out while OnDeviceAi.IsOffered is false. It takes no dependencies
+        // on purpose: an installed model and a ticked consent box must not be able to talk it round.
+        var availability = new DisabledAiAvailability();
+
+        (await availability.CanEmbedAsync()).Should().BeFalse();
+        (await availability.CanGenerateAsync()).Should().BeFalse();
+    }
+
+    [Fact]
+    public void OnDeviceAi_IsOffered_MatchesTheStackTheAppActuallyShips()
+    {
+        // A failure here is the reminder, not the bug: flipping the flag also un-hides the AI
+        // settings tab and the search hints, so the screenshots in the store stop matching.
+        OnDeviceAi.IsOffered.Should().BeFalse("the local models are retired since 2026-08-10");
+    }
+
     /// <summary>Installed but never invoked: availability reads the flag and nothing else.</summary>
     private sealed class StubAvailableEmbedder : ITextEmbedder
     {

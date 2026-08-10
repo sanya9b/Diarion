@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
 using Diarion.ViewModels;
+using FluentAssertions;
 using Moq;
 using Xunit;
 
@@ -44,6 +45,42 @@ public class ProfileViewModelTests
             new Mock<Diarion.Services.Ai.ITextEmbedder>().Object,
             new Mock<IDialogService>().Object,
             dispatcher.Object);
+    }
+
+    [Fact]
+    public void AiTab_IsHiddenWhileTheLocalModelsAreRetired()
+    {
+        var vm = Create(new Mock<IProfileService>(), new Mock<INotificationService>());
+
+        vm.IsAiTabAvailable.Should().BeFalse();
+    }
+
+    [Fact]
+    public void SelectingTheAiTabByIndex_DoesNotShowIt()
+    {
+        // The chip is hidden, but SelectTab takes a string and nothing stops a stale binding or a
+        // future fifth tab from sending "3". The section must stay closed on the strength of the
+        // flag alone.
+        var vm = Create(new Mock<IProfileService>(), new Mock<INotificationService>());
+
+        vm.SelectTabCommand.Execute("3");
+
+        vm.IsAiTab.Should().BeFalse();
+        vm.IsProfileTab.Should().BeFalse("the tap was not silently redirected — it simply shows nothing");
+    }
+
+    [Fact]
+    public async Task LoadProfile_DoesNotWakeTheAiSection_WhileTheTabIsHidden()
+    {
+        // Load() stats the model directory and subscribes each row to download progress. None of
+        // that leads anywhere now, and it runs on every visit to settings.
+        var profileMock = new Mock<IProfileService>();
+        profileMock.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile());
+
+        var vm = Create(profileMock, new Mock<INotificationService>());
+        await vm.LoadProfileAsync();
+
+        vm.Ai.Models.Should().BeEmpty();
     }
 
     [Fact]

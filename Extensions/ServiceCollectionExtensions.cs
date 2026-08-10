@@ -102,7 +102,13 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IVectorStore, LiteDbVectorStore>();
         // The single answer to "may the AI read this diary". Every consumer asks it, so consent
         // cannot be honoured in one place and forgotten in the next four.
-        services.AddSingleton<IAiAvailability, AiAvailability>();
+        //
+        // Answering "no" unconditionally while OnDeviceAi.IsOffered is false: the local models are
+        // off for everyone since 2026-08-10. AiAvailability itself is untouched and still tested, so
+        // the flag — not this line — is the switch.
+        services.AddSingleton<IAiAvailability>(sp => OnDeviceAi.IsOffered
+            ? ActivatorUtilities.CreateInstance<AiAvailability>(sp)
+            : new DisabledAiAvailability());
         services.AddSingleton<IEmbeddingIndexService, EmbeddingIndexService>();
         services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
         services.AddSingleton<IDigestService, DigestService>();

@@ -21,6 +21,7 @@
             <!-- Measured, not decorative: a single word scores barely above noise because the
                  encoder reads sentences. Saying so is cheaper than a bad first result. -->
             <Label Text="{x:Static localization:AppResources.SearchHintPhrase}"
+                   IsVisible="{Binding IsSemanticOffered}"
                    FontSize="12"
                    TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
