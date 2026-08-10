@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Diarion.Services;
 using Diarion.Services.Database;
 using Diarion.Core.Services;
+using Diarion.Services.Ai;
 using Diarion.ViewModels;
 using Diarion.ViewModels.Statistics;
 using Diarion.Views;
@@ -42,7 +43,82 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IShareService, MauiShareService>();
         services.AddSingleton<IFilePickerService, MauiFilePickerService>();
         services.AddSingleton<IDispatcherService, MauiDispatcherService>();
-        
+
+        services.AddAiServices();
+
+        return services;
+    }
+
+    /// <summary>
+    /// On-device AI (specs/13). Singletons throughout: the ONNX session and the vector matrix are
+    /// expensive enough that a second copy would be felt.
+    /// </summary>
+    private static IServiceCollection AddAiServices(this IServiceCollection services)
+    {
+        // The one HttpClient in the app. It only ever GETs pinned model URLs from HuggingFace —
+        // no user data, no identifiers, no telemetry — which is the entire justification for the
+        // INTERNET permission.
+        //
+        // No overall timeout, deliberately. HttpClient.Timeout covers the whole response body, so
+        // any finite value is a bet on how fast the user's connection is: 30 minutes killed a
+        // healthy 1.1 GB download on a slow line, and shorter would be worse. ModelDownloadService
+        // times the parts that can actually hang — the response headers, and the gap between two
+        // reads — which is the question worth asking.
+        services.AddSingleton(_ => new HttpClient { Timeout = Timeout.InfiniteTimeSpan });
+
+        services.AddSingleton<IAiModelPathProvider, AppDataModelPaths>();
+        // Answers "Wi-Fi or mobile data" for the one setting that asks. Singleton because it holds
+        // a subscription to the platform's connectivity event for the life of the app.
+        services.AddSingleton<INetworkStatusService, MauiNetworkStatusService>();
+        // Asks the platform to let a download outlive the visible app, and fetches the bytes. Only
+        // the phones need either: Windows and Mac do not suspend a windowed process for being
+        // minimized, so there the no-op host is the whole truth and the ordinary HTTP loop keeps
+        // working whatever the user does with the window.
+        //
+        // The two phones need opposite things. Android will keep the process running if asked, so
+        // the host does the asking and the transport stays as it is. iOS will not — it stops the
+        // process and the socket with it — so there is nothing to ask for, and instead the transfer
+        // itself is handed to the system.
+#if ANDROID
+        services.AddSingleton<IModelTransferHost, AndroidModelTransferHost>();
+        services.AddSingleton<IModelFileTransfer>(sp =>
+            new HttpModelFileTransfer(sp.GetRequiredService<HttpClient>()));
+#elif IOS
+        services.AddSingleton<IModelTransferHost, SystemSessionTransferHost>();
+        // The base directory is passed in rather than captured once: a destination has to be
+        // remembered relative to it, because the container path carries a UUID that iOS is free to
+        // change between launches.
+        services.AddSingleton<IModelFileTransfer>(_ =>
+            new BackgroundSessionTransfer(FileSystem.AppDataDirectory));
+#else
+        services.AddSingleton<IModelTransferHost, NullModelTransferHost>();
+        services.AddSingleton<IModelFileTransfer>(sp =>
+            new HttpModelFileTransfer(sp.GetRequiredService<HttpClient>()));
+#endif
+        services.AddSingleton<IModelDownloadService, ModelDownloadService>();
+        services.AddSingleton<IEmbeddingModelLocator, InstalledEmbeddingModelLocator>();
+        services.AddSingleton<IDeviceCapabilityProbe, MauiDeviceCapabilityProbe>();
+        services.AddSingleton<ITextEmbedder, OnnxTextEmbedder>();
+        services.AddSingleton<IVectorStore, LiteDbVectorStore>();
+        // The single answer to "may the AI read this diary". Every consumer asks it, so consent
+        // cannot be honoured in one place and forgotten in the next four.
+        //
+        // Answering "no" unconditionally while OnDeviceAi.IsOffered is false: the local models are
+        // off for everyone since 2026-08-10. AiAvailability itself is untouched and still tested, so
+        // the flag — not this line — is the switch.
+        services.AddSingleton<IAiAvailability>(sp => OnDeviceAi.IsOffered
+            ? ActivatorUtilities.CreateInstance<AiAvailability>(sp)
+            : new DisabledAiAvailability());
+        services.AddSingleton<IEmbeddingIndexService, EmbeddingIndexService>();
+        services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
+        services.AddSingleton<IDigestService, DigestService>();
+        services.AddSingleton<IThemeClusterService, ThemeClusterService>();
+        services.AddSingleton<IGenerativeModelLocator, InstalledGenerativeModelLocator>();
+        // Resolves to the real generator, which reports IsAvailable=false until a generative model
+        // is installed — so chat hides itself rather than the container deciding whether it exists.
+        services.AddSingleton<ITextGenerator, OnnxGenAiTextGenerator>();
+        services.AddSingleton<IDiaryChatService, DiaryChatService>();
+
         return services;
     }
 
@@ -59,6 +135,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<OnboardingViewModel>();
         services.AddTransient<DiaryDetailViewModel>();
         services.AddTransient<TodoDetailViewModel>();
+        services.AddTransient<AiSettingsViewModel>();
         services.AddTransient<ProfileViewModel>();
         services.AddTransient<HabitTrackerViewModel>();
         services.AddTransient<GoodDeedsViewModel>();
@@ -75,6 +152,8 @@ public static class ServiceCollectionExtensions
         
         services.AddTransient<WishlistViewModel>();
         services.AddTransient<FinanceViewModel>();
+        services.AddTransient<SearchViewModel>();
+        services.AddTransient<AiChatViewModel>();
         services.AddTransient<NotesViewModel>();
         services.AddTransient<NoteDetailViewModel>();
         services.AddTransient<HabitEditorViewModel>();
@@ -102,6 +181,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<StatisticsPage>();
         services.AddTransient<WishlistPage>();
         services.AddTransient<FinancePage>();
+        services.AddTransient<SearchPage>();
+        services.AddTransient<AiChatPage>();
         services.AddTransient<NotesPage>();
         services.AddTransient<NoteDetailPage>();
         services.AddTransient<HabitEditorPage>();

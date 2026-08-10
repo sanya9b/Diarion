@@ -48,7 +48,7 @@ public class FinanceStatsViewModelTests : IDisposable
     {
         await AddAsync(TransactionType.Expense, 100m, 1);
 
-        await _viewModel.LoadDataAsync(7);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(7));
 
         // A week is one bucket. One bar is not a trend.
         _viewModel.HasTrend.Should().BeFalse();
@@ -60,7 +60,7 @@ public class FinanceStatsViewModelTests : IDisposable
         await AddAsync(TransactionType.Expense, 100m, 1);
         await AddAsync(TransactionType.Income, 500m, 20);
 
-        await _viewModel.LoadDataAsync(30);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(30));
 
         _viewModel.HasTrend.Should().BeTrue();
         _viewModel.TrendBuckets.Should().HaveCount(5);
@@ -73,7 +73,7 @@ public class FinanceStatsViewModelTests : IDisposable
     {
         await AddAsync(TransactionType.Expense, 100m, 1);
 
-        await _viewModel.LoadDataAsync(365);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(365));
 
         _viewModel.TrendTitle.Should().Be(Diarion.Resources.Localization.AppResources.StatsTrendByMonth);
         // 12 or 13, depending on today: a year ending on the last day of a month starts on the first of
@@ -89,7 +89,7 @@ public class FinanceStatsViewModelTests : IDisposable
 
         // Weekly, because 30 is not a multiple of 7: the leftover bucket exists on every calendar day of
         // every year. Which *monthly* edges get clipped depends on today, so that lives in ReportPeriodTests.
-        await _viewModel.LoadDataAsync(30);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(30));
 
         // An undimmed short bar reads as a collapse in spending, so the flag has to reach the chart item.
         _viewModel.TrendBuckets.First().IsPartial.Should().BeTrue();
@@ -101,7 +101,7 @@ public class FinanceStatsViewModelTests : IDisposable
     {
         await AddAsync(TransactionType.Expense, 100m, 1);
 
-        await _viewModel.LoadDataAsync(30);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(30));
 
         _viewModel.HasComparison.Should().BeFalse();
         _viewModel.ComparisonMetrics.Should().BeEmpty();
@@ -113,7 +113,7 @@ public class FinanceStatsViewModelTests : IDisposable
         await AddAsync(TransactionType.Expense, 100m, 1);
         await AddAsync(TransactionType.Expense, 200m, 40);   // inside the preceding 30-day window
 
-        await _viewModel.LoadDataAsync(30);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(30));
 
         _viewModel.HasComparison.Should().BeTrue();
         _viewModel.ComparisonMetrics.Should().HaveCount(3);
@@ -129,7 +129,7 @@ public class FinanceStatsViewModelTests : IDisposable
         await AddAsync(TransactionType.Expense, 400m, 1, "Cafe");     // new this period
         await AddAsync(TransactionType.Expense, 500m, 40, "Taxi");    // gone this period
 
-        await _viewModel.LoadDataAsync(30);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(30));
 
         var taxi = _viewModel.ExpenseMovers.Single(m => m.Category == "Taxi");
         taxi.Badge.Should().Be(Diarion.Resources.Localization.AppResources.StatsMoverGone);
@@ -149,7 +149,7 @@ public class FinanceStatsViewModelTests : IDisposable
         await AddAsync(TransactionType.Expense, 120m, 1, accountId: card.Id);
         await AddAsync(TransactionType.Expense, 30m, 2, accountId: null);   // never assigned
 
-        await _viewModel.LoadDataAsync(30);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(30));
 
         _viewModel.HasAccountBreakdown.Should().BeTrue();
         _viewModel.AccountBreakdown.Should().Contain(a => a.Name == "Card" && a.Icon == "💳");
@@ -170,7 +170,7 @@ public class FinanceStatsViewModelTests : IDisposable
         await AddAsync(TransactionType.Expense, 120m, 1, accountId: card.Id);
         await AddAsync(TransactionType.Expense, 480m, 1, accountId: cash.Id);
 
-        await _viewModel.LoadDataAsync(30, card.Id);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(30), card.Id);
 
         _viewModel.TotalExpense.Should().Be(120m);
         _viewModel.HasAccountBreakdown.Should().BeFalse("one account is not a breakdown");
@@ -192,7 +192,7 @@ public class FinanceStatsViewModelTests : IDisposable
             Date = DateTime.Today.AddHours(15)   // a time of day, as the finance page writes them
         });
 
-        await _viewModel.LoadDataAsync(30);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(30));
 
         _viewModel.TotalExpense.Should().Be(10m, "a transfer is not a spend");
         _viewModel.AccountBreakdown.Single(a => a.Name == "Card").HasTransfers.Should().BeTrue();
@@ -202,7 +202,7 @@ public class FinanceStatsViewModelTests : IDisposable
     [Fact]
     public async Task LoadDataAsync_WithNothingAtAll_LeavesEveryCardHidden()
     {
-        await _viewModel.LoadDataAsync(30);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(30));
 
         _viewModel.IsEmpty.Should().BeTrue();
         _viewModel.IsNotEmpty.Should().BeFalse();
@@ -216,7 +216,7 @@ public class FinanceStatsViewModelTests : IDisposable
         // Otherwise a card of zeros sits directly under the "no data for this period" notice.
         await _finance.SaveAccountAsync(new Account { Name = "Card" });
 
-        await _viewModel.LoadDataAsync(30);
+        await _viewModel.LoadDataAsync(StatsRange.LastDays(30));
 
         _viewModel.HasAccountBreakdown.Should().BeFalse();
     }

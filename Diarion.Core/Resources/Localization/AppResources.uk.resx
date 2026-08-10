@@ -985,6 +985,12 @@
   <data name="StatsPeriod" xml:space="preserve">
     <value>Період</value>
   </data>
+  <data name="StatsRangeStartHint" xml:space="preserve">
+    <value>Початок періоду</value>
+  </data>
+  <data name="StatsRangeEndHint" xml:space="preserve">
+    <value>Кінець періоду</value>
+  </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Тиждень</value>
   </data>
@@ -1348,6 +1354,9 @@
   <data name="MinutesShort" xml:space="preserve">
     <value>хв</value>
   </data>
+  <data name="SecondsShort" xml:space="preserve">
+    <value>с</value>
+  </data>
   <data name="SecurityLabel" xml:space="preserve">
     <value>БЕЗПЕКА</value>
   </data>
@@ -1642,6 +1651,9 @@
   <data name="FactorDailySpend" xml:space="preserve">
     <value>Витрати</value>
   </data>
+  <data name="FactorThemeFormat" xml:space="preserve">
+    <value>Тема: {0}</value>
+  </data>
   <data name="SettingsCurrencyLabel" xml:space="preserve">
     <value>Валюта</value>
   </data>
@@ -1653,5 +1665,239 @@
   </data>
   <data name="StatsInsightProgressHint" xml:space="preserve">
     <value>Зв’язки між настроєм і сном, звичками, їжею, задачами та витратами з’являться, коли буде що порівнювати.</value>
+  </data>
+  <data name="SettingsTabAi" xml:space="preserve">
+    <value>ШІ</value>
+  </data>
+  <data name="AiSectionTitle" xml:space="preserve">
+    <value>ШІ НА ПРИСТРОЇ</value>
+  </data>
+  <data name="AiEnableToggle" xml:space="preserve">
+    <value>Увімкнути ШІ на пристрої</value>
+  </data>
+  <data name="AiIntro" xml:space="preserve">
+    <value>Пошук по щоденнику за змістом, теми місяця і тижневі підсумки. Усе працює на цьому пристрої.</value>
+  </data>
+  <data name="AiNetworkNotice" xml:space="preserve">
+    <value>Єдине, що Diarion завантажує, — це файл самої моделі. Ваші записи нікуди не надсилаються.</value>
+  </data>
+  <data name="AiDeviceHeader" xml:space="preserve">
+    <value>ВАШ ПРИСТРІЙ</value>
+  </data>
+  <data name="AiDeviceSummaryFormat" xml:space="preserve">
+    <value>{0} памʼяті · {1} вільно</value>
+  </data>
+  <data name="AiTierLow" xml:space="preserve">
+    <value>Пошук і підсумки</value>
+  </data>
+  <data name="AiTierMid" xml:space="preserve">
+    <value>Пошук, підсумки і чат</value>
+  </data>
+  <data name="AiTierHigh" xml:space="preserve">
+    <value>Усе, включно з більшими моделями</value>
+  </data>
+  <data name="AiModelsHeader" xml:space="preserve">
+    <value>МОДЕЛІ</value>
+  </data>
+  <data name="AiRecommendedBadge" xml:space="preserve">
+    <value>рекомендовано</value>
+  </data>
+  <data name="AiModelTooLargeForDevice" xml:space="preserve">
+    <value>На цьому пристрої замало памʼяті</value>
+  </data>
+  <data name="AiDownloadAction" xml:space="preserve">
+    <value>Завантажити</value>
+  </data>
+  <data name="AiResumeAction" xml:space="preserve">
+    <value>Продовжити</value>
+  </data>
+  <data name="AiDeleteAction" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="AiCancelAction" xml:space="preserve">
+    <value>Скасувати</value>
+  </data>
+  <data name="AiRetryAction" xml:space="preserve">
+    <value>Спробувати ще раз</value>
+  </data>
+  <data name="AiStateNotInstalled" xml:space="preserve">
+    <value>Не завантажено</value>
+  </data>
+  <data name="AiStateDownloading" xml:space="preserve">
+    <value>Завантаження</value>
+  </data>
+  <data name="AiStateInstalled" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="AiStateCorrupt" xml:space="preserve">
+    <value>Пошкоджено — завантажте ще раз</value>
+  </data>
+  <data name="AiStateInterrupted" xml:space="preserve">
+    <value>Перервано — продовжте, щоб завершити</value>
+  </data>
+  <data name="AiDownloadFailed" xml:space="preserve">
+    <value>Не вдалося завантажити. Перевірте зʼєднання і спробуйте ще раз.</value>
+  </data>
+  <data name="AiDownloadWifiOnlyStopped" xml:space="preserve">
+    <value>Зупинено: зник Wi-Fi. Завантажене збережено — продовжте, коли повернетеся в мережу Wi-Fi.</value>
+  </data>
+  <data name="AiMobileDataTitle" xml:space="preserve">
+    <value>Ви в мобільній мережі</value>
+  </data>
+  <data name="AiMobileDataConfirmFormat" xml:space="preserve">
+    <value>Модель важить {0} і буде завантажена за рахунок мобільного трафіку. Завантажити все одно?</value>
+  </data>
+  <data name="AiMobileDataDownloadAnyway" xml:space="preserve">
+    <value>Все одно завантажити</value>
+  </data>
+  <data name="AiWifiOnlyToggle" xml:space="preserve">
+    <value>Завантажувати лише через Wi-Fi</value>
+  </data>
+  <data name="AiKeepOpenNotice" xml:space="preserve">
+    <value>Не закривайте застосунок, поки модель завантажується.</value>
+  </data>
+  <data name="AiBackgroundNotice" xml:space="preserve">
+    <value>Застосунок можна згорнути — завантаження триває у фоні.</value>
+  </data>
+  <data name="AiStateVerifying" xml:space="preserve">
+    <value>Перевірка</value>
+  </data>
+  <data name="AiDownloadOfFormat" xml:space="preserve">
+    <value>{0} з {1}</value>
+  </data>
+  <data name="AiDownloadRateFormat" xml:space="preserve">
+    <value>{0}/с</value>
+  </data>
+  <data name="AiDownloadEtaFormat" xml:space="preserve">
+    <value>лишилось ~{0}</value>
+  </data>
+  <data name="AiDownloadNotificationChannel" xml:space="preserve">
+    <value>Завантаження моделей</value>
+  </data>
+  <data name="AiDownloadNotificationChannelDescription" xml:space="preserve">
+    <value>Перебіг завантаження моделей ШІ на пристрій.</value>
+  </data>
+  <data name="AiDownloadNotificationTitle" xml:space="preserve">
+    <value>Завантаження моделі ШІ</value>
+  </data>
+  <data name="AiIndexHeader" xml:space="preserve">
+    <value>ІНДЕКС</value>
+  </data>
+  <data name="AiIndexIdle" xml:space="preserve">
+    <value>Не розпочато</value>
+  </data>
+  <data name="AiIndexScanning" xml:space="preserve">
+    <value>Перевіряю, що змінилось</value>
+  </data>
+  <data name="AiIndexEmbeddingFormat" xml:space="preserve">
+    <value>Читаю ваші записи — {0} з {1}</value>
+  </data>
+  <data name="AiIndexComplete" xml:space="preserve">
+    <value>Актуальний</value>
+  </data>
+  <data name="AiIndexCancelled" xml:space="preserve">
+    <value>Призупинено</value>
+  </data>
+  <data name="AiIndexChunksFormat" xml:space="preserve">
+    <value>Проіндексовано фрагментів: {0}</value>
+  </data>
+  <data name="AiIndexRebuildAction" xml:space="preserve">
+    <value>Перебудувати індекс</value>
+  </data>
+  <data name="AiIndexClearAction" xml:space="preserve">
+    <value>Видалити індекс</value>
+  </data>
+  <data name="AiIndexClearConfirm" xml:space="preserve">
+    <value>Видалити пошуковий індекс? Записи не постраждають — його можна перебудувати.</value>
+  </data>
+  <data name="UnitByte" xml:space="preserve">
+    <value>Б</value>
+  </data>
+  <data name="UnitKilobyte" xml:space="preserve">
+    <value>КБ</value>
+  </data>
+  <data name="UnitMegabyte" xml:space="preserve">
+    <value>МБ</value>
+  </data>
+  <data name="UnitGigabyte" xml:space="preserve">
+    <value>ГБ</value>
+  </data>
+  <data name="UnitTerabyte" xml:space="preserve">
+    <value>ТБ</value>
+  </data>
+  <data name="SearchTitle" xml:space="preserve">
+    <value>Пошук</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Що ви шукаєте?</value>
+  </data>
+  <data name="SearchHintPhrase" xml:space="preserve">
+    <value>Фраза працює краще за одне слово — модель читає речення.</value>
+  </data>
+  <data name="SearchScopeAll" xml:space="preserve">
+    <value>Усе</value>
+  </data>
+  <data name="SearchScopeDiary" xml:space="preserve">
+    <value>Щоденник</value>
+  </data>
+  <data name="SearchScopeNotes" xml:space="preserve">
+    <value>Нотатки</value>
+  </data>
+  <data name="SearchNoResults" xml:space="preserve">
+    <value>Нічого не знайдено</value>
+  </data>
+  <data name="SearchLexicalOnlyNotice" xml:space="preserve">
+    <value>Шукаю лише за словами. Увімкніть ШІ в налаштуваннях, щоб шукати за змістом.</value>
+  </data>
+  <data name="SearchResultsCountFormat" xml:space="preserve">
+    <value>Знайдено: {0}</value>
+  </data>
+  <data name="SearchSourceDiary" xml:space="preserve">
+    <value>Щоденник</value>
+  </data>
+  <data name="SearchSourceNote" xml:space="preserve">
+    <value>Нотатка</value>
+  </data>
+  <data name="QuickMenuSearch" xml:space="preserve">
+    <value>Пошук</value>
+  </data>
+  <data name="StatsDigestHeader" xml:space="preserve">
+    <value>ПРО ЩО БУВ ЦЕЙ ПЕРІОД</value>
+  </data>
+  <data name="StatsDigestHint" xml:space="preserve">
+    <value>Ваші власні слова, обрані як найтиповіші для періоду — тут нічого не згенеровано.</value>
+  </data>
+  <data name="StatsThemesHeader" xml:space="preserve">
+    <value>ЩО ПОВТОРЮВАЛОСЬ</value>
+  </data>
+  <data name="StatsThemeDaysFormat" xml:space="preserve">
+    <value>днів: {0}</value>
+  </data>
+  <data name="AiChatTitle" xml:space="preserve">
+    <value>Спитати щоденник</value>
+  </data>
+  <data name="AiChatPlaceholder" xml:space="preserve">
+    <value>Запитайте про свої записи…</value>
+  </data>
+  <data name="AiChatIntro" xml:space="preserve">
+    <value>Відповіді складаються лише з написаного вами, а під ними — записи, з яких вони взяті.</value>
+  </data>
+  <data name="AiChatUnavailable" xml:space="preserve">
+    <value>Модель для чату не встановлено. Її можна додати в Налаштуваннях → ШІ.</value>
+  </data>
+  <data name="AiChatNothingRelevant" xml:space="preserve">
+    <value>Не знайшов записів, щоб відповісти на це.</value>
+  </data>
+  <data name="AiChatUngrounded" xml:space="preserve">
+    <value>Я не зміг відповісти на це з ваших записів, не вигадуючи, тому краще не буду.</value>
+  </data>
+  <data name="AiChatSourcesLabel" xml:space="preserve">
+    <value>Джерела</value>
+  </data>
+  <data name="AiChatStop" xml:space="preserve">
+    <value>Зупинити</value>
+  </data>
+  <data name="QuickMenuAiChat" xml:space="preserve">
+    <value>Спитати</value>
   </data>
 </root>

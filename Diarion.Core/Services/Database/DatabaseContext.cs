@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Diarion.Diagnostics;
 using Diarion.Models;
+using Diarion.Models.Ai;
 using LiteDB;
 
 namespace Diarion.Services.Database;
@@ -62,6 +63,7 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         _db.GetCollection<RecurringTransaction>(DatabaseConstants.RecurringTransactionsCollection);
         // Same again for repeating tasks: a handful of rules, read once per day-load, no date to index.
         _db.GetCollection<RecurringTask>(DatabaseConstants.RecurringTasksCollection);
+        var embeddingsCollection = _db.GetCollection<EmbeddingChunk>(DatabaseConstants.EmbeddingsCollection);
 
         entriesCollection.EnsureIndex(x => x.Date);
         wishlistCollection.EnsureIndex(x => x.Date);
@@ -72,6 +74,9 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         readingTrackerBooksCollection.EnsureIndex(x => x.SlotNumber, true);
         happyMomentsCollection.EnsureIndex(x => x.SlotNumber, true);
         goodDeedsCollection.EnsureIndex(x => x.SlotNumber, true);
+        // Indexed on the source, not the vector: every re-index and every entry edit deletes by
+        // SourceId, while similarity search is a full scan by design and no index would help it.
+        embeddingsCollection.EnsureIndex(x => x.SourceId);
 
         // Apply any pending schema migrations before seeding/using the data.
         MigrationRunner.Run(_db);

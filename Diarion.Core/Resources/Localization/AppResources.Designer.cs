@@ -1228,6 +1228,18 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string StatsRangeStartHint {
+            get {
+                return ResourceManager.GetString("StatsRangeStartHint", resourceCulture);
+            }
+        }
+
+        public static string StatsRangeEndHint {
+            get {
+                return ResourceManager.GetString("StatsRangeEndHint", resourceCulture);
+            }
+        }
+
         public static string NotesFilterAll {
             get {
                 return ResourceManager.GetString("NotesFilterAll", resourceCulture);
@@ -1468,6 +1480,10 @@ public static string ClearAllDataSuccessMsg {
 
         public static string MinutesShort {
             get { return ResourceManager.GetString("MinutesShort", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SecondsShort {
+            get { return ResourceManager.GetString("SecondsShort", resourceCulture) ?? string.Empty; }
         }
 
         public static string SecurityLabel {
@@ -1922,6 +1938,10 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("FactorDailySpend", resourceCulture) ?? string.Empty; }
         }
 
+        public static string FactorThemeFormat {
+            get { return ResourceManager.GetString("FactorThemeFormat", resourceCulture) ?? string.Empty; }
+        }
+
         public static string SettingsCurrencyLabel {
             get { return ResourceManager.GetString("SettingsCurrencyLabel", resourceCulture) ?? string.Empty; }
         }
@@ -1936,6 +1956,318 @@ public static string ClearAllDataSuccessMsg {
 
         public static string StatsInsightProgressHint {
             get { return ResourceManager.GetString("StatsInsightProgressHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SettingsTabAi {
+            get { return ResourceManager.GetString("SettingsTabAi", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiSectionTitle {
+            get { return ResourceManager.GetString("AiSectionTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiEnableToggle {
+            get { return ResourceManager.GetString("AiEnableToggle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIntro {
+            get { return ResourceManager.GetString("AiIntro", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiNetworkNotice {
+            get { return ResourceManager.GetString("AiNetworkNotice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDeviceHeader {
+            get { return ResourceManager.GetString("AiDeviceHeader", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDeviceSummaryFormat {
+            get { return ResourceManager.GetString("AiDeviceSummaryFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiTierLow {
+            get { return ResourceManager.GetString("AiTierLow", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiTierMid {
+            get { return ResourceManager.GetString("AiTierMid", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiTierHigh {
+            get { return ResourceManager.GetString("AiTierHigh", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiModelsHeader {
+            get { return ResourceManager.GetString("AiModelsHeader", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiRecommendedBadge {
+            get { return ResourceManager.GetString("AiRecommendedBadge", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiModelTooLargeForDevice {
+            get { return ResourceManager.GetString("AiModelTooLargeForDevice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadAction {
+            get { return ResourceManager.GetString("AiDownloadAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiResumeAction {
+            get { return ResourceManager.GetString("AiResumeAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDeleteAction {
+            get { return ResourceManager.GetString("AiDeleteAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiCancelAction {
+            get { return ResourceManager.GetString("AiCancelAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiRetryAction {
+            get { return ResourceManager.GetString("AiRetryAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateNotInstalled {
+            get { return ResourceManager.GetString("AiStateNotInstalled", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateDownloading {
+            get { return ResourceManager.GetString("AiStateDownloading", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateInstalled {
+            get { return ResourceManager.GetString("AiStateInstalled", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateCorrupt {
+            get { return ResourceManager.GetString("AiStateCorrupt", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateInterrupted {
+            get { return ResourceManager.GetString("AiStateInterrupted", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadFailed {
+            get { return ResourceManager.GetString("AiDownloadFailed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadWifiOnlyStopped {
+            get { return ResourceManager.GetString("AiDownloadWifiOnlyStopped", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiMobileDataTitle {
+            get { return ResourceManager.GetString("AiMobileDataTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiMobileDataConfirmFormat {
+            get { return ResourceManager.GetString("AiMobileDataConfirmFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiMobileDataDownloadAnyway {
+            get { return ResourceManager.GetString("AiMobileDataDownloadAnyway", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiWifiOnlyToggle {
+            get { return ResourceManager.GetString("AiWifiOnlyToggle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiKeepOpenNotice {
+            get { return ResourceManager.GetString("AiKeepOpenNotice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiBackgroundNotice {
+            get { return ResourceManager.GetString("AiBackgroundNotice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateVerifying {
+            get { return ResourceManager.GetString("AiStateVerifying", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadOfFormat {
+            get { return ResourceManager.GetString("AiDownloadOfFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadRateFormat {
+            get { return ResourceManager.GetString("AiDownloadRateFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadEtaFormat {
+            get { return ResourceManager.GetString("AiDownloadEtaFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadNotificationChannel {
+            get { return ResourceManager.GetString("AiDownloadNotificationChannel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadNotificationChannelDescription {
+            get { return ResourceManager.GetString("AiDownloadNotificationChannelDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadNotificationTitle {
+            get { return ResourceManager.GetString("AiDownloadNotificationTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexHeader {
+            get { return ResourceManager.GetString("AiIndexHeader", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexIdle {
+            get { return ResourceManager.GetString("AiIndexIdle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexScanning {
+            get { return ResourceManager.GetString("AiIndexScanning", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexEmbeddingFormat {
+            get { return ResourceManager.GetString("AiIndexEmbeddingFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexComplete {
+            get { return ResourceManager.GetString("AiIndexComplete", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexCancelled {
+            get { return ResourceManager.GetString("AiIndexCancelled", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexChunksFormat {
+            get { return ResourceManager.GetString("AiIndexChunksFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexRebuildAction {
+            get { return ResourceManager.GetString("AiIndexRebuildAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexClearAction {
+            get { return ResourceManager.GetString("AiIndexClearAction", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiIndexClearConfirm {
+            get { return ResourceManager.GetString("AiIndexClearConfirm", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string UnitByte {
+            get { return ResourceManager.GetString("UnitByte", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string UnitKilobyte {
+            get { return ResourceManager.GetString("UnitKilobyte", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string UnitMegabyte {
+            get { return ResourceManager.GetString("UnitMegabyte", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string UnitGigabyte {
+            get { return ResourceManager.GetString("UnitGigabyte", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string UnitTerabyte {
+            get { return ResourceManager.GetString("UnitTerabyte", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchTitle {
+            get { return ResourceManager.GetString("SearchTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchPlaceholder {
+            get { return ResourceManager.GetString("SearchPlaceholder", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchHintPhrase {
+            get { return ResourceManager.GetString("SearchHintPhrase", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchScopeAll {
+            get { return ResourceManager.GetString("SearchScopeAll", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchScopeDiary {
+            get { return ResourceManager.GetString("SearchScopeDiary", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchScopeNotes {
+            get { return ResourceManager.GetString("SearchScopeNotes", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchNoResults {
+            get { return ResourceManager.GetString("SearchNoResults", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchLexicalOnlyNotice {
+            get { return ResourceManager.GetString("SearchLexicalOnlyNotice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchResultsCountFormat {
+            get { return ResourceManager.GetString("SearchResultsCountFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchSourceDiary {
+            get { return ResourceManager.GetString("SearchSourceDiary", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SearchSourceNote {
+            get { return ResourceManager.GetString("SearchSourceNote", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickMenuSearch {
+            get { return ResourceManager.GetString("QuickMenuSearch", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsDigestHeader {
+            get { return ResourceManager.GetString("StatsDigestHeader", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsDigestHint {
+            get { return ResourceManager.GetString("StatsDigestHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsThemesHeader {
+            get { return ResourceManager.GetString("StatsThemesHeader", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsThemeDaysFormat {
+            get { return ResourceManager.GetString("StatsThemeDaysFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatTitle {
+            get { return ResourceManager.GetString("AiChatTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatPlaceholder {
+            get { return ResourceManager.GetString("AiChatPlaceholder", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatIntro {
+            get { return ResourceManager.GetString("AiChatIntro", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatUnavailable {
+            get { return ResourceManager.GetString("AiChatUnavailable", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatNothingRelevant {
+            get { return ResourceManager.GetString("AiChatNothingRelevant", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatUngrounded {
+            get { return ResourceManager.GetString("AiChatUngrounded", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatSourcesLabel {
+            get { return ResourceManager.GetString("AiChatSourcesLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiChatStop {
+            get { return ResourceManager.GetString("AiChatStop", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickMenuAiChat {
+            get { return ResourceManager.GetString("QuickMenuAiChat", resourceCulture) ?? string.Empty; }
         }
     }
 }

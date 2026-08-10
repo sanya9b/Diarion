@@ -53,7 +53,6 @@ public partial class DiaryEntryViewModel : ObservableObject
         _content = model.Content;
         _createdAt = model.CreatedAt;
         _emotion = model.Emotion;
-        _aiSummary = model.AiSummary;
 
         if (model.HabitsList != null)
         {
@@ -408,11 +407,6 @@ public partial class DiaryEntryViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    private string _aiSummary = string.Empty;
-
-    partial void OnAiSummaryChanged(string value) => Model.AiSummary = value;
-
-    [ObservableProperty]
     private ObservableCollection<HabitItemViewModel> _habits = new();
 
     public void SyncToModel()
@@ -447,7 +441,6 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.Content = Content;
         Model.CreatedAt = CreatedAt;
         Model.Emotion = Emotion;
-        Model.AiSummary = AiSummary;
 
         UpdateModelHabits();
         UpdateModelHourlyMood();

@@ -88,6 +88,4 @@ public class DiaryEntry
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     
     public Emotion Emotion { get; set; } = Emotion.None;
-    
-    public string AiSummary { get; set; } = string.Empty;
 }

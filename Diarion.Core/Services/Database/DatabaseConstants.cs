@@ -20,4 +20,10 @@ public static class DatabaseConstants
     public const string GuidedPromptsCollection = "guided_prompts";
     public const string CycleLogsCollection = "cycle_logs";
     public const string RecurringTasksCollection = "todo_recurring";
+
+    /// <summary>
+    /// Embedded chunks of diary entries and notes. Derived data — always rebuildable from the
+    /// sources, so it is excluded from export and dropped rather than migrated.
+    /// </summary>
+    public const string EmbeddingsCollection = "ai_embeddings";
 }

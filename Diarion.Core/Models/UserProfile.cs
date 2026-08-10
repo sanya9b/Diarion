@@ -72,6 +72,16 @@ public partial class UserProfile : ObservableObject
     [ObservableProperty] private bool _isForgivingStreaksEnabled = true;
     [ObservableProperty] private int _streakGraceDays = DefaultStreakGraceDays;
 
+    // ШІ на пристрої. Вимкнено за замовчуванням: фіча коштує сотні мегабайтів завантаження, тож
+    // вмикати її має користувач, а не оновлення застосунку. Наявні профілі читають false без міграції.
+    [ObservableProperty] private bool _isAiEnabled;
+
+    /// <summary>
+    /// Whether model downloads wait for Wi-Fi. On by default because the encoder alone is over
+    /// 100 MB, and spending someone's mobile data without asking is not a recoverable mistake.
+    /// </summary>
+    [ObservableProperty] private bool _isWifiOnlyModelDownload = true;
+
     // Сортування меню
     [ObservableProperty] private System.Collections.Generic.List<string>? _quickMenuOrder;
 

@@ -43,7 +43,7 @@ public class MauiDialogService : IDialogService
         var page = GetActivePage();
         if (page is null) return null;
 
-        var chosen = await page.DisplayActionSheet(title, cancel, null, options);
+        var chosen = await page.DisplayActionSheetAsync(title, cancel, null, options);
         // Backing out arrives either as the cancel label or, on some platforms, as nothing at all.
         return chosen == null || chosen == cancel ? null : chosen;
     }

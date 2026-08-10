@@ -997,6 +997,12 @@
   <data name="StatsPeriod" xml:space="preserve">
     <value>Period</value>
   </data>
+  <data name="StatsRangeStartHint" xml:space="preserve">
+    <value>Start of the period</value>
+  </data>
+  <data name="StatsRangeEndHint" xml:space="preserve">
+    <value>End of the period</value>
+  </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Week</value>
   </data>
@@ -1348,6 +1354,9 @@
   <data name="MinutesShort" xml:space="preserve">
     <value>m</value>
   </data>
+  <data name="SecondsShort" xml:space="preserve">
+    <value>s</value>
+  </data>
   <data name="SecurityLabel" xml:space="preserve">
     <value>SECURITY</value>
   </data>
@@ -1642,6 +1651,9 @@
   <data name="FactorDailySpend" xml:space="preserve">
     <value>Money spent</value>
   </data>
+  <data name="FactorThemeFormat" xml:space="preserve">
+    <value>Theme: {0}</value>
+  </data>
   <data name="SettingsCurrencyLabel" xml:space="preserve">
     <value>Currency</value>
   </data>
@@ -1653,5 +1665,239 @@
   </data>
   <data name="StatsInsightProgressHint" xml:space="preserve">
     <value>Links between your mood and sleep, habits, meals, tasks and spending appear once there is enough to compare.</value>
+  </data>
+  <data name="SettingsTabAi" xml:space="preserve">
+    <value>AI</value>
+  </data>
+  <data name="AiSectionTitle" xml:space="preserve">
+    <value>ON-DEVICE AI</value>
+  </data>
+  <data name="AiEnableToggle" xml:space="preserve">
+    <value>Enable on-device AI</value>
+  </data>
+  <data name="AiIntro" xml:space="preserve">
+    <value>Search your diary by meaning, see what your months were about, and get weekly summaries. Everything runs on this device.</value>
+  </data>
+  <data name="AiNetworkNotice" xml:space="preserve">
+    <value>The only thing Diarion downloads is the model file itself. Your entries are never sent anywhere.</value>
+  </data>
+  <data name="AiDeviceHeader" xml:space="preserve">
+    <value>YOUR DEVICE</value>
+  </data>
+  <data name="AiDeviceSummaryFormat" xml:space="preserve">
+    <value>{0} RAM · {1} free</value>
+  </data>
+  <data name="AiTierLow" xml:space="preserve">
+    <value>Search and summaries</value>
+  </data>
+  <data name="AiTierMid" xml:space="preserve">
+    <value>Search, summaries and chat</value>
+  </data>
+  <data name="AiTierHigh" xml:space="preserve">
+    <value>Everything, including larger models</value>
+  </data>
+  <data name="AiModelsHeader" xml:space="preserve">
+    <value>MODELS</value>
+  </data>
+  <data name="AiRecommendedBadge" xml:space="preserve">
+    <value>recommended</value>
+  </data>
+  <data name="AiModelTooLargeForDevice" xml:space="preserve">
+    <value>Not enough memory on this device</value>
+  </data>
+  <data name="AiDownloadAction" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="AiResumeAction" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="AiDeleteAction" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="AiCancelAction" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="AiRetryAction" xml:space="preserve">
+    <value>Try again</value>
+  </data>
+  <data name="AiStateNotInstalled" xml:space="preserve">
+    <value>Not downloaded</value>
+  </data>
+  <data name="AiStateDownloading" xml:space="preserve">
+    <value>Downloading</value>
+  </data>
+  <data name="AiStateInstalled" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="AiStateCorrupt" xml:space="preserve">
+    <value>Damaged — download again</value>
+  </data>
+  <data name="AiStateInterrupted" xml:space="preserve">
+    <value>Interrupted — resume to finish</value>
+  </data>
+  <data name="AiDownloadFailed" xml:space="preserve">
+    <value>Download failed. Check the connection and try again.</value>
+  </data>
+  <data name="AiDownloadWifiOnlyStopped" xml:space="preserve">
+    <value>Stopped: Wi-Fi is gone. Downloaded files are kept — resume once you are back on Wi-Fi.</value>
+  </data>
+  <data name="AiMobileDataTitle" xml:space="preserve">
+    <value>You are on mobile data</value>
+  </data>
+  <data name="AiMobileDataConfirmFormat" xml:space="preserve">
+    <value>This model is {0} and will be downloaded over your mobile data allowance. Download anyway?</value>
+  </data>
+  <data name="AiMobileDataDownloadAnyway" xml:space="preserve">
+    <value>Download anyway</value>
+  </data>
+  <data name="AiWifiOnlyToggle" xml:space="preserve">
+    <value>Download over Wi-Fi only</value>
+  </data>
+  <data name="AiKeepOpenNotice" xml:space="preserve">
+    <value>Keep the app open while the model downloads.</value>
+  </data>
+  <data name="AiBackgroundNotice" xml:space="preserve">
+    <value>You can leave the app — the download continues in the background.</value>
+  </data>
+  <data name="AiStateVerifying" xml:space="preserve">
+    <value>Verifying</value>
+  </data>
+  <data name="AiDownloadOfFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="AiDownloadRateFormat" xml:space="preserve">
+    <value>{0}/s</value>
+  </data>
+  <data name="AiDownloadEtaFormat" xml:space="preserve">
+    <value>~{0} left</value>
+  </data>
+  <data name="AiDownloadNotificationChannel" xml:space="preserve">
+    <value>Model downloads</value>
+  </data>
+  <data name="AiDownloadNotificationChannelDescription" xml:space="preserve">
+    <value>Progress of on-device AI model downloads.</value>
+  </data>
+  <data name="AiDownloadNotificationTitle" xml:space="preserve">
+    <value>Downloading AI model</value>
+  </data>
+  <data name="AiIndexHeader" xml:space="preserve">
+    <value>INDEX</value>
+  </data>
+  <data name="AiIndexIdle" xml:space="preserve">
+    <value>Not started</value>
+  </data>
+  <data name="AiIndexScanning" xml:space="preserve">
+    <value>Checking what changed</value>
+  </data>
+  <data name="AiIndexEmbeddingFormat" xml:space="preserve">
+    <value>Reading your entries — {0} of {1}</value>
+  </data>
+  <data name="AiIndexComplete" xml:space="preserve">
+    <value>Up to date</value>
+  </data>
+  <data name="AiIndexCancelled" xml:space="preserve">
+    <value>Paused</value>
+  </data>
+  <data name="AiIndexChunksFormat" xml:space="preserve">
+    <value>{0} fragments indexed</value>
+  </data>
+  <data name="AiIndexRebuildAction" xml:space="preserve">
+    <value>Rebuild index</value>
+  </data>
+  <data name="AiIndexClearAction" xml:space="preserve">
+    <value>Delete index</value>
+  </data>
+  <data name="AiIndexClearConfirm" xml:space="preserve">
+    <value>Delete the search index? Your entries are not affected — it can be rebuilt.</value>
+  </data>
+  <data name="UnitByte" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="UnitKilobyte" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="UnitMegabyte" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="UnitGigabyte" xml:space="preserve">
+    <value>GB</value>
+  </data>
+  <data name="UnitTerabyte" xml:space="preserve">
+    <value>TB</value>
+  </data>
+  <data name="SearchTitle" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>What are you looking for?</value>
+  </data>
+  <data name="SearchHintPhrase" xml:space="preserve">
+    <value>A phrase works better than a single word — the model reads sentences.</value>
+  </data>
+  <data name="SearchScopeAll" xml:space="preserve">
+    <value>Everything</value>
+  </data>
+  <data name="SearchScopeDiary" xml:space="preserve">
+    <value>Diary</value>
+  </data>
+  <data name="SearchScopeNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="SearchNoResults" xml:space="preserve">
+    <value>Nothing found</value>
+  </data>
+  <data name="SearchLexicalOnlyNotice" xml:space="preserve">
+    <value>Searching words only. Turn on AI in settings to search by meaning.</value>
+  </data>
+  <data name="SearchResultsCountFormat" xml:space="preserve">
+    <value>{0} found</value>
+  </data>
+  <data name="SearchSourceDiary" xml:space="preserve">
+    <value>Diary</value>
+  </data>
+  <data name="SearchSourceNote" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="QuickMenuSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="StatsDigestHeader" xml:space="preserve">
+    <value>WHAT THIS PERIOD WAS ABOUT</value>
+  </data>
+  <data name="StatsDigestHint" xml:space="preserve">
+    <value>Your own words, picked as the most typical of the period — nothing here is generated.</value>
+  </data>
+  <data name="StatsThemesHeader" xml:space="preserve">
+    <value>RECURRING THEMES</value>
+  </data>
+  <data name="StatsThemeDaysFormat" xml:space="preserve">
+    <value>{0} days</value>
+  </data>
+  <data name="AiChatTitle" xml:space="preserve">
+    <value>Ask your diary</value>
+  </data>
+  <data name="AiChatPlaceholder" xml:space="preserve">
+    <value>Ask about your entries…</value>
+  </data>
+  <data name="AiChatIntro" xml:space="preserve">
+    <value>Answers come only from what you wrote, with the entries they came from shown underneath.</value>
+  </data>
+  <data name="AiChatUnavailable" xml:space="preserve">
+    <value>No chat model is installed. You can add one in Settings → AI.</value>
+  </data>
+  <data name="AiChatNothingRelevant" xml:space="preserve">
+    <value>I did not find entries to answer this from.</value>
+  </data>
+  <data name="AiChatUngrounded" xml:space="preserve">
+    <value>I could not answer this from your entries without guessing, so I would rather not.</value>
+  </data>
+  <data name="AiChatSourcesLabel" xml:space="preserve">
+    <value>Sources</value>
+  </data>
+  <data name="AiChatStop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="QuickMenuAiChat" xml:space="preserve">
+    <value>Ask diary</value>
   </data>
 </root>

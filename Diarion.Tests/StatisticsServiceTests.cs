@@ -33,7 +33,7 @@ public class StatisticsServiceTests
         var statsService = new StatisticsService(mockDiaryService.Object, mockTodoService.Object, new Mock<IFinanceService>().Object);
 
         // Act
-        var result = await statsService.GetSleepStatisticsAsync(7);
+        var result = await statsService.GetSleepStatisticsAsync(StatsRange.LastDays(7));
 
         // Assert
         result.AverageSleepQuality.Should().Be(7.0); // (8+6)/2
@@ -57,7 +57,7 @@ public class StatisticsServiceTests
         var statsService = new StatisticsService(
             mockDiaryService.Object, new Mock<ITodoService>().Object, new Mock<IFinanceService>().Object);
 
-        var result = await statsService.GetSleepStatisticsAsync(days);
+        var result = await statsService.GetSleepStatisticsAsync(StatsRange.LastDays(days));
 
         result.DailyData.Should().HaveCount(days);
     }
@@ -83,7 +83,7 @@ public class StatisticsServiceTests
         var statsService = new StatisticsService(mockDiaryService.Object, mockTodoService.Object, new Mock<IFinanceService>().Object);
 
         // Act
-        var result = await statsService.GetMoodStatisticsAsync(7);
+        var result = await statsService.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         // Assert
         result.TopEmotion.Should().Be(Emotion.Happy);
@@ -114,7 +114,7 @@ public class StatisticsServiceTests
             mockDiaryService.Object, new Mock<ITodoService>().Object, new Mock<IFinanceService>().Object);
 
         // Act
-        var result = await statsService.GetMoodStatisticsAsync(7);
+        var result = await statsService.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         // Assert
         result.DailyTrend.Should().HaveCount(7); // exactly N days, gap-filled
@@ -147,7 +147,7 @@ public class StatisticsServiceTests
             mockDiaryService.Object, new Mock<ITodoService>().Object, new Mock<IFinanceService>().Object);
 
         // Act
-        var result = await statsService.GetMoodStatisticsAsync(7);
+        var result = await statsService.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         // Assert
         result.DailyTrend.Single(p => p.Date == today.AddDays(-1)).DominantEmotion.Should().Be(Emotion.Happy);
@@ -175,7 +175,7 @@ public class StatisticsServiceTests
         var statsService = new StatisticsService(mockDiaryService.Object, mockTodoService.Object, new Mock<IFinanceService>().Object);
 
         // Act
-        var result = await statsService.GetTodoStatisticsAsync(7);
+        var result = await statsService.GetTodoStatisticsAsync(StatsRange.LastDays(7));
 
         // Assert
         result.TotalCount.Should().Be(3);
@@ -211,7 +211,7 @@ public class StatisticsServiceTests
             }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         result.DailyTrend.Single(p => p.Date == today).Valence.Should().Be(-0.5);
     }
@@ -227,7 +227,7 @@ public class StatisticsServiceTests
             new() { Date = today, Emotion = Emotion.Happy }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         result.EmotionCounts[Emotion.Sad].Should().Be(1);
         result.EmotionCounts[Emotion.Happy].Should().Be(1);
@@ -243,7 +243,7 @@ public class StatisticsServiceTests
             new() { Date = today, Emotion = Emotion.Calm }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         result.EmotionCounts[Emotion.Calm].Should().Be(2);
         result.TopEmotion.Should().Be(Emotion.Calm);
@@ -259,7 +259,7 @@ public class StatisticsServiceTests
             new() { Date = today, Emotion = Emotion.None }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         result.DailyTrend.Single(p => p.Date == today).HasData.Should().BeFalse();
     }
@@ -274,7 +274,7 @@ public class StatisticsServiceTests
             new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.Calm)) }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         result.HourlyProfile.Should().HaveCount(17);
         result.HourlyProfile.Select(p => p.Hour).Should().BeInAscendingOrder();
@@ -290,7 +290,7 @@ public class StatisticsServiceTests
             new() { Date = DateTime.Today, Emotion = Emotion.Happy }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         result.HourlyProfile.Should().OnlyContain(p => !p.HasData && p.Count == 0);
     }
@@ -305,7 +305,7 @@ public class StatisticsServiceTests
             new() { Date = today, HourlyMood = Hours((9, Emotion.Sad)) }                // -2
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         var hour9 = result.HourlyProfile.Single(p => p.Hour == 9);
         hour9.Valence.Should().Be(0);
@@ -324,7 +324,7 @@ public class StatisticsServiceTests
             new() { Date = today, HourlyMood = Hours((21, Emotion.Angry)) }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         var hour21 = result.HourlyProfile.Single(p => p.Hour == 21);
         hour21.Count.Should().Be(3);
@@ -339,7 +339,7 @@ public class StatisticsServiceTests
             new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.Calm)) }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         var hour14 = result.HourlyProfile.Single(p => p.Hour == 14);
         hour14.HasData.Should().BeFalse();
@@ -356,7 +356,7 @@ public class StatisticsServiceTests
             new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.None), (3, Emotion.Happy), (9, Emotion.Happy)) }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         result.HourlyProfile.Single(p => p.Hour == 9).Count.Should().Be(1);
         result.HourlyProfile.Should().NotContain(p => p.Hour == 3);
@@ -372,7 +372,7 @@ public class StatisticsServiceTests
             new() { Date = today, HourlyMood = Hours((9, Emotion.Sad)) }                                    // -2
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         var hour9 = result.HourlyProfile.Single(p => p.Hour == 9);
         hour9.Count.Should().Be(3);
@@ -389,7 +389,7 @@ public class StatisticsServiceTests
             new() { Date = today, HourlyMood = Hours((9, Emotion.Calm)) }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         var hour9 = result.HourlyProfile.Single(p => p.Hour == 9);
         hour9.Count.Should().Be(3);
@@ -406,7 +406,7 @@ public class StatisticsServiceTests
             new() { Date = today, HourlyMood = Hours((9, Emotion.Sad)) }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         var hour9 = result.HourlyProfile.Single(p => p.Hour == 9);
         hour9.Count.Should().Be(2);
@@ -421,7 +421,7 @@ public class StatisticsServiceTests
             new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.Calm)) }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         result.HourlyProfile.Single(p => p.Hour == 14).DayCount.Should().Be(0);
     }
@@ -434,7 +434,7 @@ public class StatisticsServiceTests
             new() { Date = DateTime.Today, HourlyMood = Hours((9, Emotion.Calm), (10, Emotion.Happy)) }
         });
 
-        var result = await service.GetMoodStatisticsAsync(7);
+        var result = await service.GetMoodStatisticsAsync(StatsRange.LastDays(7));
 
         result.HourlyProfile.Single(p => p.Hour == 9).DayCount.Should().Be(1);
         result.HourlyProfile.Single(p => p.Hour == 10).DayCount.Should().Be(1);
@@ -469,7 +469,7 @@ public class StatisticsServiceTests
         // figure as "new", which looks like a plausible empty state rather than a bug.
         var (service, finance) = FinanceServiceOver(new List<FinanceTransaction>());
 
-        await service.GetFinanceStatisticsAsync(30);
+        await service.GetFinanceStatisticsAsync(StatsRange.LastDays(30));
 
         finance.Verify(s => s.GetFinanceTransactionsForStatsAsync(
             DateTime.Today.AddDays(-59), DateTime.Today), Times.Once);
@@ -485,7 +485,7 @@ public class StatisticsServiceTests
         };
         var (service, _) = FinanceServiceOver(rows);
 
-        var stats = await service.GetFinanceStatisticsAsync(30);
+        var stats = await service.GetFinanceStatisticsAsync(StatsRange.LastDays(30));
 
         stats.TotalExpense.Should().Be(100m);
         stats.Comparison.Expense.Previous.Should().Be(900m, "the baseline is what the wider fetch is for");
@@ -500,7 +500,7 @@ public class StatisticsServiceTests
             .ToList();
         var (service, _) = FinanceServiceOver(rows);
 
-        var stats = await service.GetFinanceStatisticsAsync(30);
+        var stats = await service.GetFinanceStatisticsAsync(StatsRange.LastDays(30));
 
         stats.Trend.TotalExpense.Should().Be(stats.TotalExpense);
     }
@@ -517,7 +517,7 @@ public class StatisticsServiceTests
         };
         var (service, _) = FinanceServiceOver(rows, new List<Account> { card, cash });
 
-        var scoped = await service.GetFinanceStatisticsAsync(30, card.Id);
+        var scoped = await service.GetFinanceStatisticsAsync(StatsRange.LastDays(30), card.Id);
 
         scoped.TotalExpense.Should().Be(100m);
         scoped.Trend.TotalExpense.Should().Be(100m);
@@ -532,8 +532,8 @@ public class StatisticsServiceTests
         var card = new Account { Name = "Card" };
         var (service, finance) = FinanceServiceOver(new List<FinanceTransaction>(), new List<Account> { card });
 
-        await service.GetFinanceStatisticsAsync(30);
-        await service.GetFinanceStatisticsAsync(30, card.Id);
+        await service.GetFinanceStatisticsAsync(StatsRange.LastDays(30));
+        await service.GetFinanceStatisticsAsync(StatsRange.LastDays(30), card.Id);
 
         finance.Verify(s => s.GetFinanceTransactionsForStatsAsync(
             DateTime.Today.AddDays(-59), DateTime.Today), Times.Exactly(2));
@@ -550,7 +550,7 @@ public class StatisticsServiceTests
         };
         var (service, _) = FinanceServiceOver(rows, new List<Account> { card });
 
-        var stats = await service.GetFinanceStatisticsAsync(30);
+        var stats = await service.GetFinanceStatisticsAsync(StatsRange.LastDays(30));
 
         stats.AccountBreakdown.Sum(r => r.Expense).Should().Be(stats.TotalExpense);
     }

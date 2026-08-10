@@ -91,31 +91,19 @@ public partial class MoodStatsViewModel : ObservableObject
         _correlationService = correlationService;
     }
 
-    private async Task LoadCorrelationsAsync(int days)
+    private async Task LoadCorrelationsAsync(StatsRange range)
     {
-        var correlations = await _correlationService.GetMoodCorrelationsAsync(days);
+        var correlations = await _correlationService.GetMoodCorrelationsAsync(range);
         var items = new System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem>();
 
         // Only surface associations that are statistically significant (p < 0.05, i.e. >= 3 dots).
         foreach (var c in correlations.Where(c => c.Confidence >= 3))
         {
-            var factorName = c.FactorKey switch
-            {
-                CorrelationService.Factors.SleepDuration => AppResources.FactorSleepDuration,
-                CorrelationService.Factors.SleepQuality => AppResources.FactorSleepQuality,
-                CorrelationService.Factors.CyclePeriodDay => AppResources.FactorCyclePeriodDay,
-                CorrelationService.Factors.CycleSymptomLoad => AppResources.FactorCycleSymptoms,
-                CorrelationService.Factors.HabitCompletion => AppResources.FactorHabitCompletion,
-                CorrelationService.Factors.MealsLogged => AppResources.FactorMealsLogged,
-                CorrelationService.Factors.TaskCompletion => AppResources.FactorTaskCompletion,
-                CorrelationService.Factors.DailySpend => AppResources.FactorDailySpend,
-                _ => c.FactorKey
-            };
             var arrow = c.Coefficient >= 0 ? "↑" : "↓";
 
             items.Add(new MoodCorrelationItem
             {
-                Description = $"{arrow}  {factorName}",
+                Description = $"{arrow}  {FactorName(c.FactorKey)}",
                 Dots = new string('●', c.Confidence) + new string('○', 5 - c.Confidence)
             });
         }
@@ -126,7 +114,7 @@ public partial class MoodStatsViewModel : ObservableObject
         // nothing about why. Ask how far along the data is and say so instead.
         if (items.Count == 0)
         {
-            var readiness = await _correlationService.GetReadinessAsync(days);
+            var readiness = await _correlationService.GetReadinessAsync(range);
             InsightProgressText = string.Format(
                 AppResources.StatsInsightProgressFormat,
                 Math.Min(readiness.PairedDays, readiness.RequiredDays),
@@ -138,12 +126,39 @@ public partial class MoodStatsViewModel : ObservableObject
         }
     }
 
-    public async Task LoadDataAsync(int days)
+    /// <summary>
+    /// The user-facing name of a factor. Structured factors are looked up; a theme cannot be,
+    /// because the key carries the user's own sentence and the list is different every window.
+    /// </summary>
+    private static string FactorName(string key)
+    {
+        if (key.StartsWith(CorrelationService.Factors.ThemePrefix, StringComparison.Ordinal))
+        {
+            return string.Format(
+                AppResources.FactorThemeFormat,
+                key[CorrelationService.Factors.ThemePrefix.Length..]);
+        }
+
+        return key switch
+        {
+            CorrelationService.Factors.SleepDuration => AppResources.FactorSleepDuration,
+            CorrelationService.Factors.SleepQuality => AppResources.FactorSleepQuality,
+            CorrelationService.Factors.CyclePeriodDay => AppResources.FactorCyclePeriodDay,
+            CorrelationService.Factors.CycleSymptomLoad => AppResources.FactorCycleSymptoms,
+            CorrelationService.Factors.HabitCompletion => AppResources.FactorHabitCompletion,
+            CorrelationService.Factors.MealsLogged => AppResources.FactorMealsLogged,
+            CorrelationService.Factors.TaskCompletion => AppResources.FactorTaskCompletion,
+            CorrelationService.Factors.DailySpend => AppResources.FactorDailySpend,
+            _ => key
+        };
+    }
+
+    public async Task LoadDataAsync(StatsRange range)
     {
         IsBusy = true;
         try
         {
-            var moodStats = await _statisticsService.GetMoodStatisticsAsync(days);
+            var moodStats = await _statisticsService.GetMoodStatisticsAsync(range);
             
             var totalEmotions = moodStats.EmotionCounts.Values.Sum();
             if (totalEmotions == 0)
@@ -213,7 +228,7 @@ public partial class MoodStatsViewModel : ObservableObject
                     ColorHex = p.DominantEmotion.ToColorHex()
                 }));
 
-            await LoadCorrelationsAsync(days);
+            await LoadCorrelationsAsync(range);
         }
         finally
         {

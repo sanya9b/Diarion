@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Services.Ai;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -67,7 +68,8 @@ public class CorrelationServiceTests
                .ReturnsAsync(new List<FinanceTransaction>());
 
         return new CorrelationService(
-            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object);
+            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object,
+            new NullThemeClusterService());
     }
 
     [Fact]
@@ -80,7 +82,7 @@ public class CorrelationServiceTests
         }
         var service = Build(data);
 
-        var result = await service.GetMoodCorrelationsAsync(days: 20);
+        var result = await service.GetMoodCorrelationsAsync(StatsRange.LastDays(20));
 
         result.Should().ContainSingle();
         var sleep = result[0];
@@ -102,7 +104,7 @@ public class CorrelationServiceTests
         }
         var service = Build(data);
 
-        var result = await service.GetMoodCorrelationsAsync(days: 10);
+        var result = await service.GetMoodCorrelationsAsync(StatsRange.LastDays(10));
 
         result.Should().BeEmpty();
     }
@@ -117,7 +119,7 @@ public class CorrelationServiceTests
         }
         var service = Build(data);
 
-        var result = await service.GetMoodCorrelationsAsync(days: 16);
+        var result = await service.GetMoodCorrelationsAsync(StatsRange.LastDays(16));
 
         result.Should().ContainSingle();
         result[0].Coefficient.Should().Be(0);
@@ -147,7 +149,7 @@ public class CorrelationServiceTests
         }
         var service = Build(data);
 
-        var lagged = await service.GetMoodCorrelationsAsync(days: 20, lagDays: 1);
+        var lagged = await service.GetMoodCorrelationsAsync(StatsRange.LastDays(20), lagDays: 1);
 
         lagged.Should().ContainSingle();
         lagged[0].FactorKey.Should().Be("SleepDuration");

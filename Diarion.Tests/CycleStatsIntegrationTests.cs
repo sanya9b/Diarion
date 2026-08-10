@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Services.Ai;
 using Diarion.ViewModels.Statistics;
 using FluentAssertions;
 using Moq;
@@ -64,7 +65,7 @@ public class CycleStatsViewModelTests
     {
         var (vm, _) = Build(RegularMarkedDays());
 
-        await vm.LoadDataAsync(7);   // the range is deliberately ignored by this tab
+        await vm.LoadDataAsync(StatsRange.LastDays(7));   // the range is deliberately ignored by this tab
 
         vm.IsEmpty.Should().BeFalse();
         vm.AverageCycleText.Should().Be("28");
@@ -82,7 +83,7 @@ public class CycleStatsViewModelTests
         var start = DateTime.Today.AddDays(-30);
         var (vm, _) = Build(Enumerable.Range(0, 4).Select(i => start.AddDays(i)).ToList());
 
-        await vm.LoadDataAsync(30);
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
 
         vm.IsEmpty.Should().BeFalse();
         vm.AverageCycleText.Should().Be("—");
@@ -100,7 +101,7 @@ public class CycleStatsViewModelTests
         };
 
         var (vm, _) = Build(RegularMarkedDays(), logs);
-        await vm.LoadDataAsync(90);
+        await vm.LoadDataAsync(StatsRange.LastDays(90));
 
         vm.HasSymptoms.Should().BeTrue();
         vm.Symptoms[0].CountText.Should().Be("2");
@@ -112,7 +113,7 @@ public class CycleStatsViewModelTests
     {
         var (vm, _) = Build();
 
-        await vm.LoadDataAsync(365);
+        await vm.LoadDataAsync(StatsRange.LastDays(365));
 
         vm.IsEmpty.Should().BeTrue();
         vm.HasCycles.Should().BeFalse();
@@ -153,7 +154,8 @@ public class CycleCorrelationTests
                .ReturnsAsync(new List<FinanceTransaction>());
 
         return new CorrelationService(
-            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object);
+            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object,
+            new NullThemeClusterService());
     }
 
     /// <summary>Thirty days where mood is low exactly on the five logged period days.</summary>
@@ -188,7 +190,7 @@ public class CycleCorrelationTests
         var (entries, logs) = LowMoodOnPeriodDays();
         var service = Build(entries, logs);
 
-        var results = await service.GetMoodCorrelationsAsync(30);
+        var results = await service.GetMoodCorrelationsAsync(StatsRange.LastDays(30));
 
         var periodFactor = results.FirstOrDefault(r => r.FactorKey == "CyclePeriodDay");
         periodFactor.Should().NotBeNull("the cycle is now one of the factors");
@@ -202,7 +204,7 @@ public class CycleCorrelationTests
         var (entries, logs) = LowMoodOnPeriodDays();
         var service = Build(entries, logs, trackingEnabled: false);
 
-        var results = await service.GetMoodCorrelationsAsync(30);
+        var results = await service.GetMoodCorrelationsAsync(StatsRange.LastDays(30));
 
         results.Should().NotContain(r => r.FactorKey.StartsWith("Cycle"),
             "a factor the user is not tracking must not be computed at all");
@@ -214,7 +216,7 @@ public class CycleCorrelationTests
         var (entries, _) = LowMoodOnPeriodDays();
         var service = Build(entries, new List<CycleLog>());
 
-        var results = await service.GetMoodCorrelationsAsync(30);
+        var results = await service.GetMoodCorrelationsAsync(StatsRange.LastDays(30));
 
         results.Should().NotContain(r => r.FactorKey.StartsWith("Cycle"));
     }

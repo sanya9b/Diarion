@@ -43,12 +43,12 @@ public partial class SleepStatsViewModel : ObservableObject
         _statisticsService = statisticsService;
     }
 
-    public async Task LoadDataAsync(int days)
+    public async Task LoadDataAsync(StatsRange range)
     {
         IsBusy = true;
         try
         {
-            var sleepStats = await _statisticsService.GetSleepStatisticsAsync(days);
+            var sleepStats = await _statisticsService.GetSleepStatisticsAsync(range);
             
             // Check if there's any actual sleep data > 0
             if (!sleepStats.DailyData.Any(x => x.Duration.TotalHours > 0))
@@ -74,6 +74,7 @@ public partial class SleepStatsViewModel : ObservableObject
             var sleepData = new System.Collections.ObjectModel.ObservableCollection<SleepBarChartItem>();
             
             // If less than 30 days, show daily. Else, group by week or month.
+            var days = range.Normalized().Days;
             if (days <= 14)
             {
                 foreach (var pt in sleepStats.DailyData)

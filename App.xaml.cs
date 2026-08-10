@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Diarion.Diagnostics;
 using Diarion.Services;
+using Diarion.Services.Ai;
 using Microsoft.Maui;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
@@ -86,10 +87,21 @@ public partial class App : Application
             await CheckOnboardingAsync(window);
             await CheckSecurityAsync(window, coldStart: true);
         };
-        window.Resumed += async (s, e) => await CheckSecurityAsync(window, coldStart: false);
+        window.Resumed += async (s, e) =>
+        {
+            await CheckSecurityAsync(window, coldStart: false);
+            StartEmbeddingIndex(window.Handler?.MauiContext?.Services);
+        };
 
         return window;
     }
+
+    /// <summary>
+    /// Nudges the embedding index after the UI is up. It no-ops when AI is off or no model is
+    /// installed, and it derives its own work queue, so calling it repeatedly is free.
+    /// </summary>
+    private static void StartEmbeddingIndex(IServiceProvider? services) =>
+        (services ?? IPlatformApplication.Current?.Services)?.GetService<IEmbeddingIndexService>()?.Start();
 
     private async Task CheckOnboardingAsync(Window window)
     {
@@ -115,6 +127,17 @@ public partial class App : Application
     {
         base.OnSleep();
         _backgroundedAtUtc = DateTime.UtcNow;
+
+        // Android gives no dependable background CPU, and a foreground service is not worth the
+        // permission surface for indexing. Stopping also has to happen before the database can be
+        // reopened by a backup restore, which would invalidate the collection the loop writes to.
+        var services = IPlatformApplication.Current?.Services;
+        _ = services?.GetService<IEmbeddingIndexService>()?.StopAsync();
+
+        // Both graphs are resident megabytes — the generative one over a gigabyte — and nothing
+        // needs either while the user is elsewhere.
+        services?.GetService<ITextEmbedder>()?.Unload();
+        (services?.GetService<ITextGenerator>() as OnnxGenAiTextGenerator)?.Unload();
     }
 
     private async Task CheckSecurityAsync(Window window, bool coldStart)

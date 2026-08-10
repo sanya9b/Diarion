@@ -82,6 +82,14 @@ public partial class CalendarSectionViewModel : ObservableObject
         var culture = Diarion.Resources.Localization.AppResources.Culture ?? CultureInfo.CurrentCulture;
         TodayMonthShort = DateTime.Now.ToString("MMM", culture).ToUpper();
         TodayDayNumber = DateTime.Now.ToString("dd");
+
+        // Search opens a day by asking for it. Going through the calendar rather than loading the
+        // content directly is what keeps the header, the highlighted day and the content agreeing —
+        // otherwise the screen shows June under a heading that says August.
+        WeakReferenceMessenger.Default.Register<NavigateToDateMessage>(this, (r, m) =>
+        {
+            _ = SelectDateInternalAsync(m.Date);
+        });
     }
 
     public void Initialize()

@@ -2,16 +2,31 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 	<!-- allowBackup=false: keep the local diary off Google cloud / adb backup (privacy-first, no cloud). -->
 	<application android:allowBackup="false" android:fullBackupContent="false" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true"></application>
-	<!-- No ACCESS_NETWORK_STATE, and no INTERNET either: the release APK asks for neither, so the
-	     OS itself guarantees the diary cannot leave the phone. Nothing in the app reads connectivity.
-	     Adding a dependency can undo this silently — Google's ML Kit AAR, for one, declares both in
-	     its own manifest and the merger injects them. Check the generated release manifest after
-	     adding any package. -->
+	<!-- INTERNET exists for exactly one thing: downloading AI model files (see specs/13-on-device-ai.md).
+	     No user data is ever uploaded — there is no cloud inference, no sync, no telemetry, no account.
+	     Until 2026-08-02 the app asked for no network permission at all and the OS itself guaranteed
+	     the diary could not leave the phone; that guarantee is gone, so the store copy now promises
+	     "data goes nowhere" rather than "no network", and says so explicitly.
+	     This list is an allowlist enforced by the android-permissions CI job: a dependency can inject
+	     permissions through manifest merging without showing up in a diff, so anything beyond these
+	     nine fails the build. That is what catches an accidental unpin of OnnxRuntimeGenAI 0.14.1,
+	     whose 0.15.1 AAR declares INTERNET and installs a telemetry ContentProvider.
+	     The two FOREGROUND_SERVICE names were added 2026-08-10 for the same single purpose as
+	     INTERNET: model downloads. Android suspends a backgrounded process, so a locked screen used
+	     to stop a 1.1 GB download dead; a dataSync foreground service is the only way to ask the
+	     system to let it finish. Neither name grants access to anything — they are a declaration of
+	     intent, and the notification they oblige us to show is what makes the download visible and
+	     cancellable while the app is away. No WAKE_LOCK: the foreground service should be enough,
+	     and if some OEM ROM proves otherwise it gets added then, on evidence. -->
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission android:name="android.permission.VIBRATE" />
 	<uses-permission android:name="android.permission.USE_BIOMETRIC" />
 	<uses-permission android:name="android.permission.USE_FINGERPRINT" />
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 	<!-- No exact-alarm permissions. USE_EXACT_ALARM is restricted by Play to alarm clocks and
 	     calendars; SCHEDULE_EXACT_ALARM is no longer auto-granted from Android 14 and would degrade
 	     silently. Reminders schedule as InexactAllowWhileIdle instead — see LocalNotificationService. -->

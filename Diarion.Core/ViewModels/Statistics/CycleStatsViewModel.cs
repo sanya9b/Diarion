@@ -18,9 +18,10 @@ public class CycleSymptomItemViewModel
 }
 
 /// <summary>
-/// The cycle tab. Unlike every other tab this one ignores the period chips: the shortest range on offer
+/// The cycle tab. Unlike every other tab this one ignores the selected period: the shortest range on offer
 /// is a week, and a week cannot contain a cycle — the section would read as empty for anyone who had not
-/// changed the range first. It describes the whole log instead, and says so on the card.
+/// changed the range first. It describes the whole log instead, and says so on the card. That holds for a
+/// hand-picked range too: an arbitrary fortnight is no better a container for a cycle than a preset one.
 /// </summary>
 public partial class CycleStatsViewModel : ObservableObject
 {
@@ -93,7 +94,7 @@ public partial class CycleStatsViewModel : ObservableObject
         return profile?.IsCycleTrackingActive == true;
     }
 
-    public async Task LoadDataAsync(int days)
+    public async Task LoadDataAsync(StatsRange range)
     {
         IsBusy = true;
         try

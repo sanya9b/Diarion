@@ -76,7 +76,7 @@ public abstract class ChartViewBase : GraphicsView, IDrawable
     /// loads asynchronously would draw empty and never repaint. This subscribes to
     /// <see cref="INotifyCollectionChanged"/> on the bound collection — unsubscribing the previous one — so
     /// the chart repaints whenever its data arrives or changes. Reassigning the collection still repaints via
-    /// the trailing <see cref="Invalidate"/>.
+    /// the trailing <see cref="GraphicsView.Invalidate"/>.
     /// </summary>
     protected static void OnItemsChanged(BindableObject bindable, object oldValue, object newValue)
     {

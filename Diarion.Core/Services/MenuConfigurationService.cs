@@ -6,10 +6,25 @@ namespace Diarion.Services;
 
 public class MenuConfigurationService : IMenuConfigurationService
 {
+    /// <summary>The one id that is conditional, so the filter and the catalogue cannot drift apart.</summary>
+    public const string AiChatId = "AiChat";
+
     public List<QuickMenuItem> GetDefaultMenuItems()
     {
         return new List<QuickMenuItem>
         {
+            new QuickMenuItem
+            {
+                Id = "Search",
+                // Must be one of Sage/Berry/Amber/Coral: QuickMenuView.xaml resolves the stroke
+                // through DataTriggers on exactly those four, and any other key leaves the icon
+                // with no stroke at all — drawn, but invisible.
+                StrokeColorKey = "Theme_Sage",
+                UsesUniformAspect = true,
+                // Two semicircular arcs rather than one full circle, matching Wishlist: an arc
+                // command that returns to its own start point is degenerate and draws nothing.
+                PathData = "M 28,16 A 12,12 0 0 1 28,40 A 12,12 0 0 1 28,16 M 37,37 L 48,48"
+            },
             new QuickMenuItem 
             { 
                 Id = "Notes", 
@@ -56,6 +71,18 @@ public class MenuConfigurationService : IMenuConfigurationService
                 StrokeColorKey = "Theme_Sage", 
                 UsesUniformAspect = true,
                 PathData = "M 18 26 C 18 21 21 21 22 21 H 42 C 43 21 46 21 46 26 V 42 C 46 47 43 47 42 47 H 22 C 21 47 18 47 18 42 V 26 Z M 18 26 H 46 M 38 31 H 46 V 39 H 38 C 35 39 35 31 38 31 Z M 41.5 33.5 A 1.5 1.5 0 1 1 41.5 36.5 A 1.5 1.5 0 1 1 41.5 33.5 Z"
+            },
+            new QuickMenuItem
+            {
+                // Listed here like the rest, but shown only when a generative model is installed —
+                // QuickMenuViewModel filters it. A permanent tile would promise an answer that a
+                // low-tier phone is never offered a model for.
+                Id = AiChatId,
+                StrokeColorKey = "Theme_Coral",
+                UsesUniformAspect = true,
+                // Two sparkles, not a speech bubble: Habits is already a coral speech bubble two
+                // tiles away, and at 24 px the pair was indistinguishable.
+                PathData = "M 28,14 C 29.5,22 34,26.5 42,28 C 34,29.5 29.5,34 28,42 C 26.5,34 22,29.5 14,28 C 22,26.5 26.5,22 28,14 Z M 44,37 C 44.8,41 47,43.2 51,44 C 47,44.8 44.8,47 44,51 C 43.2,47 41,44.8 37,44 C 41,43.2 43.2,41 44,37 Z"
             }
         };
     }
