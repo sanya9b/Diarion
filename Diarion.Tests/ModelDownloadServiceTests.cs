@@ -25,6 +25,7 @@ public class ModelDownloadServiceTests : IDisposable
     private readonly FakeHandler _handler = new();
     private readonly FakeNetworkStatus _network = new();
     private readonly FakeProfileService _profiles = new();
+    private readonly RecordingTransferHost _host = new();
 
     public void Dispose()
     {
@@ -35,7 +36,7 @@ public class ModelDownloadServiceTests : IDisposable
     }
 
     private ModelDownloadService CreateService() =>
-        new(new HttpClient(_handler), new TempPathProvider(_root), _profiles, _network);
+        new(new HttpModelFileTransfer(new HttpClient(_handler)), new TempPathProvider(_root), _profiles, _network, _host);
 
     private static string Sha256Of(byte[] bytes) => Convert.ToHexStringLower(SHA256.HashData(bytes));
 
@@ -165,6 +166,38 @@ public class ModelDownloadServiceTests : IDisposable
         (await CreateService().DownloadAsync(Model())).Should().BeTrue();
 
         File.ReadAllBytes(LocalPath()).Should().Equal(Payload);
+    }
+
+    [Fact]
+    public async Task Download_CompletePartial_IsVerifiedRatherThanFetchedAgain()
+    {
+        // The ordinary ending on iOS: the system finishes the transfer whether or not the app is
+        // alive, so the next launch finds every byte on disk and nothing but the digest outstanding.
+        Directory.CreateDirectory(Path.Combine(_root, "test-model"));
+        File.WriteAllBytes(LocalPath("model.onnx.partial"), Payload);
+
+        _handler.RespondWith(Payload);
+
+        (await CreateService().DownloadAsync(Model())).Should().BeTrue();
+
+        _handler.RequestCount.Should().Be(0);
+        File.ReadAllBytes(LocalPath()).Should().Equal(Payload);
+    }
+
+    [Fact]
+    public async Task Download_CompletePartialThatIsNotTheModel_IsRejectedRatherThanInstalled()
+    {
+        // Right length, wrong bytes. Skipping the wire must not mean skipping the check — this is
+        // the file the size shortcut would otherwise wave through into the model directory.
+        Directory.CreateDirectory(Path.Combine(_root, "test-model"));
+        File.WriteAllBytes(LocalPath("model.onnx.partial"), Payload.Select(b => (byte)~b).ToArray());
+
+        _handler.RespondWith(Payload);
+
+        (await CreateService().DownloadAsync(Model())).Should().BeFalse();
+
+        File.Exists(LocalPath()).Should().BeFalse();
+        File.Exists(LocalPath("model.onnx.partial")).Should().BeFalse();
     }
 
     [Fact]
@@ -320,11 +353,11 @@ public class ModelDownloadServiceTests : IDisposable
         // slow connection until something puts a clock on it.
         _handler.RespondWithSilence();
         var service = new ModelDownloadService(
-            new HttpClient(_handler),
+            new HttpModelFileTransfer(new HttpClient(_handler), stallTimeout: TimeSpan.FromMilliseconds(150)),
             new TempPathProvider(_root),
             _profiles,
             _network,
-            stallTimeout: TimeSpan.FromMilliseconds(150));
+            _host);
 
         (await service.StartAsync(Model())).Should().Be(ModelDownloadOutcome.Failed);
         service.IsActive("test-model").Should().BeFalse();
@@ -337,11 +370,11 @@ public class ModelDownloadServiceTests : IDisposable
         // than the silence that a cancel they asked for deserves.
         _handler.RespondWithSilence();
         var service = new ModelDownloadService(
-            new HttpClient(_handler),
+            new HttpModelFileTransfer(new HttpClient(_handler), stallTimeout: TimeSpan.FromMilliseconds(150)),
             new TempPathProvider(_root),
             _profiles,
             _network,
-            stallTimeout: TimeSpan.FromMilliseconds(150));
+            _host);
 
         var act = async () => await service.DownloadAsync(Model());
 
@@ -548,12 +581,227 @@ public class ModelDownloadServiceTests : IDisposable
     {
         _network.Current = NetworkStatus.Metered;
         var service = new ModelDownloadService(
-            new HttpClient(_handler),
+            new HttpModelFileTransfer(new HttpClient(_handler)),
             new TempPathProvider(_root),
             new BrokenProfiles(),
-            _network);
+            _network,
+            _host);
 
         (await service.StartAsync(Model())).Should().Be(ModelDownloadOutcome.BlockedByMobileData);
+    }
+
+    [Fact]
+    public async Task TransferHost_IsHeldWhileBytesMoveAndReleasedWhenTheyStop()
+    {
+        // The whole point of it: while this is held, Android does not suspend the process, so a
+        // locked screen no longer ends the download.
+        _handler.RespondSlowly(Payload);
+        var service = CreateService();
+        var running = service.StartAsync(Model());
+        await _handler.FirstRequestReceived;
+
+        _host.IsHeld.Should().BeTrue();
+
+        _handler.Release();
+        (await running).Should().Be(ModelDownloadOutcome.Completed);
+
+        _host.Begun.Should().Be(1);
+        _host.IsHeld.Should().BeFalse();
+
+        // Fed the same figures the in-app bar gets: when the app is away, the platform's
+        // notification is the only thing the user can see.
+        _host.Reports.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task TransferHost_IsReleasedWhenTheUserCancels()
+    {
+        _handler.RespondSlowly(Payload);
+        var service = CreateService();
+        var running = service.StartAsync(Model());
+        await _handler.FirstRequestReceived;
+
+        service.Cancel("test-model");
+        _handler.Release();
+        await running;
+
+        _host.IsHeld.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task TransferHost_IsReleasedWhenTheDownloadFails()
+    {
+        // A foreground service left running over a download that died is a notification the user
+        // cannot dismiss and a battery drain they cannot explain.
+        _handler.RespondWith(Array.Empty<byte>(), HttpStatusCode.NotFound);
+
+        (await CreateService().StartAsync(Model())).Should().Be(ModelDownloadOutcome.Failed);
+
+        _host.Begun.Should().Be(1);
+        _host.IsHeld.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task TransferHost_IsReleasedWhenMobileDataBlocksTheDownload()
+    {
+        // Refused before a socket opens, which is the one ending that never reaches the try block.
+        _network.Current = NetworkStatus.Metered;
+
+        (await CreateService().StartAsync(Model())).Should().Be(ModelDownloadOutcome.BlockedByMobileData);
+
+        _host.IsHeld.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task TransferHost_ASecondStartForTheSameModel_RaisesItOnce()
+    {
+        // Two views, one download — and one notification. Two would be one too many to dismiss.
+        _handler.RespondSlowly(Payload);
+        var service = CreateService();
+        var first = service.StartAsync(Model());
+        await _handler.FirstRequestReceived;
+        var second = service.StartAsync(Model());
+
+        _handler.Release();
+        await Task.WhenAll(first, second);
+
+        _host.Begun.Should().Be(1);
+        _host.Released.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task TransferHost_ThatThrows_DoesNotCostTheDownload()
+    {
+        // A platform that refuses to keep us alive is a reason to download in the foreground, not
+        // a reason to fail before the first byte.
+        _handler.RespondWith(Payload);
+        var service = new ModelDownloadService(
+            new HttpModelFileTransfer(new HttpClient(_handler)),
+            new TempPathProvider(_root),
+            _profiles,
+            _network,
+            new HostileTransferHost());
+
+        (await service.StartAsync(Model())).Should().Be(ModelDownloadOutcome.Completed);
+    }
+
+    [Fact]
+    public async Task Progress_Verifying_IsAnnouncedAndThenCleared()
+    {
+        // SHA-256 over a gigabyte is ten seconds of a bar that has stopped, which reads as a
+        // freeze. The phase is the only thing that tells the two apart.
+        _handler.RespondWith(Payload);
+        var service = CreateService();
+        var seen = new List<ModelDownloadProgress>();
+        service.ProgressChanged += (_, p) => seen.Add(p);
+
+        await service.StartAsync(Model());
+
+        seen.Should().Contain(p => p.Phase == ModelDownloadPhase.Verifying);
+        seen[^1].Phase.Should().Be(ModelDownloadPhase.Transferring);
+    }
+
+    [Fact]
+    public async Task Progress_Verifying_CarriesTheByteCountRatherThanRewindingTheBar()
+    {
+        _handler.RespondWith(Payload);
+        var service = CreateService();
+        var seen = new List<ModelDownloadProgress>();
+        service.ProgressChanged += (_, p) => seen.Add(p);
+
+        await service.StartAsync(Model());
+
+        seen.First(p => p.Phase == ModelDownloadPhase.Verifying)
+            .BytesReceived.Should().Be(Payload.Length);
+    }
+
+    /// <summary>Counts what the platform was asked for, so the tests can prove it was let go of.</summary>
+    private sealed class RecordingTransferHost : IModelTransferHost
+    {
+        private readonly object _gate = new();
+        private readonly List<ModelDownloadProgress> _reports = new();
+
+        public bool KeepsRunningInBackground => true;
+
+        public int Begun { get; private set; }
+
+        public int Released { get; private set; }
+
+        public bool IsHeld
+        {
+            get
+            {
+                lock (_gate)
+                {
+                    return Begun > Released;
+                }
+            }
+        }
+
+        public IReadOnlyList<ModelDownloadProgress> Reports
+        {
+            get
+            {
+                lock (_gate)
+                {
+                    return _reports.ToList();
+                }
+            }
+        }
+
+        public IDisposable Begin(string modelId, string modelName)
+        {
+            lock (_gate)
+            {
+                Begun++;
+            }
+
+            return new Handle(this);
+        }
+
+        public void Report(ModelDownloadProgress progress)
+        {
+            lock (_gate)
+            {
+                _reports.Add(progress);
+            }
+        }
+
+        private void Release()
+        {
+            lock (_gate)
+            {
+                Released++;
+            }
+        }
+
+        private sealed class Handle(RecordingTransferHost owner) : IDisposable
+        {
+            private bool _released;
+
+            public void Dispose()
+            {
+                if (_released)
+                {
+                    return;
+                }
+
+                _released = true;
+                owner.Release();
+            }
+        }
+    }
+
+    /// <summary>A platform having a bad day: every call into it throws.</summary>
+    private sealed class HostileTransferHost : IModelTransferHost
+    {
+        public bool KeepsRunningInBackground => true;
+
+        public IDisposable Begin(string modelId, string modelName) =>
+            throw new InvalidOperationException("the system refused to start the service");
+
+        public void Report(ModelDownloadProgress progress) =>
+            throw new InvalidOperationException("the notification is gone");
     }
 
     private sealed class BrokenProfiles : IProfileService

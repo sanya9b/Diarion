@@ -669,7 +669,11 @@
                                                      IsVisible="{Binding ShowProgress}"
                                                      ProgressColor="{DynamicResource Theme_Ocean_Ocean}" />
 
-                                        <Label Text="{x:Static localization:AppResources.AiKeepOpenNotice}"
+                                        <Label Text="{Binding ProgressDetail}"
+                                               IsVisible="{Binding HasProgressDetail}"
+                                               FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                                        <Label Text="{Binding BackgroundNotice}"
                                                IsVisible="{Binding IsDownloading}"
                                                FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 

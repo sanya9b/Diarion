@@ -1,7 +1,6 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Net;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,56 +15,34 @@ public class ModelDownloadService : IModelDownloadService
 
     private const int CopyBufferBytes = 128 * 1024;
 
-    /// <summary>
-    /// How long a socket may deliver nothing before the download is declared dead.
-    /// </summary>
-    /// <remarks>
-    /// A phone that goes through a tunnel, or an app that iOS suspended and resumed, leaves a
-    /// connection that is open and silent. Without this the read simply waits — and the user
-    /// watches a progress bar that will never move again, with no error and nothing to press.
-    /// Sixty seconds is long enough to survive a bad minute of mobile signal and short enough that
-    /// nobody sits through it twice.
-    /// </remarks>
-    private static readonly TimeSpan DefaultStallTimeout = TimeSpan.FromSeconds(60);
-
-    /// <summary>Separate and shorter: a server that has not sent headers yet is not slow, it is absent.</summary>
-    private static readonly TimeSpan DefaultResponseHeadersTimeout = TimeSpan.FromSeconds(30);
-
-    /// <summary>
-    /// Report at most once per megabyte. Per 128 KB chunk would be some nine thousand marshalled
-    /// callbacks for the 1.1 GB model, all of them to move a progress bar by a hair.
-    /// </summary>
-    private const long ProgressReportIntervalBytes = 1024 * 1024;
-
-    private readonly HttpClient _httpClient;
+    private readonly IModelFileTransfer _transfer;
     private readonly IAiModelPathProvider _paths;
     private readonly IProfileService _profiles;
     private readonly INetworkStatusService _network;
-    private readonly TimeSpan _stallTimeout;
-    private readonly TimeSpan _responseHeadersTimeout;
+    private readonly IModelTransferHost _host;
 
     private readonly object _gate = new();
     private readonly Dictionary<string, ActiveDownload> _active = new(StringComparer.Ordinal);
 
-    /// <param name="stallTimeout">Overridable so a test can prove the watchdog fires without waiting a minute for it.</param>
-    /// <param name="responseHeadersTimeout">Likewise.</param>
+    /// <param name="transfer">Moves the bytes. The only part of a download that differs by platform.</param>
+    /// <param name="host">Keeps the process alive on platforms that would otherwise suspend it mid-download.</param>
     public ModelDownloadService(
-        HttpClient httpClient,
+        IModelFileTransfer transfer,
         IAiModelPathProvider paths,
         IProfileService profiles,
         INetworkStatusService network,
-        TimeSpan? stallTimeout = null,
-        TimeSpan? responseHeadersTimeout = null)
+        IModelTransferHost host)
     {
-        _httpClient = httpClient;
+        _transfer = transfer;
         _paths = paths;
         _profiles = profiles;
         _network = network;
-        _stallTimeout = stallTimeout ?? DefaultStallTimeout;
-        _responseHeadersTimeout = responseHeadersTimeout ?? DefaultResponseHeadersTimeout;
+        _host = host;
     }
 
     public event EventHandler<ModelDownloadProgress>? ProgressChanged;
+
+    public bool KeepsRunningInBackground => _host.KeepsRunningInBackground;
 
     public ModelInstallState GetState(AiModelDescriptor model)
     {
@@ -185,10 +162,22 @@ public class ModelDownloadService : IModelDownloadService
         }
     }
 
-    public async Task<bool> DownloadAsync(
+    /// <remarks>
+    /// The unmanaged path: no register, no Wi-Fi rule, and so — for the transports that can be told
+    /// — no objection to mobile data either. Everything that enforces the user's preference goes
+    /// through <see cref="StartAsync"/>.
+    /// </remarks>
+    public Task<bool> DownloadAsync(
         AiModelDescriptor model,
         IProgress<ModelDownloadProgress>? progress = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default) =>
+        DownloadAsync(model, progress, allowMobileData: true, cancellationToken);
+
+    private async Task<bool> DownloadAsync(
+        AiModelDescriptor model,
+        IProgress<ModelDownloadProgress>? progress,
+        bool allowMobileData,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(model);
 
@@ -211,11 +200,26 @@ public class ModelDownloadService : IModelDownloadService
             }
 
             var alreadyHave = completedBytes;
+            var lastReported = completedBytes;
+
+            void ReportBytes(long bytes)
+            {
+                lastReported = alreadyHave + bytes;
+                progress?.Report(new ModelDownloadProgress(model.Id, lastReported, total));
+            }
+
+            // Carries the byte count rather than recomputing it, so a phase change never rewinds
+            // or advances the bar on its way past.
+            void ReportPhase(ModelDownloadPhase phase) =>
+                progress?.Report(new ModelDownloadProgress(model.Id, lastReported, total, 0d, phase));
+
             var succeeded = await DownloadFileAsync(
                 model,
                 file,
                 finalPath,
-                bytes => progress?.Report(new ModelDownloadProgress(model.Id, alreadyHave + bytes, total)),
+                allowMobileData,
+                ReportBytes,
+                ReportPhase,
                 cancellationToken).ConfigureAwait(false);
 
             if (!succeeded)
@@ -269,6 +273,15 @@ public class ModelDownloadService : IModelDownloadService
         ActiveDownload entry,
         bool allowMobileData)
     {
+        // StartAsync builds this task while holding the registry lock, and the first thing below
+        // reaches into the platform — a binder call, on Android. That has no business running
+        // under a lock that Cancel and IsActive also take.
+        await Task.Yield();
+
+        // Held for the whole download, on the platforms where being minimized would otherwise end
+        // it. Released in the finally, whichever way this ends.
+        var host = BeginHost(model);
+
         // Read once, at the start. The connection is watched for the whole download because it
         // changes on its own; the preference is not, because changing it means walking to the
         // settings screen, and re-reading the database every megabyte to catch that is not a trade
@@ -312,7 +325,7 @@ public class ModelDownloadService : IModelDownloadService
                 return ModelDownloadOutcome.BlockedByMobileData;
             }
 
-            var completed = await DownloadAsync(model, entry, entry.Cancellation.Token).ConfigureAwait(false);
+            var completed = await DownloadAsync(model, entry, !wifiOnly, entry.Cancellation.Token).ConfigureAwait(false);
             if (completed)
             {
                 return ModelDownloadOutcome.Completed;
@@ -351,6 +364,33 @@ public class ModelDownloadService : IModelDownloadService
             }
 
             entry.Cancellation.Dispose();
+
+            try
+            {
+                // Last, so the notification does not vanish before the registry says the download
+                // is over — the row and the notification would disagree for that instant.
+                host.Dispose();
+            }
+            catch (Exception)
+            {
+                // A platform that cannot tidy up its own notification is not a failed download.
+            }
+        }
+    }
+
+    /// <summary>
+    /// Never throws: a platform that refuses to keep us alive is a reason to download in the
+    /// foreground, not a reason to fail before the first byte.
+    /// </summary>
+    private IDisposable BeginHost(AiModelDescriptor model)
+    {
+        try
+        {
+            return _host.Begin(model.Id, model.DisplayName);
+        }
+        catch (Exception)
+        {
+            return NullModelTransferHost.Empty;
         }
     }
 
@@ -375,67 +415,56 @@ public class ModelDownloadService : IModelDownloadService
         AiModelDescriptor model,
         AiModelFile file,
         string finalPath,
+        bool allowMobileData,
         Action<long> reportBytes,
+        Action<ModelDownloadPhase> reportPhase,
         CancellationToken cancellationToken)
     {
         var partialPath = finalPath + PartialSuffix;
-        var resumeFrom = File.Exists(partialPath) ? new FileInfo(partialPath).Length : 0L;
 
-        // A partial larger than the expected size is not a partial; it is a mismatch between this
-        // build's catalogue and whatever wrote the file. Start over rather than reason about it.
-        if (resumeFrom >= file.SizeBytes)
+        // What is already on disk decides whether there is anything to fetch. Checked here rather
+        // than in the transport so that both transports inherit the same answer.
+        var onDisk = File.Exists(partialPath) ? new FileInfo(partialPath).Length : 0L;
+
+        // Past the catalogued size it is not a partial of this file at all — a mismatch between
+        // this build's catalogue and whatever wrote it. Start over rather than reason about it.
+        if (onDisk > file.SizeBytes)
         {
             File.Delete(partialPath);
-            resumeFrom = 0;
+            onDisk = 0;
         }
 
-        using var request = new HttpRequestMessage(HttpMethod.Get, model.BuildFileUrl(file));
-        if (resumeFrom > 0)
+        // Exactly the catalogued size is a different story: the bytes are all here and only the
+        // digest has not been checked. That is an ordinary ending on iOS, where the system finishes
+        // the transfer whether or not the app is still alive, and it is reachable anywhere a process
+        // dies in the seconds between the last write and the verification. Re-fetching a gigabyte
+        // that is already on the disk would be the wrong way to find out it is sound.
+        if (onDisk < file.SizeBytes)
         {
-            request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(resumeFrom, null);
-        }
+            var request = new ModelFileTransferRequest(
+                model.BuildFileUrl(file),
+                partialPath,
+                file.SizeBytes,
+                allowMobileData);
 
-        using var headers = new CancellationTokenSource(_responseHeadersTimeout);
-        using var headersLinked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, headers.Token);
-
-        HttpResponseMessage response;
-        try
-        {
-            response = await _httpClient
-                .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, headersLinked.Token)
-                .ConfigureAwait(false);
-        }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            // Our clock ran out, not the user's patience. A failure, and it has to read as one.
-            return false;
-        }
-
-        using (response)
-        {
-            // A server that ignores Range answers 200 with the whole file; honouring the resume
-            // offset then would splice the beginning of the file onto itself.
-            if (resumeFrom > 0 && response.StatusCode == HttpStatusCode.OK)
-            {
-                resumeFrom = 0;
-            }
-            else if (resumeFrom > 0 && response.StatusCode != HttpStatusCode.PartialContent)
-            {
-                return false;
-            }
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return false;
-            }
-
-            if (!await CopyToPartialAsync(response, partialPath, resumeFrom, _stallTimeout, reportBytes, cancellationToken).ConfigureAwait(false))
+            if (!await _transfer.FetchAsync(request, reportBytes, cancellationToken).ConfigureAwait(false))
             {
                 return false;
             }
         }
+        else
+        {
+            reportBytes(onDisk);
+        }
 
-        if (!await MatchesDigestAsync(partialPath, file.Sha256, cancellationToken).ConfigureAwait(false))
+        // Announced, because hashing a gigabyte on a phone is ten seconds of a bar that has
+        // stopped moving, and a bar that has stopped is indistinguishable from an app that has.
+        reportPhase(ModelDownloadPhase.Verifying);
+
+        var verified = await MatchesDigestAsync(partialPath, file.Sha256, cancellationToken).ConfigureAwait(false);
+        reportPhase(ModelDownloadPhase.Transferring);
+
+        if (!verified)
         {
             // Keeping a file that failed verification would let the size check in GetState call it
             // installed on the next launch.
@@ -447,61 +476,6 @@ public class ModelDownloadService : IModelDownloadService
         return true;
     }
 
-    /// <summary>
-    /// Streams the body into the partial file under a watchdog, returning false if the connection
-    /// went quiet. Bytes already written stay put — that is what the next resume is built on.
-    /// </summary>
-    private static async Task<bool> CopyToPartialAsync(
-        HttpResponseMessage response,
-        string partialPath,
-        long resumeFrom,
-        TimeSpan stallTimeout,
-        Action<long> reportBytes,
-        CancellationToken cancellationToken)
-    {
-        using var stall = new CancellationTokenSource(stallTimeout);
-        using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, stall.Token);
-
-        try
-        {
-            await using var source = await response.Content.ReadAsStreamAsync(linked.Token).ConfigureAwait(false);
-            await using var destination = new FileStream(
-                partialPath,
-                resumeFrom > 0 ? FileMode.Append : FileMode.Create,
-                FileAccess.Write,
-                FileShare.None,
-                CopyBufferBytes,
-                useAsync: true);
-
-            var buffer = new byte[CopyBufferBytes];
-            var written = resumeFrom;
-            var lastReported = resumeFrom;
-            int read;
-
-            while ((read = await source.ReadAsync(buffer, linked.Token).ConfigureAwait(false)) > 0)
-            {
-                // Bytes arrived, so the connection is alive: give it another full window.
-                stall.CancelAfter(stallTimeout);
-
-                await destination.WriteAsync(buffer.AsMemory(0, read), linked.Token).ConfigureAwait(false);
-                written += read;
-
-                if (written - lastReported >= ProgressReportIntervalBytes)
-                {
-                    lastReported = written;
-                    reportBytes(written);
-                }
-            }
-
-            reportBytes(written);
-            return true;
-        }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            return false;
-        }
-    }
-
     private static async Task<bool> MatchesDigestAsync(string path, string expectedSha256, CancellationToken cancellationToken)
     {
         await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, CopyBufferBytes, useAsync: true);
@@ -510,7 +484,21 @@ public class ModelDownloadService : IModelDownloadService
         return Convert.ToHexStringLower(actual).Equals(expectedSha256, StringComparison.OrdinalIgnoreCase);
     }
 
-    private void RaiseProgress(ModelDownloadProgress progress) => ProgressChanged?.Invoke(this, progress);
+    private void RaiseProgress(ModelDownloadProgress progress)
+    {
+        try
+        {
+            // The platform first: when the app is minimized its notification is the only thing the
+            // user can see, and the in-app subscribers are drawing to a window nobody is looking at.
+            _host.Report(progress);
+        }
+        catch (Exception)
+        {
+            // A notification that refuses to update is not worth losing a download over.
+        }
+
+        ProgressChanged?.Invoke(this, progress);
+    }
 
     /// <summary>
     /// One download the whole app can see. Doubles as the <see cref="IProgress{T}"/> sink so the
@@ -520,6 +508,11 @@ public class ModelDownloadService : IModelDownloadService
     private sealed class ActiveDownload : IProgress<ModelDownloadProgress>
     {
         private readonly ModelDownloadService _owner;
+
+        /// <summary>Monotonic, unlike the wall clock, which a phone can move under a long download.</summary>
+        private readonly Stopwatch _clock = Stopwatch.StartNew();
+
+        private readonly TransferRateMeter _rate = new();
 
         public ActiveDownload(ModelDownloadService owner, string modelId, long totalBytes)
         {
@@ -543,6 +536,17 @@ public class ModelDownloadService : IModelDownloadService
 
         public void Report(ModelDownloadProgress value)
         {
+            if (value.Phase == ModelDownloadPhase.Transferring)
+            {
+                value = value with { BytesPerSecond = _rate.Observe(_clock.Elapsed, value.BytesReceived) };
+            }
+            else
+            {
+                // Hashing moves no bytes. Carrying the window across that pause would report the
+                // wait as a collapse in speed the moment the next file starts arriving.
+                _rate.Reset();
+            }
+
             Progress = value;
             _owner.RaiseProgress(value);
         }

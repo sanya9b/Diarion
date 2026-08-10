@@ -1482,6 +1482,10 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("MinutesShort", resourceCulture) ?? string.Empty; }
         }
 
+        public static string SecondsShort {
+            get { return ResourceManager.GetString("SecondsShort", resourceCulture) ?? string.Empty; }
+        }
+
         public static string SecurityLabel {
             get { return ResourceManager.GetString("SecurityLabel", resourceCulture) ?? string.Empty; }
         }
@@ -2072,6 +2076,38 @@ public static string ClearAllDataSuccessMsg {
 
         public static string AiKeepOpenNotice {
             get { return ResourceManager.GetString("AiKeepOpenNotice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiBackgroundNotice {
+            get { return ResourceManager.GetString("AiBackgroundNotice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateVerifying {
+            get { return ResourceManager.GetString("AiStateVerifying", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadOfFormat {
+            get { return ResourceManager.GetString("AiDownloadOfFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadRateFormat {
+            get { return ResourceManager.GetString("AiDownloadRateFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadEtaFormat {
+            get { return ResourceManager.GetString("AiDownloadEtaFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadNotificationChannel {
+            get { return ResourceManager.GetString("AiDownloadNotificationChannel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadNotificationChannelDescription {
+            get { return ResourceManager.GetString("AiDownloadNotificationChannelDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiDownloadNotificationTitle {
+            get { return ResourceManager.GetString("AiDownloadNotificationTitle", resourceCulture) ?? string.Empty; }
         }
 
         public static string AiIndexHeader {

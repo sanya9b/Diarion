@@ -311,6 +311,73 @@ public class AiSettingsViewModelTests
         row.HasError.Should().BeFalse(because: "the user asked for this");
     }
 
+    [Fact]
+    public void BackgroundNotice_WherePlatformKeepsRunning_InvitesTheUserToLeave()
+    {
+        // The old text said "do not close the app". On Android that instruction is now wrong, and
+        // an instruction that is wrong costs more than none: the user sits and watches a bar.
+        _downloads.KeepsRunningInBackground = true;
+        var viewModel = CreateViewModel();
+        viewModel.Load();
+
+        Row(viewModel).BackgroundNotice.Should().Be(AppResources.AiBackgroundNotice);
+    }
+
+    [Fact]
+    public void BackgroundNotice_WherePlatformDoesNot_KeepsTheWarning()
+    {
+        _downloads.KeepsRunningInBackground = false;
+        var viewModel = CreateViewModel();
+        viewModel.Load();
+
+        Row(viewModel).BackgroundNotice.Should().Be(AppResources.AiKeepOpenNotice);
+    }
+
+    [Fact]
+    public async Task ProgressDetail_WhileDownloading_ShowsTheBytesAndDisappearsWhenItEnds()
+    {
+        // "Slow" was unarguable while the screen showed a bar and no number. This is the number.
+        var viewModel = CreateViewModel();
+        viewModel.Load();
+        var row = Row(viewModel);
+        var running = row.DownloadCommand.ExecuteAsync(null);
+
+        const long received = 5L * 1024 * 1024;
+        const long total = 20L * 1024 * 1024;
+        _downloads.RaiseProgress(new ModelDownloadProgress(ModelId, received, total, 1024 * 1024));
+
+        row.HasProgressDetail.Should().BeTrue();
+        // Compared through the same formatter rather than against literal text: the units and the
+        // decimal separator follow the interface language, and this test runs in both.
+        row.ProgressDetail.Should()
+            .Contain(string.Format(AppResources.AiDownloadOfFormat, ByteSize.Describe(received), ByteSize.Describe(total)))
+            .And.Contain(string.Format(AppResources.AiDownloadRateFormat, ByteSize.Describe(1024 * 1024)));
+
+        _downloads.State = ModelInstallState.Installed;
+        _downloads.Finish(ModelDownloadOutcome.Completed);
+        await running;
+
+        row.HasProgressDetail.Should().BeFalse(because: "there is nothing left in flight to describe");
+    }
+
+    [Fact]
+    public async Task ProgressDetail_WhileVerifying_SaysSoRatherThanSittingAtFullBar()
+    {
+        // A SHA-256 pass over 1.1 GB is ten silent seconds at 100%, indistinguishable from a hang.
+        var viewModel = CreateViewModel();
+        viewModel.Load();
+        var row = Row(viewModel);
+        var running = row.DownloadCommand.ExecuteAsync(null);
+
+        _downloads.RaiseProgress(new ModelDownloadProgress(
+            ModelId, 20_000_000, 20_000_000, 0d, ModelDownloadPhase.Verifying));
+
+        row.ProgressDetail.Should().Be(AppResources.AiStateVerifying);
+
+        _downloads.Finish(ModelDownloadOutcome.Cancelled);
+        await running;
+    }
+
     /// <summary>For the one assertion that depends on a continuation nobody handed us a task for.</summary>
     private static async Task WaitFor(Func<bool> condition)
     {
@@ -353,6 +420,10 @@ public class AiSettingsViewModelTests
 
         /// <summary>Stands in for "on cellular with the Wi-Fi-only box ticked".</summary>
         public bool WouldUseMobileData { get; set; }
+
+        /// <summary>Settable, because the notice under the progress bar is the one thing the view
+        /// model reads it for and both answers need a test.</summary>
+        public bool KeepsRunningInBackground { get; set; }
 
         public bool LastAllowMobileData { get; private set; }
 

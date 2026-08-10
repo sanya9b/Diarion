@@ -283,9 +283,11 @@ public class UkrainianChatEvaluationTests
     {
         using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(20) };
         var downloads = new EvalPathProvider();
-        // DownloadAsync is the unmanaged path and consults neither of the last two, but the gate
+        // DownloadAsync is the unmanaged path and consults none of the last three, but the gate
         // they feed is not optional in the service that a real app resolves.
-        var service = new ModelDownloadService(http, downloads, new FakeProfileService(), new FakeNetworkStatus());
+        var service = new ModelDownloadService(
+            new HttpModelFileTransfer(http), downloads, new FakeProfileService(), new FakeNetworkStatus(),
+            new NullModelTransferHost());
         var encoder = AiModelCatalog.MiniLmEncoder;
 
         if (service.GetState(encoder) != ModelInstallState.Installed)

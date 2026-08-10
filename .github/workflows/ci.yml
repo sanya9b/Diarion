@@ -85,6 +85,11 @@ jobs:
       # Microsoft.ML.OnnxRuntimeGenAI 0.14.1, whose 0.15.1 AAR declares INTERNET *and* installs a
       # telemetry ContentProvider.
       #
+      # FOREGROUND_SERVICE and FOREGROUND_SERVICE_DATA_SYNC joined on 2026-08-10, for that same one
+      # feature: Android suspends a backgrounded process, so a locked screen stopped a 1.1 GB model
+      # download dead. Neither grants access to any data. WAKE_LOCK is deliberately absent — see the
+      # comment in Platforms/Android/AndroidManifest.xml.
+      #
       # Adding a permission here is a deliberate act. It should show up in a diff, be justified in
       # the PR, and be reflected in the store listing — never arrive as a side effect of a package.
       - name: Assert the release manifest asks for exactly the approved permissions
@@ -97,6 +102,8 @@ jobs:
 
           cat > /tmp/allowed-permissions.txt <<'EOF'
           android.permission.ACCESS_NETWORK_STATE
+          android.permission.FOREGROUND_SERVICE
+          android.permission.FOREGROUND_SERVICE_DATA_SYNC
           android.permission.INTERNET
           android.permission.POST_NOTIFICATIONS
           android.permission.RECEIVE_BOOT_COMPLETED

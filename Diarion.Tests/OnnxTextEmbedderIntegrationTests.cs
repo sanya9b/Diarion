@@ -87,7 +87,9 @@ public class OnnxTextEmbedderIntegrationTests
         // them is fetching the files and verifying every hash — which DownloadAsync does, deleting
         // anything that fails. A true return is the assertion.
         using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(40) };
-        var service = new ModelDownloadService(http, new CachePathProvider(), new FakeProfileService(), new FakeNetworkStatus());
+        var service = new ModelDownloadService(
+            new HttpModelFileTransfer(http), new CachePathProvider(), new FakeProfileService(), new FakeNetworkStatus(),
+            new NullModelTransferHost());
         var model = AiModelCatalog.Qwen3Generator;
 
         if (service.GetState(model) != ModelInstallState.Installed)
@@ -111,7 +113,9 @@ public class OnnxTextEmbedderIntegrationTests
     private static async Task<bool> DownloadAsync()
     {
         using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(20) };
-        var service = new ModelDownloadService(http, new CachePathProvider(), new FakeProfileService(), new FakeNetworkStatus());
+        var service = new ModelDownloadService(
+            new HttpModelFileTransfer(http), new CachePathProvider(), new FakeProfileService(), new FakeNetworkStatus(),
+            new NullModelTransferHost());
 
         var model = AiModelCatalog.MiniLmEncoder;
         if (service.GetState(model) == ModelInstallState.Installed)

@@ -70,6 +70,31 @@ public static class ServiceCollectionExtensions
         // Answers "Wi-Fi or mobile data" for the one setting that asks. Singleton because it holds
         // a subscription to the platform's connectivity event for the life of the app.
         services.AddSingleton<INetworkStatusService, MauiNetworkStatusService>();
+        // Asks the platform to let a download outlive the visible app, and fetches the bytes. Only
+        // the phones need either: Windows and Mac do not suspend a windowed process for being
+        // minimized, so there the no-op host is the whole truth and the ordinary HTTP loop keeps
+        // working whatever the user does with the window.
+        //
+        // The two phones need opposite things. Android will keep the process running if asked, so
+        // the host does the asking and the transport stays as it is. iOS will not — it stops the
+        // process and the socket with it — so there is nothing to ask for, and instead the transfer
+        // itself is handed to the system.
+#if ANDROID
+        services.AddSingleton<IModelTransferHost, AndroidModelTransferHost>();
+        services.AddSingleton<IModelFileTransfer>(sp =>
+            new HttpModelFileTransfer(sp.GetRequiredService<HttpClient>()));
+#elif IOS
+        services.AddSingleton<IModelTransferHost, SystemSessionTransferHost>();
+        // The base directory is passed in rather than captured once: a destination has to be
+        // remembered relative to it, because the container path carries a UUID that iOS is free to
+        // change between launches.
+        services.AddSingleton<IModelFileTransfer>(_ =>
+            new BackgroundSessionTransfer(FileSystem.AppDataDirectory));
+#else
+        services.AddSingleton<IModelTransferHost, NullModelTransferHost>();
+        services.AddSingleton<IModelFileTransfer>(sp =>
+            new HttpModelFileTransfer(sp.GetRequiredService<HttpClient>()));
+#endif
         services.AddSingleton<IModelDownloadService, ModelDownloadService>();
         services.AddSingleton<IEmbeddingModelLocator, InstalledEmbeddingModelLocator>();
         services.AddSingleton<IDeviceCapabilityProbe, MauiDeviceCapabilityProbe>();

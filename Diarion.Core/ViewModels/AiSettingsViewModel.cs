@@ -203,10 +203,16 @@ public partial class AiModelItemViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(CanDelete))]
     [NotifyPropertyChangedFor(nameof(IsDownloading))]
     [NotifyPropertyChangedFor(nameof(ShowProgress))]
+    [NotifyPropertyChangedFor(nameof(HasProgressDetail))]
     [NotifyPropertyChangedFor(nameof(DownloadActionText))]
     private ModelInstallState _state;
 
     [ObservableProperty] private double _progressFraction;
+
+    /// <summary>Bytes, rate and estimate, or empty while there is nothing yet to say.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasProgressDetail))]
+    private string _progressDetail = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
@@ -234,7 +240,9 @@ public partial class AiModelItemViewModel : ObservableObject, IDisposable
 
         // Whatever is already there — an in-flight download's live figure, or the bytes an
         // interrupted one left behind. Starting at zero would tell the user the resume is a restart.
-        ProgressFraction = (downloads.ActiveProgress(descriptor.Id) ?? downloads.ProgressOnDisk(descriptor)).Fraction;
+        var already = downloads.ActiveProgress(descriptor.Id) ?? downloads.ProgressOnDisk(descriptor);
+        ProgressFraction = already.Fraction;
+        ProgressDetail = ShowProgress ? ModelProgressText.Describe(already) : string.Empty;
 
         _downloads.ProgressChanged += OnProgressChanged;
 
@@ -253,7 +261,11 @@ public partial class AiModelItemViewModel : ObservableObject, IDisposable
         }
 
         // The service reports from whatever thread the socket read completed on.
-        _dispatcher.InvokeOnMainThread(() => ProgressFraction = progress.Fraction);
+        _dispatcher.InvokeOnMainThread(() =>
+        {
+            ProgressFraction = progress.Fraction;
+            ProgressDetail = ModelProgressText.Describe(progress);
+        });
     }
 
     public void Dispose() => _downloads.ProgressChanged -= OnProgressChanged;
@@ -286,6 +298,17 @@ public partial class AiModelItemViewModel : ObservableObject, IDisposable
     /// them would make resuming look like starting over.
     /// </summary>
     public bool ShowProgress => State is ModelInstallState.Downloading or ModelInstallState.Interrupted;
+
+    public bool HasProgressDetail => ShowProgress && !string.IsNullOrEmpty(ProgressDetail);
+
+    /// <summary>
+    /// What the user is told about walking away. Read from the service rather than assumed,
+    /// because "you can minimize this" is a promise only Android and iOS can keep, and on a
+    /// desktop build it would be a lie that costs someone a gigabyte.
+    /// </summary>
+    public string BackgroundNotice => _downloads.KeepsRunningInBackground
+        ? AppResources.AiBackgroundNotice
+        : AppResources.AiKeepOpenNotice;
 
     public bool CanDownload => CanRunHere && State is
         ModelInstallState.NotInstalled or ModelInstallState.Corrupt or ModelInstallState.Interrupted;
@@ -348,7 +371,15 @@ public partial class AiModelItemViewModel : ObservableObject, IDisposable
         var outcome = await _downloads.StartAsync(Descriptor, allowMobileData);
 
         State = _downloads.GetState(Descriptor);
-        ProgressFraction = _downloads.ProgressOnDisk(Descriptor).Fraction;
+
+        var onDisk = _downloads.ProgressOnDisk(Descriptor);
+        ProgressFraction = onDisk.Fraction;
+
+        // Bytes without a rate. What is on disk still answers "will resuming cost me the whole
+        // gigabyte"; a speed left over from a download that stopped would read as one that has not.
+        ProgressDetail = State == ModelInstallState.Interrupted
+            ? ModelProgressText.Describe(onDisk)
+            : string.Empty;
 
         // Stopping on request is not a failure. Anything else that ends without the files is, and
         // has to say so — a stalled network is otherwise indistinguishable from a slow one.
@@ -376,6 +407,7 @@ public partial class AiModelItemViewModel : ObservableObject, IDisposable
 
         ErrorMessage = string.Empty;
         ProgressFraction = 0;
+        ProgressDetail = string.Empty;
         State = _downloads.GetState(Descriptor);
         _onChanged(this);
     }
@@ -407,5 +439,72 @@ public static class ByteSize
         }
 
         return unit == 0 ? $"{bytes} {units[0]}" : $"{value:0.#} {units[unit]}";
+    }
+}
+
+/// <summary>
+/// The one sentence a download gets to say about itself: <c>312 MB of 1.1 GB · 4.2 MB/s · ~3 min
+/// left</c>.
+/// </summary>
+/// <remarks>
+/// Shared, because the settings row and the Android notification say the same thing to the same
+/// person about the same download, and two spellings of it would drift. It sits beside
+/// <see cref="ByteSize"/> for the same reason that does: everything here is presentation, and the
+/// download service has no business knowing how a megabyte is spelled in Ukrainian.
+/// </remarks>
+public static class ModelProgressText
+{
+    /// <summary>
+    /// Below this an estimate is arithmetic, not information — a rate measured over a few
+    /// megabytes says nothing about the hour that follows.
+    /// </summary>
+    private static readonly TimeSpan ShortestWorthShowing = TimeSpan.FromSeconds(5);
+
+    public static string Describe(ModelDownloadProgress progress)
+    {
+        if (progress.Phase == ModelDownloadPhase.Verifying)
+        {
+            // No bytes are moving and none are left to count. Saying so is the whole point: the
+            // bar sits still for ten seconds here, and silence reads as a freeze.
+            return AppResources.AiStateVerifying;
+        }
+
+        var parts = new List<string>(3)
+        {
+            string.Format(
+                AppResources.AiDownloadOfFormat,
+                ByteSize.Describe(progress.BytesReceived),
+                ByteSize.Describe(progress.TotalBytes)),
+        };
+
+        if (progress.BytesPerSecond > 0)
+        {
+            parts.Add(string.Format(
+                AppResources.AiDownloadRateFormat,
+                ByteSize.Describe((long)progress.BytesPerSecond)));
+        }
+
+        if (progress.Remaining is { } remaining && remaining >= ShortestWorthShowing)
+        {
+            parts.Add(string.Format(AppResources.AiDownloadEtaFormat, DescribeDuration(remaining)));
+        }
+
+        return string.Join(" · ", parts);
+    }
+
+    /// <summary>
+    /// Rounded up and to one unit. "1 h 3 min" is a false promise measured against a rate that is
+    /// two seconds old; "~1 h" is honest about how much of it is a guess.
+    /// </summary>
+    private static string DescribeDuration(TimeSpan span)
+    {
+        if (span.TotalMinutes < 1)
+        {
+            return $"{Math.Ceiling(span.TotalSeconds):0} {AppResources.SecondsShort}";
+        }
+
+        return span.TotalHours < 1
+            ? $"{Math.Ceiling(span.TotalMinutes):0} {AppResources.MinutesShort}"
+            : $"{Math.Ceiling(span.TotalHours):0} {AppResources.HoursShort}";
     }
 }

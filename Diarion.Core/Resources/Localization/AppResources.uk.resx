@@ -1354,6 +1354,9 @@
   <data name="MinutesShort" xml:space="preserve">
     <value>хв</value>
   </data>
+  <data name="SecondsShort" xml:space="preserve">
+    <value>с</value>
+  </data>
   <data name="SecurityLabel" xml:space="preserve">
     <value>БЕЗПЕКА</value>
   </data>
@@ -1752,6 +1755,30 @@
   </data>
   <data name="AiKeepOpenNotice" xml:space="preserve">
     <value>Не закривайте застосунок, поки модель завантажується.</value>
+  </data>
+  <data name="AiBackgroundNotice" xml:space="preserve">
+    <value>Застосунок можна згорнути — завантаження триває у фоні.</value>
+  </data>
+  <data name="AiStateVerifying" xml:space="preserve">
+    <value>Перевірка</value>
+  </data>
+  <data name="AiDownloadOfFormat" xml:space="preserve">
+    <value>{0} з {1}</value>
+  </data>
+  <data name="AiDownloadRateFormat" xml:space="preserve">
+    <value>{0}/с</value>
+  </data>
+  <data name="AiDownloadEtaFormat" xml:space="preserve">
+    <value>лишилось ~{0}</value>
+  </data>
+  <data name="AiDownloadNotificationChannel" xml:space="preserve">
+    <value>Завантаження моделей</value>
+  </data>
+  <data name="AiDownloadNotificationChannelDescription" xml:space="preserve">
+    <value>Перебіг завантаження моделей ШІ на пристрій.</value>
+  </data>
+  <data name="AiDownloadNotificationTitle" xml:space="preserve">
+    <value>Завантаження моделі ШІ</value>
   </data>
   <data name="AiIndexHeader" xml:space="preserve">
     <value>ІНДЕКС</value>

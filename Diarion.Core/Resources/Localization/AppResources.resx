@@ -1354,6 +1354,9 @@
   <data name="MinutesShort" xml:space="preserve">
     <value>m</value>
   </data>
+  <data name="SecondsShort" xml:space="preserve">
+    <value>s</value>
+  </data>
   <data name="SecurityLabel" xml:space="preserve">
     <value>SECURITY</value>
   </data>
@@ -1752,6 +1755,30 @@
   </data>
   <data name="AiKeepOpenNotice" xml:space="preserve">
     <value>Keep the app open while the model downloads.</value>
+  </data>
+  <data name="AiBackgroundNotice" xml:space="preserve">
+    <value>You can leave the app — the download continues in the background.</value>
+  </data>
+  <data name="AiStateVerifying" xml:space="preserve">
+    <value>Verifying</value>
+  </data>
+  <data name="AiDownloadOfFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="AiDownloadRateFormat" xml:space="preserve">
+    <value>{0}/s</value>
+  </data>
+  <data name="AiDownloadEtaFormat" xml:space="preserve">
+    <value>~{0} left</value>
+  </data>
+  <data name="AiDownloadNotificationChannel" xml:space="preserve">
+    <value>Model downloads</value>
+  </data>
+  <data name="AiDownloadNotificationChannelDescription" xml:space="preserve">
+    <value>Progress of on-device AI model downloads.</value>
+  </data>
+  <data name="AiDownloadNotificationTitle" xml:space="preserve">
+    <value>Downloading AI model</value>
   </data>
   <data name="AiIndexHeader" xml:space="preserve">
     <value>INDEX</value>

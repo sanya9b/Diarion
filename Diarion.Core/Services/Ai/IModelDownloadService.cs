@@ -45,10 +45,42 @@ public enum ModelDownloadOutcome
     BlockedByMobileData,
 }
 
+/// <summary>
+/// What a download is busy with. The two are indistinguishable on a progress bar — both leave it
+/// pinned at the same place — and the second can take ten seconds on a phone, which is long enough
+/// to be read as a freeze.
+/// </summary>
+public enum ModelDownloadPhase
+{
+    /// <summary>Bytes are arriving.</summary>
+    Transferring,
+
+    /// <summary>The file is complete and its SHA-256 is being computed.</summary>
+    Verifying,
+}
+
 /// <param name="BytesReceived">Across all of the model's files, including bytes resumed from disk.</param>
-public readonly record struct ModelDownloadProgress(string ModelId, long BytesReceived, long TotalBytes)
+/// <param name="BytesPerSecond">
+/// Measured over a sliding window rather than since the start, and zero until there is enough to
+/// measure. Defaulted so every existing three-argument construction still compiles.
+/// </param>
+public readonly record struct ModelDownloadProgress(
+    string ModelId,
+    long BytesReceived,
+    long TotalBytes,
+    double BytesPerSecond = 0d,
+    ModelDownloadPhase Phase = ModelDownloadPhase.Transferring)
 {
     public double Fraction => TotalBytes <= 0 ? 0d : Math.Clamp((double)BytesReceived / TotalBytes, 0d, 1d);
+
+    /// <summary>
+    /// How long the rest should take at the rate just measured, or null when there is nothing to
+    /// base that on. Never a countdown derived from a rate that stopped being true minutes ago.
+    /// </summary>
+    public TimeSpan? Remaining =>
+        BytesPerSecond <= 0d || TotalBytes <= 0 || BytesReceived >= TotalBytes
+            ? null
+            : TimeSpan.FromSeconds((TotalBytes - BytesReceived) / BytesPerSecond);
 }
 
 /// <summary>
@@ -71,6 +103,13 @@ public interface IModelDownloadService
     /// Raised as bytes arrive, off the UI thread. Subscribers that touch bindings must marshal.
     /// </summary>
     event EventHandler<ModelDownloadProgress>? ProgressChanged;
+
+    /// <summary>
+    /// Whether a download here survives the app being minimized or the screen going dark. What the
+    /// settings row is allowed to promise — and it must not promise it where the platform will not
+    /// keep it.
+    /// </summary>
+    bool KeepsRunningInBackground { get; }
 
     ModelInstallState GetState(AiModelDescriptor model);
 
