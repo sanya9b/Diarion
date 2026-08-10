@@ -39,6 +39,8 @@ public class ModelDownloadService : IModelDownloadService
 
     private readonly HttpClient _httpClient;
     private readonly IAiModelPathProvider _paths;
+    private readonly IProfileService _profiles;
+    private readonly INetworkStatusService _network;
     private readonly TimeSpan _stallTimeout;
     private readonly TimeSpan _responseHeadersTimeout;
 
@@ -50,11 +52,15 @@ public class ModelDownloadService : IModelDownloadService
     public ModelDownloadService(
         HttpClient httpClient,
         IAiModelPathProvider paths,
+        IProfileService profiles,
+        INetworkStatusService network,
         TimeSpan? stallTimeout = null,
         TimeSpan? responseHeadersTimeout = null)
     {
         _httpClient = httpClient;
         _paths = paths;
+        _profiles = profiles;
+        _network = network;
         _stallTimeout = stallTimeout ?? DefaultStallTimeout;
         _responseHeadersTimeout = responseHeadersTimeout ?? DefaultResponseHeadersTimeout;
     }
@@ -145,7 +151,11 @@ public class ModelDownloadService : IModelDownloadService
         }
     }
 
-    public Task<bool> StartAsync(AiModelDescriptor model)
+    public async Task<bool> WouldUseMobileDataAsync() =>
+        // Network first: it is a property read, and it lets the common case skip the database.
+        _network.Current == NetworkStatus.Metered && await IsWifiOnlyAsync().ConfigureAwait(false);
+
+    public Task<ModelDownloadOutcome> StartAsync(AiModelDescriptor model, bool allowMobileData = false)
     {
         ArgumentNullException.ThrowIfNull(model);
 
@@ -159,7 +169,7 @@ public class ModelDownloadService : IModelDownloadService
 
             var entry = new ActiveDownload(this, model.Id, model.TotalSizeBytes);
             _active[model.Id] = entry;
-            entry.Task = RunAsync(model, entry);
+            entry.Task = RunAsync(model, entry, allowMobileData);
             return entry.Task;
         }
     }
@@ -224,7 +234,7 @@ public class ModelDownloadService : IModelDownloadService
     {
         ArgumentNullException.ThrowIfNull(model);
 
-        Task<bool>? running = null;
+        Task<ModelDownloadOutcome>? running = null;
         lock (_gate)
         {
             if (_active.TryGetValue(model.Id, out var entry))
@@ -250,27 +260,87 @@ public class ModelDownloadService : IModelDownloadService
     }
 
     /// <summary>
-    /// The registered form of a download: it reports progress to the whole app, swallows its own
-    /// failures into a false, and removes itself from the register whatever happens.
+    /// The registered form of a download: it enforces the user's network preference, reports
+    /// progress to the whole app, turns its own failures into an outcome rather than an exception,
+    /// and removes itself from the register whatever happens.
     /// </summary>
-    private async Task<bool> RunAsync(AiModelDescriptor model, ActiveDownload entry)
+    private async Task<ModelDownloadOutcome> RunAsync(
+        AiModelDescriptor model,
+        ActiveDownload entry,
+        bool allowMobileData)
     {
+        // Read once, at the start. The connection is watched for the whole download because it
+        // changes on its own; the preference is not, because changing it means walking to the
+        // settings screen, and re-reading the database every megabyte to catch that is not a trade
+        // worth making.
+        var wifiOnly = !allowMobileData && await IsWifiOnlyAsync().ConfigureAwait(false);
+
+        void OnNetworkChanged(object? sender, NetworkStatus status)
+        {
+            // Only Metered stops anything: a connection the platform will not classify is not
+            // evidence of anything, and refusing on it would break downloads that would have worked.
+            if (status != NetworkStatus.Metered)
+            {
+                return;
+            }
+
+            entry.StoppedByMobileData = true;
+
+            try
+            {
+                entry.Cancellation.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+                // The download finished between the event firing and this line. Nothing to stop.
+            }
+        }
+
+        if (wifiOnly)
+        {
+            // Watched, not polled. Wi-Fi can drop during a long silence in the stream, and a check
+            // inside the read loop would not run again until the next chunk arrived — which, on the
+            // mobile connection we are trying not to use, it promptly would.
+            _network.Changed += OnNetworkChanged;
+        }
+
         try
         {
-            return await DownloadAsync(model, entry, entry.Cancellation.Token).ConfigureAwait(false);
+            if (wifiOnly && _network.Current == NetworkStatus.Metered)
+            {
+                // Refused before a socket is opened, so not one byte of the allowance is spent.
+                return ModelDownloadOutcome.BlockedByMobileData;
+            }
+
+            var completed = await DownloadAsync(model, entry, entry.Cancellation.Token).ConfigureAwait(false);
+            if (completed)
+            {
+                return ModelDownloadOutcome.Completed;
+            }
+
+            // A stall or a bad response, unless the watcher pulled the plug on the way past.
+            return entry.StoppedByMobileData ? ModelDownloadOutcome.BlockedByMobileData : ModelDownloadOutcome.Failed;
         }
         catch (OperationCanceledException)
         {
-            return false;
+            // Someone asked for this. Which someone decides what the user is told.
+            return entry.StoppedByMobileData ? ModelDownloadOutcome.BlockedByMobileData : ModelDownloadOutcome.Cancelled;
         }
         catch (Exception)
         {
             // Every network failure reads the same to the user, and there is nowhere to report it
             // to — this app has no telemetry by design.
-            return false;
+            return ModelDownloadOutcome.Failed;
         }
         finally
         {
+            // Unsubscribed before the token source is disposed, so the handler cannot be running
+            // against a dead one for longer than the guard inside it already covers.
+            if (wifiOnly)
+            {
+                _network.Changed -= OnNetworkChanged;
+            }
+
             lock (_gate)
             {
                 // Guarded: a Delete followed by a fresh Start could have replaced the entry.
@@ -281,6 +351,23 @@ public class ModelDownloadService : IModelDownloadService
             }
 
             entry.Cancellation.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// The stored preference, defaulting to Wi-Fi-only whenever the answer cannot be had. A
+    /// settings read that fails is not permission to spend someone's data allowance.
+    /// </summary>
+    private async Task<bool> IsWifiOnlyAsync()
+    {
+        try
+        {
+            var profile = await _profiles.GetUserProfileAsync().ConfigureAwait(false);
+            return profile?.IsWifiOnlyModelDownload ?? true;
+        }
+        catch (Exception)
+        {
+            return true;
         }
     }
 
@@ -442,9 +529,17 @@ public class ModelDownloadService : IModelDownloadService
 
         public CancellationTokenSource Cancellation { get; } = new();
 
-        public Task<bool> Task { get; set; } = System.Threading.Tasks.Task.FromResult(false);
+        public Task<ModelDownloadOutcome> Task { get; set; } =
+            System.Threading.Tasks.Task.FromResult(ModelDownloadOutcome.Failed);
 
         public ModelDownloadProgress Progress { get; private set; }
+
+        /// <summary>
+        /// Set by the network watcher before it cancels, because a cancelled token says nothing
+        /// about who cancelled it — and "you asked me to stop" and "your Wi-Fi went away" need
+        /// opposite things said to the user.
+        /// </summary>
+        public bool StoppedByMobileData { get; set; }
 
         public void Report(ModelDownloadProgress value)
         {

@@ -67,6 +67,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(_ => new HttpClient { Timeout = Timeout.InfiniteTimeSpan });
 
         services.AddSingleton<IAiModelPathProvider, AppDataModelPaths>();
+        // Answers "Wi-Fi or mobile data" for the one setting that asks. Singleton because it holds
+        // a subscription to the platform's connectivity event for the life of the app.
+        services.AddSingleton<INetworkStatusService, MauiNetworkStatusService>();
         services.AddSingleton<IModelDownloadService, ModelDownloadService>();
         services.AddSingleton<IEmbeddingModelLocator, InstalledEmbeddingModelLocator>();
         services.AddSingleton<IDeviceCapabilityProbe, MauiDeviceCapabilityProbe>();

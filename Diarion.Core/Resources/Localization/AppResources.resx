@@ -1729,6 +1729,18 @@
   <data name="AiDownloadFailed" xml:space="preserve">
     <value>Download failed. Check the connection and try again.</value>
   </data>
+  <data name="AiDownloadWifiOnlyStopped" xml:space="preserve">
+    <value>Stopped: Wi-Fi is gone. Downloaded files are kept — resume once you are back on Wi-Fi.</value>
+  </data>
+  <data name="AiMobileDataTitle" xml:space="preserve">
+    <value>You are on mobile data</value>
+  </data>
+  <data name="AiMobileDataConfirmFormat" xml:space="preserve">
+    <value>This model is {0} and will be downloaded over your mobile data allowance. Download anyway?</value>
+  </data>
+  <data name="AiMobileDataDownloadAnyway" xml:space="preserve">
+    <value>Download anyway</value>
+  </data>
   <data name="AiWifiOnlyToggle" xml:space="preserve">
     <value>Download over Wi-Fi only</value>
   </data>

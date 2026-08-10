@@ -2038,6 +2038,22 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("AiDownloadFailed", resourceCulture) ?? string.Empty; }
         }
 
+        public static string AiDownloadWifiOnlyStopped {
+            get { return ResourceManager.GetString("AiDownloadWifiOnlyStopped", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiMobileDataTitle {
+            get { return ResourceManager.GetString("AiMobileDataTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiMobileDataConfirmFormat {
+            get { return ResourceManager.GetString("AiMobileDataConfirmFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiMobileDataDownloadAnyway {
+            get { return ResourceManager.GetString("AiMobileDataDownloadAnyway", resourceCulture) ?? string.Empty; }
+        }
+
         public static string AiWifiOnlyToggle {
             get { return ResourceManager.GetString("AiWifiOnlyToggle", resourceCulture) ?? string.Empty; }
         }

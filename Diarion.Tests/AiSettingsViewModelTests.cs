@@ -24,6 +24,7 @@ public class AiSettingsViewModelTests
     private const string ModelId = AiModelCatalog.MiniLmEncoderId;
 
     private readonly FakeDownloads _downloads = new();
+    private readonly Mock<IDialogService> _dialogs = new();
 
     private AiSettingsViewModel CreateViewModel()
     {
@@ -41,7 +42,7 @@ public class AiSettingsViewModelTests
             new Mock<IEmbeddingIndexService>().Object,
             new Mock<IVectorStore>().Object,
             new Mock<ITextEmbedder>().Object,
-            new Mock<IDialogService>().Object,
+            _dialogs.Object,
             dispatcher.Object);
     }
 
@@ -84,7 +85,7 @@ public class AiSettingsViewModelTests
         // Two reloads attach; only the button press starts anything.
         _downloads.StartCount.Should().Be(1);
 
-        _downloads.Finish(succeeded: true);
+        _downloads.Finish(ModelDownloadOutcome.Completed);
         await running;
     }
 
@@ -158,7 +159,7 @@ public class AiSettingsViewModelTests
         var row = Row(viewModel);
 
         var running = row.DownloadCommand.ExecuteAsync(null);
-        _downloads.Finish(succeeded: false);
+        _downloads.Finish(ModelDownloadOutcome.Failed);
         await running;
 
         row.HasError.Should().BeTrue();
@@ -190,7 +191,7 @@ public class AiSettingsViewModelTests
 
         var running = row.DownloadCommand.ExecuteAsync(null);
         _downloads.State = ModelInstallState.Installed;
-        _downloads.Finish(succeeded: true);
+        _downloads.Finish(ModelDownloadOutcome.Completed);
         await running;
 
         row.State.Should().Be(ModelInstallState.Installed);
@@ -212,9 +213,85 @@ public class AiSettingsViewModelTests
         Row(reopened).IsDownloading.Should().BeTrue();
 
         _downloads.State = ModelInstallState.Installed;
-        _downloads.Finish(succeeded: true);
+        _downloads.Finish(ModelDownloadOutcome.Completed);
 
         await WaitFor(() => Row(reopened).State == ModelInstallState.Installed);
+    }
+
+    [Fact]
+    public async Task Download_OnMobileData_AsksFirstAndPassesTheAnswerOn()
+    {
+        // The user's own rule, so they get to break it for one file rather than being sent back to
+        // the checkbox — but knowingly, with the size in front of them.
+        _downloads.WouldUseMobileData = true;
+        _dialogs.Setup(d => d.ShowConfirmationAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
+
+        var viewModel = CreateViewModel();
+        viewModel.Load();
+        var row = Row(viewModel);
+
+        var running = row.DownloadCommand.ExecuteAsync(null);
+        _downloads.Finish(ModelDownloadOutcome.Completed);
+        await running;
+
+        _downloads.StartCount.Should().Be(1);
+        _downloads.LastAllowMobileData.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Download_OnMobileData_Declined_StartsNothing()
+    {
+        _downloads.WouldUseMobileData = true;
+        _dialogs.Setup(d => d.ShowConfirmationAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(false);
+
+        var viewModel = CreateViewModel();
+        viewModel.Load();
+        var row = Row(viewModel);
+
+        await row.DownloadCommand.ExecuteAsync(null);
+
+        _downloads.StartCount.Should().Be(0);
+        row.State.Should().Be(ModelInstallState.NotInstalled, because: "nothing was started");
+        row.HasError.Should().BeFalse(because: "they just declined it themselves; saying so twice is noise");
+    }
+
+    [Fact]
+    public async Task Download_OnWifi_DoesNotAsk()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.Load();
+
+        var running = Row(viewModel).DownloadCommand.ExecuteAsync(null);
+        _downloads.Finish(ModelDownloadOutcome.Completed);
+        await running;
+
+        _dialogs.Verify(
+            d => d.ShowConfirmationAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never);
+        _downloads.LastAllowMobileData.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Download_StoppedByAWifiDrop_ExplainsItselfRatherThanReportingAFailure()
+    {
+        // "Download failed. Check the connection" would be a lie — the connection is fine, it is
+        // just the wrong one, and the fix is to walk back into Wi-Fi rather than to press retry.
+        _downloads.State = ModelInstallState.Interrupted;
+        var viewModel = CreateViewModel();
+        viewModel.Load();
+        var row = Row(viewModel);
+
+        var running = row.DownloadCommand.ExecuteAsync(null);
+        _downloads.Finish(ModelDownloadOutcome.BlockedByMobileData);
+        await running;
+
+        row.ErrorMessage.Should().Be(AppResources.AiDownloadWifiOnlyStopped)
+            .And.NotBe(AppResources.AiDownloadFailed);
+        row.CanDownload.Should().BeTrue(because: "resuming on Wi-Fi is exactly what it is asking for");
     }
 
     [Fact]
@@ -258,7 +335,8 @@ public class AiSettingsViewModelTests
     /// </summary>
     private sealed class FakeDownloads : IModelDownloadService
     {
-        private readonly Dictionary<string, TaskCompletionSource<bool>> _running = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, TaskCompletionSource<ModelDownloadOutcome>> _running =
+            new(StringComparer.Ordinal);
 
         public event EventHandler<ModelDownloadProgress>? ProgressChanged;
 
@@ -273,6 +351,11 @@ public class AiSettingsViewModelTests
 
         public int DeleteCount { get; private set; }
 
+        /// <summary>Stands in for "on cellular with the Wi-Fi-only box ticked".</summary>
+        public bool WouldUseMobileData { get; set; }
+
+        public bool LastAllowMobileData { get; private set; }
+
         public ModelInstallState GetState(AiModelDescriptor model) =>
             IsActive(model.Id) ? ModelInstallState.Downloading : State;
 
@@ -284,7 +367,9 @@ public class AiSettingsViewModelTests
         public ModelDownloadProgress ProgressOnDisk(AiModelDescriptor model) =>
             new(model.Id, BytesOnDisk, model.TotalSizeBytes);
 
-        public Task<bool> StartAsync(AiModelDescriptor model)
+        public Task<bool> WouldUseMobileDataAsync() => Task.FromResult(WouldUseMobileData);
+
+        public Task<ModelDownloadOutcome> StartAsync(AiModelDescriptor model, bool allowMobileData = false)
         {
             if (_running.TryGetValue(model.Id, out var existing))
             {
@@ -292,7 +377,8 @@ public class AiSettingsViewModelTests
             }
 
             StartCount++;
-            var pending = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            LastAllowMobileData = allowMobileData;
+            var pending = new TaskCompletionSource<ModelDownloadOutcome>(TaskCreationOptions.RunContinuationsAsynchronously);
             _running[model.Id] = pending;
             return pending.Task;
         }
@@ -300,7 +386,7 @@ public class AiSettingsViewModelTests
         public void Cancel(string modelId)
         {
             CancelCount++;
-            Finish(modelId, succeeded: false);
+            Finish(modelId, ModelDownloadOutcome.Cancelled);
         }
 
         public Task<bool> DownloadAsync(
@@ -312,21 +398,21 @@ public class AiSettingsViewModelTests
         public Task DeleteAsync(AiModelDescriptor model)
         {
             DeleteCount++;
-            Finish(model.Id, succeeded: false);
+            Finish(model.Id, ModelDownloadOutcome.Cancelled);
             State = ModelInstallState.NotInstalled;
             BytesOnDisk = 0;
             return Task.CompletedTask;
         }
 
-        public void Finish(bool succeeded) => Finish(ModelId, succeeded);
+        public void Finish(ModelDownloadOutcome outcome) => Finish(ModelId, outcome);
 
         public void RaiseProgress(ModelDownloadProgress progress) => ProgressChanged?.Invoke(this, progress);
 
-        private void Finish(string modelId, bool succeeded)
+        private void Finish(string modelId, ModelDownloadOutcome outcome)
         {
             if (_running.Remove(modelId, out var pending))
             {
-                pending.TrySetResult(succeeded);
+                pending.TrySetResult(outcome);
             }
         }
     }

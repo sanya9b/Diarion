@@ -22,6 +22,29 @@ public enum ModelInstallState
     Interrupted,
 }
 
+/// <summary>
+/// How a download ended. A bool cannot carry this: three of these four leave the same partial file
+/// behind, and the only difference the user can act on is which of them it was.
+/// </summary>
+public enum ModelDownloadOutcome
+{
+    /// <summary>Every file arrived and verified.</summary>
+    Completed,
+
+    /// <summary>The user asked it to stop. Not an error, and says nothing.</summary>
+    Cancelled,
+
+    /// <summary>The server or the connection gave out. Bytes kept for a resume.</summary>
+    Failed,
+
+    /// <summary>
+    /// Wi-Fi-only is on and mobile data is all there is — either at the start, or because Wi-Fi
+    /// dropped partway through. Bytes kept, and the user is told why it stopped rather than being
+    /// shown a failure they did not cause.
+    /// </summary>
+    BlockedByMobileData,
+}
+
 /// <param name="BytesReceived">Across all of the model's files, including bytes resumed from disk.</param>
 public readonly record struct ModelDownloadProgress(string ModelId, long BytesReceived, long TotalBytes)
 {
@@ -68,11 +91,26 @@ public interface IModelDownloadService
     ModelDownloadProgress ProgressOnDisk(AiModelDescriptor model);
 
     /// <summary>
+    /// Whether starting a download right now would spend mobile data against the user's wishes —
+    /// the Wi-Fi-only preference is on and cellular is the only route.
+    /// </summary>
+    /// <remarks>
+    /// Asked by the settings row so it can offer the choice before anything starts, and enforced
+    /// again inside <see cref="StartAsync"/> so the rule holds for a caller that never asked. One
+    /// owner, because a rule stated in two places drifts.
+    /// </remarks>
+    Task<bool> WouldUseMobileDataAsync();
+
+    /// <summary>
     /// Starts the download, or hands back the one already in flight for this model. Awaiting the
     /// returned task is how a second view learns that a download it did not start has finished.
-    /// Never throws for cancellation: a cancelled or failed download returns false.
+    /// Never throws for cancellation — every ending, including that one, comes back as an outcome.
     /// </summary>
-    Task<bool> StartAsync(AiModelDescriptor model);
+    /// <param name="allowMobileData">
+    /// Set once the user has been asked and said yes. Applies to this download only; the stored
+    /// preference is untouched, so the next model asks again.
+    /// </param>
+    Task<ModelDownloadOutcome> StartAsync(AiModelDescriptor model, bool allowMobileData = false);
 
     /// <summary>
     /// Stops the in-flight download, if there is one. Bytes already written stay on disk, so the

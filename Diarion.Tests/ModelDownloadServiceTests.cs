@@ -8,7 +8,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Diarion.Models;
 using Diarion.Models.Ai;
+using Diarion.Services;
 using Diarion.Services.Ai;
 using FluentAssertions;
 using Xunit;
@@ -21,6 +23,8 @@ public class ModelDownloadServiceTests : IDisposable
 
     private readonly string _root = Path.Combine(Path.GetTempPath(), "diarion-model-tests", Guid.NewGuid().ToString("N"));
     private readonly FakeHandler _handler = new();
+    private readonly FakeNetworkStatus _network = new();
+    private readonly FakeProfileService _profiles = new();
 
     public void Dispose()
     {
@@ -31,7 +35,7 @@ public class ModelDownloadServiceTests : IDisposable
     }
 
     private ModelDownloadService CreateService() =>
-        new(new HttpClient(_handler), new TempPathProvider(_root));
+        new(new HttpClient(_handler), new TempPathProvider(_root), _profiles, _network);
 
     private static string Sha256Of(byte[] bytes) => Convert.ToHexStringLower(SHA256.HashData(bytes));
 
@@ -250,8 +254,8 @@ public class ModelDownloadServiceTests : IDisposable
         var second = service.StartAsync(Model());
 
         _handler.Release();
-        (await first).Should().BeTrue();
-        (await second).Should().BeTrue();
+        (await first).Should().Be(ModelDownloadOutcome.Completed);
+        (await second).Should().Be(ModelDownloadOutcome.Completed);
         _handler.RequestCount.Should().Be(1);
     }
 
@@ -295,8 +299,8 @@ public class ModelDownloadServiceTests : IDisposable
         service.Cancel("test-model");
         _handler.Release();
 
-        // False, not an exception: a cancel is an outcome, not a fault.
-        (await running).Should().BeFalse();
+        // An outcome, not an exception: a cancel is not a fault.
+        (await running).Should().Be(ModelDownloadOutcome.Cancelled);
         service.IsActive("test-model").Should().BeFalse();
         service.GetState(Model()).Should().NotBe(ModelInstallState.Downloading);
     }
@@ -318,9 +322,11 @@ public class ModelDownloadServiceTests : IDisposable
         var service = new ModelDownloadService(
             new HttpClient(_handler),
             new TempPathProvider(_root),
+            _profiles,
+            _network,
             stallTimeout: TimeSpan.FromMilliseconds(150));
 
-        (await service.StartAsync(Model())).Should().BeFalse();
+        (await service.StartAsync(Model())).Should().Be(ModelDownloadOutcome.Failed);
         service.IsActive("test-model").Should().BeFalse();
     }
 
@@ -333,6 +339,8 @@ public class ModelDownloadServiceTests : IDisposable
         var service = new ModelDownloadService(
             new HttpClient(_handler),
             new TempPathProvider(_root),
+            _profiles,
+            _network,
             stallTimeout: TimeSpan.FromMilliseconds(150));
 
         var act = async () => await service.DownloadAsync(Model());
@@ -373,7 +381,7 @@ public class ModelDownloadServiceTests : IDisposable
         var act = async () => await service.DeleteAsync(Model());
 
         await act.Should().NotThrowAsync();
-        (await running).Should().BeFalse();
+        (await running).Should().Be(ModelDownloadOutcome.Cancelled);
         service.IsActive("test-model").Should().BeFalse();
         service.GetState(Model()).Should().Be(ModelInstallState.NotInstalled);
     }
@@ -413,6 +421,148 @@ public class ModelDownloadServiceTests : IDisposable
         var act = async () => await CreateService().DeleteAsync(Model());
 
         await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task WifiOnly_OnMobileData_RefusesBeforeOpeningASocket()
+    {
+        // The whole point of the setting: not one byte of the allowance is spent finding out.
+        _network.Current = NetworkStatus.Metered;
+        _handler.RespondWith(Payload);
+        var service = CreateService();
+
+        (await service.StartAsync(Model())).Should().Be(ModelDownloadOutcome.BlockedByMobileData);
+
+        _handler.RequestCount.Should().Be(0);
+        service.GetState(Model()).Should().Be(ModelInstallState.NotInstalled);
+    }
+
+    [Fact]
+    public async Task WifiOnly_WithTheUsersConsentForThisOneFile_Downloads()
+    {
+        // What the settings row passes after the user reads the size and says yes anyway. The
+        // stored preference is untouched, so the next model asks again.
+        _network.Current = NetworkStatus.Metered;
+        _handler.RespondWith(Payload);
+
+        (await CreateService().StartAsync(Model(), allowMobileData: true))
+            .Should().Be(ModelDownloadOutcome.Completed);
+
+        _profiles.Profile.IsWifiOnlyModelDownload.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task WifiOnly_Unticked_DownloadsOverMobileDataWithoutAsking()
+    {
+        _profiles.Profile.IsWifiOnlyModelDownload = false;
+        _network.Current = NetworkStatus.Metered;
+        _handler.RespondWith(Payload);
+
+        (await CreateService().StartAsync(Model())).Should().Be(ModelDownloadOutcome.Completed);
+    }
+
+    [Fact]
+    public async Task WifiOnly_ConnectionThePlatformWillNotClassify_IsNotTreatedAsMobileData()
+    {
+        // Deliberate direction of failure. Connectivity is not always sure what it is looking at,
+        // and refusing on a maybe would break downloads that would have worked.
+        _network.Current = NetworkStatus.Unknown;
+        _handler.RespondWith(Payload);
+
+        (await CreateService().StartAsync(Model())).Should().Be(ModelDownloadOutcome.Completed);
+    }
+
+    [Fact]
+    public async Task WifiOnly_WifiDropsMidDownload_StopsAndSaysWhy()
+    {
+        // The case that actually costs money: the phone leaves the house, hands the transfer to
+        // the cellular radio, and says nothing. Stopping here takes the same path as a user cancel,
+        // so the bytes survive for a resume — see Cancel_StopsTheDownloadAndKeepsTheBytes.
+        _handler.RespondSlowly(Payload);
+        var service = CreateService();
+        var running = service.StartAsync(Model());
+        await _handler.FirstRequestReceived;
+
+        _network.Current = NetworkStatus.Metered;
+        _handler.Release();
+
+        (await running).Should().Be(ModelDownloadOutcome.BlockedByMobileData);
+        service.GetState(Model()).Should().NotBe(ModelInstallState.Installed);
+        service.IsActive("test-model").Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task WifiOnly_AConnectionChangeThatIsStillWifi_LetsTheDownloadFinish()
+    {
+        // Moving between access points raises the same event. Only mobile data stops anything.
+        _handler.RespondSlowly(Payload);
+        var service = CreateService();
+        var running = service.StartAsync(Model());
+        await _handler.FirstRequestReceived;
+
+        _network.Current = NetworkStatus.Unmetered;
+        _handler.Release();
+
+        (await running).Should().Be(ModelDownloadOutcome.Completed);
+    }
+
+    [Fact]
+    public async Task WifiOnly_NetworkChangingAfterTheDownloadEnded_IsHarmless()
+    {
+        // The watcher outliving its download would be reaching for a disposed token source.
+        _handler.RespondWith(Payload);
+        var service = CreateService();
+        await service.StartAsync(Model());
+
+        var act = () => _network.Current = NetworkStatus.Metered;
+
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public async Task WouldUseMobileData_OnWifi_IsFalse()
+    {
+        (await CreateService().WouldUseMobileDataAsync()).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task WouldUseMobileData_OnMobileDataWithTheSettingOn_IsTrue()
+    {
+        _network.Current = NetworkStatus.Metered;
+
+        (await CreateService().WouldUseMobileDataAsync()).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task WouldUseMobileData_OnMobileDataWithTheSettingOff_IsFalse()
+    {
+        // Nothing to ask about: the user already said any network will do.
+        _profiles.Profile.IsWifiOnlyModelDownload = false;
+        _network.Current = NetworkStatus.Metered;
+
+        (await CreateService().WouldUseMobileDataAsync()).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task WifiOnly_ProfileThatCannotBeRead_ErrsTowardsNotSpendingTheAllowance()
+    {
+        _network.Current = NetworkStatus.Metered;
+        var service = new ModelDownloadService(
+            new HttpClient(_handler),
+            new TempPathProvider(_root),
+            new BrokenProfiles(),
+            _network);
+
+        (await service.StartAsync(Model())).Should().Be(ModelDownloadOutcome.BlockedByMobileData);
+    }
+
+    private sealed class BrokenProfiles : IProfileService
+    {
+        public Task<UserProfile> GetUserProfileAsync() => throw new InvalidOperationException("database is busy");
+
+        public Task SaveUserProfileAsync(UserProfile profile) => Task.CompletedTask;
+
+        public Task ClearAllDataAsync() => Task.CompletedTask;
     }
 
     private sealed class TempPathProvider(string root) : IAiModelPathProvider

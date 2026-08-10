@@ -87,6 +87,7 @@ public partial class AiSettingsViewModel : BaseViewModel
                 capabilities,
                 recommended.Contains(model.Id),
                 _dispatcher,
+                _dialogService,
                 OnModelChanged));
         }
 
@@ -193,11 +194,8 @@ public partial class AiModelItemViewModel : ObservableObject, IDisposable
 {
     private readonly IModelDownloadService _downloads;
     private readonly IDispatcherService _dispatcher;
+    private readonly IDialogService _dialogService;
     private readonly Action<AiModelItemViewModel> _onChanged;
-
-    // A cancel and a dead network both end the same way — a partial file and false — and the disk
-    // cannot tell them apart afterwards. Only the row that asked for the stop knows.
-    private bool _cancelRequested;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StateText))]
@@ -220,11 +218,13 @@ public partial class AiModelItemViewModel : ObservableObject, IDisposable
         DeviceCapabilities capabilities,
         bool isRecommended,
         IDispatcherService dispatcher,
+        IDialogService dialogService,
         Action<AiModelItemViewModel> onChanged)
     {
         Descriptor = descriptor;
         _downloads = downloads;
         _dispatcher = dispatcher;
+        _dialogService = dialogService;
         _onChanged = onChanged;
 
         IsRecommended = isRecommended;
@@ -312,47 +312,66 @@ public partial class AiModelItemViewModel : ObservableObject, IDisposable
     private async Task DownloadAsync()
     {
         ErrorMessage = string.Empty;
-        _cancelRequested = false;
+
+        var allowMobileData = false;
+        if (await _downloads.WouldUseMobileDataAsync())
+        {
+            // Asked rather than refused. The preference is the user's own, and someone a week from
+            // any Wi-Fi should be able to overrule it for one file without walking back to the
+            // checkbox — and without the checkbox silently staying off afterwards.
+            allowMobileData = await _dialogService.ShowConfirmationAsync(
+                AppResources.AiMobileDataTitle,
+                string.Format(AppResources.AiMobileDataConfirmFormat, SizeText),
+                AppResources.AiMobileDataDownloadAnyway,
+                AppResources.AiCancelAction);
+
+            if (!allowMobileData)
+            {
+                // They just read why. Repeating it in the row would be telling them their own answer.
+                return;
+            }
+        }
+
         State = ModelInstallState.Downloading;
 
-        await TrackAsync();
+        await TrackAsync(allowMobileData);
     }
 
     /// <summary>
     /// Follows a download to its end, whether or not this row started it. Only the outcome is
     /// handled here — the bytes arrive through the service's progress event.
     /// </summary>
-    private async Task TrackAsync()
+    private async Task TrackAsync(bool allowMobileData = false)
     {
-        // Joins the running download rather than starting a second one, and does not throw:
-        // cancellation and failure both come back as false.
-        var succeeded = await _downloads.StartAsync(Descriptor);
+        // Joins the running download rather than starting a second one, and does not throw: every
+        // ending, cancellation included, comes back as an outcome.
+        var outcome = await _downloads.StartAsync(Descriptor, allowMobileData);
 
         State = _downloads.GetState(Descriptor);
         ProgressFraction = _downloads.ProgressOnDisk(Descriptor).Fraction;
 
         // Stopping on request is not a failure. Anything else that ends without the files is, and
         // has to say so — a stalled network is otherwise indistinguishable from a slow one.
-        ErrorMessage = succeeded || _cancelRequested ? string.Empty : AppResources.AiDownloadFailed;
-        _cancelRequested = false;
+        ErrorMessage = outcome switch
+        {
+            ModelDownloadOutcome.Completed or ModelDownloadOutcome.Cancelled => string.Empty,
+            ModelDownloadOutcome.BlockedByMobileData => AppResources.AiDownloadWifiOnlyStopped,
+            _ => AppResources.AiDownloadFailed,
+        };
 
         _onChanged(this);
     }
 
     [RelayCommand]
-    private void Cancel()
-    {
+    private void Cancel() =>
         // Cancelling only asks; the running task notices and unwinds, and TrackAsync writes the
         // state that follows. Bytes stay on disk, so the next tap resumes.
-        _cancelRequested = true;
         _downloads.Cancel(Descriptor.Id);
-    }
 
     [RelayCommand]
     private async Task DeleteAsync()
     {
         // Awaits: deleting mid-download has to wait for the writer to let go of the file.
-        _cancelRequested = true;
         await _downloads.DeleteAsync(Descriptor);
 
         ErrorMessage = string.Empty;

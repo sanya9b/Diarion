@@ -1729,6 +1729,18 @@
   <data name="AiDownloadFailed" xml:space="preserve">
     <value>Не вдалося завантажити. Перевірте зʼєднання і спробуйте ще раз.</value>
   </data>
+  <data name="AiDownloadWifiOnlyStopped" xml:space="preserve">
+    <value>Зупинено: зник Wi-Fi. Завантажене збережено — продовжте, коли повернетеся в мережу Wi-Fi.</value>
+  </data>
+  <data name="AiMobileDataTitle" xml:space="preserve">
+    <value>Ви в мобільній мережі</value>
+  </data>
+  <data name="AiMobileDataConfirmFormat" xml:space="preserve">
+    <value>Модель важить {0} і буде завантажена за рахунок мобільного трафіку. Завантажити все одно?</value>
+  </data>
+  <data name="AiMobileDataDownloadAnyway" xml:space="preserve">
+    <value>Все одно завантажити</value>
+  </data>
   <data name="AiWifiOnlyToggle" xml:space="preserve">
     <value>Завантажувати лише через Wi-Fi</value>
   </data>
