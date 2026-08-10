@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -52,12 +51,15 @@ public partial class AiSettingsViewModel : BaseViewModel
         _embedder = embedder;
         _dialogService = dialogService;
         _dispatcher = dispatcher;
-
-        _index.ProgressChanged += OnIndexProgressChanged;
     }
 
     public void Load()
     {
+        // Symmetric with Unload, and idempotent: a page can appear twice with no disappearance in
+        // between, and every subscription below is to a singleton that outlives this view model.
+        Unload();
+        _index.ProgressChanged += OnIndexProgressChanged;
+
         var capabilities = _probe.Probe();
 
         DeviceSummary = string.Format(
@@ -77,7 +79,6 @@ public partial class AiSettingsViewModel : BaseViewModel
                 .Select(kind => AiModelCatalog.Recommend(kind, capabilities)?.Id)
                 .Where(id => id is not null)!);
 
-        Models.Clear();
         foreach (var model in AiModelCatalog.All)
         {
             Models.Add(new AiModelItemViewModel(
@@ -85,10 +86,28 @@ public partial class AiSettingsViewModel : BaseViewModel
                 _downloads,
                 capabilities,
                 recommended.Contains(model.Id),
+                _dispatcher,
                 OnModelChanged));
         }
 
         RefreshIndexStatus(_index.Progress);
+    }
+
+    /// <summary>
+    /// Lets go of the singletons when the page goes away. A download that is running keeps running
+    /// — the service owns it — and the next <see cref="Load"/> picks it back up where it is.
+    /// </summary>
+    public void Unload()
+    {
+        _index.ProgressChanged -= OnIndexProgressChanged;
+
+        // Disposed, not just dropped: each row is a listener on the download service.
+        foreach (var stale in Models)
+        {
+            stale.Dispose();
+        }
+
+        Models.Clear();
     }
 
     /// <summary>
@@ -165,18 +184,28 @@ public partial class AiSettingsViewModel : BaseViewModel
 }
 
 /// <summary>One row in the model list: what it is, whether it is here, and what can be done to it.</summary>
-public partial class AiModelItemViewModel : ObservableObject
+/// <remarks>
+/// Deliberately owns no download. This view model is rebuilt every time the profile page appears,
+/// and a gigabyte takes longer than a user stays on one screen — so the row attaches to whatever
+/// the download service is already doing rather than holding a task the next row cannot reach.
+/// </remarks>
+public partial class AiModelItemViewModel : ObservableObject, IDisposable
 {
     private readonly IModelDownloadService _downloads;
+    private readonly IDispatcherService _dispatcher;
     private readonly Action<AiModelItemViewModel> _onChanged;
 
-    private CancellationTokenSource? _cts;
+    // A cancel and a dead network both end the same way — a partial file and false — and the disk
+    // cannot tell them apart afterwards. Only the row that asked for the stop knows.
+    private bool _cancelRequested;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StateText))]
     [NotifyPropertyChangedFor(nameof(CanDownload))]
     [NotifyPropertyChangedFor(nameof(CanDelete))]
     [NotifyPropertyChangedFor(nameof(IsDownloading))]
+    [NotifyPropertyChangedFor(nameof(ShowProgress))]
+    [NotifyPropertyChangedFor(nameof(DownloadActionText))]
     private ModelInstallState _state;
 
     [ObservableProperty] private double _progressFraction;
@@ -190,17 +219,44 @@ public partial class AiModelItemViewModel : ObservableObject
         IModelDownloadService downloads,
         DeviceCapabilities capabilities,
         bool isRecommended,
+        IDispatcherService dispatcher,
         Action<AiModelItemViewModel> onChanged)
     {
         Descriptor = descriptor;
         _downloads = downloads;
+        _dispatcher = dispatcher;
         _onChanged = onChanged;
 
         IsRecommended = isRecommended;
         CanRunHere = descriptor.MinTier <= capabilities.Tier && descriptor.RequiredRamMb <= capabilities.TotalRamMb;
         SizeText = ByteSize.Describe(descriptor.TotalSizeBytes);
         State = downloads.GetState(descriptor);
+
+        // Whatever is already there — an in-flight download's live figure, or the bytes an
+        // interrupted one left behind. Starting at zero would tell the user the resume is a restart.
+        ProgressFraction = (downloads.ActiveProgress(descriptor.Id) ?? downloads.ProgressOnDisk(descriptor)).Fraction;
+
+        _downloads.ProgressChanged += OnProgressChanged;
+
+        if (State == ModelInstallState.Downloading)
+        {
+            // A download this row did not start. Joining it is how the row learns it finished.
+            _ = TrackAsync();
+        }
     }
+
+    private void OnProgressChanged(object? sender, ModelDownloadProgress progress)
+    {
+        if (!string.Equals(progress.ModelId, Descriptor.Id, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        // The service reports from whatever thread the socket read completed on.
+        _dispatcher.InvokeOnMainThread(() => ProgressFraction = progress.Fraction);
+    }
+
+    public void Dispose() => _downloads.ProgressChanged -= OnProgressChanged;
 
     public AiModelDescriptor Descriptor { get; }
 
@@ -225,15 +281,30 @@ public partial class AiModelItemViewModel : ObservableObject
 
     public bool IsDownloading => State == ModelInstallState.Downloading;
 
-    public bool CanDownload => CanRunHere && State is ModelInstallState.NotInstalled or ModelInstallState.Corrupt;
+    /// <summary>
+    /// The bar stays up for an interrupted download too — the bytes on disk are real, and hiding
+    /// them would make resuming look like starting over.
+    /// </summary>
+    public bool ShowProgress => State is ModelInstallState.Downloading or ModelInstallState.Interrupted;
 
-    public bool CanDelete => State is ModelInstallState.Installed or ModelInstallState.Corrupt;
+    public bool CanDownload => CanRunHere && State is
+        ModelInstallState.NotInstalled or ModelInstallState.Corrupt or ModelInstallState.Interrupted;
+
+    /// <summary>Half a model is still worth a delete button — it is how the user reclaims the space.</summary>
+    public bool CanDelete => State is
+        ModelInstallState.Installed or ModelInstallState.Corrupt or ModelInstallState.Interrupted;
+
+    /// <summary>"Download" the first time, "Resume" when there is something to resume.</summary>
+    public string DownloadActionText => State == ModelInstallState.Interrupted
+        ? AppResources.AiResumeAction
+        : AppResources.AiDownloadAction;
 
     public string StateText => State switch
     {
         ModelInstallState.Installed => AppResources.AiStateInstalled,
         ModelInstallState.Downloading => AppResources.AiStateDownloading,
         ModelInstallState.Corrupt => AppResources.AiStateCorrupt,
+        ModelInstallState.Interrupted => AppResources.AiStateInterrupted,
         _ => AppResources.AiStateNotInstalled,
     };
 
@@ -241,45 +312,49 @@ public partial class AiModelItemViewModel : ObservableObject
     private async Task DownloadAsync()
     {
         ErrorMessage = string.Empty;
+        _cancelRequested = false;
         State = ModelInstallState.Downloading;
-        ProgressFraction = 0;
 
-        _cts = new CancellationTokenSource();
-        try
-        {
-            var progress = new Progress<ModelDownloadProgress>(p => ProgressFraction = p.Fraction);
-            var succeeded = await _downloads.DownloadAsync(Descriptor, progress, _cts.Token);
+        await TrackAsync();
+    }
 
-            if (!succeeded)
-            {
-                ErrorMessage = AppResources.AiDownloadFailed;
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            // Cancelling leaves the partial file in place, so the next attempt resumes.
-        }
-        catch (Exception)
-        {
-            // Any network failure reads the same to the user, and there is nowhere to report it to.
-            ErrorMessage = AppResources.AiDownloadFailed;
-        }
-        finally
-        {
-            _cts?.Dispose();
-            _cts = null;
-            State = _downloads.GetState(Descriptor);
-            _onChanged(this);
-        }
+    /// <summary>
+    /// Follows a download to its end, whether or not this row started it. Only the outcome is
+    /// handled here — the bytes arrive through the service's progress event.
+    /// </summary>
+    private async Task TrackAsync()
+    {
+        // Joins the running download rather than starting a second one, and does not throw:
+        // cancellation and failure both come back as false.
+        var succeeded = await _downloads.StartAsync(Descriptor);
+
+        State = _downloads.GetState(Descriptor);
+        ProgressFraction = _downloads.ProgressOnDisk(Descriptor).Fraction;
+
+        // Stopping on request is not a failure. Anything else that ends without the files is, and
+        // has to say so — a stalled network is otherwise indistinguishable from a slow one.
+        ErrorMessage = succeeded || _cancelRequested ? string.Empty : AppResources.AiDownloadFailed;
+        _cancelRequested = false;
+
+        _onChanged(this);
     }
 
     [RelayCommand]
-    private void Cancel() => _cts?.Cancel();
+    private void Cancel()
+    {
+        // Cancelling only asks; the running task notices and unwinds, and TrackAsync writes the
+        // state that follows. Bytes stay on disk, so the next tap resumes.
+        _cancelRequested = true;
+        _downloads.Cancel(Descriptor.Id);
+    }
 
     [RelayCommand]
-    private void Delete()
+    private async Task DeleteAsync()
     {
-        _downloads.Delete(Descriptor);
+        // Awaits: deleting mid-download has to wait for the writer to let go of the file.
+        _cancelRequested = true;
+        await _downloads.DeleteAsync(Descriptor);
+
         ErrorMessage = string.Empty;
         ProgressFraction = 0;
         State = _downloads.GetState(Descriptor);

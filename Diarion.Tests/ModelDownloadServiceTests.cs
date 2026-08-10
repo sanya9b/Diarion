@@ -51,6 +51,24 @@ public class ModelDownloadServiceTests : IDisposable
         LicenseSpdx = "Apache-2.0",
     };
 
+    /// <summary>The real catalogue entries are multi-file; half-arrived is a state they can be in.</summary>
+    private static AiModelDescriptor TwoFileModel() => new()
+    {
+        Id = "test-model",
+        Kind = AiModelKind.Embedding,
+        DisplayName = "Test",
+        RepoId = "acme/test-model",
+        RevisionSha = "abc123",
+        Files =
+        [
+            new AiModelFile("onnx/model_qint8.onnx", "model.onnx", Payload.Length, Sha256Of(Payload)),
+            new AiModelFile("onnx/second.onnx", "second.onnx", Payload.Length, Sha256Of(Payload)),
+        ],
+        RequiredRamMb = 128,
+        MinTier = DeviceTier.Low,
+        LicenseSpdx = "Apache-2.0",
+    };
+
     private string LocalPath(string name = "model.onnx") => Path.Combine(_root, "test-model", name);
 
     [Fact]
@@ -186,12 +204,178 @@ public class ModelDownloadServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task GetState_PartialPresent_IsDownloading()
+    public async Task GetState_PartialWithNothingFetchingIt_IsInterrupted()
     {
+        // The bug the user hit: this used to answer Downloading, and the settings row then offered
+        // a cancel with nothing to cancel and hid both other buttons. Only reinstalling escaped it.
         Directory.CreateDirectory(Path.Combine(_root, "test-model"));
         await File.WriteAllBytesAsync(LocalPath("model.onnx.partial"), Payload.Take(3).ToArray());
 
-        CreateService().GetState(Model()).Should().Be(ModelInstallState.Downloading);
+        CreateService().GetState(Model()).Should().Be(ModelInstallState.Interrupted);
+    }
+
+    [Fact]
+    public async Task GetState_WhileTheDownloadRuns_IsDownloading()
+    {
+        _handler.RespondSlowly(Payload);
+        var service = CreateService();
+        var running = service.StartAsync(Model());
+
+        await _handler.FirstRequestReceived;
+        service.GetState(Model()).Should().Be(ModelInstallState.Downloading);
+        service.IsActive("test-model").Should().BeTrue();
+
+        _handler.Release();
+        await running;
+    }
+
+    [Fact]
+    public async Task GetState_OneFileOfTwoArrived_IsInterrupted()
+    {
+        Directory.CreateDirectory(Path.Combine(_root, "test-model"));
+        await File.WriteAllBytesAsync(LocalPath(), Payload);
+
+        CreateService().GetState(TwoFileModel()).Should().Be(ModelInstallState.Interrupted);
+    }
+
+    [Fact]
+    public async Task StartAsync_SecondCaller_JoinsTheDownloadInsteadOfStartingASecondOne()
+    {
+        // Two settings pages, or one page reopened, or a double tap. All the same download.
+        _handler.RespondSlowly(Payload);
+        var service = CreateService();
+
+        var first = service.StartAsync(Model());
+        await _handler.FirstRequestReceived;
+        var second = service.StartAsync(Model());
+
+        _handler.Release();
+        (await first).Should().BeTrue();
+        (await second).Should().BeTrue();
+        _handler.RequestCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task StartAsync_AfterTheDownloadEnds_ForgetsIt()
+    {
+        // Otherwise the register grows a permanent "downloading" entry for a model already on disk.
+        _handler.RespondWith(Payload);
+        var service = CreateService();
+
+        await service.StartAsync(Model());
+
+        service.IsActive("test-model").Should().BeFalse();
+        service.ActiveProgress("test-model").Should().BeNull();
+        service.GetState(Model()).Should().Be(ModelInstallState.Installed);
+    }
+
+    [Fact]
+    public async Task StartAsync_AnnouncesProgressToTheWholeApp()
+    {
+        // The page that started the download may be gone; whoever is on screen still needs the bar.
+        _handler.RespondWith(Payload);
+        var service = CreateService();
+        var seen = new List<ModelDownloadProgress>();
+        service.ProgressChanged += (_, p) => seen.Add(p);
+
+        await service.StartAsync(Model());
+
+        seen.Should().NotBeEmpty();
+        seen[^1].BytesReceived.Should().Be(Payload.Length);
+    }
+
+    [Fact]
+    public async Task Cancel_StopsTheDownloadAndKeepsTheBytesForAResume()
+    {
+        _handler.RespondSlowly(Payload);
+        var service = CreateService();
+        var running = service.StartAsync(Model());
+        await _handler.FirstRequestReceived;
+
+        service.Cancel("test-model");
+        _handler.Release();
+
+        // False, not an exception: a cancel is an outcome, not a fault.
+        (await running).Should().BeFalse();
+        service.IsActive("test-model").Should().BeFalse();
+        service.GetState(Model()).Should().NotBe(ModelInstallState.Downloading);
+    }
+
+    [Fact]
+    public void Cancel_NothingRunning_IsHarmless()
+    {
+        var act = () => CreateService().Cancel("test-model");
+
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public async Task Download_SilentServer_FailsInsteadOfWaitingForever()
+    {
+        // The stuck progress bar. A socket that is open and delivering nothing looks exactly like a
+        // slow connection until something puts a clock on it.
+        _handler.RespondWithSilence();
+        var service = new ModelDownloadService(
+            new HttpClient(_handler),
+            new TempPathProvider(_root),
+            stallTimeout: TimeSpan.FromMilliseconds(150));
+
+        (await service.StartAsync(Model())).Should().BeFalse();
+        service.IsActive("test-model").Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Download_SilentServer_ReportsFailureRatherThanCancellation()
+    {
+        // The distinction the UI needs: our clock ran out, so the user has to see an error rather
+        // than the silence that a cancel they asked for deserves.
+        _handler.RespondWithSilence();
+        var service = new ModelDownloadService(
+            new HttpClient(_handler),
+            new TempPathProvider(_root),
+            stallTimeout: TimeSpan.FromMilliseconds(150));
+
+        var act = async () => await service.DownloadAsync(Model());
+
+        (await act.Should().NotThrowAsync()).Which.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ProgressOnDisk_CountsWholeFilesAndPartialsTogether()
+    {
+        // What the resume is worth, and the answer to "will this cost me the whole gigabyte again".
+        Directory.CreateDirectory(Path.Combine(_root, "test-model"));
+        await File.WriteAllBytesAsync(LocalPath(), Payload);
+        await File.WriteAllBytesAsync(LocalPath("second.onnx.partial"), Payload.Take(4).ToArray());
+
+        var progress = CreateService().ProgressOnDisk(TwoFileModel());
+
+        progress.BytesReceived.Should().Be(Payload.Length + 4);
+        progress.TotalBytes.Should().Be(Payload.Length * 2);
+    }
+
+    [Fact]
+    public void ProgressOnDisk_NothingThere_IsZero()
+    {
+        CreateService().ProgressOnDisk(Model()).Fraction.Should().Be(0d);
+    }
+
+    [Fact]
+    public async Task Delete_DuringADownload_StopsItAndWaitsForTheHandleToClose()
+    {
+        // The copy holds the partial open with FileShare.None. Cancelling without waiting throws on
+        // Windows, and a writer outliving the delete recreates what the user asked to be rid of.
+        _handler.RespondSlowly(Payload);
+        var service = CreateService();
+        var running = service.StartAsync(Model());
+        await _handler.FirstRequestReceived;
+
+        var act = async () => await service.DeleteAsync(Model());
+
+        await act.Should().NotThrowAsync();
+        (await running).Should().BeFalse();
+        service.IsActive("test-model").Should().BeFalse();
+        service.GetState(Model()).Should().Be(ModelInstallState.NotInstalled);
     }
 
     [Fact]
@@ -217,18 +401,18 @@ public class ModelDownloadServiceTests : IDisposable
         await service.DownloadAsync(Model());
         await File.WriteAllBytesAsync(LocalPath("stray.partial"), Payload);
 
-        service.Delete(Model());
+        await service.DeleteAsync(Model());
 
         service.GetState(Model()).Should().Be(ModelInstallState.NotInstalled);
         Directory.Exists(Path.Combine(_root, "test-model")).Should().BeFalse();
     }
 
     [Fact]
-    public void Delete_NothingInstalled_IsHarmless()
+    public async Task Delete_NothingInstalled_IsHarmless()
     {
-        var act = () => CreateService().Delete(Model());
+        var act = async () => await CreateService().DeleteAsync(Model());
 
-        act.Should().NotThrow();
+        await act.Should().NotThrowAsync();
     }
 
     private sealed class TempPathProvider(string root) : IAiModelPathProvider
@@ -238,9 +422,14 @@ public class ModelDownloadServiceTests : IDisposable
 
     private sealed class FakeHandler : HttpMessageHandler
     {
+        private readonly TaskCompletionSource _firstRequest = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
         private byte[] _body = Array.Empty<byte>();
         private HttpStatusCode _status = HttpStatusCode.OK;
         private bool _honourRange;
+
+        /// <summary>Null delivers the body at once. Otherwise the body waits for this to be set.</summary>
+        private TaskCompletionSource? _gate;
 
         public int RequestCount { get; private set; }
 
@@ -248,11 +437,15 @@ public class ModelDownloadServiceTests : IDisposable
 
         public long BytesServed { get; private set; }
 
+        /// <summary>Completes once the service has actually asked for something.</summary>
+        public Task FirstRequestReceived => _firstRequest.Task;
+
         public void RespondWith(byte[] body, HttpStatusCode status = HttpStatusCode.OK)
         {
             _body = body;
             _status = status;
             _honourRange = false;
+            _gate = null;
         }
 
         public void RespondWithRange(byte[] body)
@@ -260,12 +453,28 @@ public class ModelDownloadServiceTests : IDisposable
             _body = body;
             _status = HttpStatusCode.OK;
             _honourRange = true;
+            _gate = null;
         }
+
+        /// <summary>Headers now, body only on <see cref="Release"/> — a download caught mid-flight.</summary>
+        public void RespondSlowly(byte[] body)
+        {
+            _body = body;
+            _status = HttpStatusCode.OK;
+            _honourRange = false;
+            _gate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        }
+
+        /// <summary>The same gate, never opened: a socket that is up and delivering nothing.</summary>
+        public void RespondWithSilence() => RespondSlowly(Array.Empty<byte>());
+
+        public void Release() => _gate?.TrySetResult();
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             RequestCount++;
+            _firstRequest.TrySetResult();
 
             var from = request.Headers.Range?.Ranges.FirstOrDefault()?.From;
             LastRangeFrom = from;
@@ -286,10 +495,59 @@ public class ModelDownloadServiceTests : IDisposable
 
             BytesServed = payload.Length;
 
-            return Task.FromResult(new HttpResponseMessage(status)
-            {
-                Content = new ByteArrayContent(payload),
-            });
+            HttpContent content = _gate is null
+                ? new ByteArrayContent(payload)
+                : new StreamContent(new GatedStream(payload, _gate.Task));
+
+            return Task.FromResult(new HttpResponseMessage(status) { Content = content });
         }
+    }
+
+    /// <summary>A body that arrives only once its gate opens, and honours cancellation while it waits.</summary>
+    private sealed class GatedStream(byte[] payload, Task gate) : Stream
+    {
+        private int _position;
+
+        public override bool CanRead => true;
+
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => false;
+
+        public override long Length => payload.Length;
+
+        public override long Position
+        {
+            get => _position;
+            set => throw new NotSupportedException();
+        }
+
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            var remaining = payload.Length - _position;
+            if (remaining <= 0)
+            {
+                return 0;
+            }
+
+            var take = Math.Min(remaining, buffer.Length);
+            payload.AsMemory(_position, take).CopyTo(buffer);
+            _position += take;
+            return take;
+        }
+
+        public override void Flush()
+        {
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+        public override void SetLength(long value) => throw new NotSupportedException();
+
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 }

@@ -50,6 +50,16 @@ public partial class ProfilePage : ContentPage
         await _viewModel.LoadProfileAsync();
     }
 
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        // This page is transient and the AI services are singletons, so its rows have to let go of
+        // them on the way out or every visit leaves another set of listeners behind. A download in
+        // flight is unaffected — the service owns it, and OnAppearing reattaches to it.
+        _viewModel.Ai.Unload();
+    }
+
     private async void OnToggleThemeClicked(object? sender, EventArgs e)
     {
         if (Application.Current == null) return;

@@ -58,7 +58,13 @@ public static class ServiceCollectionExtensions
         // The one HttpClient in the app. It only ever GETs pinned model URLs from HuggingFace —
         // no user data, no identifiers, no telemetry — which is the entire justification for the
         // INTERNET permission.
-        services.AddSingleton(_ => new HttpClient { Timeout = TimeSpan.FromMinutes(30) });
+        //
+        // No overall timeout, deliberately. HttpClient.Timeout covers the whole response body, so
+        // any finite value is a bet on how fast the user's connection is: 30 minutes killed a
+        // healthy 1.1 GB download on a slow line, and shorter would be worse. ModelDownloadService
+        // times the parts that can actually hang — the response headers, and the gap between two
+        // reads — which is the question worth asking.
+        services.AddSingleton(_ => new HttpClient { Timeout = Timeout.InfiniteTimeSpan });
 
         services.AddSingleton<IAiModelPathProvider, AppDataModelPaths>();
         services.AddSingleton<IModelDownloadService, ModelDownloadService>();

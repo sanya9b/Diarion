@@ -1998,6 +1998,10 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("AiDownloadAction", resourceCulture) ?? string.Empty; }
         }
 
+        public static string AiResumeAction {
+            get { return ResourceManager.GetString("AiResumeAction", resourceCulture) ?? string.Empty; }
+        }
+
         public static string AiDeleteAction {
             get { return ResourceManager.GetString("AiDeleteAction", resourceCulture) ?? string.Empty; }
         }
@@ -2024,6 +2028,10 @@ public static string ClearAllDataSuccessMsg {
 
         public static string AiStateCorrupt {
             get { return ResourceManager.GetString("AiStateCorrupt", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AiStateInterrupted {
+            get { return ResourceManager.GetString("AiStateInterrupted", resourceCulture) ?? string.Empty; }
         }
 
         public static string AiDownloadFailed {

@@ -666,7 +666,7 @@
                                                TextColor="{DynamicResource Theme_Amber}" />
 
                                         <ProgressBar Progress="{Binding ProgressFraction}"
-                                                     IsVisible="{Binding IsDownloading}"
+                                                     IsVisible="{Binding ShowProgress}"
                                                      ProgressColor="{DynamicResource Theme_Ocean_Ocean}" />
 
                                         <Label Text="{x:Static localization:AppResources.AiKeepOpenNotice}"
@@ -678,7 +678,7 @@
                                                TextColor="{DynamicResource Theme_Coral}" />
 
                                         <HorizontalStackLayout Spacing="8">
-                                            <Button Text="{x:Static localization:AppResources.AiDownloadAction}"
+                                            <Button Text="{Binding DownloadActionText}"
                                                     Command="{Binding DownloadCommand}"
                                                     IsVisible="{Binding CanDownload}"
                                                     BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"

@@ -1699,6 +1699,9 @@
   <data name="AiDownloadAction" xml:space="preserve">
     <value>Download</value>
   </data>
+  <data name="AiResumeAction" xml:space="preserve">
+    <value>Resume</value>
+  </data>
   <data name="AiDeleteAction" xml:space="preserve">
     <value>Delete</value>
   </data>
@@ -1719,6 +1722,9 @@
   </data>
   <data name="AiStateCorrupt" xml:space="preserve">
     <value>Damaged — download again</value>
+  </data>
+  <data name="AiStateInterrupted" xml:space="preserve">
+    <value>Interrupted — resume to finish</value>
   </data>
   <data name="AiDownloadFailed" xml:space="preserve">
     <value>Download failed. Check the connection and try again.</value>
