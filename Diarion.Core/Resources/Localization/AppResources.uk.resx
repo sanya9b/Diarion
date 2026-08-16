@@ -1900,4 +1900,25 @@
   <data name="QuickMenuAiChat" xml:space="preserve">
     <value>Спитати</value>
   </data>
+  <data name="SnapshotPreviewTitle" xml:space="preserve">
+    <value>Що саме піде</value>
+  </data>
+  <data name="SnapshotPreviewSubtitle" xml:space="preserve">
+    <value>Це сам запит, слово в слово. Нічого ще не надіслано.</value>
+  </data>
+  <data name="SnapshotPreviewSizeFormat" xml:space="preserve">
+    <value>{0} дн. · {1:N0} символів</value>
+  </data>
+  <data name="SnapshotPreviewIncludeIntimate" xml:space="preserve">
+    <value>Додати нотатки про інтимне життя</value>
+  </data>
+  <data name="SnapshotPreviewIncludeCycle" xml:space="preserve">
+    <value>Додати щоденник циклу</value>
+  </data>
+  <data name="SnapshotPreviewNothingWritten" xml:space="preserve">
+    <value>За цей період нічого не написано, тож звіт спиратиметься лише на числа.</value>
+  </data>
+  <data name="SnapshotPreviewRefresh" xml:space="preserve">
+    <value>Оновити</value>
+  </data>
 </root>

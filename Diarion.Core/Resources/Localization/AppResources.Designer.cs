@@ -2269,6 +2269,34 @@ public static string ClearAllDataSuccessMsg {
         public static string QuickMenuAiChat {
             get { return ResourceManager.GetString("QuickMenuAiChat", resourceCulture) ?? string.Empty; }
         }
+
+        public static string SnapshotPreviewTitle {
+            get { return ResourceManager.GetString("SnapshotPreviewTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewSubtitle {
+            get { return ResourceManager.GetString("SnapshotPreviewSubtitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewSizeFormat {
+            get { return ResourceManager.GetString("SnapshotPreviewSizeFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewIncludeIntimate {
+            get { return ResourceManager.GetString("SnapshotPreviewIncludeIntimate", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewIncludeCycle {
+            get { return ResourceManager.GetString("SnapshotPreviewIncludeCycle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewNothingWritten {
+            get { return ResourceManager.GetString("SnapshotPreviewNothingWritten", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewRefresh {
+            get { return ResourceManager.GetString("SnapshotPreviewRefresh", resourceCulture) ?? string.Empty; }
+        }
     }
 }
 

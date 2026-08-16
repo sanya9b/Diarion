@@ -3,6 +3,7 @@ using Diarion.Services;
 using Diarion.Services.Database;
 using Diarion.Core.Services;
 using Diarion.Services.Ai;
+using Diarion.Services.Ai.Reports;
 using Diarion.ViewModels;
 using Diarion.ViewModels.Statistics;
 using Diarion.Views;
@@ -119,6 +120,11 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ITextGenerator, OnnxGenAiTextGenerator>();
         services.AddSingleton<IDiaryChatService, DiaryChatService>();
 
+        // Periodic reports over the API (spec 14). Nothing here touches the network or the local
+        // models: the builder only gathers what the app already knows about a period, so it stays
+        // registered and useful while the on-device stack is off.
+        services.AddSingleton<ISnapshotBuilder, SnapshotBuilder>();
+
         return services;
     }
 
@@ -161,6 +167,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<PromptEditorViewModel>();
         services.AddTransient<PromptHistoryViewModel>();
         services.AddTransient<CycleViewModel>();
+        services.AddTransient<SnapshotPreviewViewModel>();
 
         return services;
     }
@@ -190,6 +197,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<PromptEditorPage>();
         services.AddTransient<PromptHistoryPage>();
         services.AddTransient<CyclePage>();
+        services.AddTransient<SnapshotPreviewPage>();
 
         return services;
     }
