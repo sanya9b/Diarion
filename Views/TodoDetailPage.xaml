@@ -114,16 +114,21 @@
                              Format, so it read as a stray "8" beside a "30" with no colon and no leading
                              zero, and the label next to it could not be lined up with either of them.
                              Painting the text ourselves makes all three platforms agree and puts the row
-                             back on one baseline. -->
+                             back on one baseline.
+
+                             Invisible via TextColor, never Opacity="0": an element at zero opacity is not
+                             hit-testable on Windows, so the picker was there, on top and bound, and simply
+                             could not be tapped. This is the same idiom as the sleep times in the diary,
+                             which is the one that has always worked. -->
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" IsVisible="{Binding HasTime}">
                             <Label Grid.Column="0" Text="{x:Static localization:AppResources.TimeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                             <Grid Grid.Column="1" HorizontalOptions="Start" VerticalOptions="Center">
                                 <Label Text="{Binding TargetTimeDisplay}" FontSize="15" FontAttributes="Bold"
                                        VerticalOptions="Center" HorizontalOptions="Start" InputTransparent="True"
                                        TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                <TimePicker Time="{Binding TargetTime}" Format="HH:mm" Opacity="0"
+                                <TimePicker Time="{Binding TargetTime}" Format="HH:mm"
                                             WidthRequest="86" HeightRequest="30"
-                                            BackgroundColor="Transparent" />
+                                            TextColor="Transparent" BackgroundColor="Transparent" />
                             </Grid>
                         </Grid>
 
@@ -142,9 +147,9 @@
                                 <Label Text="{Binding EndTimeDisplay}" FontSize="15" FontAttributes="Bold"
                                        VerticalOptions="Center" HorizontalOptions="Start" InputTransparent="True"
                                        TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                <TimePicker Time="{Binding EndTime}" Format="HH:mm" Opacity="0"
+                                <TimePicker Time="{Binding EndTime}" Format="HH:mm"
                                             WidthRequest="86" HeightRequest="30"
-                                            BackgroundColor="Transparent" />
+                                            TextColor="Transparent" BackgroundColor="Transparent" />
                             </Grid>
                         </Grid>
                         <Label Text="{Binding TimeRangeError}" IsVisible="{Binding HasTimeRangeError}"
