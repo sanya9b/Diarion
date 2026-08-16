@@ -175,6 +175,128 @@ public class TodoDetailViewModelTests
         _todoServiceMock.Verify(s => s.SaveTodoAsync(It.Is<TodoItem>(t => t.TaskDescription == "теніс")), Times.Once);
     }
 
+    // --- a task that holds a stretch of the day ---
+
+    [Fact]
+    public async Task SaveAsync_WithARange_StoresBothEnds()
+    {
+        _viewModel.TaskDescription = "Зустріч";
+        _viewModel.HasTime = true;
+        _viewModel.TargetTime = new TimeSpan(13, 0, 0);
+        _viewModel.HasEndTime = true;
+        _viewModel.EndTime = new TimeSpan(16, 0, 0);
+
+        await SaveIgnoringNavigationAsync();
+
+        _todoServiceMock.Verify(s => s.SaveTodoAsync(
+            It.Is<TodoItem>(t => t.TargetTime == new TimeSpan(13, 0, 0)
+                              && t.EndTime == new TimeSpan(16, 0, 0))), Times.Once);
+    }
+
+    [Fact]
+    public async Task SaveAsync_WithoutARange_StoresNoEnd()
+    {
+        // Null rather than "equal to the start": null is what every reader treats as a point task, and it
+        // is also what a row written before ranges existed deserializes to.
+        _viewModel.TaskDescription = "Дзвінок";
+        _viewModel.HasTime = true;
+        _viewModel.TargetTime = new TimeSpan(15, 0, 0);
+
+        await SaveIgnoringNavigationAsync();
+
+        _todoServiceMock.Verify(s => s.SaveTodoAsync(It.Is<TodoItem>(t => t.EndTime == null)), Times.Once);
+    }
+
+    [Fact]
+    public async Task SaveAsync_ARangeEndingBeforeItStarts_IsRefusedWithAReason()
+    {
+        _viewModel.TaskDescription = "Зустріч";
+        _viewModel.HasTime = true;
+        _viewModel.TargetTime = new TimeSpan(13, 0, 0);
+        _viewModel.HasEndTime = true;
+        // Straight onto the backing property: setting the start would otherwise nudge this forward.
+        _viewModel.EndTime = new TimeSpan(11, 0, 0);
+
+        await SaveIgnoringNavigationAsync();
+
+        _todoServiceMock.Verify(s => s.SaveTodoAsync(It.IsAny<TodoItem>()), Times.Never);
+        _viewModel.HasTimeRangeError.Should().BeTrue();
+    }
+
+    [Fact]
+    public void SwitchingTheRangeOnDefaultsToAnHour()
+    {
+        _viewModel.HasTime = true;
+        _viewModel.TargetTime = new TimeSpan(13, 0, 0);
+
+        _viewModel.HasEndTime = true;
+
+        _viewModel.EndTime.Should().Be(new TimeSpan(14, 0, 0));
+    }
+
+    [Fact]
+    public void MovingTheStartPastTheEndCarriesTheEndAlong()
+    {
+        // Dragging the start of a block is a request to move the block, not a mistake to be argued with.
+        _viewModel.HasTime = true;
+        _viewModel.TargetTime = new TimeSpan(13, 0, 0);
+        _viewModel.HasEndTime = true;
+
+        _viewModel.TargetTime = new TimeSpan(18, 0, 0);
+
+        _viewModel.EndTime.Should().Be(new TimeSpan(19, 0, 0));
+    }
+
+    [Fact]
+    public void DroppingTheTimeDropsTheRangeWithIt()
+    {
+        _viewModel.HasTime = true;
+        _viewModel.HasEndTime = true;
+
+        _viewModel.HasTime = false;
+
+        _viewModel.HasEndTime.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task SaveAsync_AfterTheRangeIsSwitchedOff_StoresNoEnd()
+    {
+        _viewModel.TaskDescription = "Зустріч";
+        _viewModel.HasTime = true;
+        _viewModel.TargetTime = new TimeSpan(13, 0, 0);
+        _viewModel.HasEndTime = true;
+        _viewModel.HasEndTime = false;
+
+        await SaveIgnoringNavigationAsync();
+
+        _todoServiceMock.Verify(s => s.SaveTodoAsync(It.Is<TodoItem>(t => t.EndTime == null)), Times.Once);
+    }
+
+    [Fact]
+    public async Task TypingARangePutsBothEndsIntoTheForm()
+    {
+        _viewModel.TaskDescription = "з 13:00 до 16:00 зустріч";
+
+        _viewModel.HasTime.Should().BeTrue();
+        _viewModel.TargetTime.Should().Be(new TimeSpan(13, 0, 0));
+        _viewModel.HasEndTime.Should().BeTrue();
+        _viewModel.EndTime.Should().Be(new TimeSpan(16, 0, 0));
+
+        await SaveIgnoringNavigationAsync();
+
+        _todoServiceMock.Verify(s => s.SaveTodoAsync(It.Is<TodoItem>(t => t.TaskDescription == "зустріч")), Times.Once);
+    }
+
+    [Fact]
+    public void UndoingAReadRangeLeavesTheFormAsItWas()
+    {
+        _viewModel.TaskDescription = "з 13:00 до 16:00 зустріч";
+        _viewModel.DismissParseCommand.Execute(null);
+
+        _viewModel.HasTime.Should().BeFalse();
+        _viewModel.HasEndTime.Should().BeFalse();
+    }
+
     [Fact]
     public void ANamedHourTurnsTheReminderOn()
     {

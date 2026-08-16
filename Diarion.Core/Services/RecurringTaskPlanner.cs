@@ -75,6 +75,7 @@ public static class RecurringTaskPlanner
                 Priority = priority,
                 HasTime = rule.HasTime,
                 TargetTime = rule.TargetTime,
+                EndTime = rule.EndTime,
                 HasReminder = rule.HasReminder,
                 IsCompleted = false,
                 CreatedAt = DateTime.Now

@@ -93,6 +93,11 @@ namespace Diarion.Resources.Localization {
         public static string TaskRepeatLabel => ResourceManager.GetString("TaskRepeatLabel", resourceCulture) ?? string.Empty;
         public static string RecurrenceEndDateLabel => ResourceManager.GetString("RecurrenceEndDateLabel", resourceCulture) ?? string.Empty;
         public static string RecurrenceDaysRequired => ResourceManager.GetString("RecurrenceDaysRequired", resourceCulture) ?? string.Empty;
+        public static string TaskDurationLabel => ResourceManager.GetString("TaskDurationLabel", resourceCulture) ?? string.Empty;
+        public static string TaskEndTimeLabel => ResourceManager.GetString("TaskEndTimeLabel", resourceCulture) ?? string.Empty;
+        public static string EndTimeMustFollowStart => ResourceManager.GetString("EndTimeMustFollowStart", resourceCulture) ?? string.Empty;
+        public static string TaskContinuesLabel => ResourceManager.GetString("TaskContinuesLabel", resourceCulture) ?? string.Empty;
+        public static string TaskSpanAccessibility => ResourceManager.GetString("TaskSpanAccessibility", resourceCulture) ?? string.Empty;
         public static string RecurringTaskAccessibility => ResourceManager.GetString("RecurringTaskAccessibility", resourceCulture) ?? string.Empty;
         public static string ParseHintFormat => ResourceManager.GetString("ParseHintFormat", resourceCulture) ?? string.Empty;
         public static string ParseUndoLabel => ResourceManager.GetString("ParseUndoLabel", resourceCulture) ?? string.Empty;

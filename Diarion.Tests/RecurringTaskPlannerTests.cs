@@ -48,6 +48,19 @@ public class RecurringTaskPlannerTests
     }
 
     [Fact]
+    public void ARuleThatHoldsAStretchOfTheDayHandsItToEveryOccurrence()
+    {
+        // Otherwise a repeating 13:00–16:00 class draws as a block on the day it was created and as a
+        // point task on every day after it.
+        var rule = DailyRule();
+        rule.HasTime = true;
+        rule.TargetTime = TimeSpan.FromHours(13);
+        rule.EndTime = TimeSpan.FromHours(16);
+
+        Plan(new[] { rule }).Single().EndTime.Should().Be(TimeSpan.FromHours(16));
+    }
+
+    [Fact]
     public void ARuleWhoseAnchorIsLaterProducesNothing()
     {
         var rule = DailyRule();

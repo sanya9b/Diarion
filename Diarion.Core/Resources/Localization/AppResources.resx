@@ -673,6 +673,21 @@
   <data name="RecurrenceDaysRequired" xml:space="preserve">
     <value>Pick at least one day.</value>
   </data>
+  <data name="TaskDurationLabel" xml:space="preserve">
+    <value>Lasts a while</value>
+  </data>
+  <data name="TaskEndTimeLabel" xml:space="preserve">
+    <value>Until</value>
+  </data>
+  <data name="EndTimeMustFollowStart" xml:space="preserve">
+    <value>The end has to come after the start.</value>
+  </data>
+  <data name="TaskContinuesLabel" xml:space="preserve">
+    <value>ongoing</value>
+  </data>
+  <data name="TaskSpanAccessibility" xml:space="preserve">
+    <value>{0}, runs from {1} to {2}</value>
+  </data>
   <data name="RecurringTaskAccessibility" xml:space="preserve">
     <value>Repeating task</value>
   </data>

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
@@ -25,7 +26,18 @@ public partial class PlannerHourSlot : ObservableObject
     /// time on screen are announced character by character otherwise.
     /// </summary>
     public string AccessibleTime => $"{Hour:00}:00";
+
+    /// <summary>Tasks that start in this hour. Drawn as full rows.</summary>
     public ObservableCollection<TodoItemViewModel> Items { get; } = new();
+
+    /// <summary>
+    /// Tasks that started earlier and are still running through this hour — a 13:00–16:00 block seen from
+    /// the 14th hour. Kept apart from <see cref="Items"/> rather than repeated into it: the same task
+    /// listed four times reads as four tasks with four checkboxes, and only one of those rows is the one
+    /// that can be ticked off. Drawn above the tasks that start here, because something already under way
+    /// comes before something about to begin.
+    /// </summary>
+    public ObservableCollection<TodoItemViewModel> Continuations { get; } = new();
 
     [ObservableProperty]
     private bool _isEmpty = true;
@@ -101,7 +113,11 @@ public partial class PlannerSectionViewModel : ObservableObject
             }
         }
 
-        foreach (var slot in HourSlots) slot.Items.Clear();
+        foreach (var slot in HourSlots)
+        {
+            slot.Items.Clear();
+            slot.Continuations.Clear();
+        }
         UntimedTodos.Clear();
 
         foreach (var todo in Todos.OrderBy(t => t.TargetTime))
@@ -112,16 +128,46 @@ public partial class PlannerSectionViewModel : ObservableObject
                 continue;
             }
 
-            HourSlots[SlotIndexFor(todo.TargetTime)].Items.Add(todo);
+            var start = SlotIndexFor(todo.TargetTime);
+            HourSlots[start].Items.Add(todo);
+
+            foreach (var hour in ContinuationHours(todo.TargetTime, todo.EndTime))
+            {
+                HourSlots[hour - FirstHour].Continuations.Add(todo);
+            }
         }
 
-        foreach (var slot in HourSlots) slot.IsEmpty = slot.Items.Count == 0;
+        foreach (var slot in HourSlots) slot.IsEmpty = slot.Items.Count == 0 && slot.Continuations.Count == 0;
         HasUntimedTodos = UntimedTodos.Count > 0;
     }
 
     /// <summary>Clamped, so a 06:00 or a 01:00 task lands on an edge row instead of vanishing.</summary>
     internal static int SlotIndexFor(TimeSpan time)
         => Math.Clamp(time.Hours, FirstHour, LastHour) - FirstHour;
+
+    /// <summary>
+    /// The hours a block runs through after the one it starts in, as hour numbers within the grid window.
+    ///
+    /// The end is exclusive, which is what "до 16:00" says: a block finishing at 16:00 is over before the
+    /// 16th hour begins, so 13:00–16:00 covers 13, 14 and 15. A minute past the hour does put the block in
+    /// it — 13:00–16:30 also covers 16 — because that half hour is time the user is genuinely busy.
+    ///
+    /// Both ends are clamped to the grid window for the same reason a point task is: a task nobody can see
+    /// is a task nobody does. A block starting before 05:00 therefore begins in the 05 row and keeps only
+    /// the part of its run that the window can show.
+    /// </summary>
+    internal static IEnumerable<int> ContinuationHours(TimeSpan start, TimeSpan? end)
+    {
+        if (end == null || end.Value <= start) yield break;
+
+        var first = Math.Clamp(start.Hours, FirstHour, LastHour);
+
+        // The last hour the block is still inside. Subtracting a tick rather than reading end.Hours is what
+        // makes the end exclusive on the hour and inclusive past it.
+        var last = Math.Clamp(end.Value.Subtract(TimeSpan.FromTicks(1)).Hours, FirstHour, LastHour);
+
+        for (var hour = first + 1; hour <= last; hour++) yield return hour;
+    }
 
     public void ClearTodos()
     {
@@ -130,6 +176,7 @@ public partial class PlannerSectionViewModel : ObservableObject
         foreach (var slot in HourSlots)
         {
             slot.Items.Clear();
+            slot.Continuations.Clear();
             slot.IsEmpty = true;
         }
         HasUntimedTodos = false;

@@ -661,6 +661,21 @@
   <data name="RecurrenceDaysRequired" xml:space="preserve">
     <value>Оберіть хоча б один день.</value>
   </data>
+  <data name="TaskDurationLabel" xml:space="preserve">
+    <value>Триває проміжок</value>
+  </data>
+  <data name="TaskEndTimeLabel" xml:space="preserve">
+    <value>До</value>
+  </data>
+  <data name="EndTimeMustFollowStart" xml:space="preserve">
+    <value>Кінець має бути пізніше за початок.</value>
+  </data>
+  <data name="TaskContinuesLabel" xml:space="preserve">
+    <value>триває</value>
+  </data>
+  <data name="TaskSpanAccessibility" xml:space="preserve">
+    <value>{0}, триває з {1} до {2}</value>
+  </data>
   <data name="RecurringTaskAccessibility" xml:space="preserve">
     <value>Повторювана задача</value>
   </data>
