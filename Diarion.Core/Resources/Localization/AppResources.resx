@@ -673,6 +673,21 @@
   <data name="RecurrenceDaysRequired" xml:space="preserve">
     <value>Pick at least one day.</value>
   </data>
+  <data name="TaskDurationLabel" xml:space="preserve">
+    <value>Lasts a while</value>
+  </data>
+  <data name="TaskEndTimeLabel" xml:space="preserve">
+    <value>Until</value>
+  </data>
+  <data name="EndTimeMustFollowStart" xml:space="preserve">
+    <value>The end has to come after the start.</value>
+  </data>
+  <data name="TaskContinuesLabel" xml:space="preserve">
+    <value>ongoing</value>
+  </data>
+  <data name="TaskSpanAccessibility" xml:space="preserve">
+    <value>{0}, runs from {1} to {2}</value>
+  </data>
   <data name="RecurringTaskAccessibility" xml:space="preserve">
     <value>Repeating task</value>
   </data>
@@ -1899,5 +1914,26 @@
   </data>
   <data name="QuickMenuAiChat" xml:space="preserve">
     <value>Ask diary</value>
+  </data>
+  <data name="SnapshotPreviewTitle" xml:space="preserve">
+    <value>What would be sent</value>
+  </data>
+  <data name="SnapshotPreviewSubtitle" xml:space="preserve">
+    <value>This is the request itself, word for word. Nothing has been sent.</value>
+  </data>
+  <data name="SnapshotPreviewSizeFormat" xml:space="preserve">
+    <value>{0} days · {1:N0} characters</value>
+  </data>
+  <data name="SnapshotPreviewIncludeIntimate" xml:space="preserve">
+    <value>Include intimate life notes</value>
+  </data>
+  <data name="SnapshotPreviewIncludeCycle" xml:space="preserve">
+    <value>Include the cycle log</value>
+  </data>
+  <data name="SnapshotPreviewNothingWritten" xml:space="preserve">
+    <value>Nothing was written in this period, so a report would have only the numbers to go on.</value>
+  </data>
+  <data name="SnapshotPreviewRefresh" xml:space="preserve">
+    <value>Rebuild</value>
   </data>
 </root>

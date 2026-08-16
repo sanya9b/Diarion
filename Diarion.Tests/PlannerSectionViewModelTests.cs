@@ -23,6 +23,14 @@ public class PlannerSectionViewModelTests
         TargetTime = hour == null ? TimeSpan.Zero : new TimeSpan(hour.Value, minute, 0)
     };
 
+    /// <summary>A task holding a stretch of the day: 13:00 to 16:00.</summary>
+    private static TodoItem Block(string text, int fromHour, int toHour, int toMinute = 0)
+    {
+        var todo = Task(text, fromHour);
+        todo.EndTime = new TimeSpan(toHour, toMinute, 0);
+        return todo;
+    }
+
     /// <summary>A live daily rule for every series any of these rows belongs to.</summary>
     private static List<RecurringTask> LiveRulesFor(IEnumerable<TodoItem> todos)
         => todos.Where(t => t.RecurringTaskId != null)
@@ -313,6 +321,168 @@ public class PlannerSectionViewModelTests
         viewModel.HourSlots.Should().OnlyContain(s => s.IsEmpty);
         viewModel.UntimedTodos.Should().BeEmpty();
         viewModel.HasUntimedTodos.Should().BeFalse();
+    }
+
+    // --- tasks that hold a stretch of the day ---
+
+    [Fact]
+    public async Task ABlock_StartsInOneRowAndRunsThroughTheRest()
+    {
+        var viewModel = NewViewModel(Block("Зустріч", 13, 16));
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        // The row it can be ticked off in exists exactly once.
+        viewModel.HourSlots.SelectMany(s => s.Items).Should().ContainSingle();
+        viewModel.HourSlots.Single(s => s.Hour == 13).Items.Should().ContainSingle();
+
+        viewModel.HourSlots.Where(s => s.Continuations.Any()).Select(s => s.Hour)
+            .Should().Equal(14, 15);
+    }
+
+    [Fact]
+    public async Task ABlockEndingOnTheHourDoesNotOccupyThatHour()
+    {
+        // "до 16:00" means it is over before the 16th hour begins. Reading it the other way books an hour
+        // the user is free in, every time.
+        var viewModel = NewViewModel(Block("Зустріч", 13, 16));
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        viewModel.HourSlots.Single(s => s.Hour == 16).Continuations.Should().BeEmpty();
+        viewModel.HourSlots.Single(s => s.Hour == 16).IsEmpty.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ABlockEndingPastTheHourDoesOccupyThatHour()
+    {
+        // The other half of the same rule: those thirty minutes are time the user is genuinely busy.
+        var viewModel = NewViewModel(Block("Зустріч", 13, 16, 30));
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        viewModel.HourSlots.Where(s => s.Continuations.Any()).Select(s => s.Hour)
+            .Should().Equal(14, 15, 16);
+    }
+
+    [Fact]
+    public async Task ATaskInsideABlockStillShowsInItsOwnHour()
+    {
+        // The whole point of the feature as asked for: booking 13:00–16:00 must not swallow the 15:00 call.
+        var viewModel = NewViewModel(Block("Зустріч", 13, 16), Task("Дзвінок", 15));
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        var slot = viewModel.HourSlots.Single(s => s.Hour == 15);
+        slot.Continuations.Single().TaskDescription.Should().Be("Зустріч");
+        slot.Items.Single().TaskDescription.Should().Be("Дзвінок");
+    }
+
+    [Fact]
+    public async Task AnHourHoldingOnlyAContinuationIsNotEmpty()
+    {
+        // Otherwise the dashed "add here" row draws straight through a block that is already running.
+        var viewModel = NewViewModel(Block("Зустріч", 13, 16));
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        viewModel.HourSlots.Single(s => s.Hour == 14).Items.Should().BeEmpty();
+        viewModel.HourSlots.Single(s => s.Hour == 14).IsEmpty.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ABlockShorterThanAnHourRunsThroughNothing()
+    {
+        var viewModel = NewViewModel(Block("Дзвінок", 13, 13, 30));
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        viewModel.HourSlots.Single(s => s.Hour == 13).Items.Should().ContainSingle();
+        viewModel.HourSlots.Should().OnlyContain(s => s.Continuations.Count == 0);
+    }
+
+    [Fact]
+    public async Task ABlockRunningInFromBeforeDawnStartsAtTheEdgeRow()
+    {
+        // Same rule as a point task outside the window: clamp rather than hide.
+        var viewModel = NewViewModel(Block("Зміна", 3, 8));
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        viewModel.HourSlots.Single(s => s.Hour == 5).Items.Should().ContainSingle();
+        viewModel.HourSlots.Where(s => s.Continuations.Any()).Select(s => s.Hour)
+            .Should().Equal(6, 7);
+    }
+
+    [Fact]
+    public async Task ABlockRunningPastMidnightStopsAtTheLastRow()
+    {
+        var viewModel = NewViewModel(Block("Зміна", 22, 23, 59));
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        viewModel.HourSlots.Where(s => s.Continuations.Any()).Select(s => s.Hour).Should().Equal(23);
+    }
+
+    [Fact]
+    public async Task ABackwardsRangeIsDrawnAsAPlainTask()
+    {
+        // Nothing in the app should write one — the form refuses it — but a row that somehow carries one
+        // has to degrade to the task it still is, not vanish or throw.
+        var backwards = Task("Зустріч", 16);
+        backwards.EndTime = new TimeSpan(13, 0, 0);
+        var viewModel = NewViewModel(backwards);
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        viewModel.HourSlots.Single(s => s.Hour == 16).Items.Should().ContainSingle();
+        viewModel.HourSlots.Should().OnlyContain(s => s.Continuations.Count == 0);
+    }
+
+    [Fact]
+    public async Task TwoOverlappingBlocksBothRunThroughTheHourTheyShare()
+    {
+        var viewModel = NewViewModel(Block("Зустріч", 13, 16), Block("Ремонт", 14, 18));
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        viewModel.HourSlots.Single(s => s.Hour == 15).Continuations
+            .Select(c => c.TaskDescription).Should().BeEquivalentTo(new[] { "Зустріч", "Ремонт" });
+    }
+
+    [Fact]
+    public async Task ClearTodos_EmptiesTheContinuationsToo()
+    {
+        var viewModel = NewViewModel(Block("Зустріч", 13, 16));
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        viewModel.ClearTodos();
+
+        viewModel.HourSlots.Should().OnlyContain(s => s.Continuations.Count == 0);
+        viewModel.HourSlots.Should().OnlyContain(s => s.IsEmpty);
+    }
+
+    [Fact]
+    public async Task DeletingABlockTakesItsContinuationsWithIt()
+    {
+        var (viewModel, _, _) = NewViewModelWithDialog(Block("Зустріч", 13, 16));
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        await viewModel.DeleteTodoCommand.ExecuteAsync(viewModel.Todos.Single());
+
+        viewModel.HourSlots.Should().OnlyContain(s => s.Continuations.Count == 0);
+        viewModel.HourSlots.Should().OnlyContain(s => s.IsEmpty);
+    }
+
+    [Fact]
+    public async Task ABlockPrintsBothEndsOfItsRange()
+    {
+        var viewModel = NewViewModel(Block("Зустріч", 13, 16), Task("Дзвінок", 9, 30));
+
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        viewModel.Todos.Single(t => t.TaskDescription == "Зустріч").TimeDisplay.Should().Be("13:00–16:00");
+        viewModel.Todos.Single(t => t.TaskDescription == "Дзвінок").TimeDisplay.Should().Be("09:30");
     }
 
     [Fact]

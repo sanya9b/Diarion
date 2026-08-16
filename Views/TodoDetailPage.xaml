@@ -127,6 +127,29 @@
                             </Grid>
                         </Grid>
 
+                        <!-- A task that holds a stretch of the day rather than a moment in it. Nested under
+                             the time rather than beside it: a block needs a point to start from, so this
+                             disappears with the hour it depends on. -->
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" IsVisible="{Binding HasTime}">
+                            <CheckBox IsChecked="{Binding HasEndTime}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskDurationLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Grid>
+                        <!-- Same invisible-picker-over-a-drawn-label idiom as the start time above, and for
+                             the same Windows reason. -->
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" IsVisible="{Binding HasEndTime}">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.TaskEndTimeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Grid Grid.Column="1" HorizontalOptions="Start" VerticalOptions="Center">
+                                <Label Text="{Binding EndTimeDisplay}" FontSize="15" FontAttributes="Bold"
+                                       VerticalOptions="Center" HorizontalOptions="Start" InputTransparent="True"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <TimePicker Time="{Binding EndTime}" Format="HH:mm" Opacity="0"
+                                            WidthRequest="86" HeightRequest="30"
+                                            BackgroundColor="Transparent" />
+                            </Grid>
+                        </Grid>
+                        <Label Text="{Binding TimeRangeError}" IsVisible="{Binding HasTimeRangeError}"
+                               FontSize="12" TextColor="{DynamicResource Theme_Coral}" />
+
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <CheckBox IsChecked="{Binding IsRecurring}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskRepeatLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />

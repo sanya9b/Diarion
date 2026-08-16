@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             x:Class="Diarion.Views.SnapshotPreviewPage"
+             x:DataType="viewModels:SnapshotPreviewViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{localization:Translate Key=SnapshotPreviewTitle}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCloseTapped" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <Label Text="{localization:Translate Key=SnapshotPreviewTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="{Binding PeriodText}" FontSize="12" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator Grid.Column="2"
+                               WidthRequest="28"
+                               HeightRequest="28"
+                               IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{DynamicResource Theme_Berry}"
+                               VerticalOptions="Center" />
+        </Grid>
+
+        <VerticalStackLayout Grid.Row="1" Padding="24,6,24,12" Spacing="10">
+            <Label Text="{localization:Translate Key=SnapshotPreviewSubtitle}"
+                   FontSize="13"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+            <Label Text="{Binding SizeText}"
+                   FontSize="11"
+                   FontAttributes="Bold"
+                   CharacterSpacing="1.5"
+                   TextTransform="Uppercase"
+                   TextColor="{DynamicResource Theme_Berry}" />
+
+            <Label Text="{localization:Translate Key=SnapshotPreviewNothingWritten}"
+                   FontSize="13"
+                   IsVisible="{Binding IsWordless}"
+                   TextColor="{DynamicResource Theme_Coral}" />
+
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <Label Grid.Column="0"
+                       Text="{localization:Translate Key=SnapshotPreviewIncludeIntimate}"
+                       FontSize="14"
+                       VerticalOptions="Center"
+                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Switch Grid.Column="1"
+                        IsToggled="{Binding IncludeIntimateLife}"
+                        OnColor="{DynamicResource Theme_Berry}"
+                        VerticalOptions="Center" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" IsVisible="{Binding IsCycleAvailable}">
+                <Label Grid.Column="0"
+                       Text="{localization:Translate Key=SnapshotPreviewIncludeCycle}"
+                       FontSize="14"
+                       VerticalOptions="Center"
+                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Switch Grid.Column="1"
+                        IsToggled="{Binding IncludeCycle}"
+                        OnColor="{DynamicResource Theme_Berry}"
+                        VerticalOptions="Center" />
+            </Grid>
+        </VerticalStackLayout>
+
+        <Border Grid.Row="2"
+                Margin="24,0,24,24"
+                StrokeThickness="1"
+                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                StrokeShape="RoundRectangle 16">
+            <ScrollView Padding="16,14" Orientation="Both" VerticalScrollBarVisibility="Never">
+                <!-- The payload as it will be sent, not a rendering of it: the moment this became a
+                     friendly summary it would be a second description free to drift from the first. -->
+                <Label Text="{Binding Json}"
+                       FontFamily="Consolas"
+                       FontSize="11"
+                       LineBreakMode="NoWrap"
+                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </ScrollView>
+        </Border>
+    </Grid>
+</ContentPage>

@@ -24,6 +24,9 @@ public sealed class ParsedTaskInput
 
     public TimeSpan? TimeOfDay { get; init; }
 
+    /// <summary>Where a spoken stretch of the day ends — "з 13:00 до 16:00". Never set without <see cref="TimeOfDay"/>.</summary>
+    public TimeSpan? EndTimeOfDay { get; init; }
+
     /// <summary>The phrases consumed, in the order they appeared, for showing the user what was read.</summary>
     public IReadOnlyList<string> Matched { get; init; } = Array.Empty<string>();
 
@@ -102,7 +105,10 @@ public static class TaskInputParser
         var weekday = TryBareWeekday(work, spans, today);
         if (recurrence == null && date == null) date = weekday;
 
-        var time = TryTime(work, spans);
+        // The range first: it owns both of its clock times, and the single-time patterns below would
+        // otherwise take the "13:00" out of "з 13:00 до 16:00" and leave "з до 16:00" in the task's name.
+        var (time, endTime) = TryTimeRange(work, spans, out var rangeRefused);
+        if (time == null && !rangeRefused) time = TryTime(work, spans);
 
         return new ParsedTaskInput
         {
@@ -111,6 +117,7 @@ public static class TaskInputParser
             Recurrence = recurrence,
             Date = recurrence == null ? date : null,
             TimeOfDay = time,
+            EndTimeOfDay = time == null ? null : endTime,
             Matched = spans.OrderBy(s => s.Start)
                            .Select(s => original.Substring(s.Start, s.Length).Trim())
                            .Where(s => s.Length > 0)
@@ -379,6 +386,93 @@ public static class TaskInputParser
         if (ahead == 0) ahead = 7;
         return today.Date.AddDays(ahead);
     }
+
+    /// <summary>
+    /// A stretch of the day said out loud: "з 13:00 до 16:00", "13:00-16:00", "from 1pm to 4pm".
+    ///
+    /// A dash is only read as a range when both sides carry minutes or both carry am/pm, because a bare
+    /// dash between two numbers is far more often not a time at all — "купити 2-3 яблука", "5-10 хвилин".
+    /// The word "до" is evidence in its own right, so it may join bare hours: "з 13 до 16".
+    /// </summary>
+    /// <param name="refused">
+    /// True when the text is plainly a range but not one that can be drawn — "з 16:00 до 13:00". The caller
+    /// stops there instead of falling through to the single-time patterns, which would take the "16:00" and
+    /// leave "до 13:00" sitting in the task's name. A phrase read halfway is harder to spot, and to undo,
+    /// than one left alone.
+    /// </param>
+    private static (TimeSpan? Start, TimeSpan? End) TryTimeRange(StringBuilder work, List<(int, int)> spans, out bool refused)
+    {
+        refused = false;
+        var lead = @"(?:\b(?:з|від|from)\s+)?";
+
+        // Both sides with minutes; the separator may be a dash, because the colons already say these are
+        // clock times.
+        var clock = new Regex(lead + @"\b(\d{1,2}):(\d{2})\s*(?:[-–—]|\b(?:до|to)\b)\s*(\d{1,2}):(\d{2})\b");
+        if (TakeRange(work, spans, clock,
+                m => SafeTime(Int(m, 1), Int(m, 2)),
+                m => SafeTime(Int(m, 3), Int(m, 4)), ref refused, out var range))
+        {
+            return range;
+        }
+
+        var amPm = new Regex(@"(?:\bfrom\s+)?\b(\d{1,2})\s?(am|pm)\s*(?:[-–—]|\bto\b)\s*(\d{1,2})\s?(am|pm)\b");
+        if (TakeRange(work, spans, amPm,
+                m => SafeTime(Hour12(Int(m, 1), m.Groups[2].Value), 0),
+                m => SafeTime(Hour12(Int(m, 3), m.Groups[4].Value), 0), ref refused, out range))
+        {
+            return range;
+        }
+
+        // Bare hours, and therefore only when the word "до" or "to" joins them. The lookahead is the same
+        // guard the bare single hour carries: "від 5 до 10 хвилин" is a quantity, not an afternoon.
+        var spelled = new Regex(lead + @"\b(\d{1,2})(?::(\d{2}))?\s*\b(?:до|to)\b\s*(\d{1,2})(?::(\d{2}))?\b(?!\s*(?:хв|хвилин|min|стор|раз|грн|км|кг|%))");
+        if (TakeRange(work, spans, spelled,
+                m => SafeTime(Int(m, 1), m.Groups[2].Success ? Int(m, 2) : 0),
+                m => SafeTime(Int(m, 3), m.Groups[4].Success ? Int(m, 4) : 0), ref refused, out range))
+        {
+            return range;
+        }
+
+        return (null, null);
+    }
+
+    /// <summary>
+    /// Matches, checks that the two ends make a real stretch of time, and only then consumes the phrase.
+    /// A range read backwards — "з 16:00 до 13:00" — is left in the text rather than half-applied: the
+    /// task keeps the words the user typed, which is more use to them than a block covering no hours.
+    /// </summary>
+    private static bool TakeRange(
+        StringBuilder work,
+        List<(int, int)> spans,
+        Regex pattern,
+        Func<Match, TimeSpan?> readStart,
+        Func<Match, TimeSpan?> readEnd,
+        ref bool refused,
+        out (TimeSpan? Start, TimeSpan? End) range)
+    {
+        range = (null, null);
+
+        var match = pattern.Match(work.ToString());
+        if (!match.Success) return false;
+
+        var start = readStart(match);
+        var end = readEnd(match);
+        if (start == null || end == null || end <= start)
+        {
+            refused = true;
+            return false;
+        }
+
+        Consume(work, spans, match.Index, match.Length);
+        range = (start, end);
+        return true;
+    }
+
+    private static int Int(Match m, int group)
+        => int.Parse(m.Groups[group].Value, CultureInfo.InvariantCulture);
+
+    private static int Hour12(int hour, string suffix)
+        => hour % 12 + (suffix == "pm" ? 12 : 0);
 
     private static TimeSpan? TryTime(StringBuilder work, List<(int, int)> spans)
     {

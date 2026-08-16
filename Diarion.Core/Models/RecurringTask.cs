@@ -28,6 +28,8 @@ public class RecurringTask
     public TodoPriority Priority { get; set; } = TodoPriority.Medium;
     public bool HasTime { get; set; }
     public TimeSpan TargetTime { get; set; }
+    /// <summary>The block's end, exclusive, or null for a point task. See <see cref="TodoItem.EndTime"/>.</summary>
+    public TimeSpan? EndTime { get; set; }
     public bool HasReminder { get; set; }
 
     /// <summary>Which days the task lands on. Its <c>Anchor</c> starts the series and <c>EndDate</c> ends it.</summary>

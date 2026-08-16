@@ -61,6 +61,12 @@ public partial class TodoDetailViewModel : BaseViewModel
     [ObservableProperty]
     private bool _hasTime;
 
+    /// <summary>Dropping the time drops the range with it — a stretch of the day needs a point to start from.</summary>
+    partial void OnHasTimeChanged(bool value)
+    {
+        if (!value) HasEndTime = false;
+    }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TargetTimeDisplay))]
     private TimeSpan _targetTime;
@@ -71,6 +77,51 @@ public partial class TodoDetailViewModel : BaseViewModel
     /// the leading zero. Drawing the text ourselves is the only way the three platforms agree.
     /// </summary>
     public string TargetTimeDisplay => TargetTime.ToString(@"hh\:mm");
+
+    /// <summary>Whether the task occupies a stretch of the day — 13:00 to 16:00 — rather than a moment.</summary>
+    [ObservableProperty]
+    private bool _hasEndTime;
+
+    partial void OnHasEndTimeChanged(bool value)
+    {
+        if (value) PushEndPastStart();
+        else TimeRangeError = string.Empty;
+    }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(EndTimeDisplay))]
+    private TimeSpan _endTime;
+
+    public string EndTimeDisplay => EndTime.ToString(@"hh\:mm");
+
+    partial void OnTargetTimeChanged(TimeSpan value) => PushEndPastStart();
+
+    /// <summary>
+    /// Keeps the end ahead of the start by moving it, rather than by refusing the start the user just
+    /// picked. Dragging the start of a 13:00–14:00 block to 15:00 is a request to move the block, and
+    /// answering it with a validation error puts the form in a state the user has to argue their way out
+    /// of. An hour is the default length because it is the one a picker lands on with the least work.
+    /// </summary>
+    private void PushEndPastStart()
+    {
+        if (!HasEndTime) return;
+        if (EndTime > TargetTime) return;
+
+        // Capped at the end of the day: the grid is one day wide and a block cannot run past midnight.
+        var pushed = TargetTime.Add(TimeSpan.FromHours(1));
+        EndTime = pushed < TimeSpan.FromDays(1) ? pushed : new TimeSpan(23, 59, 0);
+        TimeRangeError = string.Empty;
+    }
+
+    /// <summary>Set when the picked end cannot follow the start at all — 23:30 to 23:30, say.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasTimeRangeError))]
+    private string _timeRangeError = string.Empty;
+
+    public bool HasTimeRangeError => !string.IsNullOrWhiteSpace(TimeRangeError);
+
+    /// <summary>The range as it should be stored, or null when the task is a point in the day.</summary>
+    private TimeSpan? EndTimeToSave() => HasTime && HasEndTime ? EndTime : null;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(RecurrenceSummary))]
@@ -193,6 +244,13 @@ public partial class TodoDetailViewModel : BaseViewModel
             // Naming an hour out loud is asking to be told about it. Typing one into the picker is not,
             // which is why the reminder follows the parser and not the TargetTime property.
             HasReminder = true;
+
+            // After the start, so the nudge that keeps the end ahead of it cannot overwrite what was read.
+            if (parsed.EndTimeOfDay != null)
+            {
+                HasEndTime = true;
+                EndTime = parsed.EndTimeOfDay.Value;
+            }
         }
 
         ParseHint = string.Format(
@@ -237,6 +295,8 @@ public partial class TodoDetailViewModel : BaseViewModel
         DayOfMonth = DayOfMonth,
         HasTime = HasTime,
         TargetTime = TargetTime,
+        HasEndTime = HasEndTime,
+        EndTime = EndTime,
         HasReminder = HasReminder,
         TargetDate = _targetDate
     };
@@ -250,6 +310,8 @@ public partial class TodoDetailViewModel : BaseViewModel
         public int DayOfMonth { get; init; }
         public bool HasTime { get; init; }
         public TimeSpan TargetTime { get; init; }
+        public bool HasEndTime { get; init; }
+        public TimeSpan EndTime { get; init; }
         public bool HasReminder { get; init; }
         public DateTime TargetDate { get; init; }
 
@@ -262,6 +324,11 @@ public partial class TodoDetailViewModel : BaseViewModel
             foreach (var day in vm.Weekdays) day.IsSelected = SelectedDays.Contains(day.DayOfWeek);
             vm.HasTime = HasTime;
             vm.TargetTime = TargetTime;
+            // After the start, and the end last of all: switching the range on nudges the end past the
+            // start, so restoring it first would only have it overwritten by that nudge.
+            vm.HasEndTime = HasEndTime;
+            vm.EndTime = EndTime;
+            vm.TimeRangeError = string.Empty;
             vm.HasReminder = HasReminder;
             vm._targetDate = TargetDate;
             vm.UpdateTargetDateDisplay();
@@ -344,6 +411,8 @@ public partial class TodoDetailViewModel : BaseViewModel
             IsCompleted = _currentTodo.IsCompleted;
             HasTime = _currentTodo.HasTime;
             TargetTime = _currentTodo.TargetTime;
+            HasEndTime = _currentTodo.EndTime != null;
+            if (_currentTodo.EndTime != null) EndTime = _currentTodo.EndTime.Value;
             // Through the rule, not the id. The id stays on the row after the series ends, so reading the
             // checkbox off it made an ended series come back ticked — which is what switching the repeat
             // off looked like never having worked.
@@ -439,6 +508,15 @@ public partial class TodoDetailViewModel : BaseViewModel
         }
         RecurrenceError = string.Empty;
 
+        // A range that ends where it starts, or before it, covers no hours at all. Saved, it would read as
+        // a block on the form and draw as a plain point task on the grid.
+        if (HasTime && HasEndTime && EndTime <= TargetTime)
+        {
+            TimeRangeError = Diarion.Resources.Localization.AppResources.EndTimeMustFollowStart;
+            return;
+        }
+        TimeRangeError = string.Empty;
+
         try
         {
             IsBusy = true;
@@ -474,6 +552,7 @@ public partial class TodoDetailViewModel : BaseViewModel
             _currentTodo.TargetDate = _targetDate;
             _currentTodo.HasTime = HasTime;
             _currentTodo.TargetTime = HasTime ? TargetTime : TimeSpan.Zero;
+            _currentTodo.EndTime = EndTimeToSave();
             _currentTodo.TaskDescription = DescriptionToSave();
             _currentTodo.IsCompleted = IsCompleted;
             _currentTodo.Priority = SelectedPriority;

@@ -332,6 +332,7 @@ public class TodoService : ITodoService
                     Priority = todo.Priority,
                     HasTime = todo.HasTime,
                     TargetTime = todo.TargetTime,
+                    EndTime = todo.EndTime,
                     HasReminder = todo.HasReminder,
                     Recurrence = recurrence
                 };
@@ -420,6 +421,7 @@ public class TodoService : ITodoService
         if (existing.Priority != todo.Priority) { rule.Priority = todo.Priority; changed = true; }
         if (existing.HasTime != todo.HasTime) { rule.HasTime = todo.HasTime; changed = true; }
         if (existing.TargetTime != todo.TargetTime) { rule.TargetTime = todo.TargetTime; changed = true; }
+        if (existing.EndTime != todo.EndTime) { rule.EndTime = todo.EndTime; changed = true; }
         if (existing.HasReminder != todo.HasReminder) { rule.HasReminder = todo.HasReminder; changed = true; }
 
         if (!changed) return;

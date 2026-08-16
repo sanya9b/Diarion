@@ -206,6 +206,107 @@ public class TaskInputParserTests
         result.TimeOfDay.Should().BeNull();
     }
 
+    // --- a stretch of the day ---
+
+    [Theory]
+    [InlineData("з 13:00 до 16:00")]
+    [InlineData("від 13:00 до 16:00")]
+    [InlineData("13:00-16:00")]
+    [InlineData("13:00 – 16:00")]
+    [InlineData("з 13 до 16")]
+    [InlineData("from 13:00 to 16:00")]
+    public void ARangeInItsSeveralForms(string fragment)
+    {
+        var result = Parse($"{fragment} зустріч");
+
+        result.TimeOfDay.Should().Be(new TimeSpan(13, 0, 0));
+        result.EndTimeOfDay.Should().Be(new TimeSpan(16, 0, 0));
+        result.Description.Should().Be("зустріч");
+    }
+
+    [Fact]
+    public void ARangeInTwelveHourClock()
+    {
+        var result = Parse("from 1pm to 4pm standup");
+
+        result.TimeOfDay.Should().Be(new TimeSpan(13, 0, 0));
+        result.EndTimeOfDay.Should().Be(new TimeSpan(16, 0, 0));
+        result.Description.Should().Be("standup");
+    }
+
+    [Fact]
+    public void ARangeTakesBothOfItsClockTimesOutOfTheTitle()
+    {
+        // The reason the range runs before the single-time patterns: one of those would take the "13:00"
+        // and leave "з до 16:00" as the name of the task.
+        var result = Parse("з 13:00 до 16:00 зустріч з клієнтом");
+
+        result.Description.Should().Be("зустріч з клієнтом");
+        result.Matched.Should().Contain("з 13:00 до 16:00");
+    }
+
+    [Fact]
+    public void APlainTimeStillHasNoEnd()
+    {
+        var result = Parse("о 15:00 дзвінок");
+
+        result.TimeOfDay.Should().Be(new TimeSpan(15, 0, 0));
+        result.EndTimeOfDay.Should().BeNull();
+    }
+
+    [Fact]
+    public void ARangeReadBackwardsIsLeftAloneEntirely()
+    {
+        // Not half-applied. Taking the 16:00 and leaving "до 13:00" in the title is a worse answer than
+        // reading nothing: the user sees a time they did not intend and a title they have to repair.
+        var result = Parse("з 16:00 до 13:00 зустріч");
+
+        result.TimeOfDay.Should().BeNull();
+        result.EndTimeOfDay.Should().BeNull();
+        result.Description.Should().Be("з 16:00 до 13:00 зустріч");
+    }
+
+    [Fact]
+    public void ARangeEndingWhereItStartsIsNotARange()
+    {
+        var result = Parse("з 13:00 до 13:00 зустріч");
+
+        result.FoundAnything.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("купити 2-3 яблука")]
+    [InlineData("почитати від 5 до 10 сторінок")]
+    [InlineData("розім'ятися 5-10 хвилин")]
+    public void CountingIsNotAStretchOfTheDay(string text)
+    {
+        // A dash between bare numbers is nearly always a quantity, and "до" between them can be one too.
+        var result = Parse(text);
+
+        result.TimeOfDay.Should().BeNull();
+        result.EndTimeOfDay.Should().BeNull();
+        result.Description.Should().Be(text);
+    }
+
+    [Fact]
+    public void ARangeSurvivesAlongsideARepeat()
+    {
+        var result = Parse("щовівторка з 13:00 до 16:00 курси");
+
+        result.Recurrence!.DaysOfWeek.Should().Equal((int)DayOfWeek.Tuesday);
+        result.TimeOfDay.Should().Be(new TimeSpan(13, 0, 0));
+        result.EndTimeOfDay.Should().Be(new TimeSpan(16, 0, 0));
+        result.Description.Should().Be("курси");
+    }
+
+    [Fact]
+    public void AnImpossibleEndIsNotARange()
+    {
+        var result = Parse("зустріч 13:00-45:00");
+
+        result.EndTimeOfDay.Should().BeNull();
+    }
+
     // --- English ---
 
     [Fact]

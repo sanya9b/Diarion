@@ -93,6 +93,11 @@ namespace Diarion.Resources.Localization {
         public static string TaskRepeatLabel => ResourceManager.GetString("TaskRepeatLabel", resourceCulture) ?? string.Empty;
         public static string RecurrenceEndDateLabel => ResourceManager.GetString("RecurrenceEndDateLabel", resourceCulture) ?? string.Empty;
         public static string RecurrenceDaysRequired => ResourceManager.GetString("RecurrenceDaysRequired", resourceCulture) ?? string.Empty;
+        public static string TaskDurationLabel => ResourceManager.GetString("TaskDurationLabel", resourceCulture) ?? string.Empty;
+        public static string TaskEndTimeLabel => ResourceManager.GetString("TaskEndTimeLabel", resourceCulture) ?? string.Empty;
+        public static string EndTimeMustFollowStart => ResourceManager.GetString("EndTimeMustFollowStart", resourceCulture) ?? string.Empty;
+        public static string TaskContinuesLabel => ResourceManager.GetString("TaskContinuesLabel", resourceCulture) ?? string.Empty;
+        public static string TaskSpanAccessibility => ResourceManager.GetString("TaskSpanAccessibility", resourceCulture) ?? string.Empty;
         public static string RecurringTaskAccessibility => ResourceManager.GetString("RecurringTaskAccessibility", resourceCulture) ?? string.Empty;
         public static string ParseHintFormat => ResourceManager.GetString("ParseHintFormat", resourceCulture) ?? string.Empty;
         public static string ParseUndoLabel => ResourceManager.GetString("ParseUndoLabel", resourceCulture) ?? string.Empty;
@@ -2268,6 +2273,34 @@ public static string ClearAllDataSuccessMsg {
 
         public static string QuickMenuAiChat {
             get { return ResourceManager.GetString("QuickMenuAiChat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewTitle {
+            get { return ResourceManager.GetString("SnapshotPreviewTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewSubtitle {
+            get { return ResourceManager.GetString("SnapshotPreviewSubtitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewSizeFormat {
+            get { return ResourceManager.GetString("SnapshotPreviewSizeFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewIncludeIntimate {
+            get { return ResourceManager.GetString("SnapshotPreviewIncludeIntimate", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewIncludeCycle {
+            get { return ResourceManager.GetString("SnapshotPreviewIncludeCycle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewNothingWritten {
+            get { return ResourceManager.GetString("SnapshotPreviewNothingWritten", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SnapshotPreviewRefresh {
+            get { return ResourceManager.GetString("SnapshotPreviewRefresh", resourceCulture) ?? string.Empty; }
         }
     }
 }
