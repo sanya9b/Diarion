@@ -47,12 +47,19 @@ public partial class SearchViewModel : BaseViewModel
     private bool _showLexicalOnlyNotice;
 
     /// <summary>
-    /// Whether to talk about meaning-based search at all. False while the on-device models are
-    /// retired, and then both notices go: one advises phrasing for an encoder that will not read
-    /// it, the other points at a settings tab that no longer exists. Search still works — it is
-    /// keyword search, and keyword search does not need an apology on every query.
+    /// Whether to talk about meaning-based search at all. The encoder is what reads a phrase, so this
+    /// asks about the encoder and not about the generative model, which is retired. When it is false
+    /// both notices go: one advises phrasing for a model that will not read it, the other points at a
+    /// settings tab that would not be there either. Search still works — it is keyword search, and
+    /// keyword search does not need an apology on every query.
+    ///
+    /// <remarks>
+    /// This governs what the page says, not whether the page is reachable: the screen itself is
+    /// retired at <see cref="MenuConfigurationService.SearchOffered"/>, since the quick-menu tile is
+    /// the only way in. Kept honest so the screen tells the truth on the day the tile comes back.
+    /// </remarks>
     /// </summary>
-    public bool IsSemanticOffered => OnDeviceAi.IsOffered;
+    public bool IsSemanticOffered => OnDeviceAi.EmbeddingsOffered;
 
     public ObservableCollection<SearchResultItem> Results { get; } = [];
 

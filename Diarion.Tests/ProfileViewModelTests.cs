@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Diarion.Models;
+using Diarion.Models.Ai;
 using Diarion.Services;
+using Diarion.Services.Ai;
 using Diarion.ViewModels;
 using FluentAssertions;
 using Moq;
@@ -48,39 +50,40 @@ public class ProfileViewModelTests
     }
 
     [Fact]
-    public void AiTab_IsHiddenWhileTheLocalModelsAreRetired()
+    public void AiTab_IsThereForAsLongAsAnythingLocalIsOffered()
     {
         var vm = Create(new Mock<IProfileService>(), new Mock<INotificationService>());
 
-        vm.IsAiTabAvailable.Should().BeFalse();
+        vm.IsAiTabAvailable.Should().Be(OnDeviceAi.IsOffered);
+        vm.IsAiTabAvailable.Should().BeTrue("the encoder still feeds themes and mood factors");
     }
 
     [Fact]
-    public void SelectingTheAiTabByIndex_DoesNotShowIt()
+    public void SelectingTheAiTab_OpensIt()
     {
-        // The chip is hidden, but SelectTab takes a string and nothing stops a stale binding or a
-        // future fifth tab from sending "3". The section must stay closed on the strength of the
-        // flag alone.
+        // SelectTab takes a string, and IsAiTab weighs the index against the flag rather than
+        // trusting it — so this is also the test that the flag is consulted at all.
         var vm = Create(new Mock<IProfileService>(), new Mock<INotificationService>());
 
         vm.SelectTabCommand.Execute("3");
 
-        vm.IsAiTab.Should().BeFalse();
-        vm.IsProfileTab.Should().BeFalse("the tap was not silently redirected — it simply shows nothing");
+        vm.IsAiTab.Should().BeTrue();
+        vm.IsProfileTab.Should().BeFalse();
     }
 
     [Fact]
-    public async Task LoadProfile_DoesNotWakeTheAiSection_WhileTheTabIsHidden()
+    public async Task LoadProfile_ListsTheEncoderAndNotTheGenerativeModel()
     {
-        // Load() stats the model directory and subscribes each row to download progress. None of
-        // that leads anywhere now, and it runs on every visit to settings.
+        // Settings must not offer a 981 MB download for a model nothing is allowed to call. The row
+        // is filtered where the list is built, so this is the test that the filter is wired at all.
         var profileMock = new Mock<IProfileService>();
         profileMock.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile());
 
         var vm = Create(profileMock, new Mock<INotificationService>());
         await vm.LoadProfileAsync();
 
-        vm.Ai.Models.Should().BeEmpty();
+        vm.Ai.Models.Should().NotBeEmpty();
+        vm.Ai.Models.Should().OnlyContain(m => m.Descriptor.Kind == AiModelKind.Embedding);
     }
 
     [Fact]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Diarion.Models;
+using Diarion.Models.Ai;
 using Diarion.Services;
 using Diarion.Services.Ai;
 using FluentAssertions;
@@ -103,11 +104,45 @@ public class AiAvailabilityTests
     }
 
     [Fact]
-    public void OnDeviceAi_IsOffered_MatchesTheStackTheAppActuallyShips()
+    public async Task EmbeddingsOnly_AnswersForTheEncoderAndRefusesTheGenerator()
     {
-        // A failure here is the reminder, not the bug: flipping the flag also un-hides the AI
-        // settings tab and the search hints, so the screenshots in the store stop matching.
-        OnDeviceAi.IsOffered.Should().BeFalse("the local models are retired since 2026-08-10");
+        // What the container hands out where the app stands: the encoder is offered, the generative
+        // model is not, and an installed Qwen3 left over from an older build must not talk it round.
+        var availability = new EmbeddingsOnlyAiAvailability(
+            Build(encoderInstalled: true, generatorInstalled: true, aiEnabled: true));
+
+        (await availability.CanEmbedAsync()).Should().BeTrue();
+        (await availability.CanGenerateAsync()).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task EmbeddingsOnly_StillHonoursConsent()
+    {
+        // The wrapper narrows what is offered; it does not grant anything the toggle withholds.
+        var availability = new EmbeddingsOnlyAiAvailability(
+            Build(encoderInstalled: true, generatorInstalled: true, aiEnabled: false));
+
+        (await availability.CanEmbedAsync()).Should().BeFalse();
+    }
+
+    [Fact]
+    public void OnDeviceAi_MatchesTheStackTheAppActuallyShips()
+    {
+        // A failure here is the reminder, not the bug: these flags decide the AI tab, which models
+        // settings offers to download and whether the chat tile exists, so flipping one changes what
+        // the store screenshots show.
+        OnDeviceAi.GenerationOffered.Should().BeFalse("the generative model is retired since 2026-08-10");
+        OnDeviceAi.EmbeddingsOffered.Should().BeTrue("themes, digests and mood factors run on the encoder");
+        OnDeviceAi.IsOffered.Should().BeTrue("something local is still offered, so settings keeps its AI tab");
+    }
+
+    [Fact]
+    public void OnDeviceAi_OffersExactlyTheKindsItsFlagsSay()
+    {
+        // The settings list and the download recommender both ask this, so the two cannot disagree
+        // about which model a user is allowed to fetch.
+        OnDeviceAi.Offers(AiModelKind.Embedding).Should().Be(OnDeviceAi.EmbeddingsOffered);
+        OnDeviceAi.Offers(AiModelKind.Generation).Should().Be(OnDeviceAi.GenerationOffered);
     }
 
     /// <summary>Installed but never invoked: availability reads the flag and nothing else.</summary>

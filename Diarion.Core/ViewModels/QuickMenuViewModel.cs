@@ -57,7 +57,7 @@ public partial class QuickMenuViewModel : ObservableObject
         {
             switch (item.Id)
             {
-                case "Search": item.Command = OpenSearchCommand; break;
+                case MenuConfigurationService.SearchId: item.Command = OpenSearchCommand; break;
                 case "Notes": item.Command = OpenNotesCommand; break;
                 case "Reading": item.Command = OpenReadingTrackerCommand; break;
                 case "Moments": item.Command = OpenHappyMomentsCommand; break;

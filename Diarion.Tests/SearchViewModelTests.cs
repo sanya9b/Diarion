@@ -14,9 +14,10 @@ using Xunit;
 namespace Diarion.Tests;
 
 /// <summary>
-/// What search says about itself now that the on-device encoder is retired. The results are
-/// unaffected — lexical search never depended on a model — but the two lines of copy around the
-/// box did, and both would now be pointing at something that is not there.
+/// What search says about itself. The results never depended on a model — lexical search is lexical
+/// search — but the two lines of copy around the box do, and both have to point at something that is
+/// actually there. The screen itself is unreachable while the quick-menu tile is retired; these tests
+/// keep it honest for the day it comes back.
 /// </summary>
 public class SearchViewModelTests
 {
@@ -32,19 +33,35 @@ public class SearchViewModelTests
     }
 
     [Fact]
-    public void SemanticCopy_IsNotOffered_WhileTheLocalModelsAreRetired()
+    public void SemanticCopy_FollowsTheEncoderAndNotTheGenerativeModel()
     {
         // Drives the phrase hint: "a phrase works better than one word — the model reads sentences".
-        // There is no model reading sentences, and keyword search rewards the opposite advice.
-        Create().IsSemanticOffered.Should().BeFalse();
+        // The model that reads sentences is the encoder, which is still offered; the retired
+        // generative model was never the one answering this question.
+        Create().IsSemanticOffered.Should().Be(OnDeviceAi.EmbeddingsOffered);
+        Create().IsSemanticOffered.Should().BeTrue("the encoder is what makes a phrase worth typing");
     }
 
     [Fact]
-    public async Task LexicalOnlyNotice_StaysHidden_EvenThoughSearchIsLexicalOnly()
+    public async Task LexicalOnlyNotice_AppearsWhenTheEncoderIsNotThere()
     {
-        // The notice reads "turn AI on in settings". The tab it means is gone, so the advice would
-        // send the user looking for a control that does not exist — worse than saying nothing.
+        // The notice reads "turn AI on in settings" — and the tab it means exists again, so the
+        // advice is actionable rather than a hunt for a control that was removed.
         _search.Setup(s => s.IsSemanticAvailableAsync()).ReturnsAsync(false);
+
+        var vm = Create();
+        vm.Query = "спав погано";
+
+        await WaitForSearchAsync(vm);
+
+        vm.ShowLexicalOnlyNotice.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task LexicalOnlyNotice_StaysAwayWhenTheEncoderIsReady()
+    {
+        // Nothing to apologise for: the results are the meaning-based ones the copy promises.
+        _search.Setup(s => s.IsSemanticAvailableAsync()).ReturnsAsync(true);
 
         var vm = Create();
         vm.Query = "спав погано";
@@ -55,8 +72,10 @@ public class SearchViewModelTests
     }
 
     [Fact]
-    public async Task Searching_StillReturnsResults_WithoutAskingAboutTheEncoder()
+    public async Task Searching_ReturnsResults_WhateverTheEncoderAnswers()
     {
+        // The notice is decoration around results that come back either way. A search that failed
+        // because no model was installed would be the worst reading of this screen.
         _search.Setup(s => s.IsSemanticAvailableAsync()).ReturnsAsync(false);
 
         var vm = Create();
@@ -67,8 +86,6 @@ public class SearchViewModelTests
         _search.Verify(
             s => s.SearchAsync("спав погано", SearchScope.All, It.IsAny<int>(), It.IsAny<CancellationToken>()),
             Times.AtLeastOnce);
-        _search.Verify(s => s.IsSemanticAvailableAsync(), Times.Never,
-            "short-circuiting on the flag saves a database read on every keystroke");
     }
 
     /// <summary>

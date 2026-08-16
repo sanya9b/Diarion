@@ -1700,7 +1700,7 @@
     <value>Enable on-device AI</value>
   </data>
   <data name="AiIntro" xml:space="preserve">
-    <value>Search your diary by meaning, see what your months were about, and get weekly summaries. Everything runs on this device.</value>
+    <value>See what your months were about, get weekly summaries, and find out how what you wrote about tracks your mood. Everything runs on this device.</value>
   </data>
   <data name="AiNetworkNotice" xml:space="preserve">
     <value>The only thing Diarion downloads is the model file itself. Your entries are never sent anywhere.</value>
@@ -1719,6 +1719,9 @@
   </data>
   <data name="AiTierHigh" xml:space="preserve">
     <value>Everything, including larger models</value>
+  </data>
+  <data name="AiTierEmbeddingsOnly" xml:space="preserve">
+    <value>Themes and summaries — 123 MB, runs on any device</value>
   </data>
   <data name="AiModelsHeader" xml:space="preserve">
     <value>MODELS</value>

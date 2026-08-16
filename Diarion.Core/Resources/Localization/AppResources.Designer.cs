@@ -2003,6 +2003,10 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("AiTierHigh", resourceCulture) ?? string.Empty; }
         }
 
+        public static string AiTierEmbeddingsOnly {
+            get { return ResourceManager.GetString("AiTierEmbeddingsOnly", resourceCulture) ?? string.Empty; }
+        }
+
         public static string AiModelsHeader {
             get { return ResourceManager.GetString("AiModelsHeader", resourceCulture) ?? string.Empty; }
         }

@@ -50,12 +50,13 @@ public partial class ProfileViewModel : BaseViewModel
     public bool IsAiTab => SelectedTabIndex == 3 && IsAiTabAvailable;
 
     /// <summary>
-    /// Whether the AI tab is shown at all. False while the on-device models are retired.
+    /// Whether the AI tab is shown at all. False only when nothing local is offered any more.
     /// </summary>
     /// <remarks>
-    /// Without this the tab would still offer a 1.1 GB download for an encoder that nothing is
-    /// allowed to call — the worst of both, a long wait for a feature that stays switched off.
-    /// It is the last tab, so hiding it renumbers nothing.
+    /// The point is not to offer a download for something nothing is allowed to call — the worst of
+    /// both, a long wait for a feature that stays switched off. The encoder is still called, by the
+    /// themes in statistics and the mood factors, so the tab stays; the generative model is not, so
+    /// its row is gone from inside it. It is the last tab, so hiding it renumbers nothing.
     /// </remarks>
     public bool IsAiTabAvailable => OnDeviceAi.IsOffered;
 

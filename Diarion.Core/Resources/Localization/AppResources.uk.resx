@@ -1700,7 +1700,7 @@
     <value>Увімкнути ШІ на пристрої</value>
   </data>
   <data name="AiIntro" xml:space="preserve">
-    <value>Пошук по щоденнику за змістом, теми місяця і тижневі підсумки. Усе працює на цьому пристрої.</value>
+    <value>Теми місяця, тижневі підсумки і те, про що ви писали, як фактор настрою. Усе працює на цьому пристрої.</value>
   </data>
   <data name="AiNetworkNotice" xml:space="preserve">
     <value>Єдине, що Diarion завантажує, — це файл самої моделі. Ваші записи нікуди не надсилаються.</value>
@@ -1719,6 +1719,9 @@
   </data>
   <data name="AiTierHigh" xml:space="preserve">
     <value>Усе, включно з більшими моделями</value>
+  </data>
+  <data name="AiTierEmbeddingsOnly" xml:space="preserve">
+    <value>Теми і підсумки — 123 МБ, працює на будь-якому пристрої</value>
   </data>
   <data name="AiModelsHeader" xml:space="preserve">
     <value>МОДЕЛІ</value>

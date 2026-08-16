@@ -53,7 +53,7 @@ public class QuickMenuViewModelTests
         await viewModel.RefreshAvailabilityAsync();
 
         Ids(viewModel).Should().NotContain(MenuConfigurationService.AiChatId);
-        Ids(viewModel).Should().Contain("Search", "the rest of the menu is unaffected");
+        Ids(viewModel).Should().Contain("Notes", "the rest of the menu is unaffected");
     }
 
     [Fact]
@@ -107,29 +107,39 @@ public class QuickMenuViewModelTests
     }
 
     [Fact]
+    public void TheSearchTileIsNotOffered()
+    {
+        // The tile is the only way into the search screen — no other page navigates to the route —
+        // so a failure here means the retired screen is reachable again.
+        MenuConfigurationService.SearchOffered.Should().BeFalse();
+
+        Ids(Build()).Should().NotContain(MenuConfigurationService.SearchId);
+    }
+
+    [Fact]
     public async Task ANewTileLandsAtTheEndOfAnOrderThatPredatesIt()
     {
         // Saved orders in the wild were written before chat existed. Skipping unknown ids and
         // appending the leftovers is what keeps such an order usable across an update.
-        _profile.QuickMenuOrder = ["Finance", "Search"];
+        _profile.QuickMenuOrder = ["Finance", "Notes"];
         var viewModel = Build();
 
         await viewModel.RefreshAvailabilityAsync();
 
-        Ids(viewModel).Take(2).Should().Equal("Finance", "Search");
+        Ids(viewModel).Take(2).Should().Equal("Finance", "Notes");
         Ids(viewModel).Last().Should().Be(MenuConfigurationService.AiChatId);
     }
 
     [Fact]
     public async Task AnOrderNamingATileThatIsHidden_DoesNotLeaveAGap()
     {
-        _profile.QuickMenuOrder = [MenuConfigurationService.AiChatId, "Search"];
+        _profile.QuickMenuOrder = [MenuConfigurationService.AiChatId, "Notes"];
         _availability.CanGenerate = false;
         var viewModel = Build();
 
         await viewModel.RefreshAvailabilityAsync();
 
-        Ids(viewModel).First().Should().Be("Search");
+        Ids(viewModel).First().Should().Be("Notes");
         viewModel.QuickMenuItems.Should().NotContainNulls();
     }
 
@@ -138,7 +148,7 @@ public class QuickMenuViewModelTests
     {
         // Dragging saves the visible ids, so a hidden chat drops out of the stored order. It has to
         // come back when the model does — as a new tile at the end, which is the honest place for it.
-        _profile.QuickMenuOrder = ["Search", "Notes"];
+        _profile.QuickMenuOrder = ["Notes", "Reading"];
         _availability.CanGenerate = false;
         var viewModel = Build();
         await viewModel.RefreshAvailabilityAsync();

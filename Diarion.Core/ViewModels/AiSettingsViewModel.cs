@@ -67,19 +67,26 @@ public partial class AiSettingsViewModel : BaseViewModel
             ByteSize.Describe((long)capabilities.TotalRamMb * 1024 * 1024),
             ByteSize.Describe(capabilities.AvailableStorageBytes));
 
-        TierDescription = capabilities.Tier switch
-        {
-            DeviceTier.High => AppResources.AiTierHigh,
-            DeviceTier.Mid => AppResources.AiTierMid,
-            _ => AppResources.AiTierLow,
-        };
+        // The tiers exist to say which generative model a phone can carry. With generation retired
+        // the answer is the same on every phone, and repeating "search, summaries and chat" to a
+        // device that is offered none of the three would be the screen telling a lie.
+        TierDescription = !OnDeviceAi.GenerationOffered
+            ? AppResources.AiTierEmbeddingsOnly
+            : capabilities.Tier switch
+            {
+                DeviceTier.High => AppResources.AiTierHigh,
+                DeviceTier.Mid => AppResources.AiTierMid,
+                _ => AppResources.AiTierLow,
+            };
+
+        var offered = Enum.GetValues<AiModelKind>().Where(OnDeviceAi.Offers).ToList();
 
         var recommended = new HashSet<string>(
-            Enum.GetValues<AiModelKind>()
+            offered
                 .Select(kind => AiModelCatalog.Recommend(kind, capabilities)?.Id)
                 .Where(id => id is not null)!);
 
-        foreach (var model in AiModelCatalog.All)
+        foreach (var model in AiModelCatalog.All.Where(model => OnDeviceAi.Offers(model.Kind)))
         {
             Models.Add(new AiModelItemViewModel(
                 model,

@@ -104,12 +104,20 @@ public static class ServiceCollectionExtensions
         // The single answer to "may the AI read this diary". Every consumer asks it, so consent
         // cannot be honoured in one place and forgotten in the next four.
         //
-        // Answering "no" unconditionally while OnDeviceAi.IsOffered is false: the local models are
-        // off for everyone since 2026-08-10. AiAvailability itself is untouched and still tested, so
-        // the flag — not this line — is the switch.
-        services.AddSingleton<IAiAvailability>(sp => OnDeviceAi.IsOffered
-            ? ActivatorUtilities.CreateInstance<AiAvailability>(sp)
-            : new DisabledAiAvailability());
+        // Which of the three answers the app gives is decided here and nowhere else: everything off,
+        // embeddings only (where it stands — the generative model is retired), or the full stack.
+        // AiAvailability itself is untouched and still tested, so the flags — not this line — are the
+        // switch.
+        services.AddSingleton<IAiAvailability>(sp =>
+        {
+            if (!OnDeviceAi.IsOffered)
+            {
+                return new DisabledAiAvailability();
+            }
+
+            var full = ActivatorUtilities.CreateInstance<AiAvailability>(sp);
+            return OnDeviceAi.GenerationOffered ? full : new EmbeddingsOnlyAiAvailability(full);
+        });
         services.AddSingleton<IEmbeddingIndexService, EmbeddingIndexService>();
         services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
         services.AddSingleton<IDigestService, DigestService>();
