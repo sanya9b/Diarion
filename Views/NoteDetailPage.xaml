@@ -16,6 +16,10 @@
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Disappearing" Command="{Binding FlushSaveCommand}" />
+        <!-- The keyboard is watched only while this page is on screen: the service is a singleton and
+             would hold every note ever opened. -->
+        <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding WatchKeyboardCommand}" />
+        <toolkit:EventToCommandBehavior EventName="Disappearing" Command="{Binding ForgetKeyboardCommand}" />
     </ContentPage.Behaviors>
 
     <!--
@@ -125,7 +129,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,*,Auto">
         <!-- Top Custom Bar -->
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
             <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
@@ -237,5 +241,16 @@
 
             </VerticalStackLayout>
         </ScrollView>
+
+        <!--
+            The formatting bar sits under the note rather than inside the scroll, so it is where the
+            thumb already is and stays there while the note is scrolled. The spacer beneath it is the
+            keyboard: zero on Android, which moves the window itself, and the keyboard's height on
+            iOS, which does not.
+        -->
+        <VerticalStackLayout Grid.Row="2">
+            <controls:NoteFormatBar />
+            <BoxView HeightRequest="{Binding KeyboardInset}" Color="Transparent" />
+        </VerticalStackLayout>
     </Grid>
 </ContentPage>

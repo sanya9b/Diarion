@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             x:Class="Diarion.Controls.NoteFormatBar"
+             x:DataType="viewModels:NoteDetailViewModel">
+
+    <!--
+        The markdown symbols without the markdown. Every button here reaches the same code as typing
+        "- " or "**" does, so nothing is taken away from anyone who knows the symbols; this is for
+        everyone who does not, and for a phone keyboard where "*" is two taps away.
+
+        Tap gestures on plain layouts, not buttons, and that is the load-bearing detail: a button
+        takes keyboard focus, and the field losing focus is the field losing its caret — which is the
+        one thing every command here needs. A Grid is not focusable on any of the four platforms, so
+        the caret stays exactly where the user left it.
+    -->
+    <ContentView.Resources>
+        <Style x:Key="FormatButton" TargetType="Grid">
+            <Setter Property="HeightRequest" Value="44" />
+            <Setter Property="MinimumWidthRequest" Value="40" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+        </Style>
+
+        <Style x:Key="FormatIcon" TargetType="Path">
+            <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+            <Setter Property="StrokeThickness" Value="1.8" />
+            <Setter Property="StrokeLineCap" Value="Round" />
+            <Setter Property="StrokeLineJoin" Value="Round" />
+            <Setter Property="WidthRequest" Value="24" />
+            <Setter Property="HeightRequest" Value="24" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+
+        <Style x:Key="FormatLetter" TargetType="Label">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+    </ContentView.Resources>
+
+    <Border Margin="12,0,12,6"
+            Padding="2"
+            StrokeThickness="1"
+            Stroke="{DynamicResource Theme_Dust_Ocean}"
+            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+            StrokeShape="RoundRectangle 16">
+
+        <Grid ColumnDefinitions="*,*,*,*,*,Auto,*,*,*">
+
+            <!-- Checklist: rows with ticks, because one tick box on its own reads as "done", not "list". -->
+            <Grid Grid.Column="0" Style="{StaticResource FormatButton}"
+                  SemanticProperties.Description="{localization:Translate Key=NoteFormatChecklist}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleChecklistCommand}" />
+                </Grid.GestureRecognizers>
+                <Path Style="{StaticResource FormatIcon}"
+                      Data="M 3 7.5 L 4.8 9.3 L 8.2 5.9 M 11.5 7.5 H 21 M 3 16.5 L 4.8 18.3 L 8.2 14.9 M 11.5 16.5 H 21" />
+            </Grid>
+
+            <!-- Bulleted list -->
+            <Grid Grid.Column="1" Style="{StaticResource FormatButton}"
+                  SemanticProperties.Description="{localization:Translate Key=NoteFormatBullet}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleBulletCommand}" />
+                </Grid.GestureRecognizers>
+                <Path Style="{StaticResource FormatIcon}" StrokeThickness="2.4"
+                      Data="M 4 7.5 H 4.01 M 9 7.5 H 21 M 4 16.5 H 4.01 M 9 16.5 H 21" />
+            </Grid>
+
+            <!-- Numbered list. Thinner stroke: the digits are small enough that 1.8 fills them in. -->
+            <Grid Grid.Column="2" Style="{StaticResource FormatButton}"
+                  SemanticProperties.Description="{localization:Translate Key=NoteFormatNumbered}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleNumberedCommand}" />
+                </Grid.GestureRecognizers>
+                <Path Style="{StaticResource FormatIcon}" StrokeThickness="1.4"
+                      Data="M 3.2 4.6 L 4.8 3.6 L 4.8 9.6 M 3 13.6 C 3 12 6.4 12 6.4 14 C 6.4 15.6 3 17 3 19.4 L 6.6 19.4 M 10 6.5 H 21 M 10 16.5 H 21" />
+            </Grid>
+
+            <!-- Heading: one button for H1 → H2 → H3 → plain text -->
+            <Grid Grid.Column="3" Style="{StaticResource FormatButton}"
+                  SemanticProperties.Description="{localization:Translate Key=NoteFormatHeading}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CycleHeadingCommand}" />
+                </Grid.GestureRecognizers>
+                <Path Style="{StaticResource FormatIcon}" StrokeThickness="2"
+                      Data="M 6 5 V 19 M 6 12 H 15 M 15 5 V 19" />
+            </Grid>
+
+            <!-- Quote: the bar the quote is actually drawn with, beside its lines -->
+            <Grid Grid.Column="4" Style="{StaticResource FormatButton}"
+                  SemanticProperties.Description="{localization:Translate Key=NoteFormatQuote}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleQuoteCommand}" />
+                </Grid.GestureRecognizers>
+                <Path Style="{StaticResource FormatIcon}"
+                      Data="M 4 5 V 19 M 9.5 7.5 H 21 M 9.5 12 H 21 M 9.5 16.5 H 17" />
+            </Grid>
+
+            <!-- Whole lines to the left of this, stretches of text to the right -->
+            <BoxView Grid.Column="5" WidthRequest="1" HeightRequest="20" Margin="6,0"
+                     VerticalOptions="Center"
+                     Color="{DynamicResource Theme_Dust_Ocean}" />
+
+            <Grid Grid.Column="6" Style="{StaticResource FormatButton}"
+                  SemanticProperties.Description="{localization:Translate Key=NoteFormatBold}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleBoldCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="B" Style="{StaticResource FormatLetter}" FontAttributes="Bold" />
+            </Grid>
+
+            <Grid Grid.Column="7" Style="{StaticResource FormatButton}"
+                  SemanticProperties.Description="{localization:Translate Key=NoteFormatItalic}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleItalicCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="I" Style="{StaticResource FormatLetter}" FontAttributes="Italic" />
+            </Grid>
+
+            <Grid Grid.Column="8" Style="{StaticResource FormatButton}"
+                  SemanticProperties.Description="{localization:Translate Key=NoteFormatStrikethrough}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleStrikethroughCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="S" Style="{StaticResource FormatLetter}" TextDecorations="Strikethrough" />
+            </Grid>
+
+        </Grid>
+    </Border>
+</ContentView>

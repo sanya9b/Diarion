@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
+using Diarion.Models.Markdown;
 using Diarion.Resources.Localization;
 using Diarion.Services;
 using LiteDB;
@@ -25,6 +26,8 @@ public partial class NoteDetailViewModel : BaseViewModel
     private readonly INoteService _noteService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly IKeyboardInsetService _keyboard;
+    private bool _watchingKeyboard;
 
     [ObservableProperty]
     private string? _noteId;
@@ -64,14 +67,24 @@ public partial class NoteDetailViewModel : BaseViewModel
 
     private readonly Helpers.AsyncDebouncer _autoSaveDebouncer = new(TimeSpan.FromSeconds(1));
 
+    /// <summary>
+    /// How far the formatting bar sits off the bottom of the page: nothing until the keyboard covers
+    /// it, and the height of the keyboard once it does. See <see cref="IKeyboardInsetService"/> for
+    /// why only one platform ever answers with anything.
+    /// </summary>
+    [ObservableProperty]
+    private double _keyboardInset;
+
     public NoteDetailViewModel(
-        INoteService noteService, 
+        INoteService noteService,
         INavigationService navigationService,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        IKeyboardInsetService keyboard)
     {
         _noteService = noteService;
         _navigationService = navigationService;
         _dialogService = dialogService;
+        _keyboard = keyboard;
         _body.Changed += OnBodyChanged;
         Title = "Note";
     }
@@ -81,6 +94,61 @@ public partial class NoteDetailViewModel : BaseViewModel
     /// <summary>Tapping the empty space under a note puts the caret at its end, as in any editor.</summary>
     [RelayCommand]
     private void FocusEnd() => _body.FocusEnd();
+
+    /// <summary>
+    /// Starts listening for the keyboard, and stops. Tied to the page being on screen because the
+    /// service outlives it: a note left subscribed is a note that is never collected.
+    /// </summary>
+    [RelayCommand]
+    private void WatchKeyboard()
+    {
+        if (_watchingKeyboard) return;
+
+        _keyboard.OverlapChanged += OnKeyboardMoved;
+        _watchingKeyboard = true;
+        KeyboardInset = _keyboard.Overlap;
+    }
+
+    [RelayCommand]
+    private void ForgetKeyboard()
+    {
+        if (!_watchingKeyboard) return;
+
+        _keyboard.OverlapChanged -= OnKeyboardMoved;
+        _watchingKeyboard = false;
+        KeyboardInset = 0;
+    }
+
+    private void OnKeyboardMoved(object? sender, EventArgs e) => KeyboardInset = _keyboard.Overlap;
+
+    /// <summary>
+    /// The formatting bar. Eight buttons over the same operations the markdown symbols perform, for
+    /// the reader who does not know the symbols — typing "- " keeps working and reaches the same code.
+    /// </summary>
+    [RelayCommand]
+    private void ToggleChecklist() => _body.ToggleKind(MarkdownBlockKind.Checklist);
+
+    [RelayCommand]
+    private void ToggleBullet() => _body.ToggleKind(MarkdownBlockKind.Bullet);
+
+    [RelayCommand]
+    private void ToggleNumbered() => _body.ToggleKind(MarkdownBlockKind.Numbered);
+
+    /// <summary>One button, four sizes: H1 → H2 → H3 → plain text.</summary>
+    [RelayCommand]
+    private void CycleHeading() => _body.CycleHeading();
+
+    [RelayCommand]
+    private void ToggleQuote() => _body.ToggleKind(MarkdownBlockKind.Quote);
+
+    [RelayCommand]
+    private void ToggleBold() => _body.ToggleInline("**");
+
+    [RelayCommand]
+    private void ToggleItalic() => _body.ToggleInline("*");
+
+    [RelayCommand]
+    private void ToggleStrikethrough() => _body.ToggleInline("~~");
 
     partial void OnNoteIdChanged(string? value)
     {

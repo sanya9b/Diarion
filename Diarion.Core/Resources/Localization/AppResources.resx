@@ -1408,6 +1408,30 @@
   <data name="NoteUntitled" xml:space="preserve">
     <value>Untitled</value>
   </data>
+  <data name="NoteFormatChecklist" xml:space="preserve">
+    <value>Checklist</value>
+  </data>
+  <data name="NoteFormatBullet" xml:space="preserve">
+    <value>Bulleted list</value>
+  </data>
+  <data name="NoteFormatNumbered" xml:space="preserve">
+    <value>Numbered list</value>
+  </data>
+  <data name="NoteFormatHeading" xml:space="preserve">
+    <value>Heading size</value>
+  </data>
+  <data name="NoteFormatQuote" xml:space="preserve">
+    <value>Quote</value>
+  </data>
+  <data name="NoteFormatBold" xml:space="preserve">
+    <value>Bold</value>
+  </data>
+  <data name="NoteFormatItalic" xml:space="preserve">
+    <value>Italic</value>
+  </data>
+  <data name="NoteFormatStrikethrough" xml:space="preserve">
+    <value>Strikethrough</value>
+  </data>
   <data name="DeleteNoteConfirmTitle" xml:space="preserve">
     <value>Delete note?</value>
   </data>

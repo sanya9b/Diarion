@@ -1408,6 +1408,30 @@
   <data name="NoteUntitled" xml:space="preserve">
     <value>Без назви</value>
   </data>
+  <data name="NoteFormatChecklist" xml:space="preserve">
+    <value>Список із галочками</value>
+  </data>
+  <data name="NoteFormatBullet" xml:space="preserve">
+    <value>Маркований список</value>
+  </data>
+  <data name="NoteFormatNumbered" xml:space="preserve">
+    <value>Нумерований список</value>
+  </data>
+  <data name="NoteFormatHeading" xml:space="preserve">
+    <value>Розмір заголовка</value>
+  </data>
+  <data name="NoteFormatQuote" xml:space="preserve">
+    <value>Цитата</value>
+  </data>
+  <data name="NoteFormatBold" xml:space="preserve">
+    <value>Жирний</value>
+  </data>
+  <data name="NoteFormatItalic" xml:space="preserve">
+    <value>Курсив</value>
+  </data>
+  <data name="NoteFormatStrikethrough" xml:space="preserve">
+    <value>Закреслений</value>
+  </data>
   <data name="DeleteNoteConfirmTitle" xml:space="preserve">
     <value>Видалити нотатку?</value>
   </data>

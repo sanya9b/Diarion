@@ -20,9 +20,13 @@ namespace Diarion.ViewModels;
 public partial class NoteBlockViewModel : ObservableObject
 {
     private readonly Action<NoteBlockViewModel>? _onEdited;
+    private readonly Action<NoteBlockViewModel>? _onFocused;
     private bool _silent;
 
-    public NoteBlockViewModel(MarkdownBlock block, Action<NoteBlockViewModel>? onEdited = null)
+    public NoteBlockViewModel(
+        MarkdownBlock block,
+        Action<NoteBlockViewModel>? onEdited = null,
+        Action<NoteBlockViewModel>? onFocused = null)
     {
         Kind = block.Kind;
         Indent = block.Indent;
@@ -30,6 +34,7 @@ public partial class NoteBlockViewModel : ObservableObject
         _isChecked = block.IsChecked;
         _number = block.Number;
         _onEdited = onEdited;
+        _onFocused = onFocused;
     }
 
     public MarkdownBlockKind Kind { get; }
@@ -69,6 +74,18 @@ public partial class NoteBlockViewModel : ObservableObject
     /// <summary>Where the caret goes when focus arrives.</summary>
     [ObservableProperty]
     private int _caret;
+
+    /// <summary>
+    /// Where the caret is now, reported by the field as the user moves it. The opposite direction to
+    /// <see cref="Caret"/>, and the reason the formatting bar can act on the word you are standing in
+    /// rather than on the whole line.
+    /// </summary>
+    [ObservableProperty]
+    private int _selectionStart;
+
+    /// <summary>How much text is selected, if any; zero is a plain caret.</summary>
+    [ObservableProperty]
+    private int _selectionLength;
 
     /// <summary>
     /// True only for the single empty line of an empty note. Set by the editor rather than worked out
@@ -147,12 +164,17 @@ public partial class NoteBlockViewModel : ObservableObject
     private void BeginEdit()
     {
         IsEditing = true;
+        _onFocused?.Invoke(this);
         RequestFocus((Text ?? string.Empty).Length);
     }
 
     /// <summary>The field itself took focus — the user tapped straight into it, caret and all.</summary>
     [RelayCommand]
-    private void HoldEdit() => IsEditing = true;
+    private void HoldEdit()
+    {
+        IsEditing = true;
+        _onFocused?.Invoke(this);
+    }
 
     /// <summary>Focus has left the line: whatever markup it holds goes back to being drawn.</summary>
     [RelayCommand]

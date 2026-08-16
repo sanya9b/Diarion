@@ -38,12 +38,23 @@ public class NoteBlockEditor
     /// <summary>Raised once the block list has settled after an edit — the cue to recompose and save.</summary>
     public event EventHandler? Changed;
 
+    /// <summary>
+    /// The line the formatting bar acts on: the one the caret is in, or the one it was in last.
+    /// </summary>
+    /// <remarks>
+    /// It survives the field losing focus on purpose. Pressing a button in the bar is exactly the
+    /// moment focus leaves the text — on Windows it does, on the phones it does not — and a target
+    /// that were cleared on blur would be null in the only case that matters.
+    /// </remarks>
+    public NoteBlockViewModel? Active { get; private set; }
+
     /// <summary>Replaces the whole body. Always leaves at least one block to type into.</summary>
     public void Load(string? content)
     {
         _loading = true;
         try
         {
+            Active = null;
             Blocks.Clear();
             foreach (var block in MarkdownParser.ParseBlocks(content))
             {
@@ -84,7 +95,218 @@ public class NoteBlockEditor
         last.RequestFocus((last.Text ?? string.Empty).Length);
     }
 
-    private NoteBlockViewModel Wrap(MarkdownBlock block) => new(block, OnBlockEdited);
+    /// <summary>
+    /// Turns the current line into a list item, a tick box or a quote — and back into prose when it is
+    /// already that kind, which is what makes one button both apply and remove.
+    /// </summary>
+    /// <remarks>
+    /// Typing "- " still works and always will. This is the same operation reached without knowing the
+    /// symbol, which is the whole point of the bar.
+    /// </remarks>
+    public void ToggleKind(MarkdownBlockKind kind)
+    {
+        var block = Target();
+        if (block == null) return;
+
+        SetKind(block, block.Kind == kind ? MarkdownBlockKind.Paragraph : kind);
+    }
+
+    /// <summary>
+    /// One button for three sizes: H1 → H2 → H3 → plain text. A fourth button per level would take a
+    /// third of the bar to say something the user can see on screen after one press.
+    /// </summary>
+    public void CycleHeading()
+    {
+        var block = Target();
+        if (block == null) return;
+
+        SetKind(block, block.Kind switch
+        {
+            MarkdownBlockKind.Heading1 => MarkdownBlockKind.Heading2,
+            MarkdownBlockKind.Heading2 => MarkdownBlockKind.Heading3,
+            MarkdownBlockKind.Heading3 => MarkdownBlockKind.Paragraph,
+            _ => MarkdownBlockKind.Heading1
+        });
+    }
+
+    /// <summary>
+    /// Wraps the selection in <paramref name="marker"/> — <c>**</c>, <c>*</c> or <c>~~</c> — and
+    /// unwraps it when it is already wrapped.
+    /// </summary>
+    /// <remarks>
+    /// With nothing selected it takes the word the caret is standing in. That is not a convenience:
+    /// on a phone selecting a word first is two gestures, and a button that inserted an empty pair of
+    /// stars would be a button that asks you to type between them.
+    /// </remarks>
+    public void ToggleInline(string marker)
+    {
+        var block = Target();
+        if (block == null || string.IsNullOrEmpty(marker)) return;
+
+        var text = block.Text ?? string.Empty;
+        var (start, length) = Resolve(block, text);
+
+        string next;
+        int caret;
+
+        if (WrapsFromOutside(text, start, length, marker))
+        {
+            next = text
+                .Remove(start + length, marker.Length)
+                .Remove(start - marker.Length, marker.Length);
+            caret = start + length - marker.Length;
+        }
+        else if (WrapsFromInside(text, start, length, marker))
+        {
+            next = text
+                .Remove(start + length - marker.Length, marker.Length)
+                .Remove(start, marker.Length);
+            caret = start + length - (2 * marker.Length);
+        }
+        else
+        {
+            next = text.Insert(start + length, marker).Insert(start, marker);
+            caret = length == 0 ? start + marker.Length : start + length + (2 * marker.Length);
+        }
+
+        // The line has to stay a field: markup makes it eligible to be drawn as a formatted label, and
+        // being swapped for a label under the caret is not what pressing "bold" asks for.
+        block.IsEditing = true;
+        block.Text = next;
+        block.RequestFocus(caret);
+    }
+
+    // Which line the bar acts on. Falling back to the last block covers the note that has been opened
+    // and not yet typed into: the bar is on screen, so it has to do something.
+    private NoteBlockViewModel? Target()
+    {
+        if (Active != null && Blocks.Contains(Active)) return Active;
+
+        Active = Blocks.Count > 0 ? Blocks[^1] : null;
+        return Active;
+    }
+
+    private void SetKind(NoteBlockViewModel block, MarkdownBlockKind kind)
+    {
+        if (block.Kind == kind) return;
+
+        int caret;
+        NoteBlockViewModel? focus;
+
+        if (block.Kind == MarkdownBlockKind.Paragraph)
+        {
+            focus = PromoteLine(block, kind, out caret);
+        }
+        else
+        {
+            var replacement = new MarkdownBlock
+            {
+                Kind = kind,
+                Text = block.Text ?? string.Empty,
+                Indent = block.Indent
+            };
+
+            focus = ChangeKind(block, replacement, out caret);
+        }
+
+        Renumber();
+        (focus, caret) = Compact(focus, caret);
+        UpdatePlaceholder();
+
+        Active = focus;
+        if (focus != null)
+        {
+            focus.IsEditing = true;
+            focus.RequestFocus(caret);
+        }
+
+        Changed?.Invoke(this, EventArgs.Empty);
+    }
+
+    // Prose is held in runs, so "make this a bullet" means one line out of possibly many. Which line
+    // is the one the caret is in — the only reason the blocks track the caret at all.
+    private NoteBlockViewModel PromoteLine(NoteBlockViewModel run, MarkdownBlockKind kind, out int caret)
+    {
+        var text = run.Text ?? string.Empty;
+        var at = Math.Clamp(run.SelectionStart, 0, text.Length);
+
+        var from = at == 0 ? 0 : text.LastIndexOf('\n', at - 1) + 1;
+        var to = text.IndexOf('\n', at);
+        if (to < 0) to = text.Length;
+
+        var line = text[from..to];
+        caret = line.Length;
+
+        var index = Blocks.IndexOf(run);
+        if (index < 0) return run;
+
+        var promoted = Wrap(new MarkdownBlock { Kind = kind, Text = line, Indent = run.Indent });
+
+        var replacements = new List<NoteBlockViewModel>();
+        if (from > 0) replacements.Add(Wrap(new MarkdownBlock { Text = text[..(from - 1)] }));
+        replacements.Add(promoted);
+        if (to < text.Length) replacements.Add(Wrap(new MarkdownBlock { Text = text[(to + 1)..] }));
+
+        Blocks.RemoveAt(index);
+        for (var i = 0; i < replacements.Count; i++)
+        {
+            Blocks.Insert(index + i, replacements[i]);
+        }
+
+        return promoted;
+    }
+
+    private static (int Start, int Length) Resolve(NoteBlockViewModel block, string text)
+    {
+        var start = Math.Clamp(block.SelectionStart, 0, text.Length);
+        var length = Math.Clamp(block.SelectionLength, 0, text.Length - start);
+        if (length > 0) return (start, length);
+
+        var from = start;
+        while (from > 0 && !char.IsWhiteSpace(text[from - 1])) from--;
+
+        var to = start;
+        while (to < text.Length && !char.IsWhiteSpace(text[to])) to++;
+
+        return (from, to - from);
+    }
+
+    // The markers sit outside the selection: "**|word|**".
+    private static bool WrapsFromOutside(string text, int start, int length, string marker)
+    {
+        if (length == 0 || start < marker.Length || start + length + marker.Length > text.Length)
+        {
+            return false;
+        }
+
+        return Matches(text, start - marker.Length, marker)
+            && Matches(text, start + length, marker)
+            && !IsHalfOfBold(text, start - marker.Length - 1, marker);
+    }
+
+    // The selection took the markers with it: "|**word**|". A double tap picks the word, a drag
+    // usually picks more than the word, and both have to toggle rather than add a second pair.
+    private static bool WrapsFromInside(string text, int start, int length, string marker)
+    {
+        if (length < 2 * marker.Length) return false;
+
+        return Matches(text, start, marker)
+            && Matches(text, start + length - marker.Length, marker)
+            && !IsHalfOfBold(text, start + marker.Length, marker);
+    }
+
+    // "*" next to another "*" is half of "**": italic must not strip a bold pair down the middle.
+    private static bool IsHalfOfBold(string text, int at, string marker)
+        => marker == "*" && at >= 0 && at < text.Length && text[at] == '*';
+
+    private static bool Matches(string text, int at, string marker)
+        => at >= 0
+            && at + marker.Length <= text.Length
+            && string.CompareOrdinal(text, at, marker, 0, marker.Length) == 0;
+
+    private NoteBlockViewModel Wrap(MarkdownBlock block) => new(block, OnBlockEdited, OnBlockFocused);
+
+    private void OnBlockFocused(NoteBlockViewModel block) => Active = block;
 
     private void OnBlockEdited(NoteBlockViewModel block)
     {

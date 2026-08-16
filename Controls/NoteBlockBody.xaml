@@ -26,6 +26,8 @@
         <Editor x:Name="RawEditor"
                 IsVisible="{Binding ShowsRawText}"
                 Text="{Binding Text}"
+                CursorPosition="{Binding SelectionStart, Mode=TwoWay}"
+                SelectionLength="{Binding SelectionLength, Mode=TwoWay}"
                 AutoSize="TextChanges"
                 BackgroundColor="Transparent"
                 Margin="0"

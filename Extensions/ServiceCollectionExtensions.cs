@@ -44,6 +44,17 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IShareService, MauiShareService>();
         services.AddSingleton<IFilePickerService, MauiFilePickerService>();
         services.AddSingleton<IDispatcherService, MauiDispatcherService>();
+        // Lifts the note's formatting bar over the keyboard. Only the phones have one to lift, and
+        // only iOS covers the window with it — Android moves the window instead and answers zero,
+        // which is measured rather than assumed. Singleton: it holds a subscription to the platform
+        // for the life of the app, and every screen that ever asks is asking the same question.
+#if ANDROID
+        services.AddSingleton<IKeyboardInsetService, AndroidKeyboardInsetService>();
+#elif IOS
+        services.AddSingleton<IKeyboardInsetService, IosKeyboardInsetService>();
+#else
+        services.AddSingleton<IKeyboardInsetService, NoKeyboardInsetService>();
+#endif
 
         services.AddAiServices();
 
