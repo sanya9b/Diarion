@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
+using Diarion.Resources.Localization;
 using Diarion.Services;
 using LiteDB;
 
@@ -31,8 +32,17 @@ public partial class NoteDetailViewModel : BaseViewModel
     [ObservableProperty]
     private Note _currentNote = new();
 
+    /// <summary>
+    /// The note as it is stored: markdown, and the only thing that is ever saved. The blocks below
+    /// are a view of this string, rebuilt when the note is opened and written back on every edit.
+    /// </summary>
     [ObservableProperty]
     private string _noteContent = string.Empty;
+
+    private readonly NoteBlockEditor _body = new();
+
+    /// <summary>The body as the screen draws it — one block per marked line, prose in runs.</summary>
+    public ObservableCollection<NoteBlockViewModel> Blocks => _body.Blocks;
 
     /// <summary>Tags (without '#') parsed from the body, shown as chips.</summary>
     public ObservableCollection<string> Tags { get; } = new();
@@ -62,8 +72,15 @@ public partial class NoteDetailViewModel : BaseViewModel
         _noteService = noteService;
         _navigationService = navigationService;
         _dialogService = dialogService;
+        _body.Changed += OnBodyChanged;
         Title = "Note";
     }
+
+    private void OnBodyChanged(object? sender, EventArgs e) => NoteContent = _body.Compose();
+
+    /// <summary>Tapping the empty space under a note puts the caret at its end, as in any editor.</summary>
+    [RelayCommand]
+    private void FocusEnd() => _body.FocusEnd();
 
     partial void OnNoteIdChanged(string? value)
     {
@@ -86,6 +103,7 @@ public partial class NoteDetailViewModel : BaseViewModel
                 _noteContent = note.Content; // Set backing field to avoid triggering OnNoteContentChanged immediately
 #pragma warning restore MVVMTK0034
                 OnPropertyChanged(nameof(NoteContent));
+                _body.Load(note.Content);
                 await RefreshMetadataAsync();
             }
         }
@@ -115,17 +133,16 @@ public partial class NoteDetailViewModel : BaseViewModel
             return;
         }
 
-        // Auto generate title from content
-        var lines = CurrentNote.Content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        if (lines.Length > 0)
+        // The title is the first line that says something, as the user sees it: a note that opens
+        // with "# Покупки" is called "Покупки", not "# Покупки" — otherwise the markup would leak
+        // into the notes list, into search and into every [[link]] pointing at this note.
+        var firstLine = MarkdownParser.FirstPlainLine(CurrentNote.Content);
+        CurrentNote.Title = firstLine.Length switch
         {
-            var firstLine = lines[0].Trim();
-            CurrentNote.Title = firstLine.Length > 40 ? firstLine.Substring(0, 40) + "..." : firstLine;
-        }
-        else
-        {
-            CurrentNote.Title = "Untitled";
-        }
+            0 => AppResources.NoteUntitled,
+            > 40 => firstLine.Substring(0, 40) + "...",
+            _ => firstLine
+        };
 
         try
         {
@@ -232,9 +249,10 @@ public partial class NoteDetailViewModel : BaseViewModel
         if (CurrentNote.Id != ObjectId.Empty)
         {
             bool confirm = await _dialogService.ShowConfirmationAsync(
-                "Delete Note", 
-                "Are you sure you want to delete this note?", 
-                "Yes", "No");
+                AppResources.DeleteNoteConfirmTitle,
+                AppResources.DeleteNoteConfirmMessage,
+                AppResources.DeleteConfirmYes,
+                AppResources.DeleteConfirmNo);
                 
             if (confirm)
             {

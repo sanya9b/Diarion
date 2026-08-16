@@ -1405,6 +1405,15 @@
   <data name="NoteContentPlaceholder" xml:space="preserve">
     <value>Напишіть щось тут...</value>
   </data>
+  <data name="NoteUntitled" xml:space="preserve">
+    <value>Без назви</value>
+  </data>
+  <data name="DeleteNoteConfirmTitle" xml:space="preserve">
+    <value>Видалити нотатку?</value>
+  </data>
+  <data name="DeleteNoteConfirmMessage" xml:space="preserve">
+    <value>Нотатку буде видалено назавжди — скасувати не вийде.</value>
+  </data>
   <data name="EmptyNotes" xml:space="preserve">
     <value>Нотаток ще немає. Створіть першу.</value>
   </data>

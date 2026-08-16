@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 
@@ -12,6 +13,10 @@ public partial class RoundedCheckBox : ContentView
     public static readonly BindableProperty ColorProperty =
         BindableProperty.Create(nameof(Color), typeof(Color), typeof(RoundedCheckBox), null, propertyChanged: OnColorChanged);
 
+    /// <summary>Half the box's 18px side makes it a circle — which is what a note's checklist wants.</summary>
+    public static readonly BindableProperty CornerRadiusProperty =
+        BindableProperty.Create(nameof(CornerRadius), typeof(CornerRadius), typeof(RoundedCheckBox), new CornerRadius(6));
+
     public bool IsChecked
     {
         get => (bool)GetValue(IsCheckedProperty);
@@ -22,6 +27,12 @@ public partial class RoundedCheckBox : ContentView
     {
         get => (Color)GetValue(ColorProperty);
         set => SetValue(ColorProperty, value);
+    }
+
+    public CornerRadius CornerRadius
+    {
+        get => (CornerRadius)GetValue(CornerRadiusProperty);
+        set => SetValue(CornerRadiusProperty, value);
     }
 
     private Color _computedBackgroundColor = Colors.Transparent;

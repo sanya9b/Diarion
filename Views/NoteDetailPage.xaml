@@ -5,6 +5,8 @@
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:selectors="clr-namespace:Diarion.Selectors"
              x:Class="Diarion.Views.NoteDetailPage"
              x:Name="RootPage"
              x:DataType="viewModels:NoteDetailViewModel"
@@ -15,6 +17,113 @@
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Disappearing" Command="{Binding FlushSaveCommand}" />
     </ContentPage.Behaviors>
+
+    <!--
+        One line of the note, one editable field, with its marker drawn beside it instead of typed into
+        it. The markdown itself never reaches the screen: "# " turns the line into a heading and
+        disappears, "- [ ] " becomes a tick box you can tap.
+    -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style x:Key="NoteBlockEditor" TargetType="controls:NoteBlockBody">
+                <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="VerticalOptions" Value="Start" />
+            </Style>
+
+            <Style x:Key="NoteBlockHeading1" TargetType="controls:NoteBlockBody" BasedOn="{StaticResource NoteBlockEditor}">
+                <Setter Property="FontSize" Value="28" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+            <Style x:Key="NoteBlockHeading2" TargetType="controls:NoteBlockBody" BasedOn="{StaticResource NoteBlockEditor}">
+                <Setter Property="FontSize" Value="23" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+            <Style x:Key="NoteBlockHeading3" TargetType="controls:NoteBlockBody" BasedOn="{StaticResource NoteBlockEditor}">
+                <Setter Property="FontSize" Value="19" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+            <Style x:Key="NoteBlockMarker" TargetType="Label">
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                <Setter Property="VerticalOptions" Value="Start" />
+                <Setter Property="HorizontalOptions" Value="End" />
+                <Setter Property="Margin" Value="0,8,0,0" />
+            </Style>
+
+            <DataTemplate x:Key="NoteParagraphBlock" x:DataType="viewModels:NoteBlockViewModel">
+                <controls:NoteBlockBody Style="{StaticResource NoteBlockEditor}"
+                                        Placeholder="{localization:Translate Key=NoteContentPlaceholder}" />
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteHeading1Block" x:DataType="viewModels:NoteBlockViewModel">
+                <controls:NoteBlockBody Style="{StaticResource NoteBlockHeading1}" />
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteHeading2Block" x:DataType="viewModels:NoteBlockViewModel">
+                <controls:NoteBlockBody Style="{StaticResource NoteBlockHeading2}" />
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteHeading3Block" x:DataType="viewModels:NoteBlockViewModel">
+                <controls:NoteBlockBody Style="{StaticResource NoteBlockHeading3}" />
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteBulletBlock" x:DataType="viewModels:NoteBlockViewModel">
+                <Grid ColumnDefinitions="26,*">
+                    <Label Grid.Column="0" Text="•" Style="{StaticResource NoteBlockMarker}"
+                           TextColor="{DynamicResource Theme_Coral}" FontSize="20" Margin="0,6,0,0" />
+                    <controls:NoteBlockBody Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteNumberedBlock" x:DataType="viewModels:NoteBlockViewModel">
+                <Grid ColumnDefinitions="26,*">
+                    <Label Grid.Column="0" Text="{Binding NumberLabel}" Style="{StaticResource NoteBlockMarker}"
+                           TextColor="{DynamicResource Theme_Coral}" FontSize="16" />
+                    <controls:NoteBlockBody Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteChecklistBlock" x:DataType="viewModels:NoteBlockViewModel">
+                <Grid ColumnDefinitions="32,*">
+                    <!-- Round, and it ticks on tap. The control writes its own state back to the block. -->
+                    <controls:RoundedCheckBox Grid.Column="0"
+                                              IsChecked="{Binding IsChecked}"
+                                              CornerRadius="9"
+                                              Color="{DynamicResource Theme_Coral}"
+                                              VerticalOptions="Start"
+                                              Margin="0,2,0,0" />
+                    <!-- A ticked item goes grey and crossed out; the control does both, see IsStruck. -->
+                    <controls:NoteBlockBody Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteQuoteBlock" x:DataType="viewModels:NoteBlockViewModel">
+                <Grid ColumnDefinitions="26,*">
+                    <BoxView Grid.Column="0" WidthRequest="3" HorizontalOptions="Start" Margin="4,6,0,6"
+                             CornerRadius="2" Color="{DynamicResource Theme_Amber}" />
+                    <controls:NoteBlockBody Grid.Column="1" Style="{StaticResource NoteBlockEditor}"
+                                            FontAttributes="Italic"
+                                            TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                </Grid>
+            </DataTemplate>
+
+            <selectors:NoteBlockTemplateSelector x:Key="NoteBlockSelector"
+                                                 ParagraphTemplate="{StaticResource NoteParagraphBlock}"
+                                                 Heading1Template="{StaticResource NoteHeading1Block}"
+                                                 Heading2Template="{StaticResource NoteHeading2Block}"
+                                                 Heading3Template="{StaticResource NoteHeading3Block}"
+                                                 BulletTemplate="{StaticResource NoteBulletBlock}"
+                                                 NumberedTemplate="{StaticResource NoteNumberedBlock}"
+                                                 ChecklistTemplate="{StaticResource NoteChecklistBlock}"
+                                                 QuoteTemplate="{StaticResource NoteQuoteBlock}" />
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*">
         <!-- Top Custom Bar -->
@@ -44,14 +153,16 @@
         <ScrollView Grid.Row="1" Padding="24,10,24,32">
             <VerticalStackLayout Spacing="20">
 
-                <Editor Text="{Binding NoteContent}"
-                        Placeholder="{localization:Translate Key=NoteContentPlaceholder}"
-                        PlaceholderColor="{DynamicResource Theme_Ocean_Dust}"
-                        TextColor="{DynamicResource Theme_Midnight_Snow}"
-                        FontSize="18"
-                        AutoSize="TextChanges"
-                        BackgroundColor="Transparent"
-                        MinimumHeightRequest="200" />
+                <!-- Tapping the empty space below the text puts the caret at the end of the note. -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Blocks}"
+                                     BindableLayout.ItemTemplateSelector="{StaticResource NoteBlockSelector}"
+                                     Spacing="2"
+                                     BackgroundColor="Transparent"
+                                     MinimumHeightRequest="240">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.FocusEndCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                </VerticalStackLayout>
 
                 <!-- Tags -->
                 <VerticalStackLayout Spacing="8" IsVisible="{Binding HasTags}">
@@ -116,7 +227,7 @@
                                     </Border.GestureRecognizers>
                                     <VerticalStackLayout Spacing="2">
                                         <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
-                                        <Label Text="{Binding Content}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="1" />
+                                        <Label Text="{Binding Preview}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="1" />
                                     </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>

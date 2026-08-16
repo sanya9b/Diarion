@@ -1405,6 +1405,15 @@
   <data name="NoteContentPlaceholder" xml:space="preserve">
     <value>Write your note here...</value>
   </data>
+  <data name="NoteUntitled" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
+  <data name="DeleteNoteConfirmTitle" xml:space="preserve">
+    <value>Delete note?</value>
+  </data>
+  <data name="DeleteNoteConfirmMessage" xml:space="preserve">
+    <value>The note will be gone for good — this cannot be undone.</value>
+  </data>
   <data name="EmptyNotes" xml:space="preserve">
     <value>No notes found.</value>
   </data>

@@ -208,9 +208,10 @@ public partial class NotesViewModel : BaseViewModel
         if (note == null) return;
 
         bool confirm = await _dialogService.ShowConfirmationAsync(
-            "Delete Note",
-            "Are you sure you want to delete this note?",
-            "Yes", "No");
+            AppResources.DeleteNoteConfirmTitle,
+            AppResources.DeleteNoteConfirmMessage,
+            AppResources.DeleteConfirmYes,
+            AppResources.DeleteConfirmNo);
 
         if (confirm)
         {

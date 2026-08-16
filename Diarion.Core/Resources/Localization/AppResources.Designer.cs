@@ -2302,6 +2302,18 @@ public static string ClearAllDataSuccessMsg {
         public static string SnapshotPreviewRefresh {
             get { return ResourceManager.GetString("SnapshotPreviewRefresh", resourceCulture) ?? string.Empty; }
         }
+
+        public static string NoteUntitled {
+            get { return ResourceManager.GetString("NoteUntitled", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string DeleteNoteConfirmTitle {
+            get { return ResourceManager.GetString("DeleteNoteConfirmTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string DeleteNoteConfirmMessage {
+            get { return ResourceManager.GetString("DeleteNoteConfirmMessage", resourceCulture) ?? string.Empty; }
+        }
     }
 }
 

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             x:Class="Diarion.Controls.NoteBlockBody"
+             x:Name="RootView">
+
+    <!--
+        The same line, twice: a label that draws what the markup means, and the field you type in.
+        Exactly one of them is on screen, and the swap happens on focus, so there is no button and no
+        mode to be in. A line with nothing to reveal never becomes a label at all — see
+        NoteBlockViewModel.ShowsFormattedText.
+    -->
+    <Grid>
+        <Label x:Name="FormattedLabel"
+               IsVisible="{Binding ShowsFormattedText}"
+               LineBreakMode="WordWrap"
+               VerticalOptions="Start"
+               Margin="{OnPlatform Default='0,7,0,7', WinUI='11,7,0,7', Android='4,7,0,7'}">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding BeginEditCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+
+        <Editor x:Name="RawEditor"
+                IsVisible="{Binding ShowsRawText}"
+                Text="{Binding Text}"
+                AutoSize="TextChanges"
+                BackgroundColor="Transparent"
+                Margin="0"
+                VerticalOptions="Start"
+                FontSize="{Binding FontSize, Source={x:Reference RootView}}"
+                FontAttributes="{Binding FontAttributes, Source={x:Reference RootView}}"
+                TextColor="{Binding EffectiveTextColor, Source={x:Reference RootView}}"
+                Placeholder="{Binding Placeholder, Source={x:Reference RootView}}"
+                PlaceholderColor="Transparent">
+            <Editor.Triggers>
+                <!-- Only the one empty line of an empty note invites you to write. -->
+                <DataTrigger TargetType="Editor" Binding="{Binding ShowsPlaceholder}" Value="True">
+                    <Setter Property="PlaceholderColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                </DataTrigger>
+            </Editor.Triggers>
+            <Editor.Behaviors>
+                <behaviors:FocusRequestBehavior IsRequested="{Binding IsFocusRequested}" Caret="{Binding Caret}" />
+                <toolkit:EventToCommandBehavior EventName="Focused" Command="{Binding HoldEditCommand}" />
+                <toolkit:EventToCommandBehavior EventName="Unfocused" Command="{Binding EndEditCommand}" />
+            </Editor.Behaviors>
+        </Editor>
+    </Grid>
+</ContentView>
