@@ -7,6 +7,10 @@
     <!-- Darkened from #929FA7 to meet WCAG AA (>=4.5:1) for secondary text on light backgrounds -->
     <Color x:Key="Theme_Ocean_Dust">#6B7680</Color>
     <Color x:Key="Theme_Dust_Ocean">#E0E6EA</Color>
+    <!-- Lines drawn on the page background rather than on a card. #E0E6EA borders sit at 1.01:1 against
+         the #E9E7E1 page and simply are not there — an empty hour in the planner looked like a gap in the
+         grid. Ocean is the same grey the dark theme already draws these lines in. -->
+    <Color x:Key="Theme_GridLine">#929FA7</Color>
     <Color x:Key="Theme_Snow_Black">#FFFFFF</Color>
     <Color x:Key="Theme_Ocean_Ocean">#929FA7</Color>
     <Color x:Key="Theme_Snow_Midnight">#FFFFFF</Color>
