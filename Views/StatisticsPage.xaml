@@ -529,25 +529,35 @@
                     <VerticalStackLayout Spacing="16">
                         <Label Text="{x:Static localization:AppResources.ExpenseLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
 
-                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="16">
-                            <VerticalStackLayout Grid.Column="0" Spacing="10" VerticalOptions="Center" BindableLayout.ItemsSource="{Binding FinanceStats.ExpenseByCategory}">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:CategoryStatItem">
-                                        <Grid ColumnDefinitions="12, *, Auto" ColumnSpacing="8">
-                                            <Border Grid.Column="0" BackgroundColor="{Binding ColorHex}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="12" HeightRequest="12" VerticalOptions="Center" HorizontalOptions="Start" />
-                                            <Label Grid.Column="1" Text="{Binding Category}" FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
-                                            <Label Grid.Column="2" Text="{Binding Percentage, StringFormat='{0:P0}'}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </VerticalStackLayout>
+                        <!-- The list is the legend, so it reads left to right in the order it is asked
+                             for: category, what it cost, what share of the month that was. The amount
+                             column is Auto and the star column ahead of it takes the slack, which is
+                             what lines the figures up on their right edge; the percentage is a fixed
+                             width for the same reason, since each row is a Grid of its own and Auto
+                             would size every one of them differently. -->
+                        <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding FinanceStats.ExpenseByCategory}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:CategoryStatItem">
+                                    <Grid ColumnDefinitions="12, *, Auto, 44" ColumnSpacing="8">
+                                        <Border Grid.Column="0" BackgroundColor="{Binding ColorHex}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="12" HeightRequest="12" VerticalOptions="Center" HorizontalOptions="Start" />
+                                        <Label Grid.Column="1" Text="{Binding Category}" FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                        <Label Grid.Column="2" Text="{Binding Amount, StringFormat='{0:N2}'}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Grid.Column="3" Text="{Binding Percentage, StringFormat='{0:P0}'}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" HorizontalTextAlignment="End" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
 
-                            <Grid Grid.Column="1" WidthRequest="120" HeightRequest="120" VerticalOptions="Center" HorizontalOptions="Center">
-                                <controls:CategoryDonutChart Items="{Binding FinanceStats.ExpenseByCategory}"
-                                                             SurfaceColor="{DynamicResource Theme_Snow_Black}"
-                                                             TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                                             MutedColor="{DynamicResource Theme_Ocean_Dust}" />
-                            </Grid>
+                        <!-- Under the list and across the card, where it is as wide as the phone allows
+                             instead of the 120px it had beside the list. The donut draws itself round
+                             inside whatever rectangle it is given, so the height is what sets its size —
+                             and it has to be stated: a self-sizing GraphicsView collapses to nothing on
+                             Android. -->
+                        <Grid HeightRequest="240">
+                            <controls:CategoryDonutChart Items="{Binding FinanceStats.ExpenseByCategory}"
+                                                         SurfaceColor="{DynamicResource Theme_Snow_Black}"
+                                                         TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                                         MutedColor="{DynamicResource Theme_Ocean_Dust}" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
