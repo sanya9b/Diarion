@@ -44,6 +44,13 @@ public partial class NoteDetailViewModel : BaseViewModel
 
     private readonly NoteBlockEditor _body = new();
 
+    /// <summary>
+    /// The body as it currently stands in the database, so that a save can tell whether there is
+    /// anything to save. Closing a note saves it — the debouncer may still be holding an edit — and
+    /// without this every note that was merely read got written back.
+    /// </summary>
+    private string _savedContent = string.Empty;
+
     /// <summary>The body as the screen draws it — one block per marked line, prose in runs.</summary>
     public ObservableCollection<NoteBlockViewModel> Blocks => _body.Blocks;
 
@@ -167,6 +174,7 @@ public partial class NoteDetailViewModel : BaseViewModel
             if (note != null)
             {
                 CurrentNote = note;
+                _savedContent = note.Content;
 #pragma warning disable MVVMTK0034 // Direct reference to observable backing field
                 _noteContent = note.Content; // Set backing field to avoid triggering OnNoteContentChanged immediately
 #pragma warning restore MVVMTK0034
@@ -201,6 +209,14 @@ public partial class NoteDetailViewModel : BaseViewModel
             return;
         }
 
+        // Reading a note is not editing it. Saving stamps UpdatedAt, and that is the date on the row
+        // in the notes list as well as the order the list is in — so a note that was opened, looked
+        // at and closed used to come back re-dated and sitting at the top.
+        if (CurrentNote.Content == _savedContent)
+        {
+            return;
+        }
+
         // The title is the first line that says something, as the user sees it: a note that opens
         // with "# Покупки" is called "Покупки", not "# Покупки" — otherwise the markup would leak
         // into the notes list, into search and into every [[link]] pointing at this note.
@@ -215,6 +231,7 @@ public partial class NoteDetailViewModel : BaseViewModel
         try
         {
             await _noteService.SaveNoteAsync(CurrentNote);
+            _savedContent = CurrentNote.Content;
             await RefreshMetadataAsync();
         }
         catch (Exception ex)
