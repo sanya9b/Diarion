@@ -64,83 +64,112 @@
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="{x:Static localization:AppResources.CycleAddTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Coral}" />
+                        <!-- Louder than the other section captions on purpose: this is the one thing the page
+                             is for, and at a caption's size it read as a label over the ДОДАТИ button. -->
+                        <Label Text="{x:Static localization:AppResources.CycleAddTitle}" FontAttributes="Bold" FontSize="17" TextColor="{DynamicResource Theme_Coral}" />
 
-                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
-                            <DatePicker Grid.Column="0" Date="{Binding NewEpisodeStart}" MaximumDate="{Binding MaximumDate}" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" VerticalOptions="Center" />
-                            <Border Grid.Column="1" StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Coral}" Padding="18,10">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding AddEpisodeCommand}" />
-                                </Border.GestureRecognizers>
-                                <Label Text="{x:Static localization:AppResources.CycleAddButton}" InputTransparent="True" FontAttributes="Bold" FontSize="13" TextColor="{DynamicResource Theme_Snow}" />
-                            </Border>
-                        </Grid>
+                        <!-- Date field and button stacked, not side by side: the button keeps its width at any
+                             screen size, so on a narrow phone it squeezed the picker against the card edge. -->
+                        <Border StrokeShape="RoundRectangle 14" StrokeThickness="1"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                Padding="12,2">
+                            <DatePicker Date="{Binding NewEpisodeStart}" MaximumDate="{Binding MaximumDate}" Format="dd.MM.yyyy" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" VerticalOptions="Center" HorizontalOptions="Fill" />
+                        </Border>
+
+                        <Border StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Coral}" Padding="18,12" HorizontalOptions="Fill">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AddEpisodeCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{x:Static localization:AppResources.CycleAddButton}" InputTransparent="True" FontAttributes="Bold" FontSize="14" CharacterSpacing="1" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Snow}" />
+                        </Border>
 
                         <Label Text="{x:Static localization:AppResources.CycleAddHint}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                     </VerticalStackLayout>
                 </Border>
 
                 <!-- Recorded history -->
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="{x:Static localization:AppResources.CycleHistoryTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Coral}" />
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{x:Static localization:AppResources.CycleHistoryTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Coral}" />
 
-                    <Label Text="{x:Static localization:AppResources.CycleHistoryEmpty}"
-                           IsVisible="{Binding HasNoData}"
-                           FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{x:Static localization:AppResources.CycleHistoryEmpty}"
+                               IsVisible="{Binding HasNoData}"
+                               FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Episodes}">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:CycleEpisodeItemViewModel">
-                                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                                        StrokeShape="RoundRectangle 14" Padding="14,12">
-                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="12">
-                                        <Label Grid.Column="0" Text="{Binding RangeText}" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Label Grid.Column="1" Text="{Binding IntervalText}" FontSize="11" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                        <Label Grid.Column="2" Text="✕" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}">
-                                            <Label.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteEpisodeCommand}" CommandParameter="{Binding .}" />
-                                            </Label.GestureRecognizers>
-                                        </Label>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
+                        <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Episodes}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:CycleEpisodeItemViewModel">
+                                    <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                            BackgroundColor="Transparent"
+                                            StrokeShape="RoundRectangle 14" Padding="14,12">
+                                        <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="12">
+                                            <Label Grid.Column="0" Text="{Binding RangeText}" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Label Grid.Column="1" Text="{Binding IntervalText}" FontSize="11" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                            <Label Grid.Column="2" Text="✕" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteEpisodeCommand}" CommandParameter="{Binding .}" />
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
-                </VerticalStackLayout>
+                </Border>
 
                 <!-- Symptom log. Any day can carry symptoms, not only a period day. -->
-                <VerticalStackLayout Spacing="10">
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                        <Label Grid.Column="0" Text="{x:Static localization:AppResources.CycleSymptomsLabel}"
-                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextTransform="Uppercase"
-                               VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                        <DatePicker Grid.Column="1" Date="{Binding SymptomDate}" MaximumDate="{Binding MaximumDate}"
-                                    Format="dd.MM.yyyy" FontSize="13" FontAttributes="Bold" VerticalOptions="Center"
-                                    BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                    </Grid>
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.CycleSymptomsLabel}"
+                                   FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextTransform="Uppercase"
+                                   VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
+                            <DatePicker Grid.Column="1" Date="{Binding SymptomDate}" MaximumDate="{Binding MaximumDate}"
+                                        Format="dd.MM.yyyy" FontSize="13" FontAttributes="Bold" VerticalOptions="Center"
+                                        BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Grid>
 
-                    <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignContent="Start"
-                                BindableLayout.ItemsSource="{Binding SymptomToggles}">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:SymptomToggleViewModel">
-                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Margin="0,0,8,8"
-                                        Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="12,7">
-                                    <Border.Triggers>
-                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                        </DataTrigger>
-                                    </Border.Triggers>
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleSymptomCommand}" CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
-                                    <Label Text="{Binding Label}" FontSize="13" VerticalOptions="Center"
-                                           TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </FlexLayout>
-                </VerticalStackLayout>
+                        <!-- Two fixed columns, height stated and not measured — the same FlexLayout trap as the
+                             calendar grid and the habit list. Left to size itself, every chip came out at
+                             nothing and the whole symptom list was invisible on the page. The gutter is a
+                             margin inside the cell, not on it: a margin on top of a 50% basis is wider than
+                             half the row, so the chips would never pair up. -->
+                        <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignContent="Start" Direction="Row"
+                                    BindableLayout.ItemsSource="{Binding SymptomToggles}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:SymptomToggleViewModel">
+                                    <ContentView FlexLayout.Basis="50%" HeightRequest="46">
+                                        <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Margin="0,0,8,8"
+                                                Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="6,8">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleSymptomCommand}" CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <!-- 12pt, not 13: the longest symptom is "Чутливість грудей", and half a
+                                                 narrow phone leaves it no room to spare. A chip cannot wrap its way
+                                                 out of it — FlexLayout measures the label against infinite width, so
+                                                 it reports one line and is then cut to the column. -->
+                                            <Label Text="{Binding Label}" FontSize="12" InputTransparent="True"
+                                                   HorizontalTextAlignment="Center" VerticalOptions="Center"
+                                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        </Border>
+                                    </ContentView>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                </Border>
 
             </VerticalStackLayout>
         </ScrollView>

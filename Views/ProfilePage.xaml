@@ -232,12 +232,15 @@
                             <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
 
                             <!-- Recording and correcting periods lives on its own page: it is a handful of
-                                 days a month, so it has no business occupying the daily screen. -->
-                            <Label Text="{x:Static localization:AppResources.CycleOpenLink}" FontSize="13" TextColor="{DynamicResource Theme_Sage}">
-                                <Label.GestureRecognizers>
+                                 days a month, so it has no business occupying the daily screen. That page is
+                                 reachable from here alone, so the row is a row and not dim small print. -->
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,2" BackgroundColor="Transparent">
+                                <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenCycleCommand}" />
-                                </Label.GestureRecognizers>
-                            </Label>
+                                </Grid.GestureRecognizers>
+                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.CycleOpenLink}" InputTransparent="True" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
+                                <Label Grid.Column="1" Text="›" InputTransparent="True" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
+                            </Grid>
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
