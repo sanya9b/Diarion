@@ -53,10 +53,10 @@
 
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
 		<!--
-		  Asks iOS for a higher per-app memory ceiling. Every configuration, not just Release: a
-		  debug build on a device runs into the same jetsam limit, and finding that out only in
-		  Release is the expensive order to learn it in. See the file for what it does and does not
-		  guarantee.
+		  Every configuration, not just Release. The file used to hold only the increased memory
+		  limit and that was arguably a Release concern; it now holds the HealthKit entitlement,
+		  without which HealthDataService fails silently on a debug device too. Finding that out
+		  only in Release is the expensive order to learn it in. See the file for the rest.
 		-->
 		<CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
 	</PropertyGroup>
@@ -90,8 +90,7 @@
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
-		
+
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 

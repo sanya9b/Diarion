@@ -1630,6 +1630,45 @@
   <data name="OnboardingGetStartedButton" xml:space="preserve">
     <value>Get started</value>
   </data>
+  <data name="OnboardingNextButton" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="OnboardingBackButton" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="OnboardingSkipButton" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="OnboardingJournalTitle" xml:space="preserve">
+    <value>A day fits in one entry</value>
+  </data>
+  <data name="OnboardingJournalText" xml:space="preserve">
+    <value>Write a page or write one line, then mark the mood, the sleep, the meals, how the body felt. None of it is required — the fields you skip simply stay empty.</value>
+  </data>
+  <data name="OnboardingInsightsTitle" xml:space="preserve">
+    <value>What a single day can't show you</value>
+  </data>
+  <data name="OnboardingInsightsText" xml:space="preserve">
+    <value>After a couple of weeks the app starts comparing what you log: what your good days have in common, what your worst sleep tends to follow. It only says so once there is enough data to mean it.</value>
+  </data>
+  <data name="OnboardingModulesTitle" xml:space="preserve">
+    <value>Choose what you'll keep</value>
+  </data>
+  <data name="OnboardingModulesSubtitle" xml:space="preserve">
+    <value>Uncheck anything you don't need and it leaves the screens instead of sitting there empty. All of it is in Settings afterwards.</value>
+  </data>
+  <data name="OnboardingModulesEntryGroup" xml:space="preserve">
+    <value>In the daily entry</value>
+  </data>
+  <data name="OnboardingModulesSectionsGroup" xml:space="preserve">
+    <value>Sections of their own</value>
+  </data>
+  <data name="OnboardingReminderTitle" xml:space="preserve">
+    <value>One quiet reminder</value>
+  </data>
+  <data name="OnboardingReminderText" xml:space="preserve">
+    <value>An invitation, not a scolding. Turn it off here or in Settings whenever you like.</value>
+  </data>
   <data name="RemindersTitle" xml:space="preserve">
     <value>REMINDERS</value>
   </data>

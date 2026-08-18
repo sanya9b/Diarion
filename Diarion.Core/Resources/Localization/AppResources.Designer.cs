@@ -1245,6 +1245,10 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string Notes {
+            get { return ResourceManager.GetString("Notes", resourceCulture) ?? string.Empty; }
+        }
+
         public static string NotesFilterAll {
             get {
                 return ResourceManager.GetString("NotesFilterAll", resourceCulture);
@@ -1597,6 +1601,58 @@ public static string ClearAllDataSuccessMsg {
 
         public static string OnboardingGetStartedButton {
             get { return ResourceManager.GetString("OnboardingGetStartedButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingNextButton {
+            get { return ResourceManager.GetString("OnboardingNextButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingBackButton {
+            get { return ResourceManager.GetString("OnboardingBackButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingSkipButton {
+            get { return ResourceManager.GetString("OnboardingSkipButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingJournalTitle {
+            get { return ResourceManager.GetString("OnboardingJournalTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingJournalText {
+            get { return ResourceManager.GetString("OnboardingJournalText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingInsightsTitle {
+            get { return ResourceManager.GetString("OnboardingInsightsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingInsightsText {
+            get { return ResourceManager.GetString("OnboardingInsightsText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModulesTitle {
+            get { return ResourceManager.GetString("OnboardingModulesTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModulesSubtitle {
+            get { return ResourceManager.GetString("OnboardingModulesSubtitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModulesEntryGroup {
+            get { return ResourceManager.GetString("OnboardingModulesEntryGroup", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModulesSectionsGroup {
+            get { return ResourceManager.GetString("OnboardingModulesSectionsGroup", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingReminderTitle {
+            get { return ResourceManager.GetString("OnboardingReminderTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingReminderText {
+            get { return ResourceManager.GetString("OnboardingReminderText", resourceCulture) ?? string.Empty; }
         }
 
         public static string RemindersTitle {

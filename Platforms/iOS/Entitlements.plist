@@ -2,15 +2,37 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- The generative model is 1.1 GB of weights, and iOS gives a 4 GB device roughly 2 GB before
-	     jetsam kills the process outright - no exception, no crash report, the app simply vanishes.
-	     This entitlement raises that ceiling on devices with 3 GB or more.
+	<!-- HealthKit. This is not new capability, it is the entitlement the existing code has always
+	     needed and never had: HealthDataService constructs HKHealthStore and calls
+	     RequestAuthorizationToShare, and Info.plist carries NSHealthShareUsageDescription, but
+	     without this key the authorisation callback simply comes back unsuccessful. The failure
+	     mode is the quiet kind - no crash, no error dialog, just sleep data that never arrives -
+	     which is why it survived this long.
 
-	     It is not a guarantee. The entitlement only takes effect if the provisioning profile the app
-	     was signed with carries it, and this app is published from CI with CodesignKey="-" and
-	     re-signed afterwards by whatever the installing account allows, which may drop it silently.
-	     Costs one file; buys several hundred megabytes when it survives. -->
-	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	     Two things this obliges, both outside the repo:
+	     - The App ID must have the HealthKit capability enabled, or signing fails. CI cannot catch
+	       it: build-ios.yml publishes with CodesignKey="-".
+	     - App Review asks what health data is read and why. The honest answer is short: sleep
+	       analysis, read-only, to prefill the sleep fields of a diary entry. The share set passed
+	       to RequestAuthorizationToShare is empty on purpose - the app never writes to Health -
+	       and there is deliberately no NSHealthUpdateUsageDescription to match.
+
+	     The cheaper alternative, if Health is not worth that on v1: drop this key, drop
+	     NSHealthShareUsageDescription and both localised copies, and let the iOS branch of
+	     HealthDataService report unsupported the way the Android branch already does. -->
+	<key>com.apple.developer.healthkit</key>
 	<true/>
+
+	<!-- Removed for v1: com.apple.developer.kernel.increased-memory-limit.
+	     It was added for the 1.1 GB generative model, and OnDeviceAi.GenerationOffered has been
+	     false for everyone since 2026-08-10. What is left is the 123 MB encoder, which does not go
+	     near the jetsam ceiling that entitlement was raising. An entitlement kept "just in case"
+	     is not free: it has to be enabled on the App ID too, and a key in the binary that the
+	     provisioning profile does not carry is a signing failure rather than a warning.
+	     Restoring it is this, verbatim, in the same commit that flips GenerationOffered back:
+	         <key>com.apple.developer.kernel.increased-memory-limit</key>
+	         <true/>
+	     It only ever took effect when the installing profile happened to carry it, so it bought
+	     several hundred megabytes when it survived and nothing when it did not. -->
 </dict>
 </plist>

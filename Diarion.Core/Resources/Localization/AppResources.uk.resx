@@ -857,7 +857,7 @@
     <value>Статистика</value>
   </data>
   <data name="StatisticsTitle" xml:space="preserve">
-    <value>Dashboard</value>
+    <value>Дошка</value>
   </data>
   <data name="StatsSleepDuration" xml:space="preserve">
     <value>Середня тривалість:</value>
@@ -1524,6 +1524,45 @@
   </data>
   <data name="OnboardingGetStartedButton" xml:space="preserve">
     <value>Почати</value>
+  </data>
+  <data name="OnboardingNextButton" xml:space="preserve">
+    <value>Далі</value>
+  </data>
+  <data name="OnboardingBackButton" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+  <data name="OnboardingSkipButton" xml:space="preserve">
+    <value>Пропустити</value>
+  </data>
+  <data name="OnboardingJournalTitle" xml:space="preserve">
+    <value>День уміщається в один запис</value>
+  </data>
+  <data name="OnboardingJournalText" xml:space="preserve">
+    <value>Напишіть сторінку або один рядок, а тоді позначте настрій, сон, їжу, самопочуття. Обов'язкового немає нічого — пропущені поля просто лишаються порожніми.</value>
+  </data>
+  <data name="OnboardingInsightsTitle" xml:space="preserve">
+    <value>Те, чого не видно за один день</value>
+  </data>
+  <data name="OnboardingInsightsText" xml:space="preserve">
+    <value>За кілька тижнів застосунок почне зіставляти те, що ви записуєте: що спільного у ваших хороших днях, після чого зазвичай буває найгірший сон. Скаже про це лише тоді, коли даних справді вистачить.</value>
+  </data>
+  <data name="OnboardingModulesTitle" xml:space="preserve">
+    <value>Оберіть, що вестимете</value>
+  </data>
+  <data name="OnboardingModulesSubtitle" xml:space="preserve">
+    <value>Зніміть позначку з того, що не потрібне, — воно піде з екранів, а не стоятиме порожнім. Усе це потім є в налаштуваннях.</value>
+  </data>
+  <data name="OnboardingModulesEntryGroup" xml:space="preserve">
+    <value>У щоденному записі</value>
+  </data>
+  <data name="OnboardingModulesSectionsGroup" xml:space="preserve">
+    <value>Окремі розділи</value>
+  </data>
+  <data name="OnboardingReminderTitle" xml:space="preserve">
+    <value>Одне тихе нагадування</value>
+  </data>
+  <data name="OnboardingReminderText" xml:space="preserve">
+    <value>Запрошення, а не докір. Вимкнути можна тут або в налаштуваннях будь-коли.</value>
   </data>
   <data name="RemindersTitle" xml:space="preserve">
     <value>НАГАДУВАННЯ</value>

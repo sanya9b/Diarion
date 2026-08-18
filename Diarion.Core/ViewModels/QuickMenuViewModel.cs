@@ -84,18 +84,29 @@ public partial class QuickMenuViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Called when the main page reappears. The generative model is installed on another screen, so
-    /// the only moment the tile can honestly appear is on the way back from it.
+    /// Called when the main page reappears — the only moment either of the two things this strip
+    /// depends on can have changed behind its back.
     /// </summary>
-    public async Task RefreshAvailabilityAsync()
+    /// <remarks>
+    /// The generative model is installed on another screen, so that is the only moment the chat tile
+    /// can honestly appear. The saved order is written by two screens the user leaves to reach: the
+    /// onboarding module picker, and a drag on the strip itself. Both comparisons guard the same
+    /// thing — <see cref="Rebuild"/> clears and refills the collection, which is a visible flicker if
+    /// it runs on every return to the home screen for no reason.
+    /// </remarks>
+    public async Task RefreshAsync()
     {
+        var profile = await _profileService.GetUserProfileAsync();
+        var order = profile.QuickMenuOrder ?? new List<string>();
         var available = await _aiAvailability.CanGenerateAsync();
-        if (available == _isChatAvailable)
+
+        if (available == _isChatAvailable && order.SequenceEqual(_savedOrder))
         {
             return;
         }
 
         _isChatAvailable = available;
+        _savedOrder = order;
         Rebuild();
     }
 

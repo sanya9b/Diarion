@@ -1,3 +1,6 @@
+/* Every key here must also exist in Info.plist and in en.lproj. A string for a key Info.plist does
+   not declare is dead weight that reads like a feature; a key Info.plist declares and this file does
+   not gets shown to Ukrainian users in English. Both happened, so: keep the three files in step. */
+
 NSFaceIDUsageDescription = "Дозволяє безпечно розблокувати ваш щоденник.";
-NSPhotoLibraryUsageDescription = "Використовується для додавання фотографій до ваших записів.";
-NSCameraUsageDescription = "Використовується для створення фотографій для ваших записів.";
+NSHealthShareUsageDescription = "Використовується, щоб зчитувати дані про сон і автоматично заповнювати ваш запис.";

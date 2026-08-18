@@ -4,10 +4,17 @@
 <dict>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- iPhone only, and portrait only. Both were declared and neither was ever built: R3 of
+	     spec 08 asked for OnIdiom/AdaptiveTrigger and a max-width container, and the codebase
+	     contains no OnIdiom, no AdaptiveTrigger and exactly one MaximumWidthRequest. So AC3 of
+	     that spec ("content uses the width sensibly on tablet/landscape") is not met, and
+	     declaring iPad meant App Review opening a stretched single column on a 13" screen —
+	     plus 13" screenshots we would have to shoot to even submit.
+	     Narrowing here costs nothing that works today and is reversible in any later release,
+	     unlike the bundle id. Widen it again in the same commit that lands the adaptive layout. -->
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>
-		<integer>2</integer>
 	</array>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
@@ -16,15 +23,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
@@ -34,5 +32,20 @@
 	     deliberately no NSHealthUpdateUsageDescription: the app never writes to Health. -->
 	<key>NSHealthShareUsageDescription</key>
 	<string>Used to read sleep data and populate your diary automatically.</string>
+	<!-- Export compliance, answered once here instead of by hand on every single build: without
+	     this key App Store Connect stops each upload on the questionnaire.
+
+	     The claim being made is "no non-exempt encryption", and this is the whole basis for it:
+	     the app encrypts the user's own database on the user's own device with standard published
+	     algorithms (AES through LiteDB, PBKDF2 for the portable backup passphrase, SHA for the PIN
+	     hash), reaches the network only over ordinary HTTPS to fetch model files, and ships no
+	     cryptography of its own design.
+
+	     Flip this to <true/> the day any of that stops being true — a Diarion-operated proxy, a
+	     custom cipher, or encryption offered to the user as a feature rather than used to protect
+	     their storage. That day also brings an annual self-classification report, which is exactly
+	     why the line is worth re-reading rather than inheriting. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>

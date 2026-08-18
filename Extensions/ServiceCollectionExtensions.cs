@@ -35,6 +35,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IStatisticsService, StatisticsService>();
         services.AddSingleton<ICorrelationService, CorrelationService>();
         services.AddSingleton<IMenuConfigurationService, MenuConfigurationService>();
+        services.AddSingleton<IOnboardingModuleService, OnboardingModuleService>();
         services.AddSingleton<IBackupService, BackupService>();
         services.AddSingleton<IExportService, ExportService>();
         services.AddSingleton<INavigationService, MauiNavigationService>();

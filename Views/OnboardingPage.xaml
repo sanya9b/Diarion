@@ -8,58 +8,221 @@
              BackgroundColor="{DynamicResource Theme_Earth_Midnight}"
              NavigationPage.HasNavigationBar="False">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="24" VerticalOptions="Center">
+    <ContentPage.Resources>
+        <Style x:Key="StepTitle" TargetType="Label">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+        </Style>
 
-            <Label Text="D" FontSize="72" FontAttributes="Bold" HorizontalOptions="Center"
-                   TextColor="{DynamicResource Theme_Coral}" />
+        <Style x:Key="StepBody" TargetType="Label">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+        </Style>
 
-            <VerticalStackLayout Spacing="8">
-                <Label Text="{x:Static localization:AppResources.OnboardingTitle}"
-                       FontSize="26" FontAttributes="Bold" HorizontalOptions="Center"
-                       HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                <Label Text="{x:Static localization:AppResources.OnboardingSubtitle}"
-                       FontSize="15" HorizontalOptions="Center" HorizontalTextAlignment="Center"
-                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
-            </VerticalStackLayout>
+        <Style x:Key="StepRule" TargetType="BoxView">
+            <Setter Property="HeightRequest" Value="3" />
+            <Setter Property="WidthRequest" Value="40" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+            <Setter Property="Color" Value="{DynamicResource Theme_Coral}" />
+        </Style>
 
-            <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
-                    Stroke="{DynamicResource Theme_Dust_Ocean}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                    Padding="18">
-                <Label Text="{x:Static localization:AppResources.OnboardingPrivacyText}"
-                       FontSize="14" HorizontalTextAlignment="Center"
-                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
-            </Border>
+        <Style x:Key="GroupHeader" TargetType="Label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="CharacterSpacing" Value="1.5" />
+            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+        </Style>
 
-            <!-- Daily reminder opt-in -->
-            <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
-                    Stroke="{DynamicResource Theme_Dust_Ocean}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                    Padding="18">
-                <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
-                        <Label Grid.Column="0" Text="{x:Static localization:AppResources.OnboardingReminderLabel}"
-                               VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        <Switch Grid.Column="1" IsToggled="{Binding IsDailyReminderEnabled}"
-                                OnColor="{DynamicResource Theme_Ocean_Ocean}" VerticalOptions="Center" />
-                    </Grid>
-                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12" IsVisible="{Binding IsDailyReminderEnabled}">
-                        <Label Grid.Column="0" Text="{x:Static localization:AppResources.ReminderTimeLabel}"
-                               VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                        <TimePicker Grid.Column="1" Time="{Binding DailyReminderTime}"
-                                    TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" />
-                    </Grid>
+        <DataTemplate x:Key="ModuleRow" x:DataType="viewmodels:OnboardingModule">
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"
+                          Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                <Label Grid.Column="1" Text="{Binding Title}" VerticalOptions="Center"
+                       FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </Grid>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="24,20,24,24" RowSpacing="20">
+
+        <!-- Progress and the way out. Skip is a step-level escape, not a footer button: it must be
+             reachable at once and never sit where the primary action is about to appear. -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+            <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center"
+                                   BindableLayout.ItemsSource="{Binding StepDots}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:OnboardingStepDot">
+                        <Ellipse WidthRequest="8" HeightRequest="8" VerticalOptions="Center"
+                                 Fill="{DynamicResource Theme_Ocean_Dust}" Opacity="0.35">
+                            <Ellipse.Triggers>
+                                <DataTrigger TargetType="Ellipse" Binding="{Binding IsActive}" Value="True">
+                                    <Setter Property="Fill" Value="{DynamicResource Theme_Coral}" />
+                                    <Setter Property="Opacity" Value="1" />
+                                </DataTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </HorizontalStackLayout>
+
+            <!-- A Button rather than the tapped Label used elsewhere: this is the one control on the
+                 screen a person may be reaching for in a hurry, and it has to be announced as a
+                 button and have a finger-sized target without either being arranged by hand. -->
+            <Button Grid.Column="1" Text="{x:Static localization:AppResources.OnboardingSkipButton}"
+                    Command="{Binding SkipCommand}"
+                    IsVisible="{Binding CanSkip}"
+                    BackgroundColor="Transparent"
+                    TextColor="{DynamicResource Theme_Ocean_Dust}"
+                    FontSize="14"
+                    Padding="12,6"
+                    MinimumHeightRequest="44"
+                    VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <Grid VerticalOptions="Center">
+
+                <!-- 1. Welcome -->
+                <VerticalStackLayout Spacing="24" VerticalOptions="Center" IsVisible="{Binding IsWelcomeStep}">
+                    <Label Text="D" FontSize="72" FontAttributes="Bold" HorizontalOptions="Center"
+                           TextColor="{DynamicResource Theme_Coral}" />
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{x:Static localization:AppResources.OnboardingTitle}"
+                               Style="{StaticResource StepTitle}" FontSize="26" />
+                        <Label Text="{x:Static localization:AppResources.OnboardingSubtitle}"
+                               Style="{StaticResource StepBody}" />
+                    </VerticalStackLayout>
+
+                    <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                            Padding="18">
+                        <Label Text="{x:Static localization:AppResources.OnboardingPrivacyText}"
+                               FontSize="14" HorizontalTextAlignment="Center"
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    </Border>
                 </VerticalStackLayout>
-            </Border>
 
-            <Button Text="{x:Static localization:AppResources.OnboardingGetStartedButton}"
-                    Command="{Binding CompleteCommand}"
+                <!-- 2. What a day looks like -->
+                <VerticalStackLayout Spacing="16" VerticalOptions="Center" IsVisible="{Binding IsJournalStep}">
+                    <BoxView Style="{StaticResource StepRule}" />
+                    <Label Text="{x:Static localization:AppResources.OnboardingJournalTitle}"
+                           Style="{StaticResource StepTitle}" />
+                    <Label Text="{x:Static localization:AppResources.OnboardingJournalText}"
+                           Style="{StaticResource StepBody}" />
+                </VerticalStackLayout>
+
+                <!-- 3. Why it is worth keeping up -->
+                <VerticalStackLayout Spacing="16" VerticalOptions="Center" IsVisible="{Binding IsInsightsStep}">
+                    <BoxView Style="{StaticResource StepRule}" />
+                    <Label Text="{x:Static localization:AppResources.OnboardingInsightsTitle}"
+                           Style="{StaticResource StepTitle}" />
+                    <Label Text="{x:Static localization:AppResources.OnboardingInsightsText}"
+                           Style="{StaticResource StepBody}" />
+                </VerticalStackLayout>
+
+                <!-- 4. Pick the modules -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsModulesStep}">
+                    <Label Text="{x:Static localization:AppResources.OnboardingModulesTitle}"
+                           Style="{StaticResource StepTitle}" />
+                    <Label Text="{x:Static localization:AppResources.OnboardingModulesSubtitle}"
+                           Style="{StaticResource StepBody}" />
+
+                    <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                            Padding="16">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="{x:Static localization:AppResources.OnboardingModulesEntryGroup}"
+                                   Style="{StaticResource GroupHeader}" />
+                            <VerticalStackLayout Spacing="10"
+                                                 BindableLayout.ItemsSource="{Binding DailyEntryModules}"
+                                                 BindableLayout.ItemTemplate="{StaticResource ModuleRow}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                            Padding="16">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="{x:Static localization:AppResources.OnboardingModulesSectionsGroup}"
+                                   Style="{StaticResource GroupHeader}" />
+                            <VerticalStackLayout Spacing="10"
+                                                 BindableLayout.ItemsSource="{Binding SectionModules}"
+                                                 BindableLayout.ItemTemplate="{StaticResource ModuleRow}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- 5. Daily reminder opt-in -->
+                <VerticalStackLayout Spacing="16" VerticalOptions="Center" IsVisible="{Binding IsReminderStep}">
+                    <BoxView Style="{StaticResource StepRule}" />
+                    <Label Text="{x:Static localization:AppResources.OnboardingReminderTitle}"
+                           Style="{StaticResource StepTitle}" />
+                    <Label Text="{x:Static localization:AppResources.OnboardingReminderText}"
+                           Style="{StaticResource StepBody}" />
+
+                    <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                            Padding="18">
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.OnboardingReminderLabel}"
+                                       VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Switch Grid.Column="1" IsToggled="{Binding IsDailyReminderEnabled}"
+                                        OnColor="{DynamicResource Theme_Ocean_Ocean}" VerticalOptions="Center" />
+                            </Grid>
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12" IsVisible="{Binding IsDailyReminderEnabled}">
+                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.ReminderTimeLabel}"
+                                       VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                <TimePicker Grid.Column="1" Time="{Binding DailyReminderTime}"
+                                            TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+            </Grid>
+        </ScrollView>
+
+        <Grid Grid.Row="2" ColumnDefinitions="Auto, *" ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    Text="{x:Static localization:AppResources.OnboardingBackButton}"
+                    Command="{Binding BackCommand}"
+                    IsVisible="{Binding CanGoBack}"
+                    BackgroundColor="Transparent"
+                    TextColor="{DynamicResource Theme_Ocean_Dust}"
+                    BorderColor="{DynamicResource Theme_Dust_Ocean}"
+                    BorderWidth="1"
+                    CornerRadius="12"
+                    HeightRequest="50"
+                    Padding="20,0" />
+
+            <Button Grid.Column="1"
+                    Text="{x:Static localization:AppResources.OnboardingNextButton}"
+                    Command="{Binding NextCommand}"
+                    IsVisible="{Binding CanGoNext}"
                     BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
                     TextColor="{DynamicResource Theme_Snow}"
                     CornerRadius="12"
-                    HeightRequest="50"
-                    Margin="0,8,0,0" />
-        </VerticalStackLayout>
-    </ScrollView>
+                    HeightRequest="50" />
+
+            <Button Grid.Column="1"
+                    Text="{x:Static localization:AppResources.OnboardingGetStartedButton}"
+                    Command="{Binding CompleteCommand}"
+                    IsVisible="{Binding IsReminderStep}"
+                    BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
+                    TextColor="{DynamicResource Theme_Snow}"
+                    CornerRadius="12"
+                    HeightRequest="50" />
+        </Grid>
+    </Grid>
 </ContentPage>

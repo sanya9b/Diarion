@@ -75,9 +75,11 @@ public partial class MainPage : ContentPage
 
         StartupTrace.Mark($"MainPage.OnAppearing hasRenderedOnce={_hasRenderedOnce}");
 
-        // The generative model is installed in settings, so this is the moment the chat tile can
-        // appear — or disappear, if the model was deleted or AI switched off while we were away.
-        await _viewModel.QuickMenuSection.RefreshAvailabilityAsync();
+        // Both things the strip depends on are changed elsewhere and land here: the generative model
+        // is installed in settings, so this is the moment the chat tile can appear — or disappear, if
+        // the model was deleted or AI switched off while we were away — and the tile order is written
+        // by the onboarding module picker, which is dismissed onto this screen.
+        await _viewModel.QuickMenuSection.RefreshAsync();
 
         if (!_hasRenderedOnce)
         {

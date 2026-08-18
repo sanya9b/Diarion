@@ -140,3 +140,164 @@ jobs:
 
           [ "$STATUS" -eq 0 ] && echo "Exactly the approved permissions. Good."
           exit "$STATUS"
+
+  # Nothing in CI compiled the iOS target until this job existed. The tests job builds Core and
+  # Tests (plain net10.0), the android job builds the Android head — so everything under
+  # Platforms/iOS was checked by exactly one thing: remembering to check it. HealthDataService,
+  # the biometrics code and the notification delegate all live there.
+  #
+  # windows-latest, not macOS. `-t:Compile` runs Roslyn and the XAML source generator against the
+  # iOS reference assemblies; it never invokes Xcode, so it needs no Mac and no pairing. That
+  # matters because GitHub bills macOS minutes at 10x and Windows at 2x — the same check on
+  # macos-26 would cost five times as much for an identical result. Ubuntu is not an option:
+  # Diarion.csproj line 5 adds net10.0-ios to TargetFrameworks only when the OS is not Linux, so
+  # `-f net10.0-ios` there fails with "project does not target that framework".
+  #
+  # Release, not Debug: the iOS Release configuration is where the linker and AOT settings live
+  # (MtouchLink=SdkOnly, UseInterpreter=true), and a conditional compilation symbol that only
+  # exists in one configuration is exactly the kind of thing this is meant to catch.
+  #
+  # This does not replace build-ios.yml. That one still has to run on a Mac to produce a signed
+  # IPA — actool, the linker and the AOT compiler are Xcode. This only proves the code compiles.
+  ios-typecheck:
+    name: iOS target still compiles
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-ios-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-ios-${{ runner.os }}-
+
+      - name: Restore workloads
+        run: dotnet workload restore Diarion.csproj
+
+      - name: Type-check the iOS target
+        run: dotnet build Diarion.csproj -f net10.0-ios -c Release -t:Compile
+
+  # Four files have to agree with each other for an iOS submission to go through, and none of them
+  # is checked by the compiler: Info.plist, Entitlements.plist, PrivacyInfo.xcprivacy and the two
+  # localised InfoPlist.strings. Every rule below is one that has already been broken here once.
+  # The failure modes are all quiet — an unsuccessful callback, an English prompt shown to a
+  # Ukrainian user, an ITMS email three hours after the upload — which is what makes them worth
+  # spending fifteen seconds on every push.
+  ios-submission-metadata:
+    name: iOS submission metadata is consistent
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the plists against each other
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, plistlib, re, sys
+
+          root = pathlib.Path(".")
+          errors, warnings = [], []
+
+          def plist(relative):
+              return plistlib.loads((root / relative).read_bytes())
+
+          def text(path):
+              raw = path.read_bytes()
+              # .strings files are UTF-16 as often as UTF-8; Xcode accepts both.
+              for encoding in ("utf-8-sig", "utf-16"):
+                  try:
+                      return raw.decode(encoding)
+                  except UnicodeDecodeError:
+                      continue
+              return raw.decode("utf-8", errors="replace")
+
+          info = plist("Platforms/iOS/Info.plist")
+          entitlements = plist("Platforms/iOS/Entitlements.plist")
+          privacy = plist("Platforms/iOS/Resources/PrivacyInfo.xcprivacy")
+
+          # Without this key App Store Connect stops every single upload on the export-compliance
+          # questionnaire, and the answer is the same every time.
+          if "ITSAppUsesNonExemptEncryption" not in info:
+              errors.append(
+                  "Info.plist: ITSAppUsesNonExemptEncryption is gone. Every upload now stops on the "
+                  "export-compliance questionnaire in App Store Connect.")
+
+          # The bug this encodes shipped for months: the usage string was there, the entitlement was
+          # not, and HealthKit authorisation just came back unsuccessful with no error anywhere.
+          health_string = "NSHealthShareUsageDescription" in info
+          health_entitlement = bool(entitlements.get("com.apple.developer.healthkit"))
+          if health_string and not health_entitlement:
+              errors.append(
+                  "NSHealthShareUsageDescription is declared but com.apple.developer.healthkit is "
+                  "not. Authorisation comes back unsuccessful, silently, and sleep data never arrives.")
+          if health_entitlement and not health_string:
+              errors.append(
+                  "com.apple.developer.healthkit is claimed with no NSHealthShareUsageDescription. "
+                  "iOS terminates the app the moment it asks, and App Review rejects it before that.")
+
+          # The comment at the top of both .strings files says to keep the three in step. This is
+          # that comment, enforced.
+          usage_keys = {k for k in info if k.endswith("UsageDescription")}
+          for lproj in sorted((root / "Platforms/iOS/Resources").glob("*.lproj")):
+              strings_file = lproj / "InfoPlist.strings"
+              if not strings_file.is_file():
+                  errors.append(f"{strings_file} is missing.")
+                  continue
+              translated = set(re.findall(
+                  r'^\s*"?([A-Za-z]+UsageDescription)"?\s*=', text(strings_file), re.M))
+              for key in sorted(usage_keys - translated):
+                  errors.append(
+                      f"{strings_file}: no translation for {key}. That permission prompt is shown "
+                      "in English regardless of the device language.")
+              for key in sorted(translated - usage_keys):
+                  errors.append(
+                      f"{strings_file}: {key} is translated but Info.plist never declares it. Dead "
+                      "weight that reads like a feature.")
+
+          # Leaving a used API category out does not fail the upload — it comes back afterwards as
+          # an ITMS-91053 email, which is a slower way to learn the same thing.
+          categories = {entry.get("NSPrivacyAccessedAPIType")
+                        for entry in privacy.get("NSPrivacyAccessedAPITypes", [])}
+          sources = [p for p in root.rglob("*.cs")
+                     if not {"obj", "bin"} & set(p.parts)]
+          uses_preferences = any(
+              "Preferences." in p.read_text(encoding="utf-8", errors="ignore") for p in sources)
+          if uses_preferences and "NSPrivacyAccessedAPICategoryUserDefaults" not in categories:
+              errors.append(
+                  "The Preferences API is used but PrivacyInfo.xcprivacy does not declare "
+                  "NSPrivacyAccessedAPICategoryUserDefaults. Expect an ITMS-91053 email.")
+
+          # iPhone-only is a claim the store listing depends on: an app that also runs on iPad needs
+          # iPad screenshots, and Apple will not accept the submission without them.
+          if info.get("UIDeviceFamily") != [1]:
+              errors.append(
+                  f"UIDeviceFamily is {info.get('UIDeviceFamily')}, no longer iPhone-only. That "
+                  "obliges a full set of iPad screenshots in App Store Connect — add them and "
+                  "relax this check in the same commit.")
+
+          # The bundle id is fixed at first submission and can never be changed, so this one is a
+          # nag everywhere and a wall on main.
+          app_id = re.search(r"<ApplicationId>(.*?)</ApplicationId>",
+                             (root / "Diarion.csproj").read_text(encoding="utf-8")).group(1)
+          if app_id.startswith("com.companyname."):
+              bound_for_release = (os.environ.get("GITHUB_REF") == "refs/heads/main"
+                                   or os.environ.get("GITHUB_BASE_REF") == "main")
+              (errors if bound_for_release else warnings).append(
+                  f"ApplicationId is still the template default ({app_id}). It is permanent from "
+                  "the first submission onwards — App Store Connect will not let it be changed, "
+                  "and neither will a second app record.")
+
+          for warning in warnings:
+              print(f"::warning::{warning}")
+          for error in errors:
+              print(f"::error::{error}")
+
+          if not errors:
+              print("Info.plist, Entitlements.plist, PrivacyInfo.xcprivacy and both "
+                    "InfoPlist.strings agree with each other.")
+          sys.exit(1 if errors else 0)
+          PY
