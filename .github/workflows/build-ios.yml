@@ -1,15 +1,76 @@
 name: Build iOS IPA
 
+# Два режими, бо збірка для магазину і збірка «чи воно взагалі збирається» — різні роботи з
+# різною ціною. Раніше тут була тільки друга, і те, що вона видавала, до App Store потрапити не
+# могло в принципі: непідписаний .app, запакований у zip руками.
+#
+#   unsigned (типово) — те, що було: CodesignKey="-", IPA як артефакт, жодних секретів.
+#                       Лишається корисним: ловить actool, лінкер і AOT, яких ios-typecheck у
+#                       ci.yml не запускає.
+#   appstore          — Apple Distribution, ArchiveOnBuild, і одразу аплоуд у App Store Connect.
+#
+# Режим appstore вимагає шести секретів (нижче). Джоб перевіряє їх наявність перед збіркою, а не
+# після: п'ятнадцять хвилин на macOS-раннері, щоб дізнатись про порожній секрет на останньому
+# кроці, — найдорожчий спосіб прочитати «не задано».
 on:
-  workflow_dispatch: # Дозволяє запускати збірку вручну кнопкою
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'unsigned = перевірка збірки; appstore = підписати і залити в App Store Connect'
+        type: choice
+        options: [unsigned, appstore]
+        default: unsigned
+        required: true
 
 jobs:
   build:
     runs-on: macos-26 # .NET 10.0.300 iOS workload (26.5.10301) requires Xcode 26.6
 
+    env:
+      SIGNED: ${{ inputs.mode == 'appstore' }}
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+
+    # Перед усім іншим. Раннер macOS коштує ×10, і кожна хвилина, витрачена на збірку, яка все одно
+    # впаде на аплоуді, — витрачена двічі: на неї й на повторний запуск.
+    - name: Verify the signing secrets are present
+      if: env.SIGNED == 'true'
+      env:
+        IOS_P12_BASE64: ${{ secrets.IOS_P12_BASE64 }}
+        IOS_P12_PASSWORD: ${{ secrets.IOS_P12_PASSWORD }}
+        IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+        APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+        APPSTORE_API_KEY_BASE64: ${{ secrets.APPSTORE_API_KEY_BASE64 }}
+        IOS_CODESIGN_IDENTITY: ${{ secrets.IOS_CODESIGN_IDENTITY }}
+        IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+      run: |
+        MISSING=0
+        for NAME in IOS_P12_BASE64 IOS_P12_PASSWORD IOS_PROVISIONING_PROFILE_BASE64 \
+                    APPSTORE_API_KEY_ID APPSTORE_API_ISSUER_ID APPSTORE_API_KEY_BASE64 \
+                    IOS_CODESIGN_IDENTITY IOS_PROVISIONING_PROFILE_NAME; do
+          if [ -z "${!NAME}" ]; then
+            echo "::error::Секрет $NAME не заданий. Режим appstore без нього не працює."
+            MISSING=1
+          fi
+        done
+        [ "$MISSING" -eq 0 ] || exit 1
+
+    # Bundle id не змінюється після першої відправки збірки — ніколи, і не через підтримку теж.
+    # ci.yml уже валить це на main, але залити в App Store Connect можна і з гілки, тобто саме тут
+    # проходить остання межа, за якою помилку не забрати.
+    - name: Refuse to ship the template bundle id
+      if: env.SIGNED == 'true'
+      run: |
+        APP_ID=$(sed -n 's:.*<ApplicationId>\(.*\)</ApplicationId>.*:\1:p' Diarion.csproj)
+        echo "ApplicationId: $APP_ID"
+        case "$APP_ID" in
+          com.companyname.*)
+            echo "::error::ApplicationId досі $APP_ID. Він фіксується назавжди першим же аплоудом."
+            exit 1;;
+        esac
 
     - name: Select Xcode 26.6
       # The .NET for iOS workload restored below requires Xcode 26.6, so select it.
@@ -45,20 +106,112 @@ jobs:
     - name: Restore required workloads
       run: dotnet workload restore Diarion.csproj --skip-manifest-update
 
-    - name: Publish MAUI iOS App
-      # Збираємо додаток без сертифікатів Apple Developer (CodesignKey="-")
+    # Окремий keychain, а не login: раннер одноразовий, але keychain за замовчуванням залочений і
+    # codesign на ньому спиняється на діалозі, якого нікому натиснути.
+    - name: Import the signing certificate and profile
+      if: env.SIGNED == 'true'
+      env:
+        IOS_P12_BASE64: ${{ secrets.IOS_P12_BASE64 }}
+        IOS_P12_PASSWORD: ${{ secrets.IOS_P12_PASSWORD }}
+        IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+      run: |
+        KEYCHAIN=$RUNNER_TEMP/signing.keychain-db
+        KEYCHAIN_PASSWORD=$(uuidgen)
+
+        echo "$IOS_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/certificate.p12"
+        echo "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$RUNNER_TEMP/profile.mobileprovision"
+
+        security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+        security set-keychain-settings -lut 21600 "$KEYCHAIN"
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+        security import "$RUNNER_TEMP/certificate.p12" -k "$KEYCHAIN" \
+          -P "$IOS_P12_PASSWORD" -A -t cert -f pkcs12
+        # Без цього codesign щоразу питає дозвіл на доступ до приватного ключа.
+        security set-key-partition-list -S apple-tool:,apple:,codesign: \
+          -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" > /dev/null
+        security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+
+        PROFILES=~/Library/MobileDevice/Provisioning\ Profiles
+        mkdir -p "$PROFILES"
+        cp "$RUNNER_TEMP/profile.mobileprovision" "$PROFILES/"
+
+        echo "Identities available to codesign:"
+        security find-identity -v -p codesigning "$KEYCHAIN"
+
+    # Непідписаний шлях — рівно те, що тут було: перевірка, що воно збирається.
+    - name: Publish unsigned app
+      if: env.SIGNED != 'true'
       run: dotnet publish Diarion.csproj -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="-" -p:CodesignProvision="-"
 
-    - name: Package into IPA
-      # Формуємо .ipa файл (це просто zip-архів з папкою Payload всередині)
+    - name: Package the unsigned app into an IPA
+      # zip з текою Payload. Для встановлення це не годиться і для магазину теж — тільки артефакт.
+      if: env.SIGNED != 'true'
       run: |
         APP_PATH=$(find . -type d -name "Diarion.app" | grep "Release" | head -n 1)
         mkdir -p Payload
         cp -R "$APP_PATH" Payload/
         zip -qr Diarion.ipa Payload
-          
+
+    # ArchiveOnBuild=true — те, чого бракувало. IPA, зібраний zip'ом уручну, App Store Connect
+    # відкидає: у ньому немає ні SwiftSupport, ні коректних symbols, і підпис не покриває Payload
+    # як ціле. Тут .ipa робить сам таргет публікації.
+    - name: Publish signed IPA
+      if: env.SIGNED == 'true'
+      env:
+        IOS_CODESIGN_IDENTITY: ${{ secrets.IOS_CODESIGN_IDENTITY }}
+        IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+      run: |
+        dotnet publish Diarion.csproj -f net10.0-ios -c Release \
+          -p:RuntimeIdentifier=ios-arm64 \
+          -p:ArchiveOnBuild=true \
+          -p:CodesignKey="$IOS_CODESIGN_IDENTITY" \
+          -p:CodesignProvision="$IOS_PROVISIONING_PROFILE_NAME"
+
+        IPA=$(find . -name "*.ipa" -path "*Release*" | head -n 1)
+        if [ -z "$IPA" ]; then
+          echo "::error::Публікація не залишила .ipa. Перевірте, що ArchiveOnBuild спрацював."
+          exit 1
+        fi
+        echo "IPA_PATH=$IPA" >> $GITHUB_ENV
+        echo "Built: $IPA"
+
+    # Валідація окремим кроком від аплоуду: вона ловить те саме, що й аплоуд, але за секунди й без
+    # витрати номера збірки. Той самий ApplicationVersion двічі App Store Connect не приймає.
+    - name: Validate and upload to App Store Connect
+      if: env.SIGNED == 'true'
+      env:
+        APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+        APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+        APPSTORE_API_KEY_BASE64: ${{ secrets.APPSTORE_API_KEY_BASE64 }}
+      run: |
+        # altool шукає ключ саме тут і саме під цим іменем.
+        mkdir -p ~/private_keys
+        echo "$APPSTORE_API_KEY_BASE64" | base64 --decode > ~/private_keys/AuthKey_$APPSTORE_API_KEY_ID.p8
+
+        xcrun altool --validate-app -f "$IPA_PATH" -t ios \
+          --apiKey "$APPSTORE_API_KEY_ID" --apiIssuer "$APPSTORE_API_ISSUER_ID"
+
+        xcrun altool --upload-app -f "$IPA_PATH" -t ios \
+          --apiKey "$APPSTORE_API_KEY_ID" --apiIssuer "$APPSTORE_API_ISSUER_ID"
+
+        echo "Залито. Обробка в App Store Connect — від десяти хвилин до години, далі збірка"
+        echo "з'явиться у TestFlight. Ставте на реальний iPhone і проходьте всі екрани перед подачею."
+
+    # Ключ і сертифікат живуть у /tmp одноразового раннера, але явне видалення нічого не коштує, а
+    # `if: always()` означає, що воно станеться і після падіння збірки.
+    - name: Remove the signing material
+      if: always() && env.SIGNED == 'true'
+      run: |
+        security delete-keychain "$RUNNER_TEMP/signing.keychain-db" || true
+        rm -f "$RUNNER_TEMP/certificate.p12" "$RUNNER_TEMP/profile.mobileprovision"
+        rm -rf ~/private_keys
+        rm -f ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+
     - name: Upload IPA Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Diarion-iOS-App
-        path: Diarion.ipa
+        name: Diarion-iOS-${{ inputs.mode }}
+        path: |
+          Diarion.ipa
+          **/Release/**/*.ipa
+        if-no-files-found: error
