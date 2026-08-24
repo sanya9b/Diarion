@@ -43,7 +43,26 @@ public class DigestService : IDigestService
             return new Digest(from, to, 0, daysInPeriod, []);
         }
 
-        var chunks = _store.GetByDateRange(_embedder.ModelId, from, to, SearchScope.Diary);
+        // Off the calling thread from here on. The statistics screen calls this from the UI thread
+        // deliberately — every tab writes bound collections and those writes have to land there — but
+        // the read below scans the whole embedding collection and the centroid pass touches every
+        // vector in the window. Left inline that is a frozen screen for as long as it takes, which on
+        // a phone is not slowness but a hang: Android raises ANR and the iOS watchdog kills the app.
+        var modelId = _embedder.ModelId;
+        return await Task.Run(
+            () => Build(modelId, from, to, daysInPeriod, maxExcerpts, cancellationToken),
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    private Digest Build(
+        string modelId,
+        DateTime from,
+        DateTime to,
+        int daysInPeriod,
+        int maxExcerpts,
+        CancellationToken cancellationToken)
+    {
+        var chunks = _store.GetByDateRange(modelId, from, to, SearchScope.Diary);
         if (chunks.Count == 0)
         {
             return new Digest(from, to, 0, daysInPeriod, []);
@@ -75,8 +94,20 @@ public class DigestService : IDigestService
         int maxExcerpts,
         CancellationToken cancellationToken)
     {
-        var dimensions = chunks[0].Dim;
-        var usable = chunks.Where(c => c.Dim == dimensions).ToList();
+        // A row's Dim and the width of its blob can disagree — a leftover from an earlier model that
+        // shared an id, which is why the search path skips those too. Here the mismatch would reach
+        // Dot() and throw on the length check, and an exception from this call does not degrade the
+        // digest, it stops the statistics screen from opening.
+        var reference = chunks.FirstOrDefault(c => c.Vector.Length == c.Dim * sizeof(float));
+        if (reference is null)
+        {
+            return [];
+        }
+
+        var dimensions = reference.Dim;
+        var usable = chunks
+            .Where(c => c.Dim == dimensions && c.Vector.Length == dimensions * sizeof(float))
+            .ToList();
         if (usable.Count == 0)
         {
             return [];

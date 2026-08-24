@@ -331,6 +331,53 @@ public class ThemeClusterServiceTests : IDisposable
             inner.Search(queryVector, modelId, limit, scope, minScore);
     }
 
+    [Fact]
+    public async Task Cluster_AVectorThatDoesNotMatchItsDim_IsSkippedInsteadOfFailingTheWholeScreen()
+    {
+        // A row whose Dim no longer describes the blob beside it — what a model swap under the same id
+        // leaves behind. Filtering on Dim alone let it through, and the dot product refuses two vectors
+        // of different lengths: the exception did not cost the user their themes, it stopped the
+        // statistics screen from opening at all. The search path has always checked both.
+        Indexed(3, "робота і втома", [1f, 0f]);
+        Indexed(4, "знову робота і втома", [1f, 0.01f]);
+        Stale(5, "рядок від попередньої моделі", declaredDim: 2, actual: [1f, 0f, 0f]);
+
+        var themes = await _service.ClusterAsync(Start, End);
+
+        themes.Should().ContainSingle();
+        themes[0].DayCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Cluster_EveryVectorStale_ReturnsNothingRatherThanThrowing()
+    {
+        Stale(3, "усе, що лишилось від старої моделі", declaredDim: 2, actual: [1f, 0f, 0f]);
+        Stale(4, "і тут теж", declaredDim: 2, actual: [1f, 0f, 0f]);
+
+        (await _service.ClusterAsync(Start, End)).Should().BeEmpty();
+    }
+
+    /// <summary>Stores a chunk whose <c>Dim</c> disagrees with the width of the blob beside it.</summary>
+    private void Stale(int day, string text, int declaredDim, float[] actual)
+    {
+        text = text.Length >= 40 ? text : text.PadRight(45, '.');
+        var date = new DateTime(2026, 6, day);
+        EmbeddingMath.NormalizeInPlace(actual);
+        var id = $"stale-{day}-{_ordinal}";
+        _store.UpsertBatch([new EmbeddingChunk
+        {
+            Id = EmbeddingChunk.BuildId(EmbeddingSourceKind.Diary, id, _ordinal++),
+            SourceKind = EmbeddingSourceKind.Diary,
+            SourceId = id,
+            SourceDate = date,
+            Text = text,
+            ContentHash = "h",
+            ModelId = Model,
+            Dim = declaredDim,
+            Vector = EmbeddingMath.ToBytes(actual),
+        }]);
+    }
+
     private void IndexedRaw(int day, string text, float[] vector)
     {
         var date = new DateTime(2026, 6, day);

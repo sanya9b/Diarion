@@ -142,6 +142,14 @@ public partial class StatisticsViewModel : BaseViewModel
     /// </summary>
     private readonly Diarion.Helpers.AsyncDebouncer _rangeDebouncer = new(TimeSpan.FromMilliseconds(150));
 
+    /// <summary>
+    /// False until the constructor is done. Selecting a tab loads it, and the constructor selects the
+    /// first one — into a view model the page has not bound yet, a moment before OnAppearing asks for
+    /// the same load again. Two runs of the heaviest screen in the app, overlapping, writing the same
+    /// collections: the first one's results land in a page that is already showing the second one's.
+    /// </summary>
+    private bool _isInitialized;
+
     public ViewModels.Statistics.MoodStatsViewModel MoodStats { get; }
 
     /// <summary>Verbatim passages describing what the selected window was about. Empty when AI is off.</summary>
@@ -195,6 +203,9 @@ public partial class StatisticsViewModel : BaseViewModel
         // still at default(DateTime) would query the year 1.
         InitializeTimeRanges();
         InitializeTabs();
+        // From here on a tab change means the user changed it, and that does need a load. The first
+        // one is OnAppearing's to make.
+        _isInitialized = true;
     }
 
     /// <summary>
@@ -256,7 +267,10 @@ public partial class StatisticsViewModel : BaseViewModel
         IsCycleTabVisible = item.Option == StatisticsTabOption.Cycle;
 
         // Load data for the selected tab when switched
-        _ = LoadStatisticsAsync();
+        if (_isInitialized)
+        {
+            _ = LoadStatisticsAsync();
+        }
     }
 
     private void InitializeTimeRanges()
@@ -443,11 +457,21 @@ public partial class StatisticsViewModel : BaseViewModel
     /// </summary>
     private readonly Diarion.Helpers.AsyncDebouncer _accountDebouncer = new(TimeSpan.FromMilliseconds(150));
 
+    /// <summary>Set once the strip is filled, so it is filled exactly once.</summary>
+    private bool _statsAccountsLoaded;
+
     private async Task LoadFinanceAccountsAsync()
     {
-        if (StatsAccounts.Count > 0) return;
+        if (_statsAccountsLoaded) return;
 
         var accounts = await _financeService.GetAccountsAsync(includeArchived: false);
+
+        // Checked again on the far side of the await, which is where the strip was being filled twice:
+        // two loads that overlap both find it empty on the way in, and both add every account. The
+        // flag is only raised here, so a failed read leaves the next appearance free to retry.
+        if (_statsAccountsLoaded) return;
+        _statsAccountsLoaded = true;
+
         foreach (var account in accounts)
         {
             StatsAccounts.Add(new AccountItemViewModel
