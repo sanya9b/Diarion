@@ -254,9 +254,11 @@ public partial class MainViewModel : BaseViewModel
             await LoadEntriesForDateAsync(date);
             await CycleStatusSection.UpdateForDateAsync(date);
 
-            if (CurrentEntry != null && CycleStatusSection.IsVisible)
+            if (CurrentEntry != null)
             {
-                CurrentEntry.CycleDay = CycleStatusSection.CycleDay;
+                // Cleared, not left alone, when tracking is off: the health block renders this number,
+                // and a day that no longer counts must not keep showing the one it was given.
+                CurrentEntry.CycleDay = CycleStatusSection.IsVisible ? CycleStatusSection.CycleDay : string.Empty;
             }
         }
         finally

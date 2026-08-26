@@ -158,6 +158,40 @@ public class MainViewModelTests
     }
 
     [Fact]
+    public async Task LoadEntries_WithCycleTrackingOn_GivesTheEntryItsCycleDay()
+    {
+        // The health block renders this number, so it has to reach the entry the day screen is showing.
+        _profileServiceMock
+            .Setup(s => s.GetUserProfileAsync())
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true });
+        _cycleLogServiceMock
+            .Setup(s => s.GetMarkedDatesAsync())
+            .ReturnsAsync(new List<DateTime> { DateTime.Today.AddDays(-14) });
+
+        var viewModel = CreateViewModel();
+
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+
+        viewModel.CurrentEntry!.CycleDay.Should().Be("15");
+        viewModel.CurrentEntry.HasCycleDay.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task LoadEntries_WithCycleTrackingOff_LeavesNoCycleDayBehind()
+    {
+        // A number stored while tracking was on must not keep showing after it is switched off.
+        _diaryServiceMock
+            .Setup(s => s.GetEntryForDateAsync(It.IsAny<DateTime>()))
+            .ReturnsAsync(new DiaryEntry { CycleDay = "15" });
+
+        var viewModel = CreateViewModel();
+
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+
+        viewModel.CurrentEntry!.HasCycleDay.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task ChangingAnHourlyMood_IsPersisted()
     {
         // The hour slots are their own view-models, so MainViewModel has to subscribe to each of them

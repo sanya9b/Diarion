@@ -69,12 +69,18 @@
                         <Label Text="{x:Static localization:AppResources.CycleAddTitle}" FontAttributes="Bold" FontSize="17" TextColor="{DynamicResource Theme_Coral}" />
 
                         <!-- Date field and button stacked, not side by side: the button keeps its width at any
-                             screen size, so on a narrow phone it squeezed the picker against the card edge. -->
-                        <Border StrokeShape="RoundRectangle 14" StrokeThickness="1"
-                                Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                Padding="12,2">
-                            <DatePicker Date="{Binding NewEpisodeStart}" MaximumDate="{Binding MaximumDate}" Format="dd.MM.yyyy" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" VerticalOptions="Center" HorizontalOptions="Fill" />
-                        </Border>
+                             screen size, so on a narrow phone it squeezed the picker against the card edge.
+
+                             The frame is a sibling behind the picker, not its parent. As the Border's content
+                             the picker took no taps at all — the calendar opened on roughly one press in six,
+                             so the start date could not be changed and every recording landed on today. Same
+                             overlay the sleep block uses for its two time fields, and for the same reason. -->
+                        <Grid>
+                            <Border StrokeShape="RoundRectangle 14" StrokeThickness="1"
+                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                    InputTransparent="True" />
+                            <DatePicker Date="{Binding NewEpisodeStart}" MaximumDate="{Binding MaximumDate}" Format="dd.MM.yyyy" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" Margin="12,2" VerticalOptions="Center" HorizontalOptions="Fill" />
+                        </Grid>
 
                         <Border StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Coral}" Padding="18,12" HorizontalOptions="Fill">
                             <Border.GestureRecognizers>

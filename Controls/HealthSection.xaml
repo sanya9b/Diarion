@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vms="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
@@ -15,6 +15,13 @@
         <VerticalStackLayout Spacing="10">
             <Label Text="{x:Static localization:AppResources.HealthLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Midnight_Snow}" Margin="0,0,0,4" />
             
+            <!-- Read-only: the number is counted from the recorded periods, not typed here. The row is
+                 gone entirely when there is nothing to count, so a blank never reads as "day zero". -->
+            <Grid ColumnDefinitions="100, *" ColumnSpacing="12" IsVisible="{Binding HasCycleDay}">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.CycleDayLabel}" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                <Label Grid.Column="1" Text="{Binding CycleDay}" VerticalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Berry}" />
+            </Grid>
+
             <Grid ColumnDefinitions="100, *" ColumnSpacing="12">
                 <Label Grid.Column="0" Text="{x:Static localization:AppResources.HealthStatusLabel}" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 <controls:RatingView Grid.Column="1" Value="{Binding HealthStatus}" MaxValue="5" VerticalOptions="Center" HorizontalOptions="Start" />
@@ -27,6 +34,11 @@
                     <Entry Text="{Binding IntimateLife}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" VerticalOptions="Center" />
                 </Border>
             </Grid>
+
+            <!-- Text Field for Notes -->
+            <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0" Margin="0,2,0,0">
+                <Entry Text="{Binding HealthNotes}" Placeholder="{x:Static localization:AppResources.NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" />
+            </Border>
         </VerticalStackLayout>
     </Border>
 </ContentView>

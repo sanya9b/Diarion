@@ -60,6 +60,7 @@ public class DiaryEntryContentTests
         new object[] { new DiaryEntry { Content = "body" } },
         new object[] { new DiaryEntry { SleepNotes = "restless" } },
         new object[] { new DiaryEntry { IntimateLife = "yes" } },
+        new object[] { new DiaryEntry { HealthNotes = "headache all afternoon" } },
         new object[] { new DiaryEntry { IsIntimateLifeDone = true } },
         new object[] { new DiaryEntry { SleepStart = new TimeSpan(23, 0, 0) } },
         new object[] { new DiaryEntry { SleepEnd = new TimeSpan(7, 0, 0) } },
