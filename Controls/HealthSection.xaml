@@ -27,6 +27,11 @@
                 <controls:RatingView Grid.Column="1" Value="{Binding HealthStatus}" MaxValue="5" VerticalOptions="Center" HorizontalOptions="Start" />
             </Grid>
 
+            <!-- Text Field for Notes -->
+            <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0" Margin="0,2,0,0">
+                <Entry Text="{Binding HealthNotes}" Placeholder="{x:Static localization:AppResources.NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" />
+            </Border>
+
             <Grid ColumnDefinitions="Auto, 100, *" ColumnSpacing="12">
                 <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsIntimateLifeDone}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                 <Label Grid.Column="1" Text="{x:Static localization:AppResources.IntimateLifeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
@@ -34,11 +39,6 @@
                     <Entry Text="{Binding IntimateLife}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" VerticalOptions="Center" />
                 </Border>
             </Grid>
-
-            <!-- Text Field for Notes -->
-            <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0" Margin="0,2,0,0">
-                <Entry Text="{Binding HealthNotes}" Placeholder="{x:Static localization:AppResources.NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" />
-            </Border>
         </VerticalStackLayout>
     </Border>
 </ContentView>
