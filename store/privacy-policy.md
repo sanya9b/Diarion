@@ -5,12 +5,15 @@
 > було видно, який абзац перестав бути правдою. Дужки прибрати перед публікацією.
 >
 > **Що лишається зробити власнику:**
-> 1. Підставити домен, поштову адресу для звернень і дату набуття чинності замість `TODO`.
-> 2. Викласти обидві мови за постійними URL — Apple вимагає URL, не PDF і не текст у застосунку.
-> 3. Перечитати розділ «Здоров'я» після рішення по HealthKit і розділ «Мережа» після рішення по AI:
->    обидва описують те, що ввімкнене **сьогодні**, і обидва ті рішення ще відкриті.
+> 1. Підставити ім'я розробника, поштову адресу для звернень і дату набуття чинності замість `TODO`.
+> 2. Викласти обидві мови за постійними URL на `diarion.org` — Apple вимагає URL, не PDF і не текст
+>    у застосунку; у App Store Connect адреса задається окремо для кожної локалі.
+> 3. ~~Перечитати розділи «Здоров'я» і «Мережа» після рішень по HealthKit і по AI.~~ Обидва рішення
+>    ухвалені 2026-08-29: HealthKit прибрано з v1 (розділ «Здоров'я» вилучено разом із ним), ШІ
+>    лишається ввімкненим (розділ «Мережа» чинний як є).
 > 4. Переписати повністю, коли відвантажиться спека 14 — з нею вперше з'являється передавання тексту
->    записів третій стороні, і жоден абзац нижче тоді не чинний.
+>    записів третій стороні, і жоден абзац нижче тоді не чинний. Фаза A вже в коді, але мережі в ній
+>    немає, а екран «ось що піде» недосяжний з інтерфейсу, тож усе нижче поки правда.
 
 ---
 
@@ -34,7 +37,7 @@ Diarion не має акаунтів, серверів і синхронізац
 - звички, задачі й події планера, бажання, добрі справи, приємні моменти;
 - фінансові операції, рахунки, бюджети;
 - дані трекера циклу й пов'язані з ним симптоми;
-- час сну, зчитаний з Apple Health (див. нижче);
+- час сну й самопочуття — так, як ви їх записали самі;
 - налаштування: тема, мова, валюта, PIN, порядок швидкого меню.
 
 База даних зашифрована на диску. Ключ шифрування створюється на вашому пристрої й зберігається в
@@ -55,13 +58,11 @@ Diarion не має акаунтів, серверів і синхронізац
   файл, і вкладка «Дані» пропонує надіслати або видалити його. Нічого не надсилається автоматично
   (`Diarion.Core/Diagnostics/CrashReporter.cs`).
 
-### Здоров'я (тільки iOS)
+### Здоров'я
 
-Застосунок може запитати доступ до Apple Health, щоб зчитати **аналіз сну** й підставити час сну у
-ваш запис. Доступ **лише на читання**: набір типів для запису порожній, і застосунок ніколи нічого
-не записує в Health. Зчитані значення лишаються у вашій локальній базі. Дозвіл необов'язковий —
-відмова не блокує жодну функцію (`Services/HealthDataService.cs`). На Android інтеграції зі
-здоров'ям немає взагалі.
+Застосунок **не підключається** ні до Apple Health, ні до Google Health Connect і не читає звідти
+нічого. Час сну, самопочуття й симптоми — це те, що ви вписали руками, і воно лишається у вашій
+локальній базі (`Services/HealthDataService.cs` не компілюється у цій версії).
 
 ### Мережа
 
@@ -126,7 +127,7 @@ All of the following lives **only** in the app's storage on your device:
 - habits, tasks and planner events, wishlist, good deeds, happy moments;
 - financial transactions, accounts, budgets;
 - cycle tracker data and its symptoms;
-- sleep times read from Apple Health (see below);
+- sleep times and how you felt, exactly as you typed them;
 - settings: theme, language, currency, PIN, quick-menu order.
 
 The database is encrypted on disk. The encryption key is generated on your device and held in the
@@ -143,12 +144,11 @@ obtain it. The PIN is stored as a hash, not as a number.
 - **Crash report.** If the app crashed, the last exception is written to a local file and the Data
   tab offers to send or delete it. Nothing is sent automatically.
 
-### Health (iOS only)
+### Health
 
-The app may ask for Apple Health access to read **sleep analysis** and prefill the sleep times of
-your entry. Access is **read-only**: the set of types requested for writing is empty and the app
-never writes to Health. Values read stay in your local database. The permission is optional and
-denying it blocks no feature. There is no health integration on Android at all.
+The app connects to **neither** Apple Health nor Google Health Connect and reads nothing from
+either. Sleep times, how you felt and any symptoms are what you typed yourself, and they stay in
+your local database.
 
 ### Network
 

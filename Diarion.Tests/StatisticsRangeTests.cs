@@ -242,7 +242,8 @@ public class StatisticsRangeTests
             new ProductivityStatsViewModel(stats.Object),
             new FinanceStatsViewModel(stats.Object, profile.Object),
             new HabitStatsViewModel(new Mock<IHabitService>().Object, profile.Object),
-            new CycleStatsViewModel(new Mock<ICycleLogService>().Object, profile.Object));
+            new CycleStatsViewModel(new Mock<ICycleLogService>().Object, profile.Object),
+            new TourViewModel(profile.Object, new TourService()));
     }
 
     [Fact]

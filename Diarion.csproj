@@ -33,8 +33,15 @@
 		<!-- Display name -->
 		<ApplicationTitle>Diarion</ApplicationTitle>
 
-		<!-- App Identifier -->
-		<ApplicationId>com.companyname.diarion</ApplicationId>
+		<!-- App Identifier. Reverse DNS of diarion.org, the domain the owner holds; `.app` rather
+		     than `.diarion` so that org.diarion.* stays free for a widget or a share extension,
+		     which have to be siblings of this id and cannot be children of it.
+
+		     Permanent from the first upload onwards: Apple refuses to change it once a build has
+		     been submitted, and Play burns the id forever, even for an app that was later deleted.
+		     Changing it after release is a different app — no update for existing users, ratings
+		     from zero, and any lifetime licences left behind. So this line is not a line to tidy. -->
+		<ApplicationId>org.diarion.app</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -55,12 +62,27 @@
 
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
 		<!--
-		  Every configuration, not just Release. The file used to hold only the increased memory
-		  limit and that was arguably a Release concern; it now holds the HealthKit entitlement,
-		  without which HealthDataService fails silently on a debug device too. Finding that out
-		  only in Release is the expensive order to learn it in. See the file for the rest.
+		  Every configuration, not just Release. Both entitlements this file has carried so far were
+		  ones a debug device needed as much as a signed build — the increased memory limit and the
+		  HealthKit key — and learning that only in Release is the expensive order to learn it in.
+		  The file is empty of live keys for v1 and stays wired up regardless: it is where the two
+		  removals are written down, and where the next capability lands without touching csproj.
 		-->
 		<CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
+
+		<!--
+		  HealthKit is compiled out of v1. Removing NSHealthShareUsageDescription is not enough on
+		  its own: Apple scans the binary for API references, so a build that still links HKHealthStore
+		  with no purpose string is rejected at upload with ITMS-90683 rather than at review. So the
+		  iOS branches of HealthDataService are gated on this symbol, which nothing defines.
+
+		  Turning Health back on is three things in one commit, and each is useless without the
+		  others — uncomment this, restore the entitlement and the usage string (both written out in
+		  Entitlements.plist and Info.plist), and enable the HealthKit capability on the App ID in
+		  the Developer Portal, or signing fails. The metadata job in ci.yml enforces the first three
+		  against each other in both directions; the fourth is outside the repo and nothing can.
+		  <DefineConstants>$(DefineConstants);HEALTHKIT</DefineConstants>
+		-->
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(Configuration)' == 'Release'">

@@ -1,6 +1,9 @@
 using System;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 using Diarion.Diagnostics;
+using Diarion.Models;
 using Diarion.ViewModels;
 
 namespace Diarion.Views;
@@ -8,6 +11,7 @@ namespace Diarion.Views;
 public partial class MainPage : ContentPage
 {
     private static readonly TimeSpan InitialLoadDelay = TimeSpan.FromMilliseconds(450);
+
     private readonly MainViewModel _viewModel;
     private bool _hasRenderedOnce;
 
@@ -18,12 +22,24 @@ public partial class MainPage : ContentPage
         StartupTrace.Mark("MainPage.InitializeComponent complete");
         _viewModel = viewModel;
         BindingContext = _viewModel;
-        
+
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+
+        TourOverlay.AnchorResolver = AnchorFor;
+        TourOverlay.PrepareStepAsync = PrepareTourStepAsync;
+        TourOverlay.Tour = _viewModel.Tour;
     }
 
     private async void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(MainViewModel.IsContentReady))
+        {
+            // The guide points at blocks that are not on screen until the profile has loaded, so it
+            // waits for the same flag the content itself waits for.
+            await TryStartTourAsync();
+            return;
+        }
+
         if (e.PropertyName == nameof(MainViewModel.IsPlannerMode))
         {
             if (_viewModel.IsPlannerMode)
@@ -94,6 +110,51 @@ public partial class MainPage : ContentPage
 
         StartupTrace.Mark("MainPage immediate LoadEntriesCommand dispatch");
         _viewModel.LoadEntriesCommand.Execute(null);
+
+        // Returning from settings after "show the guide again", and the ordinary case of the
+        // onboarding modal being dismissed onto this screen.
+        await TryStartTourAsync();
     }
 
+    // --- Home-screen guide (onboarding stage 2) ---------------------------------------------------
+    // TourOverlayView does the drawing; this page answers the only two questions it cannot: which
+    // element an id means, and what has to happen before that element can be measured.
+
+    private async Task TryStartTourAsync()
+    {
+        if (_viewModel.Tour.IsActive) return;
+        if (!_viewModel.IsContentReady) return;
+
+        // Onboarding is a modal over this page, and it finishes by loading the profile — which flips
+        // IsContentReady while the modal is still up. Starting there would run the whole guide behind
+        // it, unseen and marked as seen. OnAppearing fires again when the modal pops.
+        if (Navigation.ModalStack.Count > 0) return;
+
+        await _viewModel.Tour.StartAsync(TourId.Home);
+    }
+
+    private async Task PrepareTourStepAsync(TourStep step)
+    {
+        if (step.Id != TourStepId.DiaryBlocks) return;
+
+        // The blocks are the one target that can be scrolled out of view, and the guide runs over
+        // whichever tab was left open.
+        if (_viewModel.IsPlannerMode)
+        {
+            _viewModel.SwitchToDiaryModeCommand.Execute(null);
+        }
+
+        await DiaryContainer.ScrollToAsync(0, 0, animated: false);
+    }
+
+    private VisualElement? AnchorFor(TourStepId id) => id switch
+    {
+        TourStepId.QuickMenu => QuickMenuAnchor,
+        TourStepId.DayStrip => DayStripAnchor,
+        TourStepId.Tabs => TabsAnchor,
+        // The first block that survived the module picker, not the whole stack: the stack is taller
+        // than the screen, and a hole that size highlights nothing.
+        TourStepId.DiaryBlocks => BlocksAnchor.Children.OfType<VisualElement>().FirstOrDefault(child => child.IsVisible),
+        _ => null
+    };
 }

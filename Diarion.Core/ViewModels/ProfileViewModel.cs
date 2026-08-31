@@ -26,6 +26,7 @@ public partial class ProfileViewModel : BaseViewModel
     private readonly INavigationService _navigationService;
     private readonly Diarion.Diagnostics.ICrashReporter _crashReporter;
     private readonly IShareService _shareService;
+    private readonly ITourService _tourService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
@@ -35,6 +36,9 @@ public partial class ProfileViewModel : BaseViewModel
 
     /// <summary>The AI tab's own state. A section view model rather than more fields here.</summary>
     public AiSettingsViewModel Ai { get; }
+
+    /// <summary>The first-visit coach marks over this screen. Idle until the page starts it.</summary>
+    public TourViewModel Tour { get; }
 
     // Settings tabs: 0 = Profile, 1 = Screen, 2 = Data, 3 = AI.
     [ObservableProperty]
@@ -86,9 +90,13 @@ public partial class ProfileViewModel : BaseViewModel
         INavigationService navigationService,
         Diarion.Diagnostics.ICrashReporter crashReporter,
         IShareService shareService,
+        ITourService tourService,
+        TourViewModel tour,
         AiSettingsViewModel ai)
     {
         Ai = ai;
+        Tour = tour;
+        _tourService = tourService;
         _crashReporter = crashReporter;
         _shareService = shareService;
         _profileService = profileService;
@@ -246,6 +254,24 @@ public partial class ProfileViewModel : BaseViewModel
     public async Task OpenPromptHistoryAsync()
     {
         await _navigationService.NavigateToAsync("PromptHistory");
+    }
+
+    /// <summary>
+    /// Arms every guide again, and runs this screen's one straight away.
+    /// </summary>
+    /// <remarks>
+    /// Only the settings guide can start from here; the other two draw over pages that are not this
+    /// one, so they wait to be walked into. The alert says so before the spotlight appears, because
+    /// otherwise a guide about settings looks like the whole of what the row promised.
+    /// </remarks>
+    [RelayCommand]
+    public async Task ReplayTourAsync()
+    {
+        _tourService.ResetSeen(Profile);
+        await _profileService.SaveUserProfileAsync(Profile);
+        await _dialogService.ShowAlertAsync(AppResources.TourReplayLabel, AppResources.TourReplayMessage);
+
+        await Tour.StartAsync(TourId.Settings);
     }
 
     [RelayCommand]

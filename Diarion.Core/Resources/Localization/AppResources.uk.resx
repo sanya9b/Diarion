@@ -1534,17 +1534,98 @@
   <data name="OnboardingSkipButton" xml:space="preserve">
     <value>Пропустити</value>
   </data>
-  <data name="OnboardingJournalTitle" xml:space="preserve">
+  <data name="TourQuickMenuTitle" xml:space="preserve">
+    <value>Розділи живуть тут</value>
+  </data>
+  <data name="TourQuickMenuText" xml:space="preserve">
+    <value>Нотатки, звички, фінанси, дошка зі статистикою за місяць — усе відкривається з цієї смуги. Порядок ви щойно задали в попередньому кроці, змінити його можна в налаштуваннях.</value>
+  </data>
+  <data name="TourDayStripTitle" xml:space="preserve">
+    <value>Це — обраний день</value>
+  </data>
+  <data name="TourDayStripText" xml:space="preserve">
+    <value>Усе нижче стосується саме його. Торкніться дати або потягніть ручку вниз, щоб відкрити календар і перейти на інший день.</value>
+  </data>
+  <data name="TourTabsTitle" xml:space="preserve">
+    <value>Щоденник і планер — той самий день</value>
+  </data>
+  <data name="TourTabsText" xml:space="preserve">
+    <value>Ліворуч те, що вже сталося, праворуч те, що заплановано. Перемикання не змінює дату.</value>
+  </data>
+  <data name="TourBlocksTitle" xml:space="preserve">
     <value>День уміщається в один запис</value>
   </data>
-  <data name="OnboardingJournalText" xml:space="preserve">
-    <value>Напишіть сторінку або один рядок, а тоді позначте настрій, сон, їжу, самопочуття. Обов'язкового немає нічого — пропущені поля просто лишаються порожніми.</value>
+  <data name="TourBlocksText" xml:space="preserve">
+    <value>Настрій, сон, їжа, самопочуття, текст. Обов'язкового немає нічого — пропущені поля просто лишаються порожніми. За кілька тижнів записаного вистачить, щоб дошка почала зіставляти дні між собою.</value>
   </data>
-  <data name="OnboardingInsightsTitle" xml:space="preserve">
-    <value>Те, чого не видно за один день</value>
+  <data name="TourStatsPeriodTitle" xml:space="preserve">
+    <value>Усе на дошці — про один проміжок</value>
   </data>
-  <data name="OnboardingInsightsText" xml:space="preserve">
-    <value>За кілька тижнів застосунок почне зіставляти те, що ви записуєте: що спільного у ваших хороших днях, після чого зазвичай буває найгірший сон. Скаже про це лише тоді, коли даних справді вистачить.</value>
+  <data name="TourStatsPeriodText" xml:space="preserve">
+    <value>Дві дати — це і є фільтр, а чіпи поруч лише вписують у них готові проміжки. Змініть вікно — і всі картки нижче перерахуються.</value>
+  </data>
+  <data name="TourStatsTabsTitle" xml:space="preserve">
+    <value>Кілька дошок, один період</value>
+  </data>
+  <data name="TourStatsTabsText" xml:space="preserve">
+    <value>Настрій, сон, задачі, гроші, звички, цикл. Перемикання вкладки не змінює обрані дати.</value>
+  </data>
+  <data name="TourStatsThemesTitle" xml:space="preserve">
+    <value>До чого ви повертаєтесь</value>
+  </data>
+  <data name="TourStatsThemesText" xml:space="preserve">
+    <value>Коли назбирається кілька тижнів записів, теми, що повторюються, зберуться тут — рахунок у днях, а не в абзацах. Це ваші власні формулювання, згруповані на пристрої.</value>
+  </data>
+  <data name="TourStatsInfluencesTitle" xml:space="preserve">
+    <value>Що впливає на настрій</value>
+  </data>
+  <data name="TourStatsInfluencesText" xml:space="preserve">
+    <value>Сон, їжа, звички й самі дні зіставляються з тим, як ви почувалися. Поки записаного замало, картка натомість показує, скільки лишилось до першої відповіді. Це кореляція, а не діагноз.</value>
+  </data>
+  <data name="TourSettingsTabsTitle" xml:space="preserve">
+    <value>Чотири групи налаштувань</value>
+  </data>
+  <data name="TourSettingsTabsText" xml:space="preserve">
+    <value>Ви, екран, ваші дані та ШІ на пристрої. Нічого зі змінюваного тут не залишає телефон.</value>
+  </data>
+  <data name="TourSettingsBlocksTitle" xml:space="preserve">
+    <value>Оберіть, про що питатиме день</value>
+  </data>
+  <data name="TourSettingsBlocksText" xml:space="preserve">
+    <value>Вимкнений блок зникає з головного екрана і більше не питає. Записане не видаляється — увімкніть назад, і все на місці.</value>
+  </data>
+  <data name="TourSettingsPromptsTitle" xml:space="preserve">
+    <value>Питання дня живе тут</value>
+  </data>
+  <data name="TourSettingsPromptsText" xml:space="preserve">
+    <value>Ці два блоки питають, а не записують. Бібліотеку промптів можна редагувати, а історія відповідей зберігає все, що ви на ті питання написали.</value>
+  </data>
+  <data name="TourSettingsSaveTitle" xml:space="preserve">
+    <value>«Зберегти» стосується всіх вкладок</value>
+  </data>
+  <data name="TourSettingsSaveText" xml:space="preserve">
+    <value>Одна кнопка на весь екран. Якщо піти без неї, залишаться старі налаштування.</value>
+  </data>
+  <data name="SettingsPromptsTitle" xml:space="preserve">
+    <value>ПРОМПТИ Й РЕФЛЕКСІЯ</value>
+  </data>
+  <data name="SettingsPromptsHint" xml:space="preserve">
+    <value>Два блоки, які ставлять запитання, а не записують відповідь.</value>
+  </data>
+  <data name="SettingsReflectionHint" xml:space="preserve">
+    <value>Три поля наприкінці дня: тригери, вдячність і щось для себе.</value>
+  </data>
+  <data name="SettingsFinanceTitle" xml:space="preserve">
+    <value>ФІНАНСИ</value>
+  </data>
+  <data name="TourDoneButton" xml:space="preserve">
+    <value>Зрозуміло</value>
+  </data>
+  <data name="TourReplayLabel" xml:space="preserve">
+    <value>Показати гіди знову</value>
+  </data>
+  <data name="TourReplayMessage" xml:space="preserve">
+    <value>Гід по цьому екрану почнеться зараз. Головний екран і дошка покажуть свої, щойно ви їх відкриєте.</value>
   </data>
   <data name="OnboardingModulesTitle" xml:space="preserve">
     <value>Оберіть, що вестимете</value>

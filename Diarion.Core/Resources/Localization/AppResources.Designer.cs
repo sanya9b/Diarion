@@ -1615,20 +1615,128 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("OnboardingSkipButton", resourceCulture) ?? string.Empty; }
         }
 
-        public static string OnboardingJournalTitle {
-            get { return ResourceManager.GetString("OnboardingJournalTitle", resourceCulture) ?? string.Empty; }
+        public static string TourQuickMenuTitle {
+            get { return ResourceManager.GetString("TourQuickMenuTitle", resourceCulture) ?? string.Empty; }
         }
 
-        public static string OnboardingJournalText {
-            get { return ResourceManager.GetString("OnboardingJournalText", resourceCulture) ?? string.Empty; }
+        public static string TourQuickMenuText {
+            get { return ResourceManager.GetString("TourQuickMenuText", resourceCulture) ?? string.Empty; }
         }
 
-        public static string OnboardingInsightsTitle {
-            get { return ResourceManager.GetString("OnboardingInsightsTitle", resourceCulture) ?? string.Empty; }
+        public static string TourDayStripTitle {
+            get { return ResourceManager.GetString("TourDayStripTitle", resourceCulture) ?? string.Empty; }
         }
 
-        public static string OnboardingInsightsText {
-            get { return ResourceManager.GetString("OnboardingInsightsText", resourceCulture) ?? string.Empty; }
+        public static string TourDayStripText {
+            get { return ResourceManager.GetString("TourDayStripText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourTabsTitle {
+            get { return ResourceManager.GetString("TourTabsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourTabsText {
+            get { return ResourceManager.GetString("TourTabsText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourBlocksTitle {
+            get { return ResourceManager.GetString("TourBlocksTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourBlocksText {
+            get { return ResourceManager.GetString("TourBlocksText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourStatsPeriodTitle {
+            get { return ResourceManager.GetString("TourStatsPeriodTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourStatsPeriodText {
+            get { return ResourceManager.GetString("TourStatsPeriodText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourStatsTabsTitle {
+            get { return ResourceManager.GetString("TourStatsTabsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourStatsTabsText {
+            get { return ResourceManager.GetString("TourStatsTabsText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourStatsThemesTitle {
+            get { return ResourceManager.GetString("TourStatsThemesTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourStatsThemesText {
+            get { return ResourceManager.GetString("TourStatsThemesText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourStatsInfluencesTitle {
+            get { return ResourceManager.GetString("TourStatsInfluencesTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourStatsInfluencesText {
+            get { return ResourceManager.GetString("TourStatsInfluencesText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourSettingsTabsTitle {
+            get { return ResourceManager.GetString("TourSettingsTabsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourSettingsTabsText {
+            get { return ResourceManager.GetString("TourSettingsTabsText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourSettingsBlocksTitle {
+            get { return ResourceManager.GetString("TourSettingsBlocksTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourSettingsBlocksText {
+            get { return ResourceManager.GetString("TourSettingsBlocksText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourSettingsPromptsTitle {
+            get { return ResourceManager.GetString("TourSettingsPromptsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourSettingsPromptsText {
+            get { return ResourceManager.GetString("TourSettingsPromptsText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourSettingsSaveTitle {
+            get { return ResourceManager.GetString("TourSettingsSaveTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourSettingsSaveText {
+            get { return ResourceManager.GetString("TourSettingsSaveText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SettingsPromptsTitle {
+            get { return ResourceManager.GetString("SettingsPromptsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SettingsPromptsHint {
+            get { return ResourceManager.GetString("SettingsPromptsHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SettingsReflectionHint {
+            get { return ResourceManager.GetString("SettingsReflectionHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SettingsFinanceTitle {
+            get { return ResourceManager.GetString("SettingsFinanceTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourDoneButton {
+            get { return ResourceManager.GetString("TourDoneButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourReplayLabel {
+            get { return ResourceManager.GetString("TourReplayLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string TourReplayMessage {
+            get { return ResourceManager.GetString("TourReplayMessage", resourceCulture) ?? string.Empty; }
         }
 
         public static string OnboardingModulesTitle {

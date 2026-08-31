@@ -104,15 +104,28 @@ public class OnboardingViewModelTests
         vm.NextCommand.Execute(null);
         vm.NextCommand.Execute(null);
 
-        vm.IsInsightsStep.Should().BeTrue();
-        vm.StepDots[OnboardingViewModel.InsightsStep].IsActive.Should().BeTrue();
+        vm.IsReminderStep.Should().BeTrue();
+        vm.StepDots[OnboardingViewModel.ReminderStep].IsActive.Should().BeTrue();
 
         vm.BackCommand.Execute(null);
 
-        vm.CurrentStep.Should().Be(OnboardingViewModel.JournalStep);
-        vm.IsJournalStep.Should().BeTrue();
-        vm.StepDots[OnboardingViewModel.JournalStep].IsActive.Should().BeTrue();
+        vm.CurrentStep.Should().Be(OnboardingViewModel.ModulesStep);
+        vm.IsModulesStep.Should().BeTrue();
+        vm.StepDots[OnboardingViewModel.ModulesStep].IsActive.Should().BeTrue();
         vm.StepDots.Count(d => d.IsActive).Should().Be(1);
+    }
+
+    /// <summary>
+    /// The two explaining screens moved into the home-screen guide, and the count is asserted here so
+    /// that removing or adding one is a deliberate edit rather than something the dots quietly absorb.
+    /// </summary>
+    [Fact]
+    public void Onboarding_IsThreeScreens_TwoOfWhichAskSomething()
+    {
+        OnboardingViewModel.StepCount.Should().Be(3);
+        OnboardingViewModel.WelcomeStep.Should().Be(0);
+        OnboardingViewModel.ModulesStep.Should().Be(1);
+        OnboardingViewModel.ReminderStep.Should().Be(2);
     }
 
     [Fact]

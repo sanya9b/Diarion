@@ -19,7 +19,9 @@
         <!-- Custom Top Bar: Removed Hamburger Menu for Clean Minimalism -->
         <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="*, Auto" ColumnSpacing="12">
             
-            <controls:QuickMenuView Grid.Column="0" HorizontalOptions="Start" />
+            <!-- x:Name on the four tour targets. They are anchors for the spotlight and nothing
+                 else; MainPage.xaml.cs maps a TourStepId onto each one and measures it. -->
+            <controls:QuickMenuView x:Name="QuickMenuAnchor" Grid.Column="0" HorizontalOptions="Start" />
         </Grid>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
@@ -32,7 +34,7 @@
                      whole page below, so any vertical drag anywhere — scrolling the planner, most of all —
                      threw the month open. Scoped here it is only triggered on purpose, and a tap does the
                      same thing for anyone who never thinks to drag a bar they did not know was a handle. -->
-                <VerticalStackLayout Margin="0,-1,0,16" Spacing="0" HorizontalOptions="Fill"
+                <VerticalStackLayout x:Name="DayStripAnchor" Margin="0,-1,0,16" Spacing="0" HorizontalOptions="Fill"
                                      BackgroundColor="Transparent">
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding CalendarSection.ToggleCalendarCommand}" />
@@ -50,7 +52,7 @@
                 </VerticalStackLayout>
 
                 <!-- Tabs: Typography-Driven Design -->
-                <Grid Margin="0,0,0,16" ColumnDefinitions="*,*">
+                <Grid x:Name="TabsAnchor" Margin="0,0,0,16" ColumnDefinitions="*,*">
                     <Label Grid.Column="0" Text="{x:Static localization:AppResources.TabDiary}"
                            HorizontalOptions="Center" VerticalOptions="Center">
                         <Label.GestureRecognizers>
@@ -99,7 +101,7 @@
                          VerticalStackLayout collapses hidden blocks without leaving empty gaps.
                          The whole stack stays hidden (IsContentReady) until the real profile is
                          loaded, so the default all-blocks-visible layout never flashes on startup. -->
-                    <VerticalStackLayout Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+                    <VerticalStackLayout x:Name="BlocksAnchor" Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
                                          IsVisible="{Binding BindingContext.IsContentReady, Source={x:Reference PageRoot}}">
 
                         <controls:MoodSection BindingContext="{Binding}"
@@ -137,6 +139,11 @@
                            IsVisible="{Binding IsLoading}"
                            HorizontalOptions="Center" VerticalOptions="Center"
                            Color="{DynamicResource Theme_Ocean_Dust}"/>
+
+        <!-- Гід по головному екрану (онбординг, етап 2). Last child and RowSpan over both rows, so
+             it covers the page. Everything it does lives in the control; this page only tells it
+             which element each step means (MainPage.xaml.cs). -->
+        <controls:TourOverlayView x:Name="TourOverlay" Grid.Row="0" Grid.RowSpan="2" />
     </Grid>
 
 </ContentPage>

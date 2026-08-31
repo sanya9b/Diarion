@@ -169,6 +169,9 @@ public partial class StatisticsViewModel : BaseViewModel
     public ViewModels.Statistics.HabitStatsViewModel HabitStats { get; }
     public ViewModels.Statistics.CycleStatsViewModel CycleStats { get; }
 
+    /// <summary>The first-visit coach marks over this screen. Idle until the page starts it.</summary>
+    public TourViewModel Tour { get; }
+
     public StatisticsViewModel(
         Diarion.Services.IStatisticsService statisticsService,
         Diarion.Services.IDiaryService diaryService,
@@ -182,7 +185,8 @@ public partial class StatisticsViewModel : BaseViewModel
         ViewModels.Statistics.ProductivityStatsViewModel productivityStats,
         ViewModels.Statistics.FinanceStatsViewModel financeStats,
         ViewModels.Statistics.HabitStatsViewModel habitStats,
-        ViewModels.Statistics.CycleStatsViewModel cycleStats)
+        ViewModels.Statistics.CycleStatsViewModel cycleStats,
+        TourViewModel tour)
     {
         _statisticsService = statisticsService;
         _diaryService = diaryService;
@@ -197,6 +201,7 @@ public partial class StatisticsViewModel : BaseViewModel
         FinanceStats = financeStats;
         HabitStats = habitStats;
         CycleStats = cycleStats;
+        Tour = tour;
 
         Title = AppResources.StatisticsTitle;
         // Period first: InitializeTabs selects a tab, which starts a load, and a load with the dates

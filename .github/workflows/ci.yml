@@ -226,10 +226,18 @@ jobs:
                   "Info.plist: ITSAppUsesNonExemptEncryption is gone. Every upload now stops on the "
                   "export-compliance questionnaire in App Store Connect.")
 
-          # The bug this encodes shipped for months: the usage string was there, the entitlement was
-          # not, and HealthKit authorisation just came back unsuccessful with no error anywhere.
+          # Everything below reads the csproj with XML comments stripped, so that a key written out
+          # inside a comment for whoever restores it later does not read as a live one.
+          csproj = re.sub(r"<!--.*?-->", "",
+                          (root / "Diarion.csproj").read_text(encoding="utf-8"), flags=re.S)
+
+          # Three facts that only work together, and each pair fails a different way. The first two
+          # shipped broken for months: the usage string was there, the entitlement was not, and
+          # HealthKit authorisation came back unsuccessful with no error anywhere.
           health_string = "NSHealthShareUsageDescription" in info
           health_entitlement = bool(entitlements.get("com.apple.developer.healthkit"))
+          health_compiled = "HEALTHKIT" in " ".join(
+              re.findall(r"<DefineConstants>(.*?)</DefineConstants>", csproj, re.S))
           if health_string and not health_entitlement:
               errors.append(
                   "NSHealthShareUsageDescription is declared but com.apple.developer.healthkit is "
@@ -238,6 +246,16 @@ jobs:
               errors.append(
                   "com.apple.developer.healthkit is claimed with no NSHealthShareUsageDescription. "
                   "iOS terminates the app the moment it asks, and App Review rejects it before that.")
+          if health_compiled and not (health_string and health_entitlement):
+              errors.append(
+                  "The HEALTHKIT symbol is defined, so HealthDataService links HKHealthStore, but "
+                  "the usage string or the entitlement is missing. Apple scans the binary for API "
+                  "references: this is ITMS-90683 at upload, not a review comment.")
+          if not health_compiled and (health_string or health_entitlement):
+              errors.append(
+                  "Health metadata is declared while HEALTHKIT is not defined, so no HealthKit code "
+                  "is compiled at all. App Review asks what reads the data, and the honest answer is "
+                  "nothing. Define the symbol in Diarion.csproj or drop the metadata.")
 
           # The comment at the top of both .strings files says to keep the three in step. This is
           # that comment, enforced.
@@ -247,8 +265,12 @@ jobs:
               if not strings_file.is_file():
                   errors.append(f"{strings_file} is missing.")
                   continue
+              # Comments stripped first, for the same reason the csproj is: a removed key is kept
+              # written out inside /* */ so the commit that restores it has the exact text, and a
+              # scanner that cannot tell the two apart would report every such note as dead weight.
+              live = re.sub(r"/\*.*?\*/", "", text(strings_file), flags=re.S)
               translated = set(re.findall(
-                  r'^\s*"?([A-Za-z]+UsageDescription)"?\s*=', text(strings_file), re.M))
+                  r'^\s*"?([A-Za-z]+UsageDescription)"?\s*=', live, re.M))
               for key in sorted(usage_keys - translated):
                   errors.append(
                       f"{strings_file}: no translation for {key}. That permission prompt is shown "
@@ -281,8 +303,7 @@ jobs:
 
           # The bundle id is fixed at first submission and can never be changed, so this one is a
           # nag everywhere and a wall on main.
-          app_id = re.search(r"<ApplicationId>(.*?)</ApplicationId>",
-                             (root / "Diarion.csproj").read_text(encoding="utf-8")).group(1)
+          app_id = re.search(r"<ApplicationId>(.*?)</ApplicationId>", csproj).group(1)
           if app_id.startswith("com.companyname."):
               bound_for_release = (os.environ.get("GITHUB_REF") == "refs/heads/main"
                                    or os.environ.get("GITHUB_BASE_REF") == "main")

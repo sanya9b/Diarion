@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             x:Class="Diarion.Controls.TourOverlayView"
+             IsVisible="False">
+
+    <!-- The guide layer, shared by every screen that has one. Put it last in the page's root grid
+         and let it fill: it covers the page and swallows every touch, because the point of a coach
+         mark is that the screen underneath is frozen while it is up. A tap anywhere advances —
+         requiring a hit on the highlighted element itself is how people get stuck in tours. -->
+    <Grid x:Name="Root" x:DataType="viewmodels:TourViewModel">
+
+        <controls:SpotlightOverlay x:Name="Spotlight" InputTransparent="True"
+                                   ScrimColor="#D8101619"
+                                   HighlightColor="{DynamicResource Theme_Coral}" />
+
+        <!-- The tap-to-advance target is this sheet rather than the layer itself, and it sits
+             under the card on purpose. On the layer, a press on "Далі" ran the button's command
+             and then bubbled into the gesture too, which advanced twice and swallowed a step. -->
+        <Grid BackgroundColor="Transparent">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding NextCommand}" />
+            </Grid.GestureRecognizers>
+        </Grid>
+
+        <Border x:Name="Callout"
+                StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                Padding="18" VerticalOptions="End" Margin="20">
+            <VerticalStackLayout Spacing="12">
+
+                <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding StepDots}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:OnboardingStepDot">
+                            <Ellipse WidthRequest="8" HeightRequest="8" VerticalOptions="Center"
+                                     Fill="{DynamicResource Theme_Ocean_Dust}" Opacity="0.35">
+                                <Ellipse.Triggers>
+                                    <DataTrigger TargetType="Ellipse" Binding="{Binding IsActive}" Value="True">
+                                        <Setter Property="Fill" Value="{DynamicResource Theme_Coral}" />
+                                        <Setter Property="Opacity" Value="1" />
+                                    </DataTrigger>
+                                </Ellipse.Triggers>
+                            </Ellipse>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </HorizontalStackLayout>
+
+                <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold"
+                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="{Binding Body}" FontSize="14"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="{x:Static localization:AppResources.OnboardingSkipButton}"
+                            Command="{Binding SkipCommand}"
+                            IsVisible="{Binding HasMoreSteps}"
+                            BackgroundColor="Transparent"
+                            TextColor="{DynamicResource Theme_Ocean_Dust}"
+                            FontSize="14" Padding="12,6" MinimumHeightRequest="44" />
+
+                    <!-- One button all the way through: NextAsync finishes by itself on the last
+                         step, and it only renames itself. Two buttons in this one cell, swapped by
+                         IsVisible, cost a step — the tap that hid "Далі" was caught by the "Готово"
+                         that appeared under the pointer. -->
+                    <Button Grid.Column="1"
+                            Text="{Binding PrimaryButtonText}"
+                            Command="{Binding NextCommand}"
+                            BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
+                            TextColor="{DynamicResource Theme_Snow}"
+                            CornerRadius="12" HeightRequest="46" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+
+</ContentView>

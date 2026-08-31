@@ -1639,17 +1639,98 @@
   <data name="OnboardingSkipButton" xml:space="preserve">
     <value>Skip</value>
   </data>
-  <data name="OnboardingJournalTitle" xml:space="preserve">
+  <data name="TourQuickMenuTitle" xml:space="preserve">
+    <value>The sections live here</value>
+  </data>
+  <data name="TourQuickMenuText" xml:space="preserve">
+    <value>Notes, habits, finances, the dashboard with the month's statistics — all of it opens from this strip. You set the order on the previous screen; it can be changed in Settings.</value>
+  </data>
+  <data name="TourDayStripTitle" xml:space="preserve">
+    <value>This is the day you are on</value>
+  </data>
+  <data name="TourDayStripText" xml:space="preserve">
+    <value>Everything below belongs to it. Tap the date, or pull the handle down, to open the calendar and move to another day.</value>
+  </data>
+  <data name="TourTabsTitle" xml:space="preserve">
+    <value>Diary and planner, same day</value>
+  </data>
+  <data name="TourTabsText" xml:space="preserve">
+    <value>On the left, what already happened; on the right, what is planned. Switching does not change the date.</value>
+  </data>
+  <data name="TourBlocksTitle" xml:space="preserve">
     <value>A day fits in one entry</value>
   </data>
-  <data name="OnboardingJournalText" xml:space="preserve">
-    <value>Write a page or write one line, then mark the mood, the sleep, the meals, how the body felt. None of it is required — the fields you skip simply stay empty.</value>
+  <data name="TourBlocksText" xml:space="preserve">
+    <value>Mood, sleep, meals, how the body felt, the text. None of it is required — the fields you skip simply stay empty. After a couple of weeks there is enough here for the dashboard to start comparing days with each other.</value>
   </data>
-  <data name="OnboardingInsightsTitle" xml:space="preserve">
-    <value>What a single day can't show you</value>
+  <data name="TourStatsPeriodTitle" xml:space="preserve">
+    <value>Everything here is about one window</value>
   </data>
-  <data name="OnboardingInsightsText" xml:space="preserve">
-    <value>After a couple of weeks the app starts comparing what you log: what your good days have in common, what your worst sleep tends to follow. It only says so once there is enough data to mean it.</value>
+  <data name="TourStatsPeriodText" xml:space="preserve">
+    <value>The two dates are the filter; the chips beside them are shortcuts that write into those dates. Change the window and every card below is recalculated.</value>
+  </data>
+  <data name="TourStatsTabsTitle" xml:space="preserve">
+    <value>Several boards, one period</value>
+  </data>
+  <data name="TourStatsTabsText" xml:space="preserve">
+    <value>Mood, sleep, tasks, money, habits, cycle. Switching a tab keeps the dates you picked.</value>
+  </data>
+  <data name="TourStatsThemesTitle" xml:space="preserve">
+    <value>What you keep coming back to</value>
+  </data>
+  <data name="TourStatsThemesText" xml:space="preserve">
+    <value>Once there are a couple of weeks of entries, the subjects that repeat gather here, counted in days rather than in passages. Your own wording, grouped on the device.</value>
+  </data>
+  <data name="TourStatsInfluencesTitle" xml:space="preserve">
+    <value>What moves your mood</value>
+  </data>
+  <data name="TourStatsInfluencesText" xml:space="preserve">
+    <value>Sleep, meals, habits and the days themselves are compared with how you felt. While there is too little written the card counts down to the first answer instead. It is a correlation, not a diagnosis.</value>
+  </data>
+  <data name="TourSettingsTabsTitle" xml:space="preserve">
+    <value>Four groups of settings</value>
+  </data>
+  <data name="TourSettingsTabsText" xml:space="preserve">
+    <value>You, the screen, your data, and on-device AI. Nothing set here leaves the device.</value>
+  </data>
+  <data name="TourSettingsBlocksTitle" xml:space="preserve">
+    <value>Choose what the day asks you</value>
+  </data>
+  <data name="TourSettingsBlocksText" xml:space="preserve">
+    <value>A block switched off disappears from the home screen and stops asking. Nothing already written is deleted — switch it back on and it is all there.</value>
+  </data>
+  <data name="TourSettingsPromptsTitle" xml:space="preserve">
+    <value>The question of the day lives here</value>
+  </data>
+  <data name="TourSettingsPromptsText" xml:space="preserve">
+    <value>These two blocks ask something instead of recording it. The prompt library is yours to edit, and the answer history keeps everything you have written to those questions.</value>
+  </data>
+  <data name="TourSettingsSaveTitle" xml:space="preserve">
+    <value>Save applies to every tab</value>
+  </data>
+  <data name="TourSettingsSaveText" xml:space="preserve">
+    <value>One button for the whole screen. Leaving without it keeps the old settings.</value>
+  </data>
+  <data name="SettingsPromptsTitle" xml:space="preserve">
+    <value>PROMPTS AND REFLECTION</value>
+  </data>
+  <data name="SettingsPromptsHint" xml:space="preserve">
+    <value>The two blocks that ask you something instead of recording an answer.</value>
+  </data>
+  <data name="SettingsReflectionHint" xml:space="preserve">
+    <value>Three fields at the end of the day: triggers, gratitude, something for yourself.</value>
+  </data>
+  <data name="SettingsFinanceTitle" xml:space="preserve">
+    <value>FINANCES</value>
+  </data>
+  <data name="TourDoneButton" xml:space="preserve">
+    <value>Got it</value>
+  </data>
+  <data name="TourReplayLabel" xml:space="preserve">
+    <value>Show the guides again</value>
+  </data>
+  <data name="TourReplayMessage" xml:space="preserve">
+    <value>This screen's guide starts now. The home screen and the dashboard show theirs the next time you open them.</value>
   </data>
   <data name="OnboardingModulesTitle" xml:space="preserve">
     <value>Choose what you'll keep</value>

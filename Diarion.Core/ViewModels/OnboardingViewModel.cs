@@ -10,22 +10,25 @@ using Diarion.Services;
 namespace Diarion.ViewModels;
 
 /// <summary>
-/// The first-run walkthrough: three screens that explain, one that asks what to keep, one that offers
-/// the daily reminder.
+/// The first-run walkthrough: a greeting, a screen that asks what to keep, and the daily reminder.
 /// </summary>
 /// <remarks>
-/// Steps are an index and a set of <c>IsXStep</c> flags rather than a <c>CarouselView</c>. The five are
-/// not five of the same thing — two of them are forms — so a template selector would exist only to
+/// Steps are an index and a set of <c>IsXStep</c> flags rather than a <c>CarouselView</c>. The three are
+/// not three of the same thing — two of them are forms — so a template selector would exist only to
 /// deliver swipe, and swipe past a screen with checkboxes on it is a way to lose an answer.
+/// <para>
+/// Two explaining screens used to sit between the greeting and the modules: "a day fits in one entry"
+/// and "what a single day can't show you". Both described the home screen in words while the home
+/// screen was hidden behind them. <see cref="TourViewModel"/> now says the same things on the screen
+/// itself, pointing at the thing being described, so they were removed rather than duplicated.
+/// </para>
 /// </remarks>
 public partial class OnboardingViewModel : ObservableObject
 {
     public const int WelcomeStep = 0;
-    public const int JournalStep = 1;
-    public const int InsightsStep = 2;
-    public const int ModulesStep = 3;
-    public const int ReminderStep = 4;
-    public const int StepCount = 5;
+    public const int ModulesStep = 1;
+    public const int ReminderStep = 2;
+    public const int StepCount = 3;
 
     private readonly IProfileService _profileService;
     private readonly INotificationService _notificationService;
@@ -35,8 +38,7 @@ public partial class OnboardingViewModel : ObservableObject
     public Action? Completed { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsWelcomeStep), nameof(IsJournalStep), nameof(IsInsightsStep))]
-    [NotifyPropertyChangedFor(nameof(IsModulesStep), nameof(IsReminderStep))]
+    [NotifyPropertyChangedFor(nameof(IsWelcomeStep), nameof(IsModulesStep), nameof(IsReminderStep))]
     [NotifyPropertyChangedFor(nameof(CanGoBack), nameof(CanGoNext), nameof(CanSkip))]
     [NotifyCanExecuteChangedFor(nameof(NextCommand), nameof(BackCommand))]
     private int _currentStep;
@@ -52,8 +54,6 @@ public partial class OnboardingViewModel : ObservableObject
         Enumerable.Range(0, StepCount).Select(i => new OnboardingStepDot { IsActive = i == WelcomeStep }).ToList();
 
     public bool IsWelcomeStep => CurrentStep == WelcomeStep;
-    public bool IsJournalStep => CurrentStep == JournalStep;
-    public bool IsInsightsStep => CurrentStep == InsightsStep;
     public bool IsModulesStep => CurrentStep == ModulesStep;
     public bool IsReminderStep => CurrentStep == ReminderStep;
 

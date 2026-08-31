@@ -109,25 +109,7 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- 2. What a day looks like -->
-                <VerticalStackLayout Spacing="16" VerticalOptions="Center" IsVisible="{Binding IsJournalStep}">
-                    <BoxView Style="{StaticResource StepRule}" />
-                    <Label Text="{x:Static localization:AppResources.OnboardingJournalTitle}"
-                           Style="{StaticResource StepTitle}" />
-                    <Label Text="{x:Static localization:AppResources.OnboardingJournalText}"
-                           Style="{StaticResource StepBody}" />
-                </VerticalStackLayout>
-
-                <!-- 3. Why it is worth keeping up -->
-                <VerticalStackLayout Spacing="16" VerticalOptions="Center" IsVisible="{Binding IsInsightsStep}">
-                    <BoxView Style="{StaticResource StepRule}" />
-                    <Label Text="{x:Static localization:AppResources.OnboardingInsightsTitle}"
-                           Style="{StaticResource StepTitle}" />
-                    <Label Text="{x:Static localization:AppResources.OnboardingInsightsText}"
-                           Style="{StaticResource StepBody}" />
-                </VerticalStackLayout>
-
-                <!-- 4. Pick the modules -->
+                <!-- 2. Pick the modules -->
                 <VerticalStackLayout Spacing="16" IsVisible="{Binding IsModulesStep}">
                     <Label Text="{x:Static localization:AppResources.OnboardingModulesTitle}"
                            Style="{StaticResource StepTitle}" />
@@ -161,7 +143,7 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- 5. Daily reminder opt-in -->
+                <!-- 3. Daily reminder opt-in -->
                 <VerticalStackLayout Spacing="16" VerticalOptions="Center" IsVisible="{Binding IsReminderStep}">
                     <BoxView Style="{StaticResource StepRule}" />
                     <Label Text="{x:Static localization:AppResources.OnboardingReminderTitle}"

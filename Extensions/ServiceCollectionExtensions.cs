@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ICorrelationService, CorrelationService>();
         services.AddSingleton<IMenuConfigurationService, MenuConfigurationService>();
         services.AddSingleton<IOnboardingModuleService, OnboardingModuleService>();
+        services.AddSingleton<ITourService, TourService>();
         services.AddSingleton<IBackupService, BackupService>();
         services.AddSingleton<IExportService, ExportService>();
         services.AddSingleton<INavigationService, MauiNavigationService>();
@@ -159,6 +160,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<LockViewModel>();
         services.AddTransient<PinSetupViewModel>();
         services.AddTransient<OnboardingViewModel>();
+        services.AddTransient<TourViewModel>();
         services.AddTransient<DiaryDetailViewModel>();
         services.AddTransient<TodoDetailViewModel>();
         services.AddTransient<AiSettingsViewModel>();

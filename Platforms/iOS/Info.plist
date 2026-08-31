@@ -28,10 +28,15 @@
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Allows you to securely unlock your diary.</string>
-	<!-- Read-only. HealthDataService asks for sleep analysis with an empty share set, so there is
-	     deliberately no NSHealthUpdateUsageDescription: the app never writes to Health. -->
-	<key>NSHealthShareUsageDescription</key>
-	<string>Used to read sleep data and populate your diary automatically.</string>
+	<!-- Removed for v1 together with the HealthKit entitlement and both localised copies:
+	         <key>NSHealthShareUsageDescription</key>
+	         <string>Used to read sleep data and populate your diary automatically.</string>
+	     Read-only was always the claim — HealthDataService passes an empty share set, so there was
+	     deliberately no NSHealthUpdateUsageDescription to go with it — but the feature had no way
+	     in: ImportSleepDataAsync is bound by no XAML, so nothing in the app could ever call it.
+	     A permission prompt App Review asks about, for a button that does not exist, is a cost with
+	     no matching benefit. Restore this verbatim in the same commit that defines HEALTHKIT. -->
+
 	<!-- Export compliance, answered once here instead of by hand on every single build: without
 	     this key App Store Connect stops each upload on the questionnaire.
 

@@ -85,6 +85,20 @@ public partial class UserProfile : ObservableObject
     // Сортування меню
     [ObservableProperty] private System.Collections.Generic.List<string>? _quickMenuOrder;
 
+    /// <summary>
+    /// Which version of the home-screen guide this profile has already been walked through. Zero is
+    /// "none", which is also what LiteDB returns for every profile written before the field existed —
+    /// so an update offers the guide once and needs no migration. The rule lives in
+    /// <see cref="Services.TourService"/>; nothing outside it should compare this number.
+    /// </summary>
+    [ObservableProperty] private int _tourVersionSeen;
+
+    /// <summary>The same marker for the statistics guide. See <see cref="TourVersionSeen"/>.</summary>
+    [ObservableProperty] private int _statsTourVersionSeen;
+
+    /// <summary>The same marker for the settings guide. See <see cref="TourVersionSeen"/>.</summary>
+    [ObservableProperty] private int _settingsTourVersionSeen;
+
     /// <summary>Whether the cycle feature is offered at all. Hidden for men rather than merely switched
     /// off, so it never has to be dismissed; the stored flag and logged days survive untouched, and a
     /// mis-set gender is fully reversible.</summary>

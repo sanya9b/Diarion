@@ -62,7 +62,7 @@ Apple питає про зміст, а не про наміри, тож відп
 
 | Питання анкети | Відповідь | Підстава в коді |
 |---|---|---|
-| Medical / Treatment-Focused Content | **Так, Infrequent/Mild** | Трекер циклу з симптомами, сон із Health, фертильне вікно. Це інформація про здоров'я, а не лікування — але «ні» тут неправда |
+| Medical / Treatment-Focused Content | **Так, Infrequent/Mild** | Трекер циклу з симптомами, самопочуття, сон, фертильне вікно. Це інформація про здоров'я, а не лікування — але «ні» тут неправда. Відповідь не змінилась від того, що HealthKit прибрали: дані ті самі, просто вводяться руками |
 | Alcohol, Tobacco, or Drug Use or References | **Так, Infrequent/Mild** | Трекер кинутих звичок; підказка в полі прямо каже «Наприклад: куріння або безкінечний скролінг» (`AppResources.uk.resx:380`). Контекст — відмова від звички, тобто мінімальний ступінь |
 | Sexual Content or Nudity | Ні | Репродуктивне здоров'я — це медична категорія, не сексуальний контент |
 | Violence / Horror / Profanity / Gambling / Contests | Ні | Немає |
@@ -77,8 +77,8 @@ Apple питає про зміст, а не про наміри, тож відп
 
 ## 3. Текст у поле «Notes» App Store Connect
 
-> Скопіювати як є після того, як будуть закриті рішення по HealthKit і по AI — обидва абзаци
-> позначені `[?]` описують те, що ввімкнене сьогодні, і мають зникнути, якщо фічу вимкнуть.
+> Обидва рішення закриті 2026-08-29: HealthKit прибрано з v1, тож його абзац вилучено; ШІ
+> лишається, тож абзац про мережу лишається теж. Текст нижче можна копіювати як є.
 
 ```
 No account is required and there is no sign-in, so no demo credentials are needed.
@@ -88,11 +88,13 @@ App lock: the app may offer to set a PIN during onboarding. This is optional and
 skipped. If a PIN is set, it is stored only as a hash on the device and cannot be recovered
 — if you set one and lose it, please reinstall rather than contacting us.
 
-[?] Health: on iPhone the app asks for read-only access to Sleep Analysis in order to
-prefill the sleep fields of a diary entry. It never writes to HealthKit — the share set
-passed to the authorisation request is empty. Denying the permission blocks no feature.
+Onboarding and in-app guides: after the first-run setup, a short guide highlights the
+real controls on the home screen. The Dashboard and Settings screens each show their own
+guide the first time you open them. To replay any of them without reinstalling, open
+Settings > Screen > "Show the guides again": the Settings guide starts immediately, and
+the home screen and the Dashboard show theirs the next time you open them.
 
-[?] Network and AI: the only network request the app makes is downloading model weight
+Network and AI: the only network request the app makes is downloading model weight
 files (~123 MB) from HuggingFace, and only after the user starts that download in
 Settings > AI. No diary content, no text and no identifier ever leaves the device. All
 model inference runs on the device. If the download is inconvenient to test, every other
@@ -107,6 +109,12 @@ not a medical device, gives no medical advice, and is not intended for contracep
 
 Останній абзац — не формальність. Він потрібен незалежно від того, який варіант із розділу 1 буде
 обрано, бо це єдине місце, де намір можна заявити словами до того, як його прочитають з екрана.
+
+Абзац про гіди доданий 2026-08-31, разом із етапом 3 онбордингу. Причина проста: кожен гід
+показується один раз на екран і сам себе позначає баченим. Рев'юер, який відкрив головну до того, як
+дійшов до цих нотаток, більше його не побачить — і без цього абзацу єдиним способом переглянути
+онбординг удруге лишалося перевстановлення. Шлях названий дослівно тими рядками, що на екрані
+(`SettingsTabScreen`, `TourReplayLabel`), щоб не довелось шукати за перекладом.
 
 ---
 
@@ -132,18 +140,19 @@ not a medical device, gives no medical advice, and is not intended for contracep
 
 **Впирається в рішення власника:**
 
-1. **Домен → `ApplicationId` → URL політики приватності.** `Diarion.csproj:37` досі
-   `com.companyname.diarion`. Після першої відправки збірки не змінюється ніколи. Один ланцюжок, бо
-   домен потрібен і для ідентифікатора, і для хостингу політики.
+1. ~~**Домен → `ApplicationId` → URL політики приватності.**~~ Домен `diarion.org` куплений
+   2026-08-29, `ApplicationId` став `org.diarion.app` тим самим заходом — розділ 8. Лишився хвіст
+   ланцюжка, і він **не в репозиторії**: підняти `/privacy`, `/en/privacy` і `/support`, завести
+   пошту на домені, зареєструвати App ID у Developer Portal.
 2. ~~**Фертильне вікно**~~ — вирішено 2026-08-24, розділ 1. Іконку вимкнено, підпис і розрахунок
    лишились, анкета вікового рейтингу (§2) від цього не змінюється: фертильне вікно все ще названо
    словами на екрані циклу, тож «Medical / Treatment-Focused Content» так і лишається «так».
-3. **AI у v1.** `OnDeviceAi.EmbeddingsOffered = true`, тобто у першій подачі є вкладка AI,
-   завантаження 123 МБ і мережеві дозволи. Якщо AI справді після релізу — один рядок прибирає з
-   подачі цілий пласт питань рев'ю; ціна — зникають теми у статистиці й фактор настрою.
-4. **HealthKit.** Entitlement додано, але capability на App ID вмикається вручну в Developer
-   Portal, інакше підпис падає. Альтернатива — прибрати Health з v1 (див. коментар у
-   `Entitlements.plist`).
+3. ~~**AI у v1.**~~ Вирішено 2026-08-29: **лишається**. `OnDeviceAi.EmbeddingsOffered = true`, у
+   першій подачі є вкладка AI, завантаження 123 МБ і абзац про мережу в §3, в описі й у політиці.
+   Ціна відмови була б у темах статистики й факторі настрою, і власник її платити не став.
+4. ~~**HealthKit.**~~ Вирішено 2026-08-29: **прибрано з v1** — розділ 8. Capability на App ID більше
+   не потрібна, підпис від неї не залежить, і питання «які дані здоров'я ви читаєте» на рев'ю не
+   виникає взагалі.
 5. **Монетизація.** StoreKit немає взагалі. Роадмапа (рядок 7) фіксує одноразовий lifetime, а не
    підписку.
 
@@ -251,3 +260,62 @@ zip'ом у теку `Payload` і віддати артефактом. Для п
 Окремий keychain у `$RUNNER_TEMP`, а не `login`: типовий залочений, і `codesign` на ньому спиняється
 на діалозі, якого нікому натиснути. Видаляється в `if: always()` — раннер і так одноразовий, але
 крок, що виконується лише при успіху, лишає матеріал підпису на впалій збірці.
+
+---
+
+## 8. Bundle id і HealthKit (2026-08-29, закриває пункти 1 і 4 §5)
+
+Власник купив `diarion.org`, і це розблокувало ланцюжок, який стояв із 2026-08-01.
+
+### `ApplicationId` = `org.diarion.app`
+
+Реверсний DNS від домену, яким власник володіє. `.app`, а не `.diarion`, з однієї причини на
+майбутнє: віджет чи share-extension мусять бути **сусідами** ідентифікатора застосунку, а не його
+дітьми, тож `org.diarion.*` лишається вільним під них.
+
+Значення живе рівно в одному місці (`Diarion.csproj`) — правка однорядкова, важким тут було саме
+рішення. Воно незворотне: Apple не міняє ідентифікатор після першої відправленої збірки, Play
+випалює його назавжди навіть для видаленого застосунку. Правило в `ci.yml`, яке валило `main` на
+`com.companyname.*`, тепер зелене й лишається на місці — воно ще знадобиться, якщо шаблон колись
+повернеться копіпастом.
+
+### HealthKit прибрано з v1
+
+Рішення далося легше, ніж очікувалось, бо перевірка показала те, чого не побачив прохід 0.10:
+**кнопки не було**. `MainViewModel.ImportSleepDataAsync` — єдиний споживач `IHealthDataService`, і
+його не прив'язує жоден XAML. Entitlement, рядок призначення й дві локалізовані копії існували для
+функції, яку користувач не міг викликати ніяк. Плата за них була цілком реальна: capability на App
+ID руками (інакше падає підпис, і CI цього не ловить, бо публікує з `CodesignKey="-"`) плюс
+питання рев'ю «які дані здоров'я ви читаєте і навіщо».
+
+**Прибрати самі ключі було б помилкою, і це найважливіше в цій правці.** Apple сканує бінарник на
+звернення до API: збірка, яка й далі лінкує `HKHealthStore` без `NSHealthShareUsageDescription`,
+відпадає на аплоуді з ITMS-90683 — тобто прибирання метаданих без прибирання коду проміняло б
+робочу функцію на невдале завантаження. Тому гілки `#if IOS` у `HealthDataService` стали
+`#if IOS && HEALTHKIT`, а символ не визначений ніде: рядок, який його визначає, лежить
+закоментований у `Diarion.csproj`. На iOS ці гілки тепер компілюються у ті самі «unsupported», що
+й андроїдні, і HealthKit у бінарнику немає взагалі.
+
+Нічого не видалено — той самий уклад, що в `OnDeviceAi.GenerationOffered` і
+`CycleDisplay.FertileWindowMarkerOffered`.
+
+**Повернення — один коміт із чотирьох частин, і три з них тримає CI.** Розкоментувати
+`DefineConstants`, повернути entitlement і рядок призначення (обидва виписані дослівно там, звідки
+прибрані), увімкнути capability на App ID. У `ios-submission-metadata` додано два правила, які
+роблять будь-які три з чотирьох без четвертої червоними:
+
+| Стан | Що каже CI |
+|---|---|
+| `HEALTHKIT` визначено, метаданих немає | ITMS-90683 на аплоуді, а не зауваження на рев'ю |
+| Метадані є, `HEALTHKIT` не визначено | Рев'ю питає, що читає дані; чесна відповідь — ніщо |
+
+Четверту частину — capability на App ID — не перевіряє ніщо і не перевірить: вона поза
+репозиторієм.
+
+Заодно обидва сканери (`.strings` і `csproj`) тепер зрізають коментарі перед пошуком ключів. Без
+цього ключ, виписаний у коментарі для того, хто його повертатиме, читався б як живий — і правило
+«переклад є, а в Info.plist ключа немає» падало б саме на записці, залишеній йому на допомогу.
+
+Після правок: iOS Release type-check 0 помилок / 0 попереджень; `dotnet test` — 1430 пройшли, 8
+пропущено, 0 впало; сім правил `ios-submission-metadata` зелені, обидва нові прогнані на мутованих
+копіях і ловлять.

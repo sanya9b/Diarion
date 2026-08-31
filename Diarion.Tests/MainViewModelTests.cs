@@ -112,7 +112,8 @@ public class MainViewModelTests
             _plannerSection,
             _quickMenuSection,
             _habitsSection,
-            new Mock<CycleStatusViewModel>(_cycleLogServiceMock.Object, _profileServiceMock.Object).Object);
+            new Mock<CycleStatusViewModel>(_cycleLogServiceMock.Object, _profileServiceMock.Object).Object,
+            new TourViewModel(_profileServiceMock.Object, new TourService()));
     }
 
     [Fact]

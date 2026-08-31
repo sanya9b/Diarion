@@ -26,6 +26,8 @@ public class ProfileViewModelTests
             new Mock<INavigationService>().Object,
             new Mock<Diarion.Diagnostics.ICrashReporter>().Object,
             new Mock<IShareService>().Object,
+            new TourService(),
+            new TourViewModel(profile.Object, new TourService()),
             CreateAiSection());
     }
 

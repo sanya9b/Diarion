@@ -2,26 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- HealthKit. This is not new capability, it is the entitlement the existing code has always
-	     needed and never had: HealthDataService constructs HKHealthStore and calls
-	     RequestAuthorizationToShare, and Info.plist carries NSHealthShareUsageDescription, but
-	     without this key the authorisation callback simply comes back unsuccessful. The failure
-	     mode is the quiet kind - no crash, no error dialog, just sleep data that never arrives -
-	     which is why it survived this long.
+	<!-- Removed for v1: com.apple.developer.healthkit (owner's decision, 2026-08-29).
+	     It was added on 2026-08-17 as the entitlement the existing code had always needed and never
+	     had - without it the authorisation callback comes back unsuccessful, quietly, and sleep data
+	     simply never arrives. What the same pass did not check is whether anything could ask: the
+	     only caller is MainViewModel.ImportSleepDataAsync, and no XAML binds it. The entitlement was
+	     bought for a button that was never built.
 
-	     Two things this obliges, both outside the repo:
-	     - The App ID must have the HealthKit capability enabled, or signing fails. CI cannot catch
-	       it: build-ios.yml publishes with CodesignKey="-".
-	     - App Review asks what health data is read and why. The honest answer is short: sleep
-	       analysis, read-only, to prefill the sleep fields of a diary entry. The share set passed
-	       to RequestAuthorizationToShare is empty on purpose - the app never writes to Health -
-	       and there is deliberately no NSHealthUpdateUsageDescription to match.
+	     What it cost to keep, and why that decided it: the App ID needs the HealthKit capability
+	     enabled by hand or signing fails - CI cannot catch that, build-ios.yml publishes with
+	     CodesignKey="-" - and App Review asks what health data is read and why. Two obligations,
+	     one of them outside the repo, for a feature no user can reach.
 
-	     The cheaper alternative, if Health is not worth that on v1: drop this key, drop
-	     NSHealthShareUsageDescription and both localised copies, and let the iOS branch of
-	     HealthDataService report unsupported the way the Android branch already does. -->
-	<key>com.apple.developer.healthkit</key>
-	<true/>
+	     Restoring it is one commit with four parts, and three of them are here in the repo:
+	         <key>com.apple.developer.healthkit</key>
+	         <true/>
+	     plus NSHealthShareUsageDescription in Info.plist and both .lproj files, plus the HEALTHKIT
+	     define in Diarion.csproj (which is what actually compiles the HealthKit code back in), plus
+	     the capability on the App ID. And before any of it, a button: the read is read-only by
+	     design - the share set passed to RequestAuthorizationToShare is empty, which is why there is
+	     no NSHealthUpdateUsageDescription anywhere in this repo's history. -->
 
 	<!-- Removed for v1: com.apple.developer.kernel.increased-memory-limit.
 	     It was added for the 1.1 GB generative model, and OnDeviceAi.GenerationOffered has been
