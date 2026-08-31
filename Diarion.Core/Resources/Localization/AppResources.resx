@@ -1682,10 +1682,10 @@
     <value>Once there are a couple of weeks of entries, the subjects that repeat gather here, counted in days rather than in passages. Your own wording, grouped on the device.</value>
   </data>
   <data name="TourStatsInfluencesTitle" xml:space="preserve">
-    <value>What moves your mood</value>
+    <value>Guesses, checked</value>
   </data>
   <data name="TourStatsInfluencesText" xml:space="preserve">
-    <value>Sleep, meals, habits and the days themselves are compared with how you felt. While there is too little written the card counts down to the first answer instead. It is a correlation, not a diagnosis.</value>
+    <value>Sleep, meals, habits and the days themselves are compared with how you felt, and only what survives the check is listed — with the number of days it rests on. Often nothing survives, and the card says that too.</value>
   </data>
   <data name="TourSettingsTabsTitle" xml:space="preserve">
     <value>Four groups of settings</value>
@@ -1766,10 +1766,22 @@
     <value>A quiet minute for yourself?</value>
   </data>
   <data name="StatsMoodInfluencesTitle" xml:space="preserve">
-    <value>WHAT AFFECTS YOUR MOOD</value>
+    <value>WORTH CHECKING</value>
   </data>
   <data name="StatsCorrelationDisclaimer" xml:space="preserve">
-    <value>Linked to your mood — not proven to cause it.</value>
+    <value>These are patterns in your own log, not causes. The way to find out is on purpose: change one of them for a week and see whether the pattern follows.</value>
+  </data>
+  <data name="StatsHypothesesCheckedFormat" xml:space="preserve">
+    <value>Checked {0}, still holding {1}</value>
+  </data>
+  <data name="StatsCorrelationEvidenceFormat" xml:space="preserve">
+    <value>holds across {0} days</value>
+  </data>
+  <data name="StatsNoHypothesisHolds" xml:space="preserve">
+    <value>Nothing holds up yet</value>
+  </data>
+  <data name="StatsNoHypothesisHoldsHintFormat" xml:space="preserve">
+    <value>Checked {0}, none of them survived. That is the ordinary result — most coincidences do not, and saying so is more use than a pattern that is not there.</value>
   </data>
   <data name="ExportDataTitle" xml:space="preserve">
     <value>EXPORT DATA</value>

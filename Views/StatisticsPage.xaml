@@ -353,19 +353,25 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- What affects your mood (on-device correlations) -->
+                <!-- Guesses about your mood, checked on the device. The card is a test report: how many
+                     factors were compared, how many came through, and how many days each survivor rests
+                     on. Not a list of what the diary "found". -->
                 <Border x:Name="InfluencesAnchor" Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasCorrelations}">
                     <Border.Shadow>
                         <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsMoodInfluencesTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
+                        <Label Text="{Binding MoodStats.CorrelationSummaryText}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
                         <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding MoodStats.Correlations}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="viewmodels:MoodCorrelationItem">
                                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
-                                        <Label Grid.Column="0" Text="{Binding Description}" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                            <Label Text="{Binding Description}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Label Text="{Binding Evidence}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                        </VerticalStackLayout>
                                         <Label Grid.Column="1" Text="{Binding Dots}" FontSize="12" CharacterSpacing="1" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
                                     </Grid>
                                 </DataTemplate>
@@ -376,14 +382,15 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Progress towards the first insight. Takes the place of the card above while there
-                     is nothing to put in it, so a fortnight of waiting reads as progress rather than
-                     as a screen that does not work. -->
+                <!-- Takes the place of the card above whenever the list is empty, and says which kind of
+                     empty it is: too little to compare yet, or compared and nothing held. The headline
+                     and the line under it are both bound, because those two states want opposite things
+                     said — one promises links later, the other must not. -->
                 <Border x:Name="InsightProgressAnchor" Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasInsightProgress}">
                     <VerticalStackLayout Spacing="8">
                         <Label Text="{x:Static localization:AppResources.StatsMoodInfluencesTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                         <Label Text="{Binding MoodStats.InsightProgressText}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        <Label Text="{x:Static localization:AppResources.StatsInsightProgressHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{Binding MoodStats.InsightProgressHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>

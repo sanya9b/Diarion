@@ -2127,6 +2127,22 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("StatsInsightProgressHint", resourceCulture) ?? string.Empty; }
         }
 
+        public static string StatsHypothesesCheckedFormat {
+            get { return ResourceManager.GetString("StatsHypothesesCheckedFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsCorrelationEvidenceFormat {
+            get { return ResourceManager.GetString("StatsCorrelationEvidenceFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsNoHypothesisHolds {
+            get { return ResourceManager.GetString("StatsNoHypothesisHolds", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsNoHypothesisHoldsHintFormat {
+            get { return ResourceManager.GetString("StatsNoHypothesisHoldsHintFormat", resourceCulture) ?? string.Empty; }
+        }
+
         public static string SettingsTabAi {
             get { return ResourceManager.GetString("SettingsTabAi", resourceCulture) ?? string.Empty; }
         }

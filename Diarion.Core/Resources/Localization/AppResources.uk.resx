@@ -1577,10 +1577,10 @@
     <value>Коли назбирається кілька тижнів записів, теми, що повторюються, зберуться тут — рахунок у днях, а не в абзацах. Це ваші власні формулювання, згруповані на пристрої.</value>
   </data>
   <data name="TourStatsInfluencesTitle" xml:space="preserve">
-    <value>Що впливає на настрій</value>
+    <value>Здогади, які перевіряються</value>
   </data>
   <data name="TourStatsInfluencesText" xml:space="preserve">
-    <value>Сон, їжа, звички й самі дні зіставляються з тим, як ви почувалися. Поки записаного замало, картка натомість показує, скільки лишилось до першої відповіді. Це кореляція, а не діагноз.</value>
+    <value>Сон, їжа, звички й самі дні зіставляються з тим, як ви почувалися, і в списку лишається тільки те, що витримало перевірку, — разом із кількістю днів, на яких воно тримається. Часто не лишається нічого, і картка про це теж скаже.</value>
   </data>
   <data name="TourSettingsTabsTitle" xml:space="preserve">
     <value>Чотири групи налаштувань</value>
@@ -1661,10 +1661,22 @@
     <value>Хвилинка для себе?</value>
   </data>
   <data name="StatsMoodInfluencesTitle" xml:space="preserve">
-    <value>ЩО ВПЛИВАЄ НА НАСТРІЙ</value>
+    <value>ВАРТО ПЕРЕВІРИТИ</value>
   </data>
   <data name="StatsCorrelationDisclaimer" xml:space="preserve">
-    <value>Пов'язано з настроєм — не доведено, що є причиною.</value>
+    <value>Це збіги у ваших записах, а не причини. Дізнатися можна лише навмисне: змініть щось одне на тиждень і подивіться, чи піде збіг слідом.</value>
+  </data>
+  <data name="StatsHypothesesCheckedFormat" xml:space="preserve">
+    <value>Перевірено: {0}. Тримаються: {1}</value>
+  </data>
+  <data name="StatsCorrelationEvidenceFormat" xml:space="preserve">
+    <value>тримається на {0} днях</value>
+  </data>
+  <data name="StatsNoHypothesisHolds" xml:space="preserve">
+    <value>Поки не тримається жодна</value>
+  </data>
+  <data name="StatsNoHypothesisHoldsHintFormat" xml:space="preserve">
+    <value>Перевірено: {0}. Жодна не витримала перевірки. Це звичайний результат — більшість збігів її не витримує, і сказати про це чесніше, ніж показати зв'язок, якого немає.</value>
   </data>
   <data name="FactorSleepDuration" xml:space="preserve">
     <value>Тривалість сну</value>
