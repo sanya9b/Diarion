@@ -5,7 +5,8 @@
 > було видно, який абзац перестав бути правдою. Дужки прибрати перед публікацією.
 >
 > **Що лишається зробити власнику:**
-> 1. Підставити ім'я розробника, поштову адресу для звернень і дату набуття чинності замість `TODO`.
+> 1. ~~Підставити ім'я розробника, поштову адресу для звернень і дату набуття чинності замість `TODO`.~~
+>    Зроблено 2026-09-02: Кугай Вікторія Юріївна, `support@diarion.org`, чинна з 07.09.2026.
 > 2. Викласти обидві мови за постійними URL на `diarion.org` — Apple вимагає URL, не PDF і не текст
 >    у застосунку; у App Store Connect адреса задається окремо для кожної локалі.
 > 3. ~~Перечитати розділи «Здоров'я» і «Мережа» після рішень по HealthKit і по AI.~~ Обидва рішення
@@ -19,9 +20,9 @@
 
 ## Українською
 
-**Чинна з:** TODO
-**Розробник:** TODO (фізична особа)
-**Контакт:** TODO@TODO
+**Чинна з:** 7 вересня 2026
+**Розробник:** Кугай Вікторія Юріївна (фізична особа)
+**Контакт:** support@diarion.org
 
 ### Коротко
 
@@ -103,15 +104,15 @@ Android хмарне резервне копіювання вимкнено на
 
 ### Контакт
 
-TODO@TODO
+support@diarion.org
 
 ---
 
 ## English
 
-**Effective:** TODO
-**Developer:** TODO (individual)
-**Contact:** TODO@TODO
+**Effective:** 7 September 2026
+**Developer:** Victoria Kuhai (individual)
+**Contact:** support@diarion.org
 
 ### In short
 
@@ -184,4 +185,4 @@ data off the device, the app will ask for separate consent before the first such
 
 ### Contact
 
-TODO@TODO
+support@diarion.org

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://diarion.org/</loc>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://diarion.org/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://diarion.org/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://diarion.org/"/>
+  </url>
+  <url>
+    <loc>https://diarion.org/en/</loc>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://diarion.org/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://diarion.org/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://diarion.org/"/>
+  </url>
+  <url>
+    <loc>https://diarion.org/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://diarion.org/privacy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://diarion.org/en/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://diarion.org/privacy"/>
+  </url>
+  <url>
+    <loc>https://diarion.org/en/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://diarion.org/privacy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://diarion.org/en/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://diarion.org/privacy"/>
+  </url>
+  <url>
+    <loc>https://diarion.org/support</loc>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://diarion.org/support"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://diarion.org/en/support"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://diarion.org/support"/>
+  </url>
+  <url>
+    <loc>https://diarion.org/en/support</loc>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://diarion.org/support"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://diarion.org/en/support"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://diarion.org/support"/>
+  </url>
+</urlset>
