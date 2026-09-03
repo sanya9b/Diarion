@@ -270,6 +270,7 @@ public class MarkdownParserTests
     [InlineData("~~молоко~~", InlineStyle.Strikethrough)]
     [InlineData("`молоко`", InlineStyle.Code)]
     [InlineData("[[молоко]]", InlineStyle.Link)]
+    [InlineData("***молоко***", InlineStyle.Bold | InlineStyle.Italic)]
     public void EachPairOfMarkersStylesWhatIsBetweenThemAndDisappears(string text, InlineStyle style)
     {
         var spans = MarkdownParser.ParseInline(text);

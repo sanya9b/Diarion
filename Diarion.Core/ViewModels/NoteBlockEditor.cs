@@ -23,6 +23,10 @@ namespace Diarion.ViewModels;
 /// not something reimplemented here. Only marked lines get a block of their own, and the only
 /// keystroke this class has to recognise is the newline that arrives in a block that cannot hold one.
 /// </para>
+/// <para>
+/// Every cut and join here is made on <see cref="StyledText"/>, not on strings, so a bold word keeps
+/// its weight when the line it is in becomes a bullet or is split by Enter.
+/// </para>
 /// </remarks>
 public class NoteBlockEditor
 {
@@ -92,7 +96,7 @@ public class NoteBlockEditor
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
-        last.RequestFocus((last.Text ?? string.Empty).Length);
+        last.RequestFocus(last.Body.Length);
     }
 
     /// <summary>
@@ -130,50 +134,30 @@ public class NoteBlockEditor
     }
 
     /// <summary>
-    /// Wraps the selection in <paramref name="marker"/> — <c>**</c>, <c>*</c> or <c>~~</c> — and
-    /// unwraps it when it is already wrapped.
+    /// Bold, italic or strikethrough, the way every rich text editor does it: with text selected, the
+    /// selection takes the style — or loses it, if it already had it throughout; with nothing selected,
+    /// what is typed next takes it. Neither path ever shows the user a marker.
     /// </summary>
     /// <remarks>
-    /// With nothing selected it takes the word the caret is standing in. That is not a convenience:
-    /// on a phone selecting a word first is two gestures, and a button that inserted an empty pair of
-    /// stars would be a button that asks you to type between them.
+    /// Flipping the typing style is not an edit: nothing stored has changed until a character is
+    /// typed, so no save is raised for it.
     /// </remarks>
-    public void ToggleInline(string marker)
+    public void ToggleStyle(InlineStyle style)
     {
         var block = Target();
-        if (block == null || string.IsNullOrEmpty(marker)) return;
+        if (block == null || style == InlineStyle.None) return;
 
-        var text = block.Text ?? string.Empty;
-        var (start, length) = Resolve(block, text);
+        var body = block.Body;
+        var start = Math.Clamp(block.SelectionStart, 0, body.Length);
+        var length = Math.Clamp(block.SelectionLength, 0, body.Length - start);
 
-        string next;
-        int caret;
-
-        if (WrapsFromOutside(text, start, length, marker))
+        if (length == 0)
         {
-            next = text
-                .Remove(start + length, marker.Length)
-                .Remove(start - marker.Length, marker.Length);
-            caret = start + length - marker.Length;
-        }
-        else if (WrapsFromInside(text, start, length, marker))
-        {
-            next = text
-                .Remove(start + length - marker.Length, marker.Length)
-                .Remove(start, marker.Length);
-            caret = start + length - (2 * marker.Length);
-        }
-        else
-        {
-            next = text.Insert(start + length, marker).Insert(start, marker);
-            caret = length == 0 ? start + marker.Length : start + length + (2 * marker.Length);
+            block.TypingStyle ^= style;
+            return;
         }
 
-        // The line has to stay a field: markup makes it eligible to be drawn as a formatted label, and
-        // being swapped for a label under the caret is not what pressing "bold" asks for.
-        block.IsEditing = true;
-        block.Text = next;
-        block.RequestFocus(caret);
+        block.Body = body.Toggle(start, length, style);
     }
 
     // Which line the bar acts on. Falling back to the last block covers the note that has been opened
@@ -199,14 +183,8 @@ public class NoteBlockEditor
         }
         else
         {
-            var replacement = new MarkdownBlock
-            {
-                Kind = kind,
-                Text = block.Text ?? string.Empty,
-                Indent = block.Indent
-            };
-
-            focus = ChangeKind(block, replacement, out caret);
+            var shape = new MarkdownBlock { Kind = kind, Indent = block.Indent };
+            focus = ChangeKind(block, shape, block.Body, out caret);
         }
 
         Renumber();
@@ -214,11 +192,7 @@ public class NoteBlockEditor
         UpdatePlaceholder();
 
         Active = focus;
-        if (focus != null)
-        {
-            focus.IsEditing = true;
-            focus.RequestFocus(caret);
-        }
+        focus?.RequestFocus(caret);
 
         Changed?.Invoke(this, EventArgs.Empty);
     }
@@ -227,25 +201,25 @@ public class NoteBlockEditor
     // is the one the caret is in — the only reason the blocks track the caret at all.
     private NoteBlockViewModel PromoteLine(NoteBlockViewModel run, MarkdownBlockKind kind, out int caret)
     {
-        var text = run.Text ?? string.Empty;
+        var body = run.Body;
+        var text = body.Text;
         var at = Math.Clamp(run.SelectionStart, 0, text.Length);
 
         var from = at == 0 ? 0 : text.LastIndexOf('\n', at - 1) + 1;
         var to = text.IndexOf('\n', at);
         if (to < 0) to = text.Length;
 
-        var line = text[from..to];
-        caret = line.Length;
+        caret = to - from;
 
         var index = Blocks.IndexOf(run);
         if (index < 0) return run;
 
-        var promoted = Wrap(new MarkdownBlock { Kind = kind, Text = line, Indent = run.Indent });
+        var promoted = Wrap(new MarkdownBlock { Kind = kind, Indent = run.Indent }, body.Slice(from, to));
 
         var replacements = new List<NoteBlockViewModel>();
-        if (from > 0) replacements.Add(Wrap(new MarkdownBlock { Text = text[..(from - 1)] }));
+        if (from > 0) replacements.Add(Wrap(new MarkdownBlock(), body.Slice(0, from - 1)));
         replacements.Add(promoted);
-        if (to < text.Length) replacements.Add(Wrap(new MarkdownBlock { Text = text[(to + 1)..] }));
+        if (to < text.Length) replacements.Add(Wrap(new MarkdownBlock(), body.Slice(to + 1, body.Length)));
 
         Blocks.RemoveAt(index);
         for (var i = 0; i < replacements.Count; i++)
@@ -256,55 +230,15 @@ public class NoteBlockEditor
         return promoted;
     }
 
-    private static (int Start, int Length) Resolve(NoteBlockViewModel block, string text)
-    {
-        var start = Math.Clamp(block.SelectionStart, 0, text.Length);
-        var length = Math.Clamp(block.SelectionLength, 0, text.Length - start);
-        if (length > 0) return (start, length);
-
-        var from = start;
-        while (from > 0 && !char.IsWhiteSpace(text[from - 1])) from--;
-
-        var to = start;
-        while (to < text.Length && !char.IsWhiteSpace(text[to])) to++;
-
-        return (from, to - from);
-    }
-
-    // The markers sit outside the selection: "**|word|**".
-    private static bool WrapsFromOutside(string text, int start, int length, string marker)
-    {
-        if (length == 0 || start < marker.Length || start + length + marker.Length > text.Length)
-        {
-            return false;
-        }
-
-        return Matches(text, start - marker.Length, marker)
-            && Matches(text, start + length, marker)
-            && !IsHalfOfBold(text, start - marker.Length - 1, marker);
-    }
-
-    // The selection took the markers with it: "|**word**|". A double tap picks the word, a drag
-    // usually picks more than the word, and both have to toggle rather than add a second pair.
-    private static bool WrapsFromInside(string text, int start, int length, string marker)
-    {
-        if (length < 2 * marker.Length) return false;
-
-        return Matches(text, start, marker)
-            && Matches(text, start + length - marker.Length, marker)
-            && !IsHalfOfBold(text, start + marker.Length, marker);
-    }
-
-    // "*" next to another "*" is half of "**": italic must not strip a bold pair down the middle.
-    private static bool IsHalfOfBold(string text, int at, string marker)
-        => marker == "*" && at >= 0 && at < text.Length && text[at] == '*';
-
-    private static bool Matches(string text, int at, string marker)
-        => at >= 0
-            && at + marker.Length <= text.Length
-            && string.CompareOrdinal(text, at, marker, 0, marker.Length) == 0;
-
     private NoteBlockViewModel Wrap(MarkdownBlock block) => new(block, OnBlockEdited, OnBlockFocused);
+
+    // A block whose text is already styled: the shape says what kind it is, the body what it says.
+    private NoteBlockViewModel Wrap(MarkdownBlock shape, StyledText body)
+    {
+        var block = Wrap(shape);
+        block.SetBodySilently(body);
+        return block;
+    }
 
     private void OnBlockFocused(NoteBlockViewModel block) => Active = block;
 
@@ -325,13 +259,16 @@ public class NoteBlockEditor
         {
             focus = SplitRun(block, out caret);
         }
-        else if ((block.Text ?? string.Empty).Contains('\n'))
+        else if (block.Text.Contains('\n'))
         {
             focus = SplitLine(block, out caret);
         }
         else if (MarkdownParser.TryPromote(block.Text, out var promoted))
         {
-            focus = ChangeKind(block, promoted, out caret);
+            // The marker is a prefix of the line and the recognised text its suffix, so the styled
+            // remainder is the same count of characters off the end.
+            var body = block.Body;
+            focus = ChangeKind(block, promoted, body.Slice(body.Length - promoted.Text.Length, body.Length), out caret);
         }
 
         Renumber();
@@ -346,7 +283,7 @@ public class NoteBlockEditor
     {
         var isEmptyNote = Blocks.Count == 1
             && Blocks[0].Kind == MarkdownBlockKind.Paragraph
-            && string.IsNullOrEmpty(Blocks[0].Text);
+            && Blocks[0].Body.IsEmpty;
 
         foreach (var block in Blocks)
         {
@@ -372,39 +309,54 @@ public class NoteBlockEditor
         return first;
     }
 
+    // The first marked line, because on any single keystroke it is the only one that can be new:
+    // anything earlier would have been promoted a keystroke ago.
     private NoteBlockViewModel? SplitRunOnce(NoteBlockViewModel run, out NoteBlockViewModel? tail, out int promotedLength)
     {
         tail = null;
         promotedLength = 0;
 
-        if (!MarkdownParser.TrySplitRun(run.Text, out var before, out var promoted, out var after))
+        var body = run.Body;
+        var lines = body.Text.Split('\n');
+        var offset = 0;
+
+        for (var i = 0; i < lines.Length; i++)
         {
-            return null;
+            var line = lines[i];
+            var lineEnd = offset + line.Length;
+
+            if (!MarkdownParser.TryPromote(line, out var promoted))
+            {
+                offset = lineEnd + 1;
+                continue;
+            }
+
+            var index = Blocks.IndexOf(run);
+            if (index < 0) return null;
+
+            var replacements = new List<NoteBlockViewModel>();
+            if (i > 0) replacements.Add(Wrap(new MarkdownBlock(), body.Slice(0, offset - 1)));
+
+            var promotedBlock = Wrap(promoted, body.Slice(lineEnd - promoted.Text.Length, lineEnd));
+            replacements.Add(promotedBlock);
+
+            if (i < lines.Length - 1)
+            {
+                tail = Wrap(new MarkdownBlock(), body.Slice(lineEnd + 1, body.Length));
+                replacements.Add(tail);
+            }
+
+            Blocks.RemoveAt(index);
+            for (var j = 0; j < replacements.Count; j++)
+            {
+                Blocks.Insert(index + j, replacements[j]);
+            }
+
+            promotedLength = promoted.Text.Length;
+            return promotedBlock;
         }
 
-        var index = Blocks.IndexOf(run);
-        if (index < 0) return null;
-
-        var replacements = new List<NoteBlockViewModel>();
-        if (before != null) replacements.Add(Wrap(new MarkdownBlock { Text = before }));
-
-        var promotedBlock = Wrap(promoted);
-        replacements.Add(promotedBlock);
-
-        if (after != null)
-        {
-            tail = Wrap(new MarkdownBlock { Text = after });
-            replacements.Add(tail);
-        }
-
-        Blocks.RemoveAt(index);
-        for (var i = 0; i < replacements.Count; i++)
-        {
-            Blocks.Insert(index + i, replacements[i]);
-        }
-
-        promotedLength = promoted.Text.Length;
-        return promotedBlock;
+        return null;
     }
 
     // A newline has arrived in a block that holds exactly one line: the user pressed Enter.
@@ -412,17 +364,17 @@ public class NoteBlockEditor
     {
         caret = 0;
 
-        var text = block.Text ?? string.Empty;
-        var at = text.IndexOf('\n');
-        var before = text[..at];
-        var after = text[(at + 1)..];
+        var body = block.Body;
+        var at = body.Text.IndexOf('\n');
+        var before = body.Slice(0, at);
+        var after = body.Slice(at + 1, body.Length);
 
         var index = Blocks.IndexOf(block);
         if (index < 0) return null;
 
         // Enter on an item that has nothing in it is how you leave a list: the marker comes off
         // instead of another empty item appearing below it.
-        if (before.Length == 0 && after.Length == 0 && IsListItem(block.Kind))
+        if (before.IsEmpty && after.IsEmpty && IsListItem(block.Kind))
         {
             var plain = Wrap(new MarkdownBlock());
             Blocks.RemoveAt(index);
@@ -430,15 +382,15 @@ public class NoteBlockEditor
             return plain;
         }
 
-        block.SetTextSilently(before);
+        block.SetBodySilently(before);
 
         // Pasted text brings its own line breaks; hand the whole tail to the prose path, which knows
         // how to pull markers back out of it. Otherwise the new line carries on the list, and Enter
         // after a heading drops you into ordinary text — the same as every editor that has headings.
-        var carriesBreaks = after.Contains('\n');
+        var carriesBreaks = after.Text.Contains('\n');
         var nextKind = carriesBreaks || IsHeading(block.Kind) ? MarkdownBlockKind.Paragraph : block.Kind;
 
-        var next = Wrap(new MarkdownBlock { Kind = nextKind, Text = after, Indent = block.Indent });
+        var next = Wrap(new MarkdownBlock { Kind = nextKind, Indent = block.Indent }, after);
         Blocks.Insert(index + 1, next);
 
         if (carriesBreaks)
@@ -454,18 +406,18 @@ public class NoteBlockEditor
         return next;
     }
 
-    // The block's text now starts with a marker — "- " typed in front of a heading, "[]" in front of
-    // a bullet. The block cannot change kind in place, so it is swapped for one of the new kind.
-    private NoteBlockViewModel ChangeKind(NoteBlockViewModel block, MarkdownBlock promoted, out int caret)
+    // The block has to become another kind — "[]" typed in front of a bullet, or a button pressed.
+    // It cannot change kind in place, so it is swapped for one of the new kind carrying the same text.
+    private NoteBlockViewModel ChangeKind(NoteBlockViewModel block, MarkdownBlock shape, StyledText body, out int caret)
     {
         var index = Blocks.IndexOf(block);
-        if (promoted.Indent.Length == 0) promoted.Indent = block.Indent;
+        if (shape.Indent.Length == 0) shape.Indent = block.Indent;
 
-        var replacement = Wrap(promoted);
+        var replacement = Wrap(shape, body);
         Blocks.RemoveAt(index);
         Blocks.Insert(index, replacement);
 
-        caret = promoted.Text.Length;
+        caret = body.Length;
         return replacement;
     }
 
@@ -482,8 +434,8 @@ public class NoteBlockEditor
                 continue;
             }
 
-            var join = (first.Text ?? string.Empty).Length + 1;
-            first.SetTextSilently((first.Text ?? string.Empty) + "\n" + (second.Text ?? string.Empty));
+            var join = first.Body.Length + 1;
+            first.SetBodySilently(first.Body.Append("\n").Concat(second.Body));
             Blocks.RemoveAt(i + 1);
 
             if (ReferenceEquals(focus, second))

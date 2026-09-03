@@ -75,9 +75,10 @@ public partial class NoteDetailViewModel : BaseViewModel
     private readonly Helpers.AsyncDebouncer _autoSaveDebouncer = new(TimeSpan.FromSeconds(1));
 
     /// <summary>
-    /// How far the formatting bar sits off the bottom of the page: nothing until the keyboard covers
-    /// it, and the height of the keyboard once it does. See <see cref="IKeyboardInsetService"/> for
-    /// why only one platform ever answers with anything.
+    /// How far the formatting bar sits off the bottom of the page when it is laid out in the page:
+    /// nothing until the keyboard covers it, and the height of the keyboard once it does. On iOS the
+    /// bar is not in the page at all — it rides on the keyboard as its accessory view — so there this
+    /// stays at zero; see <see cref="IKeyboardInsetService"/>.
     /// </summary>
     [ObservableProperty]
     private double _keyboardInset;
@@ -149,13 +150,13 @@ public partial class NoteDetailViewModel : BaseViewModel
     private void ToggleQuote() => _body.ToggleKind(MarkdownBlockKind.Quote);
 
     [RelayCommand]
-    private void ToggleBold() => _body.ToggleInline("**");
+    private void ToggleBold() => _body.ToggleStyle(InlineStyle.Bold);
 
     [RelayCommand]
-    private void ToggleItalic() => _body.ToggleInline("*");
+    private void ToggleItalic() => _body.ToggleStyle(InlineStyle.Italic);
 
     [RelayCommand]
-    private void ToggleStrikethrough() => _body.ToggleInline("~~");
+    private void ToggleStrikethrough() => _body.ToggleStyle(InlineStyle.Strikethrough);
 
     partial void OnNoteIdChanged(string? value)
     {

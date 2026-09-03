@@ -24,29 +24,36 @@
 
     <!--
         One line of the note, one editable field, with its marker drawn beside it instead of typed into
-        it. The markdown itself never reaches the screen: "# " turns the line into a heading and
-        disappears, "- [ ] " becomes a tick box you can tap.
+        it. Neither the markdown nor its emphasis ever reaches the screen: "# " turns the line into a
+        heading and disappears, "- [ ] " becomes a tick box you can tap, and bold is bold — the field is
+        a RichTextBlock, a native rich text control on every platform, see Controls/Handlers.
     -->
     <ContentPage.Resources>
         <ResourceDictionary>
 
-            <Style x:Key="NoteBlockEditor" TargetType="controls:NoteBlockBody">
+            <Style x:Key="NoteBlockEditor" TargetType="controls:NoteLine">
                 <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                <Setter Property="DimColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                <Setter Property="CodeColor" Value="{DynamicResource Theme_Amber}" />
+                <Setter Property="LinkColor" Value="{DynamicResource Theme_Coral}" />
+                <Setter Property="ActivePlaceholderColor" Value="{DynamicResource Theme_Ocean_Dust}" />
                 <Setter Property="FontSize" Value="18" />
                 <Setter Property="VerticalOptions" Value="Start" />
+                <!-- On iOS the formatting bar rides on the keyboard; the page hands it over here. -->
+                <Setter Property="InputAccessory" Value="{Binding Source={x:Reference RootPage}, Path=AccessoryBar}" />
             </Style>
 
-            <Style x:Key="NoteBlockHeading1" TargetType="controls:NoteBlockBody" BasedOn="{StaticResource NoteBlockEditor}">
+            <Style x:Key="NoteBlockHeading1" TargetType="controls:NoteLine" BasedOn="{StaticResource NoteBlockEditor}">
                 <Setter Property="FontSize" Value="28" />
                 <Setter Property="FontAttributes" Value="Bold" />
             </Style>
 
-            <Style x:Key="NoteBlockHeading2" TargetType="controls:NoteBlockBody" BasedOn="{StaticResource NoteBlockEditor}">
+            <Style x:Key="NoteBlockHeading2" TargetType="controls:NoteLine" BasedOn="{StaticResource NoteBlockEditor}">
                 <Setter Property="FontSize" Value="23" />
                 <Setter Property="FontAttributes" Value="Bold" />
             </Style>
 
-            <Style x:Key="NoteBlockHeading3" TargetType="controls:NoteBlockBody" BasedOn="{StaticResource NoteBlockEditor}">
+            <Style x:Key="NoteBlockHeading3" TargetType="controls:NoteLine" BasedOn="{StaticResource NoteBlockEditor}">
                 <Setter Property="FontSize" Value="19" />
                 <Setter Property="FontAttributes" Value="Bold" />
             </Style>
@@ -60,27 +67,27 @@
             </Style>
 
             <DataTemplate x:Key="NoteParagraphBlock" x:DataType="viewModels:NoteBlockViewModel">
-                <controls:NoteBlockBody Style="{StaticResource NoteBlockEditor}"
-                                        Placeholder="{localization:Translate Key=NoteContentPlaceholder}" />
+                <controls:NoteLine Style="{StaticResource NoteBlockEditor}"
+                                   Placeholder="{localization:Translate Key=NoteContentPlaceholder}" />
             </DataTemplate>
 
             <DataTemplate x:Key="NoteHeading1Block" x:DataType="viewModels:NoteBlockViewModel">
-                <controls:NoteBlockBody Style="{StaticResource NoteBlockHeading1}" />
+                <controls:NoteLine Style="{StaticResource NoteBlockHeading1}" />
             </DataTemplate>
 
             <DataTemplate x:Key="NoteHeading2Block" x:DataType="viewModels:NoteBlockViewModel">
-                <controls:NoteBlockBody Style="{StaticResource NoteBlockHeading2}" />
+                <controls:NoteLine Style="{StaticResource NoteBlockHeading2}" />
             </DataTemplate>
 
             <DataTemplate x:Key="NoteHeading3Block" x:DataType="viewModels:NoteBlockViewModel">
-                <controls:NoteBlockBody Style="{StaticResource NoteBlockHeading3}" />
+                <controls:NoteLine Style="{StaticResource NoteBlockHeading3}" />
             </DataTemplate>
 
             <DataTemplate x:Key="NoteBulletBlock" x:DataType="viewModels:NoteBlockViewModel">
                 <Grid ColumnDefinitions="26,*">
                     <Label Grid.Column="0" Text="•" Style="{StaticResource NoteBlockMarker}"
                            TextColor="{DynamicResource Theme_Coral}" FontSize="20" Margin="0,6,0,0" />
-                    <controls:NoteBlockBody Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
+                    <controls:NoteLine Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
                 </Grid>
             </DataTemplate>
 
@@ -88,7 +95,7 @@
                 <Grid ColumnDefinitions="26,*">
                     <Label Grid.Column="0" Text="{Binding NumberLabel}" Style="{StaticResource NoteBlockMarker}"
                            TextColor="{DynamicResource Theme_Coral}" FontSize="16" />
-                    <controls:NoteBlockBody Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
+                    <controls:NoteLine Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
                 </Grid>
             </DataTemplate>
 
@@ -101,8 +108,8 @@
                                               Color="{DynamicResource Theme_Coral}"
                                               VerticalOptions="Start"
                                               Margin="0,2,0,0" />
-                    <!-- A ticked item goes grey and crossed out; the control does both, see IsStruck. -->
-                    <controls:NoteBlockBody Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
+                    <!-- A ticked item goes grey and crossed out; the field does both, see IsStruck. -->
+                    <controls:NoteLine Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
                 </Grid>
             </DataTemplate>
 
@@ -110,9 +117,9 @@
                 <Grid ColumnDefinitions="26,*">
                     <BoxView Grid.Column="0" WidthRequest="3" HorizontalOptions="Start" Margin="4,6,0,6"
                              CornerRadius="2" Color="{DynamicResource Theme_Amber}" />
-                    <controls:NoteBlockBody Grid.Column="1" Style="{StaticResource NoteBlockEditor}"
-                                            FontAttributes="Italic"
-                                            TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    <controls:NoteLine Grid.Column="1" Style="{StaticResource NoteBlockEditor}"
+                                       FontAttributes="Italic"
+                                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 </Grid>
             </DataTemplate>
 
@@ -245,11 +252,16 @@
         <!--
             The formatting bar sits under the note rather than inside the scroll, so it is where the
             thumb already is and stays there while the note is scrolled. The spacer beneath it is the
-            keyboard: zero on Android, which moves the window itself, and the keyboard's height on
-            iOS, which does not.
+            keyboard, measured — zero on Android, which moves the window itself.
+
+            Not on iOS. There the keyboard slides over the page, and a bar laid out in the page would
+            need to know how tall the keyboard is to climb over it; the system does not say reliably.
+            So on iOS the bar is the keyboard's accessory view instead — the same NoteFormatBar,
+            created in the code-behind and handed to every line through AccessoryBar — and the system
+            raises and lowers it with the keyboard, whatever height the keyboard has.
         -->
         <VerticalStackLayout Grid.Row="2">
-            <controls:NoteFormatBar />
+            <controls:NoteFormatBar IsVisible="{OnPlatform True, iOS=False}" />
             <BoxView HeightRequest="{Binding KeyboardInset}" Color="Transparent" />
         </VerticalStackLayout>
     </Grid>

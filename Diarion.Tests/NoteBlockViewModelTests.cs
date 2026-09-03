@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Diarion.Models.Markdown;
 using Diarion.ViewModels;
 using FluentAssertions;
@@ -7,9 +8,8 @@ using Xunit;
 namespace Diarion.Tests;
 
 /// <summary>
-/// One line of a note deciding how it is drawn. A MAUI input field cannot format part of its own text,
-/// so a line that has something to show becomes a label until it is tapped — and a line that has
-/// nothing to show must never do that, because a label cannot say which character the finger landed on.
+/// One line of a note as the field holds it: styled characters and never a marker. The markdown is
+/// something the line is parsed from when the note opens and composed into when it is saved.
 /// </summary>
 public class NoteBlockViewModelTests
 {
@@ -20,93 +20,70 @@ public class NoteBlockViewModelTests
         => new(new MarkdownBlock { Kind = kind, Text = text, IsChecked = isChecked });
 
     [Fact]
-    public void APlainLineStaysAFieldYouCanPutTheCaretInto()
-    {
-        var block = Block("купити молоко");
-
-        block.ShowsFormattedText.Should().BeFalse();
-        block.ShowsRawText.Should().BeTrue();
-    }
-
-    [Fact]
-    public void ALineWithEmphasisIsDrawnRatherThanShownAsItIsWritten()
+    public void TheStoredMarkupArrivesAsStyleAndTheStarsDoNot()
     {
         var block = Block("купити **молоко**");
 
-        block.ShowsFormattedText.Should().BeTrue();
-        block.ShowsRawText.Should().BeFalse();
+        block.Text.Should().Be("купити молоко");
+        block.Body.Runs.Select(r => (r.Text, r.Style)).Should().Equal(
+            ("купити ", InlineStyle.None),
+            ("молоко", InlineStyle.Bold));
     }
 
     [Fact]
-    public void AnEmptyLineIsAFieldSoThereIsSomewhereToType()
+    public void TheStyleGoesBackOutAsTheSameMarkup()
     {
-        Block(string.Empty).ShowsRawText.Should().BeTrue();
+        Block("купити **молоко** і ~~каву~~").ToBlock().Text.Should().Be("купити **молоко** і ~~каву~~");
     }
 
     [Fact]
-    public void TheMarkupShowsItselfWhileTheCaretIsInTheLine()
+    public void MarkupTypedByHandBecomesStyleTheMomentItCloses()
     {
-        var block = Block("купити **молоко**");
-
-        block.HoldEditCommand.Execute(null);
-
-        block.ShowsRawText.Should().BeTrue();
-        block.ShowsFormattedText.Should().BeFalse();
-    }
-
-    [Fact]
-    public void TheMarkupGoesBackToBeingDrawnWhenTheCaretLeaves()
-    {
-        var block = Block("купити **молоко**");
-        block.HoldEditCommand.Execute(null);
-
-        block.EndEditCommand.Execute(null);
-
-        block.ShowsFormattedText.Should().BeTrue();
-    }
-
-    [Fact]
-    public void TappingADrawnLinePutsTheCaretAtItsEnd()
-    {
-        // A label cannot say which character was tapped, so the end is the only honest answer.
-        var block = Block("купити **молоко**");
-
-        block.BeginEditCommand.Execute(null);
-
-        block.ShowsRawText.Should().BeTrue();
-        block.IsFocusRequested.Should().BeTrue();
-        block.Caret.Should().Be("купити **молоко**".Length);
-    }
-
-    [Fact]
-    public void TypingEmphasisDoesNotYankTheFieldAwayMidWord()
-    {
-        // The line has become worth drawing, but the caret is still in it: swapping now would take the
-        // field out from under the user between the second and the third star.
+        // The same rule as "- " becoming a bullet: anyone who knows the symbols may still type them,
+        // and they vanish into the look they describe rather than staying on screen.
         var block = Block("купити ");
-        block.HoldEditCommand.Execute(null);
+        block.SelectionStart = "купити **молоко**".Length;
 
         block.Text = "купити **молоко**";
 
-        block.ShowsRawText.Should().BeTrue();
+        block.Text.Should().Be("купити молоко");
+        block.Body.StyleAt(7).Should().Be(InlineStyle.Bold);
+        block.IsFocusRequested.Should().BeTrue("the field has to be told where the caret now is");
+        block.Caret.Should().Be("купити молоко".Length, "four stars went away in front of it");
     }
 
     [Fact]
-    public void ATickedItemIsCrossedOutEvenWithNothingElseToDraw()
+    public void MarkupTypedIntoAStyledLineAddsToTheStyleRatherThanReplacingIt()
     {
-        var block = Block("молоко", MarkdownBlockKind.Checklist, isChecked: true);
+        var block = Block("*курсив*");
 
-        block.IsStruck.Should().BeTrue();
-        block.ShowsFormattedText.Should().BeTrue();
+        block.Body = block.Body.Append(" і **жирний**", InlineStyle.Italic);
+
+        block.Body.Runs.Last().Style.Should().Be(InlineStyle.Italic | InlineStyle.Bold);
+        block.Body.Runs.Last().Text.Should().Be("жирний");
+    }
+
+    [Fact]
+    public void TheLineIsSavedOnceForATypedMarkerNotTwice()
+    {
+        var edits = 0;
+        var block = new NoteBlockViewModel(new MarkdownBlock(), onEdited: _ => edits++);
+
+        block.Text = "**молоко**";
+
+        edits.Should().Be(1);
+    }
+
+    [Fact]
+    public void ATickedItemIsCrossedOut()
+    {
+        Block("молоко", MarkdownBlockKind.Checklist, isChecked: true).IsStruck.Should().BeTrue();
     }
 
     [Fact]
     public void AnItemThatIsNotTickedIsNotCrossedOut()
     {
-        var block = Block("молоко", MarkdownBlockKind.Checklist);
-
-        block.IsStruck.Should().BeFalse();
-        block.ShowsRawText.Should().BeTrue();
+        Block("молоко", MarkdownBlockKind.Checklist).IsStruck.Should().BeFalse();
     }
 
     [Fact]
@@ -127,28 +104,48 @@ public class NoteBlockViewModelTests
 
         block.IsChecked.Should().BeTrue();
         announced.Should().Contain(nameof(NoteBlockViewModel.IsStruck));
-        announced.Should().Contain(nameof(NoteBlockViewModel.ShowsFormattedText));
     }
 
     [Fact]
-    public void EditingALineRedrawsWhatItSays()
+    public void EditingALineAnnouncesBothTheStyledAndThePlainReading()
     {
         var block = Block("молоко");
         var announced = new List<string?>();
         block.PropertyChanged += (_, e) => announced.Add(e.PropertyName);
 
-        block.Text = "**молоко**";
+        block.Text = "молоко 2л";
 
-        announced.Should().Contain(nameof(NoteBlockViewModel.Spans));
+        announced.Should().Contain(nameof(NoteBlockViewModel.Body));
+        announced.Should().Contain(nameof(NoteBlockViewModel.Text));
     }
 
     [Fact]
-    public void TheLineKnowsWhichStretchesAreDrawnDifferently()
+    public void SettingTheSameTextAgainIsNotAnEdit()
     {
-        var block = Block("купити **молоко**");
+        // Two-way bindings echo. A field that reports back exactly what it was given must not cost a
+        // save, and must not wipe the styles the plain text cannot carry.
+        var edits = 0;
+        var block = new NoteBlockViewModel(new MarkdownBlock { Text = "**молоко**" }, onEdited: _ => edits++);
 
-        block.Spans.Should().HaveCount(2);
-        block.Spans[1].Text.Should().Be("молоко");
-        block.Spans[1].Has(InlineStyle.Bold).Should().BeTrue();
+        block.Text = "молоко";
+        block.Body = StyledText.Parse("**молоко**");
+
+        edits.Should().Be(0);
+        block.Body.StyleAt(0).Should().Be(InlineStyle.Bold);
+    }
+
+    [Fact]
+    public void TakingFocusTellsTheEditorWhichLineIsLive()
+    {
+        NoteBlockViewModel? focused = null;
+        var block = new NoteBlockViewModel(new MarkdownBlock(), onFocused: b => focused = b);
+
+        block.HoldEditCommand.Execute(null);
+
+        focused.Should().BeSameAs(block);
+        block.IsEditing.Should().BeTrue();
+
+        block.EndEditCommand.Execute(null);
+        block.IsEditing.Should().BeFalse();
     }
 }

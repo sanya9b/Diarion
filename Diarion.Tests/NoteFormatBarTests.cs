@@ -150,90 +150,127 @@ public class NoteFormatBarTests
     // --- stretches of text ---
 
     [Fact]
-    public void BoldWrapsWhatIsSelected()
+    public void BoldTakesWhatIsSelectedAndNothingElse()
     {
         var editor = Loaded("слово тут");
         Focus(editor.Blocks[0], caret: 0, length: 5);
 
-        editor.ToggleInline("**");
+        editor.ToggleStyle(InlineStyle.Bold);
 
+        editor.Blocks[0].Body.Runs.Select(r => (r.Text, r.Style)).Should().Equal(
+            ("слово", InlineStyle.Bold),
+            (" тут", InlineStyle.None));
         editor.Compose().Should().Be("**слово** тут");
     }
 
     [Fact]
     public void BoldOnTextThatIsAlreadyBoldTakesItOff()
     {
+        // The line holds the word as bold, not as stars, so the selection is the word itself.
         var editor = Loaded("**слово** тут");
-        Focus(editor.Blocks[0], caret: 2, length: 5);
+        Focus(editor.Blocks[0], caret: 0, length: 5);
 
-        editor.ToggleInline("**");
-
-        editor.Compose().Should().Be("слово тут");
-    }
-
-    [Fact]
-    public void AWordSelectedWithItsStarsStillTogglesRatherThanGainingMore()
-    {
-        // A double tap on a phone often takes the markers with the word. Adding a second pair would
-        // be the one outcome nobody asked for.
-        var editor = Loaded("~~слово~~ тут");
-        Focus(editor.Blocks[0], caret: 0, length: "~~слово~~".Length);
-
-        editor.ToggleInline("~~");
+        editor.ToggleStyle(InlineStyle.Bold);
 
         editor.Compose().Should().Be("слово тут");
     }
 
     [Fact]
-    public void WithNothingSelectedTheButtonTakesTheWordTheCaretIsIn()
+    public void AHalfBoldSelectionBecomesAllBoldRatherThanAllPlain()
     {
-        // Selecting a word first is two gestures on a phone, and a button that inserted an empty
-        // pair of markers would be a button asking the user to type between them.
-        var editor = Loaded("два слова");
-        Focus(editor.Blocks[0], caret: 6);
+        // The button reads as "make this bold" until every character already is; the other reading
+        // would make a drag that overshot the word undo it.
+        var editor = Loaded("**сло**во");
+        Focus(editor.Blocks[0], caret: 0, length: 5);
 
-        editor.ToggleInline("~~");
+        editor.ToggleStyle(InlineStyle.Bold);
 
-        editor.Compose().Should().Be("два ~~слова~~");
+        editor.Compose().Should().Be("**слово**");
     }
 
     [Fact]
-    public void InWhitespaceTheMarkersGoInAndTheCaretGoesBetweenThem()
+    public void StylesStackInsteadOfReplacingEachOther()
     {
-        var editor = Loaded("два ");
-        Focus(editor.Blocks[0], caret: 4);
-
-        editor.ToggleInline("**");
-
-        editor.Compose().Should().Be("два ****");
-        editor.Blocks[0].Caret.Should().Be(6, "the next thing typed belongs between the stars");
-    }
-
-    [Fact]
-    public void ItalicDoesNotUnpickBold()
-    {
-        // "*" sitting against another "*" is half of "**". Reading it as an italic marker would turn
-        // pressing italic into a way of removing bold.
         var editor = Loaded("**слово**");
-        Focus(editor.Blocks[0], caret: 2, length: 5);
+        Focus(editor.Blocks[0], caret: 0, length: 5);
 
-        editor.ToggleInline("*");
+        editor.ToggleStyle(InlineStyle.Italic);
 
+        editor.Blocks[0].Body.Runs.Should().ContainSingle()
+            .Which.Style.Should().Be(InlineStyle.Bold | InlineStyle.Italic);
         editor.Compose().Should().Be("***слово***");
     }
 
     [Fact]
-    public void FormattingKeepsTheLineAsAFieldRatherThanLettingItBecomeALabel()
+    public void TheSelectionNeverSeesAMarker()
     {
-        // A line with markup is drawn as a formatted label when it is not being edited. Swapping the
-        // line under the caret for a label is not what pressing "bold" asks for.
+        // The whole point: the field holds "слово", and nothing in it moves when it turns bold, so the
+        // selection the user made is still the selection after the press.
+        var editor = Loaded("два слова");
+        Focus(editor.Blocks[0], caret: 4, length: 5);
+
+        editor.ToggleStyle(InlineStyle.Strikethrough);
+
+        editor.Blocks[0].Text.Should().Be("два слова");
+        editor.Blocks[0].SelectionStart.Should().Be(4);
+        editor.Blocks[0].SelectionLength.Should().Be(5);
+    }
+
+    [Fact]
+    public void WithNothingSelectedTheButtonSetsWhatIsTypedNext()
+    {
+        // Press bold, type, and the word arrives bold — the way every rich text editor works. The
+        // stored note does not change until a character is typed, so no save is raised either.
+        var editor = Loaded("два ");
+        Focus(editor.Blocks[0], caret: 4);
+        var saved = false;
+        editor.Changed += (_, _) => saved = true;
+
+        editor.ToggleStyle(InlineStyle.Bold);
+
+        editor.Blocks[0].TypingStyle.Should().Be(InlineStyle.Bold);
+        editor.Compose().Should().Be("два ");
+        saved.Should().BeFalse();
+    }
+
+    [Fact]
+    public void PressingTheSameButtonAgainTurnsTheTypingStyleBackOff()
+    {
+        var editor = Loaded("два ");
+        Focus(editor.Blocks[0], caret: 4);
+
+        editor.ToggleStyle(InlineStyle.Bold);
+        editor.ToggleStyle(InlineStyle.Italic);
+        editor.ToggleStyle(InlineStyle.Bold);
+
+        editor.Blocks[0].TypingStyle.Should().Be(InlineStyle.Italic);
+    }
+
+    [Fact]
+    public void StylingASelectionSavesTheNote()
+    {
         var editor = Loaded("слово");
         Focus(editor.Blocks[0], caret: 0, length: 5);
+        var saved = false;
+        editor.Changed += (_, _) => saved = true;
 
-        editor.ToggleInline("**");
+        editor.ToggleStyle(InlineStyle.Italic);
 
-        editor.Blocks[0].IsEditing.Should().BeTrue();
-        editor.Blocks[0].ShowsRawText.Should().BeTrue();
+        saved.Should().BeTrue();
+        editor.Compose().Should().Be("*слово*");
+    }
+
+    [Fact]
+    public void ABoldWordSurvivesTheLineBecomingAListItem()
+    {
+        // Every cut the editor makes is on styled text, not on strings: the bullet button must not
+        // cost the user the emphasis they just applied.
+        var editor = Loaded("купити **молоко** сьогодні");
+        Focus(editor.Blocks[0], caret: 3);
+
+        editor.ToggleKind(MarkdownBlockKind.Bullet);
+
+        editor.Compose().Should().Be("- купити **молоко** сьогодні");
     }
 
     // --- which line the bar is aiming at ---
@@ -270,7 +307,7 @@ public class NoteFormatBarTests
         var editor = new NoteBlockEditor();
 
         editor.ToggleKind(MarkdownBlockKind.Checklist);
-        editor.ToggleInline("**");
+        editor.ToggleStyle(InlineStyle.Bold);
 
         editor.Blocks.Should().ContainSingle();
         editor.Blocks[0].Kind.Should().Be(MarkdownBlockKind.Checklist);

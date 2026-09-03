@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models.Markdown;
@@ -8,8 +7,9 @@ using Diarion.Services;
 namespace Diarion.ViewModels;
 
 /// <summary>
-/// One editable line of a note. The marker is not in <see cref="Text"/> — it is drawn beside it as a
-/// bullet, a number or a tick box — so the user never sees the markdown that is actually stored.
+/// One editable line of a note. The marker is not in the text — it is drawn beside it as a bullet, a
+/// number or a tick box — and neither is the emphasis: <see cref="Body"/> holds bold as bold, not as
+/// a pair of stars, so the user never sees the markdown that is actually stored.
 /// </summary>
 /// <remarks>
 /// <see cref="Kind"/> is deliberately read-only. A block that changes kind is replaced with a new
@@ -30,7 +30,7 @@ public partial class NoteBlockViewModel : ObservableObject
     {
         Kind = block.Kind;
         Indent = block.Indent;
-        _text = block.Text;
+        _body = StyledText.Parse(block.Text);
         _isChecked = block.IsChecked;
         _number = block.Number;
         _onEdited = onEdited;
@@ -42,25 +42,28 @@ public partial class NoteBlockViewModel : ObservableObject
     /// <summary>Leading whitespace carried through from the stored text; see <see cref="MarkdownBlock.Indent"/>.</summary>
     public string Indent { get; }
 
+    /// <summary>
+    /// The line as the field holds it: characters and their look, no markup. The field writes here
+    /// on every keystroke and redraws from here whenever the editor reshapes the line.
+    /// </summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Spans))]
-    [NotifyPropertyChangedFor(nameof(ShowsFormattedText))]
-    [NotifyPropertyChangedFor(nameof(ShowsRawText))]
-    private string _text = string.Empty;
+    [NotifyPropertyChangedFor(nameof(Text))]
+    private StyledText _body = StyledText.Empty;
+
+    /// <summary>
+    /// The look the next character typed at the caret will have. Two-way with the field: the field
+    /// reports what the caret inherited from the character before it, and the formatting bar flips
+    /// bits in it when nothing is selected — press bold, type, and the word arrives bold.
+    /// </summary>
+    [ObservableProperty]
+    private InlineStyle _typingStyle;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsStruck))]
-    [NotifyPropertyChangedFor(nameof(ShowsFormattedText))]
-    [NotifyPropertyChangedFor(nameof(ShowsRawText))]
     private bool _isChecked;
 
-    /// <summary>
-    /// True while the caret is in this line. The markup shows itself only here, and only for as long
-    /// as it takes to edit it — the line you are not typing in is the line you see formatted.
-    /// </summary>
+    /// <summary>True while the caret is in this line.</summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowsFormattedText))]
-    [NotifyPropertyChangedFor(nameof(ShowsRawText))]
     private bool _isEditing;
 
     [ObservableProperty]
@@ -77,8 +80,8 @@ public partial class NoteBlockViewModel : ObservableObject
 
     /// <summary>
     /// Where the caret is now, reported by the field as the user moves it. The opposite direction to
-    /// <see cref="Caret"/>, and the reason the formatting bar can act on the word you are standing in
-    /// rather than on the whole line.
+    /// <see cref="Caret"/>, and the reason the formatting bar can act on the selection rather than
+    /// on the whole line.
     /// </summary>
     [ObservableProperty]
     private int _selectionStart;
@@ -97,48 +100,44 @@ public partial class NoteBlockViewModel : ObservableObject
 
     public string NumberLabel => $"{Number}.";
 
-    /// <summary>The line cut into the stretches that are drawn differently — bold, code, a link title.</summary>
-    public IReadOnlyList<InlineSpan> Spans => MarkdownParser.ParseInline(Text);
-
-    /// <summary>A ticked item is crossed out, which only a label can do.</summary>
-    public bool IsStruck => Kind == MarkdownBlockKind.Checklist && IsChecked;
-
     /// <summary>
-    /// Whether this line is currently drawn as formatted text rather than as an input field.
+    /// The characters of the line with the look forgotten. Setting it replaces the line with plain
+    /// text — any markup typed in it is read and turned into style, exactly as if it had been typed
+    /// into the field.
     /// </summary>
-    /// <remarks>
-    /// A MAUI input field cannot format part of its own text, so a line that has something to show —
-    /// emphasis, or a tick that should cross it out — is drawn as a label until it is tapped. Lines
-    /// with nothing to reveal stay input fields the whole time, which matters: that is what keeps the
-    /// caret landing exactly where the finger did, and it is nearly every line in a note.
-    /// </remarks>
-    public bool ShowsFormattedText
-        => !IsEditing
-            && !string.IsNullOrEmpty(Text)
-            && (IsStruck || MarkdownParser.HasInlineMarkup(Text));
+    public string Text
+    {
+        get => Body.Text;
+        set
+        {
+            if (value == Body.Text) return;
+            Body = StyledText.Plain(value);
+        }
+    }
 
-    public bool ShowsRawText => !ShowsFormattedText;
+    /// <summary>A ticked item is drawn crossed out and dimmed, whatever its own styles say.</summary>
+    public bool IsStruck => Kind == MarkdownBlockKind.Checklist && IsChecked;
 
     public MarkdownBlock ToBlock() => new()
     {
         Kind = Kind,
-        Text = Text ?? string.Empty,
+        Text = MarkdownParser.ComposeInline(Body),
         IsChecked = IsChecked,
         Number = Number,
         Indent = Indent
     };
 
     /// <summary>
-    /// Changes the text without telling the editor about it. Used when the editor itself is the one
+    /// Changes the line without telling the editor about it. Used when the editor itself is the one
     /// rewriting the block — splitting it, or joining it with the line above — so that reshaping the
     /// list does not immediately re-enter the code that is reshaping it.
     /// </summary>
-    public void SetTextSilently(string value)
+    public void SetBodySilently(StyledText value)
     {
         _silent = true;
         try
         {
-            Text = value;
+            Body = value;
         }
         finally
         {
@@ -155,20 +154,7 @@ public partial class NoteBlockViewModel : ObservableObject
     [RelayCommand]
     private void ToggleCheck() => IsChecked = !IsChecked;
 
-    /// <summary>Tapping a formatted line: show it as it is written, with the caret in it.</summary>
-    /// <remarks>
-    /// The caret goes to the end because a label cannot say which character was tapped. That is the
-    /// price of showing the line formatted, and the reason lines with no markup are never labels.
-    /// </remarks>
-    [RelayCommand]
-    private void BeginEdit()
-    {
-        IsEditing = true;
-        _onFocused?.Invoke(this);
-        RequestFocus((Text ?? string.Empty).Length);
-    }
-
-    /// <summary>The field itself took focus — the user tapped straight into it, caret and all.</summary>
+    /// <summary>The field took focus: this is the line the formatting bar now acts on.</summary>
     [RelayCommand]
     private void HoldEdit()
     {
@@ -176,13 +162,27 @@ public partial class NoteBlockViewModel : ObservableObject
         _onFocused?.Invoke(this);
     }
 
-    /// <summary>Focus has left the line: whatever markup it holds goes back to being drawn.</summary>
+    /// <summary>Focus has left the line.</summary>
     [RelayCommand]
     private void EndEdit() => IsEditing = false;
 
-    partial void OnTextChanged(string value)
+    partial void OnBodyChanged(StyledText value)
     {
-        if (!_silent) _onEdited?.Invoke(this);
+        if (_silent) return;
+
+        // The user typed the markup by hand — "**молоко**" — or pasted a line that carries it. It
+        // becomes style the moment it closes, the same way "- " becomes a bullet: the stars were
+        // never meant to be seen. The caret sat after the closing marker, so it moves back by exactly
+        // the characters that vanished.
+        if (value.ContainsMarkup)
+        {
+            var expanded = value.ExpandMarkup();
+            var removed = value.Length - expanded.Length;
+            SetBodySilently(expanded);
+            RequestFocus(Math.Clamp(SelectionStart - removed, 0, expanded.Length));
+        }
+
+        _onEdited?.Invoke(this);
     }
 
     partial void OnIsCheckedChanged(bool value)

@@ -23,6 +23,9 @@ public static class MauiProgram
 			.UseMauiApp<App>()
 			.UseMauiCommunityToolkit()
 			.UseLocalNotification()
+			// The note editor's line: a field that draws bold as bold. See Controls/Handlers.
+			.ConfigureMauiHandlers(handlers =>
+				handlers.AddHandler<Diarion.Controls.RichTextBlock, Diarion.Controls.Handlers.RichTextBlockHandler>())
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("Montserrat-Regular.ttf", "OpenSansRegular"); // Alias kept for compatibility with Styles

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Diarion.Models.Markdown;
 
@@ -47,6 +48,7 @@ public static class MarkdownParser
     // leave the other behind. There is deliberately no single "_" — snake_case is not italic.
     private static readonly (string Open, string Close, InlineStyle Style)[] InlineMarkers =
     {
+        ("***", "***", InlineStyle.Bold | InlineStyle.Italic),
         ("**", "**", InlineStyle.Bold),
         ("__", "__", InlineStyle.Bold),
         ("~~", "~~", InlineStyle.Strikethrough),
@@ -225,6 +227,98 @@ public static class MarkdownParser
     /// <summary>True when a line has anything worth drawing differently.</summary>
     public static bool HasInlineMarkup(string? text)
         => ParseInline(text).Any(span => span.Style != InlineStyle.None);
+
+    /// <summary>
+    /// The other direction of <see cref="ParseInline"/>: styled runs back to the markdown that is
+    /// stored. What the editor holds never has a star in it; this is where the stars come from.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Written so that <see cref="ParseInline"/> reads it back to the same runs. Two rules do most of
+    /// that work. Whitespace at either end of a styled run is moved outside the markers, because the
+    /// parser refuses <c>** bold**</c> — that is the rule that keeps <c>2 * 3</c> from being italic,
+    /// and it cuts both ways. And markers nest in one fixed order, strikethrough outside emphasis
+    /// outside code, so neighbouring runs never open with the same characters the previous one
+    /// closed with in a way the left-to-right scanner would misread.
+    /// </para>
+    /// <para>
+    /// A line break is never inside a marker pair: each line is composed on its own.
+    /// </para>
+    /// </remarks>
+    public static string ComposeInline(StyledText text)
+        => string.Join("\n", text.Lines().Select(ComposeLine));
+
+    private static string ComposeLine(StyledText line)
+    {
+        var sb = new StringBuilder(line.Length + 8);
+
+        foreach (var run in line.Runs)
+        {
+            if (run.Style == InlineStyle.None)
+            {
+                sb.Append(run.Text);
+                continue;
+            }
+
+            var lead = run.Text.Length - run.Text.TrimStart().Length;
+            var trail = run.Text.Length - run.Text.TrimEnd().Length;
+            var core = run.Text.Length - lead - trail;
+
+            // A run that is nothing but spaces has no look worth keeping: the markers would surround
+            // nothing, and "****" is exactly what the parser refuses to read.
+            if (core <= 0)
+            {
+                sb.Append(run.Text);
+                continue;
+            }
+
+            var (open, close) = Markers(run.Style);
+            sb.Append(run.Text, 0, lead)
+              .Append(open)
+              .Append(run.Text, lead, core)
+              .Append(close)
+              .Append(run.Text, lead + core, trail);
+        }
+
+        return sb.ToString();
+    }
+
+    // Outermost first. Code and a link title are literal inside, so they always go innermost, and a
+    // run that is somehow both is written as code — a link title in backticks is not a link.
+    private static (string Open, string Close) Markers(InlineStyle style)
+    {
+        var open = new StringBuilder(6);
+        var close = new StringBuilder(6);
+
+        if (style.HasFlag(InlineStyle.Strikethrough))
+        {
+            open.Append("~~");
+            close.Insert(0, "~~");
+        }
+
+        var emphasis = (style & (InlineStyle.Bold | InlineStyle.Italic)) switch
+        {
+            InlineStyle.Bold | InlineStyle.Italic => "***",
+            InlineStyle.Bold => "**",
+            InlineStyle.Italic => "*",
+            _ => string.Empty
+        };
+        open.Append(emphasis);
+        close.Insert(0, emphasis);
+
+        if (style.HasFlag(InlineStyle.Code))
+        {
+            open.Append('`');
+            close.Insert(0, '`');
+        }
+        else if (style.HasFlag(InlineStyle.Link))
+        {
+            open.Append("[[");
+            close.Insert(0, "]]");
+        }
+
+        return (open.ToString(), close.ToString());
+    }
 
     private static void AppendInline(List<InlineSpan> spans, string text, InlineStyle inherited, int depth)
     {
