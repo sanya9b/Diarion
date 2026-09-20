@@ -175,6 +175,33 @@ jobs:
         echo "IPA_PATH=$IPA" >> $GITHUB_ENV
         echo "Built: $IPA"
 
+    # Те, що App Store Connect перевіряє у вкладених фреймворках, але збірка — ні. Перший аплоуд
+    # 2026-09-20 упав саме тут: Info.plist фреймворку onnxruntime-genai без MinimumOSVersion і з
+    # версією "1.25.0-dev-…". Виправляє це ціль FixOnnxGenAiFrameworkPlist у Diarion.csproj; цей крок
+    # доводить, що вона спрацювала, і робить це до altool — тобто до того, як хвилини вже витрачені.
+    - name: Embedded frameworks carry a valid Info.plist
+      run: |
+        APP=$(find . -type d -name "Diarion.app" -path "*Release*" | head -n 1)
+        python3 - "$APP" <<'PY'
+        import glob, plistlib, re, sys
+        app = sys.argv[1]
+        bad = []
+        plists = glob.glob(f"{app}/Frameworks/*.framework/Info.plist")
+        for path in plists:
+            p = plistlib.load(open(path, "rb"))
+            name = path.split("/Frameworks/")[1]
+            for key in ("CFBundleVersion", "CFBundleShortVersionString"):
+                v = str(p.get(key, ""))
+                if not re.fullmatch(r"\d+(\.\d+){0,2}", v) or len(v) > 18:
+                    bad.append(f"{name}: {key}='{v}'")
+            if not p.get("MinimumOSVersion"):
+                bad.append(f"{name}: MinimumOSVersion missing")
+        print(f"checked {len(plists)} framework plist(s)")
+        for b in bad:
+            print(f"::error::{b}")
+        sys.exit(1 if bad else 0)
+        PY
+
     # Валідація окремим кроком від аплоуду: вона ловить те саме, що й аплоуд, але за секунди й без
     # витрати номера збірки. Той самий ApplicationVersion двічі App Store Connect не приймає.
     - name: Validate and upload to App Store Connect

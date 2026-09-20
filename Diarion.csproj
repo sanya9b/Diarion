@@ -153,5 +153,28 @@
 	  <None Remove="Diarion.Tests\**" />
 	</ItemGroup>
 
-</Project>
+	<!--
+	  Apple rejected the first upload (2026-09-20) with five errors, all about one file:
+	  Frameworks/onnxruntime-genai.framework/Info.plist as shipped in OnnxRuntimeGenAI 0.14.1 has
+	  CFBundleVersion and CFBundleShortVersionString set to "1.25.0-dev-<date>-<sha>" (must be up to
+	  three integers, at most 18 characters — ITMS-90058/90059/90060) and no MinimumOSVersion at all
+	  (ITMS-90360/90530). The build itself never complains; only App Store Connect does, after the
+	  macOS minutes are spent. The pin on 0.14.1 is deliberate (see Diarion.Core.csproj), so instead
+	  of bumping the package this rewrites the three keys in the copy inside the app bundle.
+	  _CreateAppBundle is the SDK target that has just copied the framework in; Codesign runs after
+	  it, so the signature covers the corrected plist. macOS only: plutil lives there, and so does
+	  every iOS build. The versions written are the package's own, not onnxruntime's.
+	-->
+	<Target Name="FixOnnxGenAiFrameworkPlist"
+	        AfterTargets="_CreateAppBundle"
+	        Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and $([MSBuild]::IsOSPlatform('osx'))">
+		<PropertyGroup>
+			<_GenAiFrameworkPlist>$(AppBundleDir)/Frameworks/onnxruntime-genai.framework/Info.plist</_GenAiFrameworkPlist>
+		</PropertyGroup>
+		<Exec Condition="Exists('$(_GenAiFrameworkPlist)')"
+		      Command="plutil -replace CFBundleShortVersionString -string 0.14.1 &quot;$(_GenAiFrameworkPlist)&quot; &amp;&amp; plutil -replace CFBundleVersion -string 0.14.1 &quot;$(_GenAiFrameworkPlist)&quot; &amp;&amp; plutil -replace MinimumOSVersion -string $(SupportedOSPlatformVersion) &quot;$(_GenAiFrameworkPlist)&quot;" />
+		<Message Importance="high" Condition="Exists('$(_GenAiFrameworkPlist)')" Text="onnxruntime-genai.framework/Info.plist: versions and MinimumOSVersion rewritten for App Store validation." />
+		<Warning Condition="!Exists('$(_GenAiFrameworkPlist)')" Text="onnxruntime-genai.framework not found in the app bundle; the Info.plist fix did nothing. If the package was removed, delete the FixOnnxGenAiFrameworkPlist target." />
+	</Target>
 
+</Project>
