@@ -2104,4 +2104,25 @@
   <data name="SnapshotPreviewRefresh" xml:space="preserve">
     <value>Rebuild</value>
   </data>
+  <data name="BirthDateLabel" xml:space="preserve">
+    <value>Date of birth</value>
+  </data>
+  <data name="BirthDateNotSet" xml:space="preserve">
+    <value>not set</value>
+  </data>
+  <data name="BirthDateSetAction" xml:space="preserve">
+    <value>Set</value>
+  </data>
+  <data name="BirthDateClearAction" xml:space="preserve">
+    <value>Clear the date of birth</value>
+  </data>
+  <data name="BirthDatePrivacyHint" xml:space="preserve">
+    <value>Stays on the phone. Used only to show the sections that have an age.</value>
+  </data>
+  <data name="IntimateLifeAgeHint" xml:space="preserve">
+    <value>Intimate life is an 18+ row. Set your date of birth in profile settings to see it.</value>
+  </data>
+  <data name="CycleAgeHint" xml:space="preserve">
+    <value>The cycle calendar is available from age 14. Set your date of birth above to see it.</value>
+  </data>
 </root>

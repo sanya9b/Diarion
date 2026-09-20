@@ -77,6 +77,11 @@ public partial class SnapshotPreviewViewModel : BaseViewModel
     [ObservableProperty]
     public partial bool IsCycleAvailable { get; set; }
 
+    /// <summary>The same for the intimate-life switch: an 18+ row (<see cref="Services.AgeGate"/>) that a younger
+    /// or undated profile never sees at home, so it must not be offered for sending either.</summary>
+    [ObservableProperty]
+    public partial bool IsIntimateLifeAvailable { get; set; }
+
     /// <summary>
     /// True when not one day of the period carries written text. Worth saying out loud: the report
     /// would then be a paid restatement of the numbers already on the statistics screen.
@@ -87,7 +92,7 @@ public partial class SnapshotPreviewViewModel : BaseViewModel
     /// <summary>The options the payload on screen was built with — what a caller would go on to send.</summary>
     public SnapshotOptions Options => new()
     {
-        IncludeIntimateLife = IncludeIntimateLife,
+        IncludeIntimateLife = IncludeIntimateLife && IsIntimateLifeAvailable,
         IncludeCycle = IncludeCycle && IsCycleAvailable
     };
 
@@ -98,6 +103,8 @@ public partial class SnapshotPreviewViewModel : BaseViewModel
         _settingUp = true;
         IsCycleAvailable = profile.IsCycleTrackingActive;
         if (!IsCycleAvailable) IncludeCycle = false;
+        IsIntimateLifeAvailable = profile.IsIntimateLifeAvailable;
+        if (!IsIntimateLifeAvailable) IncludeIntimateLife = false;
         _settingUp = false;
 
         PeriodText = string.Concat(

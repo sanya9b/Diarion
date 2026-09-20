@@ -119,6 +119,7 @@ public class DiaryServiceTests : IDisposable
         var profile = new UserProfile
         {
             IsMenstrualTrackingEnabled = true,
+            BirthDate = new DateTime(1990, 1, 1),
             CycleLength = 0,
             PeriodLength = 0,
             LastPeriodStartDate = new DateTime(2025, 1, 1)

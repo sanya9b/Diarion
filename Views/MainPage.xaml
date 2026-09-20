@@ -110,8 +110,12 @@
                         <controls:SleepSection BindingContext="{Binding}"
                                                IsVisible="{Binding BindingContext.Profile.IsSleepBlockVisible, Source={x:Reference PageRoot}}" />
 
+                        <!-- The intimate-life row inside is age-gated (18+); the block itself is not. Both
+                             flags come off the profile the same way the block visibility does. -->
                         <controls:HealthSection BindingContext="{Binding}"
-                                                IsVisible="{Binding BindingContext.Profile.IsHealthBlockVisible, Source={x:Reference PageRoot}}" />
+                                                IsVisible="{Binding BindingContext.Profile.IsHealthBlockVisible, Source={x:Reference PageRoot}}"
+                                                IsIntimateLifeAvailable="{Binding BindingContext.Profile.IsIntimateLifeAvailable, Source={x:Reference PageRoot}}"
+                                                ShowsIntimateLifeAgeHint="{Binding BindingContext.Profile.ShowsIntimateLifeAgeHint, Source={x:Reference PageRoot}}" />
 
                         <controls:FoodTrackerSection BindingContext="{Binding}"
                                                      IsVisible="{Binding BindingContext.Profile.IsFoodBlockVisible, Source={x:Reference PageRoot}}" />

@@ -30,7 +30,8 @@ public class CycleStatsViewModelTests
         profile.Setup(s => s.GetUserProfileAsync()).ReturnsAsync(new UserProfile
         {
             Gender = gender,
-            IsMenstrualTrackingEnabled = trackingEnabled
+            IsMenstrualTrackingEnabled = trackingEnabled,
+            BirthDate = new DateTime(1990, 1, 1)
         });
 
         return (new CycleStatsViewModel(cycle.Object, profile.Object), profile);
@@ -140,7 +141,8 @@ public class CycleCorrelationTests
         profile.Setup(s => s.GetUserProfileAsync()).ReturnsAsync(new UserProfile
         {
             Gender = GenderType.Female,
-            IsMenstrualTrackingEnabled = trackingEnabled
+            IsMenstrualTrackingEnabled = trackingEnabled,
+            BirthDate = new DateTime(1990, 1, 1)
         });
 
         // Tasks and spending are not what these tests are about, but Moq hands back a null Task

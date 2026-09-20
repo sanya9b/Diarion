@@ -122,6 +122,13 @@ namespace Diarion.Resources.Localization {
         public static string GenderFemale => ResourceManager.GetString("GenderFemale", resourceCulture) ?? string.Empty;
         public static string GenderOther => ResourceManager.GetString("GenderOther", resourceCulture) ?? string.Empty;
         public static string AgeLabel => ResourceManager.GetString("AgeLabel", resourceCulture) ?? string.Empty;
+        public static string BirthDateLabel => ResourceManager.GetString("BirthDateLabel", resourceCulture) ?? string.Empty;
+        public static string BirthDateNotSet => ResourceManager.GetString("BirthDateNotSet", resourceCulture) ?? string.Empty;
+        public static string BirthDateSetAction => ResourceManager.GetString("BirthDateSetAction", resourceCulture) ?? string.Empty;
+        public static string BirthDateClearAction => ResourceManager.GetString("BirthDateClearAction", resourceCulture) ?? string.Empty;
+        public static string BirthDatePrivacyHint => ResourceManager.GetString("BirthDatePrivacyHint", resourceCulture) ?? string.Empty;
+        public static string IntimateLifeAgeHint => ResourceManager.GetString("IntimateLifeAgeHint", resourceCulture) ?? string.Empty;
+        public static string CycleAgeHint => ResourceManager.GetString("CycleAgeHint", resourceCulture) ?? string.Empty;
         public static string WeightLabel => ResourceManager.GetString("WeightLabel", resourceCulture) ?? string.Empty;
         public static string HeightLabel => ResourceManager.GetString("HeightLabel", resourceCulture) ?? string.Empty;
         public static string MenstrualTrackingTitle => ResourceManager.GetString("MenstrualTrackingTitle", resourceCulture) ?? string.Empty;

@@ -2104,4 +2104,25 @@
   <data name="SnapshotPreviewRefresh" xml:space="preserve">
     <value>Оновити</value>
   </data>
+  <data name="BirthDateLabel" xml:space="preserve">
+    <value>Дата народження</value>
+  </data>
+  <data name="BirthDateNotSet" xml:space="preserve">
+    <value>не вказано</value>
+  </data>
+  <data name="BirthDateSetAction" xml:space="preserve">
+    <value>Вказати</value>
+  </data>
+  <data name="BirthDateClearAction" xml:space="preserve">
+    <value>Прибрати дату народження</value>
+  </data>
+  <data name="BirthDatePrivacyHint" xml:space="preserve">
+    <value>Лишається на телефоні. Потрібна лише щоб показувати розділи, які мають вік.</value>
+  </data>
+  <data name="IntimateLifeAgeHint" xml:space="preserve">
+    <value>Інтимне життя — рядок для 18+. Вкажіть дату народження в налаштуваннях профілю, щоб його побачити.</value>
+  </data>
+  <data name="CycleAgeHint" xml:space="preserve">
+    <value>Календар циклу доступний з 14 років. Вкажіть дату народження вище, щоб його побачити.</value>
+  </data>
 </root>

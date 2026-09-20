@@ -22,7 +22,7 @@ public class CycleViewModelTests
     public CycleViewModelTests()
     {
         _profileService.Setup(s => s.GetUserProfileAsync())
-            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true });
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
         MarkedDates();
     }
 

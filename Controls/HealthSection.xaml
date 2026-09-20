@@ -5,6 +5,7 @@
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:controls="clr-namespace:Diarion.Controls"
              x:Class="Diarion.Controls.HealthSection"
+             x:Name="Root"
              x:DataType="vms:DiaryEntryViewModel">
     
     <Border StrokeShape="RoundRectangle 16"
@@ -32,13 +33,21 @@
                 <Entry Text="{Binding HealthNotes}" Placeholder="{x:Static localization:AppResources.NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" />
             </Border>
 
-            <Grid ColumnDefinitions="Auto, 100, *" ColumnSpacing="12">
+            <!-- 18+ (AgeGate.IntimateLifeMinimumAge). The two flags are bindable properties set by the page,
+                 not read off the entry: the entry knows nothing about the profile, and should not. -->
+            <Grid ColumnDefinitions="Auto, 100, *" ColumnSpacing="12"
+                  IsVisible="{Binding Source={x:Reference Root}, Path=IsIntimateLifeAvailable, x:DataType=controls:HealthSection}">
                 <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsIntimateLifeDone}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                 <Label Grid.Column="1" Text="{x:Static localization:AppResources.IntimateLifeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 <Border Grid.Column="2" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0">
                     <Entry Text="{Binding IntimateLife}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" VerticalOptions="Center" />
                 </Border>
             </Grid>
+            <!-- Stands in for the row only while the birth date is unknown; nothing at all once it is
+                 known and too young — see UserProfile.ShowsIntimateLifeAgeHint. -->
+            <Label Text="{x:Static localization:AppResources.IntimateLifeAgeHint}"
+                   IsVisible="{Binding Source={x:Reference Root}, Path=ShowsIntimateLifeAgeHint, x:DataType=controls:HealthSection}"
+                   FontSize="11" LineBreakMode="WordWrap" TextColor="{DynamicResource Theme_Ocean_Dust}" />
         </VerticalStackLayout>
     </Border>
 </ContentView>

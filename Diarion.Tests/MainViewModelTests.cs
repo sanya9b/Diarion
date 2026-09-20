@@ -145,7 +145,7 @@ public class MainViewModelTests
         // containing nothing but Date and CycleDay. Those rows then counted towards the diary streak.
         _profileServiceMock
             .Setup(s => s.GetUserProfileAsync())
-            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true });
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
         _cycleLogServiceMock
             .Setup(s => s.GetMarkedDatesAsync())
             .ReturnsAsync(new List<DateTime> { DateTime.Today.AddDays(-14) });
@@ -164,7 +164,7 @@ public class MainViewModelTests
         // The health block renders this number, so it has to reach the entry the day screen is showing.
         _profileServiceMock
             .Setup(s => s.GetUserProfileAsync())
-            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true });
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
         _cycleLogServiceMock
             .Setup(s => s.GetMarkedDatesAsync())
             .ReturnsAsync(new List<DateTime> { DateTime.Today.AddDays(-14) });
