@@ -35,14 +35,14 @@ Daylio і Finch усі мають акаунт і сервер; (б) підтв�
 
 ### Українська (основна локаль)
 
-**Заголовок** (27)
+**Заголовок** (7) — з 2026-09-20 без гасла: назва в магазині не має суперечити можливій синхронізації в майбутньому
 ```
-Diarion: щоденник без хмари
+Diarion
 ```
 
-**Підзаголовок** (27)
+**Підзаголовок** (28)
 ```
-Записи лишаються у телефоні
+Приватний щоденник і трекери
 ```
 
 **Ключові слова** (98) — без слів із заголовка й підзаголовка, Apple індексує їх і так; без пробілів
@@ -73,11 +73,9 @@ Diarion — застосунок для щоденних записів. Без 
 • Ще: читання, добрі справи, щасливі моменти, список бажань, календар циклу
 • Що з цього бачити — обираєте ви: зайве вимикається в перший запуск і будь-коли в налаштуваннях
 
-ПРИВАТНІСТЬ ЯК УСТРІЙ, А НЕ ЯК ОБІЦЯНКА
+ПРИВАТНІСТЬ - СИЛЬНА СТОРОНА
 
-• Немає акаунта — нема чого зламувати
 • Немає сервера — записи нікуди не надсилаються
-• Немає аналітики, немає реклами, немає трекерів
 • Замок на вході — Face ID або відбиток
 • Резервна копія шифрується паролем, який знаєте тільки ви
 • Експорт у JSON, CSV і Markdown — ваші записи ваші, і виносяться звідси в один дотик
@@ -91,14 +89,14 @@ Diarion — застосунок для щоденних записів. Без 
 
 ### English
 
-**Title** (28)
+**Title** (7)
 ```
-Diarion: Diary Without Cloud
+Diarion
 ```
 
-**Subtitle** (25)
+**Subtitle** (26)
 ```
-Nothing leaves your phone
+Private diary and trackers
 ```
 
 **Keywords** (98)
@@ -128,11 +126,9 @@ WHAT IS INSIDE
 • Also: reading, good deeds, happy moments, a wishlist, a cycle calendar
 • You choose what to see: anything you do not need switches off on first launch, or later in settings
 
-PRIVACY AS PLUMBING, NOT AS A PROMISE
+PRIVACY IS THE STRONG SIDE
 
-• No account — nothing to breach
 • No server — entries are not sent anywhere
-• No analytics, no ads, no trackers
 • A lock on the way in — Face ID or fingerprint
 • Backups are encrypted with a passphrase only you know
 • Export to JSON, CSV and Markdown — your entries are yours, and they leave in one tap
