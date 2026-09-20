@@ -6,7 +6,7 @@
 >
 > **Що лишається зробити власнику:**
 > 1. ~~Підставити ім'я розробника, поштову адресу для звернень і дату набуття чинності замість `TODO`.~~
->    Зроблено 2026-09-02: Кугай Вікторія Юріївна, `support@diarion.org`, чинна з 07.09.2026.
+>    Зроблено 2026-09-02: Кугай Вікторія Юріївна, `support@diarion.org`, чинна з 07.09.2026; 2026-09-20 додано рядок про поля профілю (дата народження для вікових воріт), дата чинності відповідно 20.09.2026.
 > 2. Викласти обидві мови за постійними URL на `diarion.org` — Apple вимагає URL, не PDF і не текст
 >    у застосунку; у App Store Connect адреса задається окремо для кожної локалі.
 > 3. ~~Перечитати розділи «Здоров'я» і «Мережа» після рішень по HealthKit і по AI.~~ Обидва рішення
@@ -20,7 +20,7 @@
 
 ## Українською
 
-**Чинна з:** 7 вересня 2026
+**Чинна з:** 20 вересня 2026
 **Розробник:** Кугай Вікторія Юріївна (фізична особа)
 **Контакт:** support@diarion.org
 
@@ -39,6 +39,8 @@ Diarion не має акаунтів, серверів і синхронізац
 - фінансові операції, рахунки, бюджети;
 - дані трекера циклу й пов'язані з ним симптоми;
 - час сну й самопочуття — так, як ви їх записали самі;
+- профіль: ім'я, стать, дата народження (необов'язкова — лише щоб показувати розділи, які мають
+  вік: інтимне життя з 18, календар циклу з 14; `Diarion.Core/Services/AgeGate.cs`), вага, зріст;
 - налаштування: тема, мова, валюта, PIN, порядок швидкого меню.
 
 База даних зашифрована на диску. Ключ шифрування створюється на вашому пристрої й зберігається в
@@ -110,7 +112,7 @@ support@diarion.org
 
 ## English
 
-**Effective:** 7 September 2026
+**Effective:** 20 September 2026
 **Developer:** Victoria Kuhai (individual)
 **Contact:** support@diarion.org
 
@@ -129,6 +131,8 @@ All of the following lives **only** in the app's storage on your device:
 - financial transactions, accounts, budgets;
 - cycle tracker data and its symptoms;
 - sleep times and how you felt, exactly as you typed them;
+- profile: name, gender, date of birth (optional — used only to show the sections that have an
+  age: intimate life from 18, the cycle calendar from 14; `Diarion.Core/Services/AgeGate.cs`), weight, height;
 - settings: theme, language, currency, PIN, quick-menu order.
 
 The database is encrypted on disk. The encryption key is generated on your device and held in the
