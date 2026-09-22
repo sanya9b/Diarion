@@ -335,3 +335,50 @@ ID руками (інакше падає підпис, і CI цього не л�
 Після правок: iOS Release type-check 0 помилок / 0 попереджень; `dotnet test` — 1430 пройшли, 8
 пропущено, 0 впало; сім правил `ios-submission-metadata` зелені, обидва нові прогнані на мутованих
 копіях і ловлять.
+
+---
+
+## 9. Перша відповідь рев'ю (2026-09-22): Guideline 2.1 — Information Needed
+
+Не відмова по суті, а стандартний запит до кожного нового акаунта розробника: відео з реального
+пристрою плюс шість питань. Відповідь нижче надіслана в тред App Store Connect разом із записом
+екрана, а скорочена версія (ліміт поля 4000 знаків) додана в Notes; обидва тексти лежать у
+`D:\WORKpple-signing\` (`app-review-reply.txt`, `asc-notes-full.txt`). Факти звірені з кодом
+збірки (2): єдиний HTTP-клієнт — `HttpModelFileTransfer`, маршрут `SnapshotPreview` зареєстрований,
+але з інтерфейсу недосяжний, тож хмарних звітів у збірці немає і в п. 4 їх не названо.
+
+**Сценарій запису** (iPhone 13 Pro Max, iOS 26, свіже встановлення з TestFlight, 2–3 хвилини):
+запуск → онбординг, три кроки → головна: настрій, сон, здоров'я, харчування, звички → тап по даті,
+календар → «Планувальник», додати задачу → швидке меню: Нотатки, Звички, Фінанси, Читання →
+Статистика → Налаштування: Профіль (дата народження, після неї з'являється картка циклу), Дані
+(замок, резервна копія), ШІ (завантаження показане, не запущене). Без акаунтів, без покупок — це
+й сказано в п. 1 відповіді.
+
+```
+Thank you for the review. Answers to the six points, in order. The same text is now in the Notes field for future submissions.
+
+1. SCREEN RECORDING
+Attached to this message. Recorded on a physical iPhone 13 Pro Max running the current iOS. It starts with launching the app on a fresh install (onboarding, which can be skipped) and walks through the typical flow: the daily entry on the home screen (mood, sleep, health, food, habits), the quick-menu screens (notes, planner, habit tracker, finances, reading), the statistics dashboard, and Settings (profile, data/backup, app lock, the optional AI download). There is no account registration, login or account deletion because the app has no accounts. There is no user-generated content shared with anyone: everything a user writes is visible only to that user on that device, so there is no reporting or blocking mechanism to show. There is no paid content: the app is free with no in-app purchases.
+
+2. PURPOSE AND TARGET AUDIENCE
+Diarion is a private personal diary and life tracker: one place for a daily entry (text, mood, sleep, how you feel, food), habits, tasks with reminders, notes, finances, reading, happy moments, good deeds, a wishlist and an optional cycle calendar. The audience is anyone 13+ who wants to keep such records for themselves. The problem it solves: most diary and tracker apps require an account and sync personal notes to a server. Diarion has no account, no server and no analytics; everything stays in an encrypted database on the phone, with a passphrase-encrypted backup and JSON/CSV/Markdown export so the data is the user's to keep or move.
+
+3. SETUP AND ACCESSING THE MAIN FEATURES
+No login, no credentials and no sample files are needed. On first launch a three-step onboarding appears (welcome, choose which modules to show, optional daily reminder); every step can be skipped. An app lock (PIN, Face ID) is optional and lives in Settings > Data; if a PIN is set it is stored only as a hash and cannot be recovered, so please do not set one you might forget (reinstall clears it).
+- Home screen: today's entry. Tap the date at the top to open the calendar and switch days. Blocks: mood, sleep, health, food, habits, guided prompt, reflection. Which blocks appear is chosen in onboarding and in Settings > Screen.
+- Quick menu (icons at the top of the home screen): Notes, Reading, Happy Moments, Good Deeds, Habits, Wishlist, Finance.
+- "Planner" tab next to "Notes" on the home screen: the day's tasks with reminders.
+- Bottom tabs: Statistics (a month at a glance, correlations) and Settings.
+- Two rows are shown by age: the "Intimate life" row of the health block appears only for a profile with a date of birth of 18+, and the cycle calendar (Settings > Profile) only from 14. To see them, set a date of birth in Settings > Profile. Without a date, neither is shown; this is by design.
+- Settings > AI offers to download an on-device language model (~123 MB). This is optional; no feature you need to test depends on it, and every other feature works with it left off.
+- Guides: after onboarding, a short guide highlights the home-screen controls; Statistics and Settings each show their own guide once. To replay them: Settings > Screen > "Show the guides again".
+
+4. EXTERNAL SERVICES, TOOLS AND PLATFORMS
+None are used to deliver the core functionality. There is no authentication service, no payment processor, no data provider, no analytics, no advertising and no third-party SDK that contacts a network. The only network request the app can make is downloading model weight files from huggingface.co, and only after the user starts that download in Settings > AI. The model then runs entirely on the device; no diary content, no text and no identifier ever leaves the phone. Platform features used: local notifications (reminders), Face ID / Touch ID through the system API for the optional app lock, and the system share sheet for backups and exports.
+
+5. REGIONAL DIFFERENCES
+None. The app functions identically in all regions. The interface is available in Ukrainian and English and follows the device language; currency for the finance section is chosen by the user.
+
+6. REGULATED INDUSTRY / PROTECTED MATERIAL
+Not applicable. The app is not a medical device and makes no medical claims: the cycle calendar is a personal log and estimate based on dates the user enters, and the screen carries a notice that it is not medical advice and not a method of contraception. The app contains no protected third-party material; all content is created by the user, and the fonts and icons are licensed or our own.
+```
