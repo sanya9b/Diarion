@@ -4,6 +4,7 @@ using Diarion.Services.Database;
 using Diarion.Core.Services;
 using Diarion.Services.Ai;
 using Diarion.Services.Ai.Reports;
+using Diarion.Services.Store;
 using Diarion.ViewModels;
 using Diarion.ViewModels.Statistics;
 using Diarion.Views;
@@ -18,6 +19,15 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IEncryptionKeyProvider, SecureStorageKeyProvider>();
         services.AddSingleton<IAppLockService, AppLockService>();
         services.AddSingleton<IBiometricService, BiometricService>();
+        // Subscription state (spec 15). The store client is the platform stub until the StoreKit
+        // facade lands; wherever there is no store, the state grants writing.
+        services.AddSingleton(TimeProvider.System);
+        services.AddSingleton<IEntitlementStore, SecureStorageEntitlementStore>();
+        services.AddSingleton<IInstallEvidence, MauiInstallEvidence>();
+        services.AddSingleton<IStoreClient, UnavailableStoreClient>();
+        services.AddSingleton<ILegacyAccessDetector, LegacyAccessDetector>();
+        services.AddSingleton<IEntitlementService, EntitlementService>();
+        services.AddSingleton<IAccessGuard, AccessGuard>();
         services.AddSingleton<IDatabaseContext, DatabaseContext>();
         services.AddSingleton<INotificationService, LocalNotificationService>();
         services.AddSingleton<ITodoService, TodoService>();

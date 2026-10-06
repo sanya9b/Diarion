@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services.Database;
+using Diarion.Services.Store;
 using LiteDB;
 
 namespace Diarion.Services;
@@ -11,9 +12,11 @@ namespace Diarion.Services;
 public class GuidedPromptService : IGuidedPromptService
 {
     private readonly IDatabaseContext _dbContext;
+    private readonly IAccessGuard _accessGuard;
 
-    public GuidedPromptService(IDatabaseContext dbContext)
+    public GuidedPromptService(IDatabaseContext dbContext, IAccessGuard? accessGuard = null)
     {
+        _accessGuard = accessGuard ?? AccessGuard.Unrestricted;
         _dbContext = dbContext;
     }
 
@@ -28,6 +31,7 @@ public class GuidedPromptService : IGuidedPromptService
 
     public Task AddAsync(GuidedPrompt prompt)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             // Unlike habits, a new prompt lands at the end of the library rather than at int.MaxValue,
@@ -44,10 +48,14 @@ public class GuidedPromptService : IGuidedPromptService
     }
 
     public Task UpdateAsync(GuidedPrompt prompt)
-        => Task.Run(() => PromptsCollection.Update(prompt));
+    {
+        _accessGuard.EnsureWritable();
+        return Task.Run(() => PromptsCollection.Update(prompt));
+    }
 
     public Task DeleteAsync(Guid id, DateTime deleteDate)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var prompt = PromptsCollection.FindById(id);
@@ -60,6 +68,7 @@ public class GuidedPromptService : IGuidedPromptService
 
     public Task UpdateOrderAsync(List<Guid> orderedIds)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             for (int i = 0; i < orderedIds.Count; i++)

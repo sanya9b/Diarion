@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services.Database;
+using Diarion.Services.Store;
 using LiteDB;
 
 namespace Diarion.Services;
@@ -11,9 +12,11 @@ namespace Diarion.Services;
 public class HabitService : IHabitService
 {
     private readonly IDatabaseContext _dbContext;
+    private readonly IAccessGuard _accessGuard;
 
-    public HabitService(IDatabaseContext dbContext)
+    public HabitService(IDatabaseContext dbContext, IAccessGuard? accessGuard = null)
     {
+        _accessGuard = accessGuard ?? AccessGuard.Unrestricted;
         _dbContext = dbContext;
     }
 
@@ -100,6 +103,7 @@ public class HabitService : IHabitService
 
     public Task AddHabitDefinitionAsync(HabitDefinition habit)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() => HabitsCollection.Insert(habit));
     }
 
@@ -110,11 +114,13 @@ public class HabitService : IHabitService
 
     public Task UpdateHabitDefinitionAsync(HabitDefinition habit)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() => HabitsCollection.Update(habit));
     }
 
     public Task DeleteHabitDefinitionAsync(Guid id, DateTime deleteDate)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var def = HabitsCollection.FindById(id);
@@ -128,6 +134,7 @@ public class HabitService : IHabitService
 
     public Task UpdateHabitDefinitionsOrderAsync(List<Guid> orderedIds)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             for (int i = 0; i < orderedIds.Count; i++)
@@ -154,6 +161,7 @@ public class HabitService : IHabitService
 
     public Task SaveHarmfulHabitTrackerAsync(HarmfulHabitTracker tracker)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var normalizedName = (tracker.HarmfulHabitName ?? string.Empty).Trim();
@@ -187,6 +195,7 @@ public class HabitService : IHabitService
 
     public Task DeleteHarmfulHabitTrackerAsync(Guid id)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             HarmfulHabitTrackersCollection.Delete(id);
@@ -195,6 +204,7 @@ public class HabitService : IHabitService
 
     public Task AddRelapseAsync(Guid trackerId, DateTime date, string? note)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var tracker = HarmfulHabitTrackersCollection.FindById(trackerId)
@@ -214,6 +224,7 @@ public class HabitService : IHabitService
 
     public Task SetHarmfulHabitDayMarkedAsync(Guid trackerId, DateTime date, bool isMarked)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var tracker = HarmfulHabitTrackersCollection.FindById(trackerId)

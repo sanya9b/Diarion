@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services.Database;
+using Diarion.Services.Store;
 using LiteDB;
 
 namespace Diarion.Services;
@@ -11,9 +12,11 @@ namespace Diarion.Services;
 public class WishlistService : IWishlistService
 {
     private readonly IDatabaseContext _dbContext;
+    private readonly IAccessGuard _accessGuard;
 
-    public WishlistService(IDatabaseContext dbContext)
+    public WishlistService(IDatabaseContext dbContext, IAccessGuard? accessGuard = null)
     {
+        _accessGuard = accessGuard ?? AccessGuard.Unrestricted;
         _dbContext = dbContext;
     }
 
@@ -26,6 +29,7 @@ public class WishlistService : IWishlistService
 
     public Task SaveWishlistEntryAsync(WishlistEntry entry)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             if (entry.CreatedAt == default)
@@ -38,6 +42,7 @@ public class WishlistService : IWishlistService
 
     public Task DeleteWishlistEntryAsync(Guid id)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             WishlistCollection.Delete(id);

@@ -1,6 +1,6 @@
 # 15 — Підписка Base з 14-денним тріалом
 
-- **Priority:** P1 · **Effort:** L · **Status:** Approved · **Depends on:** 01, 04, 07, 12 · **Blocks:** Plus (ШІ за підпискою)
+- **Priority:** P1 · **Effort:** L · **Status:** In progress · **Depends on:** 01, 04, 07, 12 · **Blocks:** Plus (ШІ за підпискою)
 
 > Рішення власника 2026-10-06, за день після виходу 1.0 в App Store. Воно **скасовує** модель
 > «безкоштовне ядро + довічний Pro» з [`COMPETITIVE_ANALYSIS.md`](../COMPETITIVE_ANALYSIS.md) §7:
@@ -307,10 +307,28 @@
 
 ### Фази
 
-- **Фаза A — стан доступу в Core.** Усе з «Зачеплених файлів» для `Diarion.Core/Services/Store/`,
-  `AccessGuard` у сервісах, `UnavailableStoreClient`, тести на все, крім Swift. Нуль UI. Після цієї
-  фази застосунок поводиться як раніше на всіх платформах (R1.5), але має один вимикач запису, і
-  він доведений тестами.
+- **Фаза A — стан доступу в Core. Зроблено 2026-10-06.** Усе з «Зачеплених файлів» для
+  `Diarion.Core/Services/Store/`, `AccessGuard` у сервісах, `UnavailableStoreClient`, тести на все,
+  крім Swift. Нуль UI. Після цієї фази застосунок поводиться як раніше на всіх платформах (R1.5),
+  але має один вимикач запису, і він доведений тестами.
+  - 44 методи запису в дев'яти сервісах починаються з `_accessGuard.EnsureWritable()`; параметр
+    конструктора необов'язковий (`AccessGuard.Unrestricted` за замовчуванням), як
+    `INotificationService?` у `TodoService`, тож жоден наявний тест не змінився.
+  - Два автоматичні шляхи запису не кидають, а мовчать: породження повторюваних задач у
+    `TodoService.GetTodosForDateAsync` і автопроведення в `FinanceService.ApplyDuePostingsAsync`
+    пропускаються, поки `CanWrite` хибний — відкриття екрана не може стати помилкою.
+  - `IHealthDataService` виявився лише читанням, охорони не потребує. R1.6 (нагадування в режимі
+    читання) перенесено у фазу C: воно потребує планувальників нагадувань, які живуть у головному
+    проєкті поруч з інтерфейсом.
+  - В голові: `SecureStorageEntitlementStore` (Keychain, той самий sync-over-async, що в
+    `AppLockService`), `MauiInstallEvidence` (читає `OnboardingCompleted` і ставить `PaidEraSeen` у
+    конструкторі), реєстрації в `AddCoreServices`, `App.CreateWindow` резолвить `IEntitlementService`
+    до першого кадру і запускає `RefreshAsync` у фоні після створення вікна.
+  - 58 нових тестів: `EntitlementServiceTests` (таблиця станів, кеш, збій магазину, `Changed`),
+    `LegacyAccessDetectorTests` (AC3–AC5, `[Theory]` по середовищу й номеру збірки),
+    `AccessGuardTests` + `ReadOnlyWriteGuardTests` (кожен метод запису кожного сервісу з `null`
+    замість аргументів — охорона мусить кинути раніше, ніж торкнеться їх; бекап, експорт, профіль і
+    база за рефлексією не знають про охорону). Разом 1562 пройшли.
 - **Фаза B — Swift-фасад і CI.** `native/ios-storekit`, `swift-storekit.yml`, `StoreKitClient`,
   зміни в `build-ios.yml` і `csproj`. Критерій — AC12, AC13 і зелений аплоуд у TestFlight.
 - **Фаза C — інтерфейс.** Пейвол, екран підписки, режим читання в інтерфейсі, картка Legacy,

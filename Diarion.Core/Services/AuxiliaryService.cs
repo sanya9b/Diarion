@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services.Database;
+using Diarion.Services.Store;
 using LiteDB;
 
 namespace Diarion.Services;
@@ -11,9 +12,11 @@ namespace Diarion.Services;
 public class AuxiliaryService : IAuxiliaryService
 {
     private readonly IDatabaseContext _dbContext;
+    private readonly IAccessGuard _accessGuard;
 
-    public AuxiliaryService(IDatabaseContext dbContext)
+    public AuxiliaryService(IDatabaseContext dbContext, IAccessGuard? accessGuard = null)
     {
+        _accessGuard = accessGuard ?? AccessGuard.Unrestricted;
         _dbContext = dbContext;
     }
 
@@ -28,6 +31,7 @@ public class AuxiliaryService : IAuxiliaryService
 
     public Task SaveReadingTrackerBookAsync(ReadingTrackerBook book)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var normalizedTitle = (book.BookTitle ?? string.Empty).Trim();
@@ -60,6 +64,7 @@ public class AuxiliaryService : IAuxiliaryService
 
     public Task DeleteReadingTrackerBookAsync(int slotNumber)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var existingSlot = ReadingTrackerBooksCollection.FindOne(x => x.SlotNumber == slotNumber);
@@ -77,6 +82,7 @@ public class AuxiliaryService : IAuxiliaryService
 
     public Task DeleteHappyMomentAsync(int slotNumber)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             HappyMomentsCollection.DeleteMany(x => x.SlotNumber == slotNumber);
@@ -85,6 +91,7 @@ public class AuxiliaryService : IAuxiliaryService
 
     public Task SaveHappyMomentAsync(HappyMoment moment)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var normalizedTitle = (moment.Title ?? string.Empty).Trim();
@@ -125,6 +132,7 @@ public class AuxiliaryService : IAuxiliaryService
 
     public Task SaveGoodDeedAsync(GoodDeed deed)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var normalizedTitle = (deed.Title ?? string.Empty).Trim();
@@ -160,6 +168,7 @@ public class AuxiliaryService : IAuxiliaryService
 
     public Task DeleteGoodDeedAsync(int slotNumber)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var existingSlot = GoodDeedsCollection.FindOne(x => x.SlotNumber == slotNumber);

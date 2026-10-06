@@ -37,7 +37,7 @@
 | 12 | [Версіонування схеми та міграції](12-schema-versioning-and-migrations.md) | P1 | L | 03 | Done |
 | 13 | [Модуль ШІ на пристрої](13-on-device-ai.md) | P2 | XL | 06, 09, 12 | Retired (R25) |
 | 14 | [Періодичні звіти через API](14-cloud-period-reports.md) | P2 | L | 06, 11, 13 | Proposed |
-| 15 | [Підписка Base з 14-денним тріалом](15-subscription.md) | **P1** | L | 01, 04, 07, 12 | Approved |
+| 15 | [Підписка Base з 14-денним тріалом](15-subscription.md) | **P1** | L | 01, 04, 07, 12 | In progress (A done) |
 
 ## Стратегічний контекст (для всіх spec)
 - **Privacy-by-architecture — маркетинговий стовп №1.** Але спершу треба реально зашифрувати (spec 01/03/04),
