@@ -6,6 +6,8 @@
     <Color x:Key="Theme_Midnight_Snow">#FFFFFF</Color>
     <Color x:Key="Theme_Ocean_Dust">#E0E6EA</Color>
     <Color x:Key="Theme_Dust_Ocean">#929FA7</Color>
+    <!-- Lines on the page background; unchanged here, where Dust_Ocean already reads against #22282C. -->
+    <Color x:Key="Theme_GridLine">#929FA7</Color>
     <Color x:Key="Theme_Snow_Black">#22282C</Color>
     <Color x:Key="Theme_Ocean_Ocean">#929FA7</Color>
     <Color x:Key="Theme_Snow_Midnight">#22282C</Color>

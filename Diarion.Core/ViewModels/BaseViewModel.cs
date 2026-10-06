@@ -12,4 +12,9 @@ public partial class BaseViewModel : ObservableObject
     public partial string Title { get; set; } = string.Empty;
 
     public bool IsNotBusy => !IsBusy;
+
+    partial void OnIsBusyChanged(bool value) => OnBusyStateChanged();
+
+    /// <summary>Hook for derived VMs to react to IsBusy changes (e.g. recompute composite loading flags).</summary>
+    protected virtual void OnBusyStateChanged() { }
 }

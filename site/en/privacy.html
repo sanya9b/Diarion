@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Diarion</title>
+<meta name="description" content="Diarion has no accounts, no servers and no sync. Your diary is stored on your device and is not sent to anyone. The full privacy policy.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#E9E7E1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#22282C" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://diarion.org/en/privacy">
+<link rel="alternate" hreflang="uk" href="https://diarion.org/privacy">
+<link rel="alternate" hreflang="en" href="https://diarion.org/en/privacy">
+<link rel="alternate" hreflang="x-default" href="https://diarion.org/privacy">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/icon-512.png" type="image/png" sizes="512x512">
+<link rel="apple-touch-icon" href="/icon-512.png">
+<link rel="stylesheet" href="/styles.css">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Diarion">
+<meta property="og:title" content="Diarion Privacy Policy">
+<meta property="og:description" content="No accounts, no servers, no sync. Your diary is stored on your device.">
+<meta property="og:url" content="https://diarion.org/en/privacy">
+<meta property="og:image" content="https://diarion.org/og-en.png">
+<meta property="og:locale" content="en_US">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/en/" aria-label="Diarion — home">
+      <svg viewBox="0 0 280 280" aria-hidden="true" focusable="false"><rect width="280" height="280" rx="56" fill="#22282C"/><path fill-rule="evenodd" fill="#E9E7E1" d="M 78 70 L 78 218 L 148 218 C 215 218 222 175 222 144 C 222 113 215 70 148 70 Z M 112 102 L 112 186 L 148 186 C 184 186 190 165 190 144 C 190 123 184 102 148 102 Z"/><path fill="#C26D53" d="M 168 58 L 168 138 L 190 122 L 212 138 L 212 58 Z"/></svg>
+      Diarion
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="/en/">Home</a>
+      <a href="/en/privacy" aria-current="page">Privacy</a>
+      <a href="/en/support">Support</a>
+      <a class="lang" href="/privacy" lang="uk" hreflang="uk">Українська</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap prose">
+  <h1>Diarion Privacy Policy</h1>
+
+  <dl class="meta">
+    <dt>Effective</dt><dd>20 September 2026</dd>
+    <dt>Developer</dt><dd>Victoria Kuhai (individual)</dd>
+    <dt>Contact</dt><dd><!--email_off--><a href="mailto:support@diarion.org">support@diarion.org</a><!--/email_off--></dd>
+  </dl>
+
+  <h2>In short</h2>
+  <p class="lead">Diarion has no accounts, no servers and no sync. Your diary is stored on your device and is not sent to the developer or to anyone else. We collect no usage statistics, show no ads, and bundle no analytics or advertising SDKs.</p>
+
+  <h2>What the app stores</h2>
+  <p>All of the following lives <strong>only</strong> in the app's storage on your device:</p>
+  <ul>
+    <li>diary entries, mood, reflections, notes and tags;</li>
+    <li>habits, tasks and planner events, wishlist, good deeds, happy moments;</li>
+    <li>financial transactions, accounts, budgets;</li>
+    <li>cycle tracker data and its symptoms;</li>
+    <li>sleep times and how you felt, exactly as you typed them;</li>
+    <li>profile: name, gender, date of birth (optional — used only to show the sections that have an age: intimate life from 18, the cycle calendar from 14), weight, height;</li>
+    <li>settings: theme, language, currency, PIN, quick-menu order.</li>
+  </ul>
+  <p>The database is encrypted on disk. The encryption key is generated on your device and held in the system keystore (Keychain on iOS, Keystore on Android); the developer does not have it and cannot obtain it. The PIN is stored as a hash, not as a number.</p>
+
+  <h2>Where data can go — and only if you send it</h2>
+  <ul>
+    <li><strong>Backup.</strong> You create it. The file is encrypted with a key derived from <strong>your</strong> passphrase via PBKDF2 — not with the device key — and handed to the system share sheet, where you pick the destination. The app never stores the passphrase: lose it and nobody can open the backup, the developer included.</li>
+    <li><strong>Export.</strong> JSON, CSV and Markdown are produced locally and handed to you the same way.</li>
+    <li><strong>Crash report.</strong> If the app crashed, the last exception is written to a local file and the Data tab offers to send or delete it. Nothing is sent automatically.</li>
+  </ul>
+
+  <h2>Health</h2>
+  <p>The app connects to <strong>neither</strong> Apple Health nor Google Health Connect and reads nothing from either. Sleep times, how you felt and any symptoms are what you typed yourself, and they stay in your local database.</p>
+
+  <h2>Network</h2>
+  <p>The app reaches the network in exactly one case: <strong>downloading AI model files</strong> from HuggingFace, and only when you start that download yourself in settings. It is a download: none of your entries, no diary text and no identifier are transmitted. Text is processed by the model on the device.</p>
+  <p>There are no other network calls: no telemetry, no update checks, no ads.</p>
+
+  <h2>What there isn't</h2>
+  <ul>
+    <li>No accounts, no registration.</li>
+    <li>No Diarion servers — data cannot be sent anywhere because there is nowhere to send it.</li>
+    <li>No analytics, crash analytics, A/B tests or advertising identifiers.</li>
+    <li>No sharing with or selling to third parties.</li>
+    <li>No cross-app tracking (App Tracking Transparency is not used, because there is nothing to track).</li>
+  </ul>
+
+  <h2>Your rights</h2>
+  <p>The data is in your hands, so the rights are exercised in the app rather than by writing to the developer: to view it, open the app; to obtain a copy, use Export or Backup; to delete it, delete the app (its storage goes with it), tap “Delete all my data” in settings, or delete the individual entry. On Android, cloud backup is disabled in the manifest, so your diary does not end up in a Google backup.</p>
+
+  <h2>Children</h2>
+  <p>The app is not directed at children and collects no data, therefore it collects none from children.</p>
+
+  <h2>Changes</h2>
+  <p>A new version is published at this same URL with a new effective date. If a change involves sending data off the device, the app will ask for separate consent before the first such transmission.</p>
+
+  <h2>Contact</h2>
+  <p><!--email_off--><a href="mailto:support@diarion.org">support@diarion.org</a><!--/email_off--> · <a href="/en/support">support page</a></p>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>© 2026 Diarion · Nothing leaves your phone.</div>
+    <nav aria-label="Footer links">
+      <a href="/en/">Home</a>
+      <a href="/en/support">Support</a>
+      <a href="/privacy" lang="uk" hreflang="uk">Українська</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

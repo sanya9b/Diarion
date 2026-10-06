@@ -19,10 +19,10 @@ public class StatisticsService : IStatisticsService
         _financeService = financeService;
     }
 
-    public async Task<SleepStatistics> GetSleepStatisticsAsync(int days)
+    public async Task<SleepStatistics> GetSleepStatisticsAsync(StatsRange range)
     {
-        var startDate = DateTime.Today.AddDays(-days);
-        var entries = await _diaryService.GetDiaryEntriesForStatsAsync(startDate, DateTime.Today);
+        range = range.Normalized();
+        var entries = await _diaryService.GetDiaryEntriesForStatsAsync(range.Start, range.End);
         var entriesList = entries.ToList();
 
         var validSleepEntries = entriesList.Where(x => x.HasSleepStart && x.HasSleepEnd).ToList();
@@ -57,19 +57,19 @@ public class StatisticsService : IStatisticsService
             averageDuration = TimeSpan.FromHours(totalHours / validSleepEntries.Count);
         }
 
-        // Fill gaps with 0 duration for chart
-        var fullDataPoints = new List<SleepDataPoint>();
-        for (var d = startDate.Date; d <= DateTime.Today; d = d.AddDays(1))
+        // Fill gaps with 0 duration for chart (O(days) lookup via a date-keyed map)
+        var byDate = new Dictionary<DateTime, SleepDataPoint>();
+        foreach (var p in dataPoints)
         {
-            var pt = dataPoints.FirstOrDefault(p => p.Date.Date == d);
-            if (pt != null)
-            {
-                fullDataPoints.Add(pt);
-            }
-            else
-            {
-                fullDataPoints.Add(new SleepDataPoint { Date = d, Duration = TimeSpan.Zero, Quality = 0 });
-            }
+            byDate[p.Date.Date] = p;
+        }
+
+        var fullDataPoints = new List<SleepDataPoint>();
+        for (var d = range.Start; d <= range.End; d = d.AddDays(1))
+        {
+            fullDataPoints.Add(byDate.TryGetValue(d, out var pt)
+                ? pt
+                : new SleepDataPoint { Date = d, Duration = TimeSpan.Zero, Quality = 0 });
         }
 
         return new SleepStatistics
@@ -80,10 +80,10 @@ public class StatisticsService : IStatisticsService
         };
     }
 
-    public async Task<MoodStatistics> GetMoodStatisticsAsync(int days)
+    public async Task<MoodStatistics> GetMoodStatisticsAsync(StatsRange range)
     {
-        var startDate = DateTime.Today.AddDays(-days);
-        var entries = await _diaryService.GetDiaryEntriesForStatsAsync(startDate, DateTime.Today);
+        range = range.Normalized();
+        var entries = await _diaryService.GetDiaryEntriesForStatsAsync(range.Start, range.End);
         var entriesList = entries.ToList();
 
         var counts = new Dictionary<Emotion, int>();
@@ -95,17 +95,22 @@ public class StatisticsService : IStatisticsService
             }
         }
 
+        // One observation per DAY, not per hour: the donut reads as "share of your days", and
+        // hour-weighting would silently turn it into "share of your time" and let one heavily-logged
+        // day outweigh a month. For days with no hourly data Dominant returns the scalar, so this is
+        // identical to the previous behaviour.
         foreach (var entry in entriesList)
         {
-            if (entry.Emotion != Emotion.None)
+            var dominant = MoodAggregate.Dominant(entry.Emotion, entry.HourlyMood);
+            if (dominant != Emotion.None)
             {
-                if (counts.ContainsKey(entry.Emotion))
+                if (counts.ContainsKey(dominant))
                 {
-                    counts[entry.Emotion]++;
+                    counts[dominant]++;
                 }
                 else
                 {
-                    counts[entry.Emotion] = 1;
+                    counts[dominant] = 1;
                 }
             }
         }
@@ -121,27 +126,96 @@ public class StatisticsService : IStatisticsService
             }
         }
 
+        // Daily mood series (gap-filled so it spans exactly the window): average valence for the trend line
+        // plus the day's dominant emotion (mode, deterministic tie-break) for the Year-in-Pixels heatmap.
+        var moodByDate = entriesList
+            .Where(e => MoodAggregate.HasAny(e.Emotion, e.HourlyMood))
+            .GroupBy(e => e.Date.Date)
+            .ToDictionary(
+                g => g.Key,
+                g => (
+                    // Averaged across every logged hour, so the trend line reflects the whole day
+                    // rather than whichever moment happened to be captured.
+                    Valence: g.Average(e => MoodAggregate.Valence(e.Emotion, e.HourlyMood)),
+                    Dominant: MoodAggregate.Dominant(
+                        g.First().Emotion,
+                        g.SelectMany(e => e.HourlyMood).ToList())));
+
+        var dailyTrend = new List<MoodTrendPoint>();
+        for (var d = range.Start; d <= range.End; d = d.AddDays(1))
+        {
+            dailyTrend.Add(moodByDate.TryGetValue(d, out var info)
+                ? new MoodTrendPoint { Date = d, Valence = info.Valence, HasData = true, DominantEmotion = info.Dominant }
+                : new MoodTrendPoint { Date = d, Valence = 0, HasData = false });
+        }
+
+        // Hour-of-day profile. Weighted per OBSERVATION, unlike the donut above: the question here is
+        // "how do I usually feel at 14:00", which is about hours, not days. Scalar-only days carry no
+        // hour and so contribute nothing.
+        // Days are tracked as a set of dates, not a counter: several DTO rows can share one calendar day,
+        // and the whole point of the figure is how many different days back an hour up.
+        var byHour = new Dictionary<int, (int Count, double Sum, HashSet<DateTime> Days)>();
+        foreach (var entry in entriesList)
+        {
+            foreach (var hourMood in MoodAggregate.HourlyObservations(entry.HourlyMood))
+            {
+                if (!byHour.TryGetValue(hourMood.Hour, out var acc))
+                {
+                    acc = (0, 0d, new HashSet<DateTime>());
+                }
+
+                acc.Days.Add(entry.Date.Date);
+                byHour[hourMood.Hour] = (acc.Count + 1, acc.Sum + hourMood.Mood.ToValence(), acc.Days);
+            }
+        }
+
+        var hourlyProfile = new List<MoodHourPoint>();
+        for (int hour = MoodAggregate.FirstHour; hour <= MoodAggregate.LastHour; hour++)
+        {
+            hourlyProfile.Add(byHour.TryGetValue(hour, out var slot)
+                ? new MoodHourPoint { Hour = hour, Valence = slot.Sum / slot.Count, Count = slot.Count, DayCount = slot.Days.Count, HasData = true }
+                : new MoodHourPoint { Hour = hour, Valence = 0, Count = 0, DayCount = 0, HasData = false });
+        }
+
         return new MoodStatistics
         {
             EmotionCounts = counts,
-            TopEmotion = topEmotion
+            TopEmotion = topEmotion,
+            DailyTrend = dailyTrend,
+            HourlyProfile = hourlyProfile
         };
     }
 
-    public async Task<TodoStatistics> GetTodoStatisticsAsync(int days)
+    public async Task<TodoStatistics> GetTodoStatisticsAsync(StatsRange range)
     {
-        var startDate = DateTime.Today.AddDays(-days);
+        range = range.Normalized();
         // Using the optimized summary method that counts directly in DB
-        return await _todoService.GetTodoStatsSummaryAsync(startDate, DateTime.Today);
+        return await _todoService.GetTodoStatsSummaryAsync(range.Start, range.End);
     }
 
-    public async Task<FinanceStatistics> GetFinanceStatisticsAsync(int days)
+    public async Task<FinanceStatistics> GetFinanceStatisticsAsync(StatsRange range, Guid? accountId = null)
     {
-        var startDate = DateTime.Today.AddDays(-days);
-        var transactions = await _financeService.GetFinanceTransactionsForStatsAsync(startDate, DateTime.Today);
-        
+        range = range.Normalized();
+        var startDate = range.Start;
+        var end = range.End;
+
+        // Twice the selected window: the comparison card needs the preceding period as a baseline, and
+        // fetching it here keeps everything on this screen derived from one read of one set of rows.
+        var (fetchStart, _) = ReportPeriod.PreviousWindow(startDate, end);
+        var fetched = await _financeService.GetFinanceTransactionsForStatsAsync(fetchStart, end);
+
+        // Scoped in memory rather than in the query on purpose. AccountId is a nullable Guid and LiteDB's
+        // LINQ translation is broken for those (see FinanceService.DeleteAccountAsync) — and it fails by
+        // returning no rows, which this screen would render as a perfectly plausible empty state. It also
+        // makes flipping the account chip free, since the rows are already in hand.
+        var scoped = accountId == null
+            ? fetched
+            : fetched.Where(t => t.AccountId == accountId).ToList();
+
+        var transactions = scoped.Where(t => t.Date >= startDate).ToList();
+
         var stats = new FinanceStatistics();
-        
+
         var expenses = transactions.Where(t => t.Type == TransactionType.Expense).ToList();
         var incomes = transactions.Where(t => t.Type == TransactionType.Income).ToList();
         
@@ -187,6 +261,18 @@ public class StatisticsService : IStatisticsService
                 grouped[i].ColorHex = incomeColors[i % incomeColors.Length];
             }
             stats.IncomeByCategory = grouped;
+        }
+
+        stats.Trend = FinanceReportCalculator.ComputeTrend(transactions, startDate, end);
+        stats.Comparison = FinanceReportCalculator.ComputeComparison(scoped, startDate, end);
+
+        // One account is not a breakdown — the card hides itself rather than showing a single bar.
+        if (accountId == null)
+        {
+            var accounts = await _financeService.GetAccountsAsync(includeArchived: true);
+            var transfers = await _financeService.GetTransfersAsync();
+            stats.AccountBreakdown = FinanceReportCalculator.ComputeAccountBreakdown(
+                accounts, transactions, transfers, startDate, end);
         }
 
         return stats;

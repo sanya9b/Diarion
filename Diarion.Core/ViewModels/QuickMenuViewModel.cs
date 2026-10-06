@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Services.Ai;
 
 namespace Diarion.ViewModels;
 
@@ -14,19 +15,33 @@ public partial class QuickMenuViewModel : ObservableObject
     private readonly IMenuConfigurationService _menuConfigurationService;
     private readonly IProfileService _profileService;
     private readonly INavigationService _navigationService;
+    private readonly IAiAvailability _aiAvailability;
 
     public ObservableCollection<QuickMenuItem> QuickMenuItems { get; } = new();
+
+    /// <summary>Every tile the app knows about, in catalogue order, whether shown or not.</summary>
+    private readonly List<QuickMenuItem> _catalogue = new();
+
+    private List<string> _savedOrder = new();
+
+    /// <summary>
+    /// Starts hidden. The alternative — showing the tile and hiding it a moment later — puts a
+    /// button on the screen that vanishes as the user reaches for it.
+    /// </summary>
+    private bool _isChatAvailable;
 
     private QuickMenuItem? _draggedMenuItem;
 
     public QuickMenuViewModel(
         IMenuConfigurationService menuConfigurationService,
         IProfileService profileService,
-        INavigationService navigationService)
+        INavigationService navigationService,
+        IAiAvailability aiAvailability)
     {
         _menuConfigurationService = menuConfigurationService;
         _profileService = profileService;
         _navigationService = navigationService;
+        _aiAvailability = aiAvailability;
     }
 
     public void Initialize()
@@ -37,56 +52,89 @@ public partial class QuickMenuViewModel : ObservableObject
 
     private void InitQuickMenuDefault()
     {
-        var defaultItems = _menuConfigurationService.GetDefaultMenuItems();
-        foreach (var item in defaultItems)
+        _catalogue.Clear();
+        foreach (var item in _menuConfigurationService.GetDefaultMenuItems())
         {
             switch (item.Id)
             {
+                case MenuConfigurationService.SearchId: item.Command = OpenSearchCommand; break;
+                case "Notes": item.Command = OpenNotesCommand; break;
                 case "Reading": item.Command = OpenReadingTrackerCommand; break;
                 case "Moments": item.Command = OpenHappyMomentsCommand; break;
                 case "Deeds": item.Command = OpenGoodDeedsCommand; break;
                 case "Habits": item.Command = OpenHabitTrackerCommand; break;
                 case "Wishlist": item.Command = OpenWishlistCommand; break;
                 case "Finance": item.Command = OpenFinanceCommand; break;
+                case MenuConfigurationService.AiChatId: item.Command = OpenAiChatCommand; break;
             }
+
+            _catalogue.Add(item);
         }
 
-        QuickMenuItems.Clear();
-        foreach (var item in defaultItems)
-        {
-            QuickMenuItems.Add(item);
-        }
+        Rebuild();
     }
 
     private async Task LoadQuickMenuAsync()
     {
         var profile = await _profileService.GetUserProfileAsync();
-        
-        if (profile.QuickMenuOrder != null && profile.QuickMenuOrder.Count > 0)
+        _savedOrder = profile.QuickMenuOrder ?? new List<string>();
+        _isChatAvailable = await _aiAvailability.CanGenerateAsync();
+
+        Rebuild();
+    }
+
+    /// <summary>
+    /// Called when the main page reappears — the only moment either of the two things this strip
+    /// depends on can have changed behind its back.
+    /// </summary>
+    /// <remarks>
+    /// The generative model is installed on another screen, so that is the only moment the chat tile
+    /// can honestly appear. The saved order is written by two screens the user leaves to reach: the
+    /// onboarding module picker, and a drag on the strip itself. Both comparisons guard the same
+    /// thing — <see cref="Rebuild"/> clears and refills the collection, which is a visible flicker if
+    /// it runs on every return to the home screen for no reason.
+    /// </remarks>
+    public async Task RefreshAsync()
+    {
+        var profile = await _profileService.GetUserProfileAsync();
+        var order = profile.QuickMenuOrder ?? new List<string>();
+        var available = await _aiAvailability.CanGenerateAsync();
+
+        if (available == _isChatAvailable && order.SequenceEqual(_savedOrder))
         {
-            var orderedItems = new List<QuickMenuItem>();
-            var currentItems = QuickMenuItems.ToList();
-            
-            foreach (var id in profile.QuickMenuOrder)
-            {
-                var item = currentItems.FirstOrDefault(x => x.Id == id);
-                if (item != null)
-                {
-                    orderedItems.Add(item);
-                    currentItems.Remove(item);
-                }
-            }
+            return;
+        }
 
-            foreach (var item in currentItems)
-            {
-                orderedItems.Add(item);
-            }
+        _isChatAvailable = available;
+        _savedOrder = order;
+        Rebuild();
+    }
 
-            QuickMenuItems.Clear();
-            foreach (var item in orderedItems)
+    private void Rebuild()
+    {
+        var pending = _catalogue
+            .Where(item => item.Id != MenuConfigurationService.AiChatId || _isChatAvailable)
+            .ToList();
+
+        var ordered = new List<QuickMenuItem>();
+        foreach (var id in _savedOrder)
+        {
+            var item = pending.FirstOrDefault(x => x.Id == id);
+            if (item != null)
             {
-                QuickMenuItems.Add(item);
+                ordered.Add(item);
+                pending.Remove(item);
             }
+        }
+
+        // Whatever the saved order never knew about goes last: a tile added by an update, or the
+        // chat tile the first time a model is installed.
+        ordered.AddRange(pending);
+
+        QuickMenuItems.Clear();
+        foreach (var item in ordered)
+        {
+            QuickMenuItems.Add(item);
         }
     }
 
@@ -116,8 +164,10 @@ public partial class QuickMenuViewModel : ObservableObject
 
         QuickMenuItems.Move(oldIndex, newIndex);
 
+        _savedOrder = QuickMenuItems.Select(x => x.Id).ToList();
+
         var profile = await _profileService.GetUserProfileAsync();
-        profile.QuickMenuOrder = QuickMenuItems.Select(x => x.Id).ToList();
+        profile.QuickMenuOrder = _savedOrder;
         await _profileService.SaveUserProfileAsync(profile);
     }
 
@@ -138,4 +188,13 @@ public partial class QuickMenuViewModel : ObservableObject
 
     [RelayCommand]
     private async Task OpenFinanceAsync() => await _navigationService.NavigateToAsync("Finance");
+
+    [RelayCommand]
+    private async Task OpenNotesAsync() => await _navigationService.NavigateToAsync("Notes");
+
+    [RelayCommand]
+    private async Task OpenSearchAsync() => await _navigationService.NavigateToAsync("Search");
+
+    [RelayCommand]
+    private async Task OpenAiChatAsync() => await _navigationService.NavigateToAsync("AiChat");
 }

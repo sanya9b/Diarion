@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,33 +14,183 @@ using Diarion.Services;
 
 namespace Diarion.ViewModels;
 
+/// <summary>One hour of the day grid. Holds however many tasks fall in it — the row grows rather than
+/// squeezing them, because unreadable blocks are worse than an uneven grid.</summary>
+public partial class PlannerHourSlot : ObservableObject
+{
+    public int Hour { get; init; }
+    public string Label { get; init; } = string.Empty;
+
+    /// <summary>
+    /// What <see cref="Label"/> means, spelled out. The superscript zeros that make the label read as a
+    /// time on screen are announced character by character otherwise.
+    /// </summary>
+    public string AccessibleTime => $"{Hour:00}:00";
+
+    /// <summary>Tasks that start in this hour. Drawn as full rows.</summary>
+    public ObservableCollection<TodoItemViewModel> Items { get; } = new();
+
+    /// <summary>
+    /// Tasks that started earlier and are still running through this hour — a 13:00–16:00 block seen from
+    /// the 14th hour. Kept apart from <see cref="Items"/> rather than repeated into it: the same task
+    /// listed four times reads as four tasks with four checkboxes, and only one of those rows is the one
+    /// that can be ticked off. Drawn above the tasks that start here, because something already under way
+    /// comes before something about to begin.
+    /// </summary>
+    public ObservableCollection<TodoItemViewModel> Continuations { get; } = new();
+
+    [ObservableProperty]
+    private bool _isEmpty = true;
+}
+
 public partial class PlannerSectionViewModel : ObservableObject
 {
+    /// <summary>
+    /// The grid runs 5–23. It started at 7 to match the hourly mood scale, but a planner and a mood log
+    /// are not asked the same question: nobody records a mood before dawn, and plenty of days start there.
+    /// A task outside the window is kept in the nearest edge slot rather than hidden — a task nobody can
+    /// see is a task nobody does — and its block always prints its real time.
+    /// </summary>
+    public const int FirstHour = 5;
+    public const int LastHour = 23;
+
     private readonly ITodoService _todoService;
     private readonly INavigationService _navigationService;
+    private readonly IDialogService _dialogService;
 
     public ObservableCollection<TodoItemViewModel> Todos { get; } = new();
 
-    public PlannerSectionViewModel(ITodoService todoService, INavigationService navigationService)
+    /// <summary>Tasks with no time of their own. They keep working exactly as before.</summary>
+    public ObservableCollection<TodoItemViewModel> UntimedTodos { get; } = new();
+
+    public ObservableCollection<PlannerHourSlot> HourSlots { get; } = new();
+
+    [ObservableProperty]
+    private bool _hasUntimedTodos;
+
+    public PlannerSectionViewModel(
+        ITodoService todoService, INavigationService navigationService, IDialogService dialogService)
     {
         _todoService = todoService;
         _navigationService = navigationService;
+        _dialogService = dialogService;
     }
 
     public async Task LoadTodosForDateAsync(DateTime date)
     {
         using var _ = StartupTrace.Measure("PlannerSectionViewModel.LoadTodosForDateAsync");
         var items = await _todoService.GetTodosForDateAsync(date.Date);
+
+        // Which series are still running on this day. An ended one leaves its occurrences pointing at it
+        // for ever, so the id alone cannot answer whether the row still repeats.
+        var live = (await _todoService.GetRecurringTasksAsync())
+            .Where(rule => rule.IsActiveOn(date))
+            .Select(rule => rule.Id)
+            .ToHashSet();
+
         Todos.Clear();
         foreach (var item in items)
         {
-            Todos.Add(new TodoItemViewModel(item));
+            var isRecurring = item.RecurringTaskId != null && live.Contains(item.RecurringTaskId.Value);
+            Todos.Add(new TodoItemViewModel(item, isRecurring, row => DeleteTodoCommand.Execute(row)));
         }
+
+        BuildHourGrid();
+    }
+
+    /// <summary>Redistributes <see cref="Todos"/> across the tray and the hour slots.</summary>
+    private void BuildHourGrid()
+    {
+        if (HourSlots.Count == 0)
+        {
+            for (var hour = FirstHour; hour <= LastHour; hour++)
+            {
+                HourSlots.Add(new PlannerHourSlot
+                {
+                    Hour = hour,
+                    Label = hour.ToString("00", CultureInfo.InvariantCulture)
+                });
+            }
+        }
+
+        foreach (var slot in HourSlots)
+        {
+            slot.Items.Clear();
+            slot.Continuations.Clear();
+        }
+        UntimedTodos.Clear();
+
+        foreach (var todo in Todos.OrderBy(t => t.TargetTime))
+        {
+            if (!todo.HasTime)
+            {
+                UntimedTodos.Add(todo);
+                continue;
+            }
+
+            var start = SlotIndexFor(todo.TargetTime);
+            HourSlots[start].Items.Add(todo);
+
+            foreach (var hour in ContinuationHours(todo.TargetTime, todo.EndTime))
+            {
+                HourSlots[hour - FirstHour].Continuations.Add(todo);
+            }
+        }
+
+        foreach (var slot in HourSlots) slot.IsEmpty = slot.Items.Count == 0 && slot.Continuations.Count == 0;
+        HasUntimedTodos = UntimedTodos.Count > 0;
+    }
+
+    /// <summary>Clamped, so a 06:00 or a 01:00 task lands on an edge row instead of vanishing.</summary>
+    internal static int SlotIndexFor(TimeSpan time)
+        => Math.Clamp(time.Hours, FirstHour, LastHour) - FirstHour;
+
+    /// <summary>
+    /// The hours a block runs through after the one it starts in, as hour numbers within the grid window.
+    ///
+    /// The end is exclusive, which is what "до 16:00" says: a block finishing at 16:00 is over before the
+    /// 16th hour begins, so 13:00–16:00 covers 13, 14 and 15. A minute past the hour does put the block in
+    /// it — 13:00–16:30 also covers 16 — because that half hour is time the user is genuinely busy.
+    ///
+    /// Both ends are clamped to the grid window for the same reason a point task is: a task nobody can see
+    /// is a task nobody does. A block starting before 05:00 therefore begins in the 05 row and keeps only
+    /// the part of its run that the window can show.
+    /// </summary>
+    internal static IEnumerable<int> ContinuationHours(TimeSpan start, TimeSpan? end)
+    {
+        if (end == null || end.Value <= start) yield break;
+
+        var first = Math.Clamp(start.Hours, FirstHour, LastHour);
+
+        // The last hour the block is still inside. Subtracting a tick rather than reading end.Hours is what
+        // makes the end exclusive on the hour and inclusive past it.
+        var last = Math.Clamp(end.Value.Subtract(TimeSpan.FromTicks(1)).Hours, FirstHour, LastHour);
+
+        for (var hour = first + 1; hour <= last; hour++) yield return hour;
     }
 
     public void ClearTodos()
     {
         Todos.Clear();
+        UntimedTodos.Clear();
+        foreach (var slot in HourSlots)
+        {
+            slot.Items.Clear();
+            slot.Continuations.Clear();
+            slot.IsEmpty = true;
+        }
+        HasUntimedTodos = false;
+    }
+
+    /// <summary>Creating from an empty row carries the hour into the form, so it opens already scheduled.</summary>
+    [RelayCommand]
+    private async Task AddAtHourAsync(PlannerHourSlot? slot)
+    {
+        if (slot == null) return;
+
+        var date = Todos.Count > 0 ? Todos[0].TargetDate : DateTime.Today;
+        var encoded = Uri.EscapeDataString(date.ToString("O", CultureInfo.InvariantCulture));
+        await _navigationService.NavigateToAsync($"TodoDetail?Date={encoded}&Hour={slot.Hour}");
     }
 
     [RelayCommand]
@@ -48,14 +201,52 @@ public partial class PlannerSectionViewModel : ObservableObject
 
         try
         {
+            // A one-off just goes. A row that belongs to a series is two different requests wearing the
+            // same gesture, and guessing which one was meant is how a whole series disappears by accident.
+            if (todo.Model.RecurringTaskId != null)
+            {
+                var thisOne = Diarion.Resources.Localization.AppResources.DeleteThisOccurrenceOption;
+                var wholeSeries = Diarion.Resources.Localization.AppResources.DeleteWholeSeriesOption;
+
+                var choice = await _dialogService.ShowActionSheetAsync(
+                    Diarion.Resources.Localization.AppResources.DeleteRecurringTaskTitle,
+                    Diarion.Resources.Localization.AppResources.CancelButtonLabel,
+                    thisOne, wholeSeries);
+
+                if (choice == null) return;
+
+                if (choice == wholeSeries)
+                {
+                    await _todoService.DeleteRecurringTaskAsync(todo.Model.RecurringTaskId.Value);
+                    RemoveFromView(todo);
+                    WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
+                    return;
+                }
+            }
+
             await _todoService.DeleteTodoAsync(todo.Id);
-            Todos.Remove(todo);
+            RemoveFromView(todo);
             WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine("Error deleting todo: " + ex.Message);
         }
+    }
+
+    /// <summary>
+    /// Takes a row off the screen. <see cref="Todos"/> is the source list, but nothing is bound to it —
+    /// the view reads the tray and the hour slots, and only <see cref="BuildHourGrid"/> refills those. So
+    /// removing from <see cref="Todos"/> alone left the deleted block sitting there until something else
+    /// happened to reload the day, which is what made deleting look like it worked on a delay.
+    ///
+    /// A rebuild rather than a reload: a rule contributes at most one occurrence per day, so exactly one
+    /// row leaves the current day either way, and no other row's state depends on it.
+    /// </summary>
+    private void RemoveFromView(TodoItemViewModel todo)
+    {
+        Todos.Remove(todo);
+        BuildHourGrid();
     }
 
     [RelayCommand]

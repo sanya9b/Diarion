@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Removed for v1: com.apple.developer.healthkit (owner's decision, 2026-08-29).
+	     It was added on 2026-08-17 as the entitlement the existing code had always needed and never
+	     had - without it the authorisation callback comes back unsuccessful, quietly, and sleep data
+	     simply never arrives. What the same pass did not check is whether anything could ask: the
+	     only caller is MainViewModel.ImportSleepDataAsync, and no XAML binds it. The entitlement was
+	     bought for a button that was never built.
+
+	     What it cost to keep, and why that decided it: the App ID needs the HealthKit capability
+	     enabled by hand or signing fails - CI cannot catch that, build-ios.yml publishes with
+	     CodesignKey="-" - and App Review asks what health data is read and why. Two obligations,
+	     one of them outside the repo, for a feature no user can reach.
+
+	     Restoring it is one commit with four parts, and three of them are here in the repo:
+	         <key>com.apple.developer.healthkit</key>
+	         <true/>
+	     plus NSHealthShareUsageDescription in Info.plist and both .lproj files, plus the HEALTHKIT
+	     define in Diarion.csproj (which is what actually compiles the HealthKit code back in), plus
+	     the capability on the App ID. And before any of it, a button: the read is read-only by
+	     design - the share set passed to RequestAuthorizationToShare is empty, which is why there is
+	     no NSHealthUpdateUsageDescription anywhere in this repo's history. -->
+
+	<!-- Removed for v1: com.apple.developer.kernel.increased-memory-limit.
+	     It was added for the 1.1 GB generative model, and OnDeviceAi.GenerationOffered has been
+	     false for everyone since 2026-08-10. What is left is the 123 MB encoder, which does not go
+	     near the jetsam ceiling that entitlement was raising. An entitlement kept "just in case"
+	     is not free: it has to be enabled on the App ID too, and a key in the binary that the
+	     provisioning profile does not carry is a signing failure rather than a warning.
+	     Restoring it is this, verbatim, in the same commit that flips GenerationOffered back:
+	         <key>com.apple.developer.kernel.increased-memory-limit</key>
+	         <true/>
+	     It only ever took effect when the installing profile happened to carry it, so it bought
+	     several hundred megabytes when it survived and nothing when it did not. -->
+</dict>
+</plist>

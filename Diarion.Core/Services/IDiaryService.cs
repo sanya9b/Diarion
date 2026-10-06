@@ -12,8 +12,11 @@ public interface IDiaryService
     Task<DiaryEntry> GetEntryByIdAsync(Guid id);
     Task SaveEntryAsync(DiaryEntry entry);
     Task DeleteEntryAsync(Guid id);
-    Task<int> GetCurrentStreakAsync();
+    Task<StreakResult> GetCurrentStreakAsync();
 
     // Statistics (Optimized DB Queries)
     Task<IEnumerable<DiaryEntryStatsDto>> GetDiaryEntriesForStatsAsync(DateTime startDate, DateTime endDate);
+
+    /// <summary>Every answered guided prompt, newest first. Unanswered days are left out.</summary>
+    Task<IReadOnlyList<PromptAnswerDto>> GetPromptAnswersAsync();
 }

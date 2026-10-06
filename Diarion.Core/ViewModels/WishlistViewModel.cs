@@ -27,9 +27,14 @@ public partial class WishlistViewModel : BaseViewModel
     [ObservableProperty]
     private WishlistEntry? _selectedEntry;
 
-    public WishlistViewModel(IWishlistService wishlistService)
+    public bool IsEditing => SelectedEntry != null;
+
+    private readonly IDialogService _dialogService;
+
+    public WishlistViewModel(IWishlistService wishlistService, IDialogService dialogService)
     {
         _wishlistService = wishlistService;
+        _dialogService = dialogService;
         Title = Diarion.Resources.Localization.AppResources.WishlistTitle ?? "Wishlist";
     }
 
@@ -65,6 +70,7 @@ public partial class WishlistViewModel : BaseViewModel
             NewWantText = string.Empty;
             NewDate = DateTime.Today;
         }
+        OnPropertyChanged(nameof(IsEditing));
         IsAddFormVisible = true;
     }
 
@@ -73,6 +79,7 @@ public partial class WishlistViewModel : BaseViewModel
     {
         IsAddFormVisible = false;
         SelectedEntry = null;
+        OnPropertyChanged(nameof(IsEditing));
     }
 
     [RelayCommand]
@@ -108,7 +115,7 @@ public partial class WishlistViewModel : BaseViewModel
     {
         if (entry == null) return;
 
-        bool confirm = await Microsoft.Maui.Controls.Shell.Current.DisplayAlertAsync(
+        bool confirm = await _dialogService.ShowConfirmationAsync(
             Diarion.Resources.Localization.AppResources.DeleteConfirmTitle ?? "Delete",
             Diarion.Resources.Localization.AppResources.DeleteConfirmMsg ?? "Are you sure you want to delete this record?",
             Diarion.Resources.Localization.AppResources.DeleteConfirmYes ?? "Yes",
@@ -118,6 +125,16 @@ public partial class WishlistViewModel : BaseViewModel
         {
             await _wishlistService.DeleteWishlistEntryAsync(entry.Id);
             Entries.Remove(entry);
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteCurrentEntryAsync()
+    {
+        if (SelectedEntry != null)
+        {
+            await DeleteEntryAsync(SelectedEntry);
+            CloseForm();
         }
     }
 }

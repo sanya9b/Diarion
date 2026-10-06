@@ -16,119 +16,119 @@
 
     <Grid Padding="0" RowDefinitions="Auto, *">
         
-        <!-- Custom Top Bar -->
-        <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
-            <!-- Hamburger Menu Button -->
-            <Grid Grid.Column="0" Padding="10,0">
-                <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding OpenMenuCommand}" />
-                </Grid.GestureRecognizers>
-                <Label Text="☰" FontSize="32" 
-                       InputTransparent="True"
-                       TextColor="{DynamicResource Theme_Midnight_Snow}" 
-                       VerticalOptions="Center" HorizontalOptions="Start" />
-            </Grid>
+        <!-- Custom Top Bar: Removed Hamburger Menu for Clean Minimalism -->
+        <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="*, Auto" ColumnSpacing="12">
             
-            <controls:QuickMenuView Grid.Column="1" />
-
-            <!-- Streak Badge -->
-            <Border Grid.Column="2" 
-                    IsVisible="{Binding IsStreakVisible}"
-                    StrokeThickness="1" 
-                    Stroke="{DynamicResource Theme_Coral}" 
-                    BackgroundColor="{DynamicResource Theme_Snow_Black}" 
-                    StrokeShape="RoundRectangle 16"
-                    Padding="12,0" 
-                    VerticalOptions="Center" 
-                    HeightRequest="36">
-                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                    <Label Text="🔥" FontSize="16" VerticalOptions="Center" />
-                    <Label Text="{Binding CurrentStreak}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-            </Border>
+            <!-- x:Name on the four tour targets. They are anchors for the spotlight and nothing
+                 else; MainPage.xaml.cs maps a TourStepId onto each one and measures it. -->
+            <controls:QuickMenuView x:Name="QuickMenuAnchor" Grid.Column="0" HorizontalOptions="Start" />
         </Grid>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
-            <Grid.GestureRecognizers>
-                <SwipeGestureRecognizer Direction="Up" Command="{Binding CalendarSection.ToggleCalendarCommand}" />
-                <SwipeGestureRecognizer Direction="Down" Command="{Binding CalendarSection.ToggleCalendarCommand}" />
-            </Grid.GestureRecognizers>
-
-            <VerticalStackLayout Grid.Row="0" Padding="24,4,24,10" Spacing="2">
+            <VerticalStackLayout Grid.Row="0" Padding="24,4,24,10" Spacing="0">
                 
                 <controls:CalendarView IsExpanded="{Binding BindingContext.CalendarSection.IsCalendarExpanded, Source={x:Reference PageRoot}}" BindingContext="{Binding CalendarSection}" x:DataType="viewmodels:CalendarSectionViewModel" />
 
-                <VerticalStackLayout Margin="0,0,0,10" Spacing="0" HorizontalOptions="Fill">
-                    <BoxView HeightRequest="4" WidthRequest="32" CornerRadius="2" 
-                             BackgroundColor="{DynamicResource Theme_Dust_Ocean}" 
-                             HorizontalOptions="Center" Margin="0,0,0,4" />
-                    <Label Text="{Binding CalendarSection.SelectedDateDayName}" FontFamily="MarckScript" FontSize="32" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <!-- Date Typographical Editorial Style.
+                     The handle and the day name are the calendar's control. The swipe used to sit on the
+                     whole page below, so any vertical drag anywhere — scrolling the planner, most of all —
+                     threw the month open. Scoped here it is only triggered on purpose, and a tap does the
+                     same thing for anyone who never thinks to drag a bar they did not know was a handle. -->
+                <VerticalStackLayout x:Name="DayStripAnchor" Margin="0,-1,0,16" Spacing="0" HorizontalOptions="Fill"
+                                     BackgroundColor="Transparent">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CalendarSection.ToggleCalendarCommand}" />
+                        <SwipeGestureRecognizer Direction="Down" Command="{Binding CalendarSection.ToggleCalendarCommand}" />
+                        <SwipeGestureRecognizer Direction="Up" Command="{Binding CalendarSection.ToggleCalendarCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <BoxView HeightRequest="4" WidthRequest="32" CornerRadius="2"
+                             BackgroundColor="{DynamicResource Theme_Dust_Ocean}"
+                             HorizontalOptions="Center" Margin="0,0,0,4"
+                             SemanticProperties.Description="{x:Static localization:AppResources.ToggleCalendarAccessibility}" />
+                    <!-- 24 rather than 28: the line now carries the date too, and "понеділок, 22 листопада"
+                         is the longest it gets. At 28 that wraps on a narrow phone, and a wrapped date
+                         costs more than two points of display type. -->
+                    <Label Text="{Binding CalendarSection.SelectedDateLabel}" FontFamily="MarckScript" FontSize="24" MaxLines="1" HorizontalTextAlignment="Center" HorizontalOptions="Center" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </VerticalStackLayout>
 
-                <Grid ColumnDefinitions="*, *" Margin="0,4,0,6">
-                    <Border Grid.Column="0" StrokeThickness="0" BackgroundColor="Transparent" Padding="0,8">
-                        <Border.GestureRecognizers>
+                <!-- Tabs: Typography-Driven Design -->
+                <Grid x:Name="TabsAnchor" Margin="0,0,0,16" ColumnDefinitions="*,*">
+                    <Label Grid.Column="0" Text="{x:Static localization:AppResources.TabDiary}"
+                           HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SwitchToDiaryModeCommand}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{x:Static localization:AppResources.TabDiary}"
-                               InputTransparent="True"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               FontAttributes="Bold"
-                               FontSize="15">
-                            <Label.Triggers>
-                                <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="True">
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="False">
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
-                    </Border>
-                    <Border Grid.Column="1" StrokeThickness="0" BackgroundColor="Transparent" Padding="0,8">
-                        <Border.GestureRecognizers>
+                        </Label.GestureRecognizers>
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="True">
+                                <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                <Setter Property="FontSize" Value="20" />
+                                <Setter Property="FontAttributes" Value="Bold" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsDiaryMode}" Value="False">
+                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                <Setter Property="FontSize" Value="16" />
+                                <Setter Property="FontAttributes" Value="None" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+
+                    <Label Grid.Column="1" Text="{x:Static localization:AppResources.TabPlanner}"
+                           HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SwitchToPlannerModeCommand}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{x:Static localization:AppResources.TabPlanner}"
-                               InputTransparent="True"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               FontAttributes="Bold"
-                               FontSize="15">
-                            <Label.Triggers>
-                                <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="True">
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="False">
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
-                    </Border>
-                    <BoxView Grid.Column="0" HeightRequest="2" BackgroundColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="End" IsVisible="{Binding IsDiaryMode}" />
-                    <BoxView Grid.Column="1" HeightRequest="2" BackgroundColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="End" IsVisible="{Binding IsPlannerMode}" />
+                        </Label.GestureRecognizers>
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="True">
+                                <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                <Setter Property="FontSize" Value="20" />
+                                <Setter Property="FontAttributes" Value="Bold" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsPlannerMode}" Value="False">
+                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                <Setter Property="FontSize" Value="16" />
+                                <Setter Property="FontAttributes" Value="None" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
                 </Grid>
             </VerticalStackLayout>
 
+            <!-- Bento Box Content Container -->
             <Grid Grid.Row="1">
                 <ScrollView x:Name="DiaryContainer" IsVisible="{Binding IsDiaryMode}" Padding="24,10,24,40">
-                    <VerticalStackLayout Spacing="24" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel">
-                        
-                        <!-- Sleep Block -->
-                        <controls:SleepSection BindingContext="{Binding}" />
 
-                        <!-- Health Block -->
-                        <controls:HealthSection BindingContext="{Binding}" />
+                    <!-- Home-screen blocks. Each block's visibility is toggled from Settings; a
+                         VerticalStackLayout collapses hidden blocks without leaving empty gaps.
+                         The whole stack stays hidden (IsContentReady) until the real profile is
+                         loaded, so the default all-blocks-visible layout never flashes on startup. -->
+                    <VerticalStackLayout x:Name="BlocksAnchor" Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+                                         IsVisible="{Binding BindingContext.IsContentReady, Source={x:Reference PageRoot}}">
 
-                        <!-- Food Block -->
-                        <controls:FoodTrackerSection BindingContext="{Binding}" />
+                        <controls:MoodSection BindingContext="{Binding}"
+                                              IsVisible="{Binding BindingContext.Profile.IsMoodBlockVisible, Source={x:Reference PageRoot}}" />
 
-                        <!-- Habits Block -->
-                        <controls:HabitTrackerSection BindingContext="{Binding}" />
+                        <controls:SleepSection BindingContext="{Binding}"
+                                               IsVisible="{Binding BindingContext.Profile.IsSleepBlockVisible, Source={x:Reference PageRoot}}" />
 
-                        <!-- Reflection / Text blocks -->
-                        <controls:ReflectionSection BindingContext="{Binding}" />
+                        <!-- The intimate-life row inside is age-gated (18+); the block itself is not. Both
+                             flags come off the profile the same way the block visibility does. -->
+                        <controls:HealthSection BindingContext="{Binding}"
+                                                IsVisible="{Binding BindingContext.Profile.IsHealthBlockVisible, Source={x:Reference PageRoot}}"
+                                                IsIntimateLifeAvailable="{Binding BindingContext.Profile.IsIntimateLifeAvailable, Source={x:Reference PageRoot}}"
+                                                ShowsIntimateLifeAgeHint="{Binding BindingContext.Profile.ShowsIntimateLifeAgeHint, Source={x:Reference PageRoot}}" />
+
+                        <controls:FoodTrackerSection BindingContext="{Binding}"
+                                                     IsVisible="{Binding BindingContext.Profile.IsFoodBlockVisible, Source={x:Reference PageRoot}}" />
+
+                        <controls:HabitTrackerSection BindingContext="{Binding}"
+                                                      IsVisible="{Binding BindingContext.Profile.IsHabitsBlockVisible, Source={x:Reference PageRoot}}" />
+
+                        <controls:GuidedPromptSection BindingContext="{Binding}"
+                                                      ManageCommand="{Binding BindingContext.OpenPromptLibraryCommand, Source={x:Reference PageRoot}}"
+                                                      IsVisible="{Binding BindingContext.Profile.IsGuidedPromptBlockVisible, Source={x:Reference PageRoot}}" />
+
+                        <controls:ReflectionSection BindingContext="{Binding}"
+                                                    IsVisible="{Binding BindingContext.Profile.IsReflectionBlockVisible, Source={x:Reference PageRoot}}" />
                     </VerticalStackLayout>
                 </ScrollView>
 
@@ -136,11 +136,18 @@
             </Grid>
         </Grid>
 
-        <!-- Завантаження -->
-        <ActivityIndicator IsRunning="{Binding IsBusy}" 
-                           IsVisible="{Binding IsBusy}"
-                           HorizontalOptions="Center" VerticalOptions="Center" 
+        <!-- Завантаження. Grid.Row/RowSpan center it over the whole page (default row 0 is the
+             Auto top-bar row); IsLoading covers both the initial startup load and day switches. -->
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2"
+                           IsRunning="{Binding IsLoading}"
+                           IsVisible="{Binding IsLoading}"
+                           HorizontalOptions="Center" VerticalOptions="Center"
                            Color="{DynamicResource Theme_Ocean_Dust}"/>
+
+        <!-- Гід по головному екрану (онбординг, етап 2). Last child and RowSpan over both rows, so
+             it covers the page. Everything it does lives in the control; this page only tells it
+             which element each step means (MainPage.xaml.cs). -->
+        <controls:TourOverlayView x:Name="TourOverlay" Grid.Row="0" Grid.RowSpan="2" />
     </Grid>
 
 </ContentPage>

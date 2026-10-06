@@ -16,7 +16,7 @@
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCloseTapped" />
                 </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="✕" FontSize="22" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </Grid>
 
             <VerticalStackLayout Grid.Column="1" Spacing="4">
@@ -35,7 +35,7 @@
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="24,10,24,32" Spacing="16">
-                <CollectionView ItemsSource="{Binding Slots}"
+                <CollectionView BackgroundColor="Transparent" ItemsSource="{Binding Slots}"
                                 SelectionMode="None"
                                 VerticalOptions="Start">
                     <CollectionView.ItemsLayout>

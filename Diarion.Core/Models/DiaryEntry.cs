@@ -5,6 +5,12 @@ namespace Diarion.Models;
 
 public class DiaryEntry
 {
+    /// <summary>
+    /// Top of the star scale used by <c>SleepQuality</c> and <c>HealthStatus</c>. It used to be 10;
+    /// anything still reporting out of 10 is a leftover, so read this instead of writing a literal.
+    /// </summary>
+    public const int MaxRating = 5;
+
     public Guid Id { get; set; } = Guid.NewGuid();
     
     public DateTime Date { get; set; } = DateTime.Today;
@@ -15,13 +21,20 @@ public class DiaryEntry
     public TimeSpan? SleepEnd { get; set; }
     
     public int SleepQuality { get; set; } = 0;
+    
+    public string SleepNotes { get; set; } = string.Empty;
 
     // Здоров'я / Фізіологія (Health & Physiology)
     public string CycleDay { get; set; } = string.Empty;
     
     public int HealthStatus { get; set; } = 0;
     
+    public bool IsIntimateLifeDone { get; set; }
+
     public string IntimateLife { get; set; } = string.Empty;
+
+    /// <summary>Free note for the day's health, the counterpart of <see cref="SleepNotes"/>.</summary>
+    public string HealthNotes { get; set; } = string.Empty;
 
     // Їжа (Food)
     public bool IsBreakfastDone { get; set; }
@@ -48,8 +61,9 @@ public class DiaryEntry
     // List used for DB persistence
     public List<HabitItem> HabitsList { get; set; } = new();
 
-    // Шкала настрою (Mood Scale) - hours 7 to 23
-    public Dictionary<int, Emotion> MoodScale { get; set; } = new();
+    // Шкала настрою по годинах (hours 7 to 23). Порожній список = настрій за день задано лише
+    // скаляром нижче. Обидва живуть паралельно: скаляр — явний підсумок дня від користувача.
+    public List<HourMood> HourlyMood { get; set; } = new();
 
     // Рефлексія та Текстові блоки (Reflection & Text Blocks)
     public string Triggers { get; set; } = string.Empty;
@@ -59,7 +73,16 @@ public class DiaryEntry
     public string SoulFood { get; set; } = string.Empty;
     
     public string SupportForOthers { get; set; } = string.Empty;
-    
+
+    // Керований промпт (Guided prompt)
+    /// <summary>
+    /// Resource key of the prompt shown for this day. Stored rather than recomputed so the question
+    /// stays put once the user has started answering it, even if their mood changes later.
+    /// </summary>
+    public string PromptResourceKey { get; set; } = string.Empty;
+
+    public string PromptAnswer { get; set; } = string.Empty;
+
     // Legacy fields (optional to keep for backward compatibility or general note)
     public string Title { get; set; } = string.Empty;
     
@@ -68,6 +91,4 @@ public class DiaryEntry
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     
     public Emotion Emotion { get; set; } = Emotion.None;
-    
-    public string AiSummary { get; set; } = string.Empty;
 }

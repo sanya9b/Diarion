@@ -176,13 +176,157 @@
     <value>Notes</value>
   </data>
   <data name="TabGeneral" xml:space="preserve">
-    <value>General</value>
+    <value>Mood</value>
   </data>
   <data name="TabSleep" xml:space="preserve">
     <value>Sleep</value>
   </data>
   <data name="TabProductivity" xml:space="preserve">
     <value>Productivity</value>
+  </data>
+  <data name="TabHabits" xml:space="preserve">
+    <value>Habits</value>
+  </data>
+  <data name="TabCycle" xml:space="preserve">
+    <value>Cycle</value>
+  </data>
+  <data name="FactorSleepDuration" xml:space="preserve">
+    <value>Sleep duration</value>
+  </data>
+  <data name="FactorSleepQuality" xml:space="preserve">
+    <value>Sleep quality</value>
+  </data>
+  <data name="FactorCyclePeriodDay" xml:space="preserve">
+    <value>Period days</value>
+  </data>
+  <data name="FactorCycleSymptoms" xml:space="preserve">
+    <value>Cycle symptoms</value>
+  </data>
+  <data name="CycleStatsAllTimeNote" xml:space="preserve">
+    <value>Covers your whole log — a cycle does not fit inside the shorter ranges above.</value>
+  </data>
+  <data name="CycleStatsAverage" xml:space="preserve">
+    <value>Average cycle</value>
+  </data>
+  <data name="CycleStatsShortest" xml:space="preserve">
+    <value>Shortest</value>
+  </data>
+  <data name="CycleStatsLongest" xml:space="preserve">
+    <value>Longest</value>
+  </data>
+  <data name="CycleStatsPeriodLength" xml:space="preserve">
+    <value>Period length</value>
+  </data>
+  <data name="CycleStatsDaysCaption" xml:space="preserve">
+    <value>days</value>
+  </data>
+  <data name="CycleStatsLengthChart" xml:space="preserve">
+    <value>Cycle length</value>
+  </data>
+  <data name="CycleStatsCalendar" xml:space="preserve">
+    <value>Logged days</value>
+  </data>
+  <data name="CycleStatsSymptoms" xml:space="preserve">
+    <value>Most frequent symptoms</value>
+  </data>
+  <data name="CycleStatsBasisFormat" xml:space="preserve">
+    <value>Based on {0} recorded cycles.</value>
+  </data>
+  <data name="CycleStatsDiscardedFormat" xml:space="preserve">
+    <value>{0} gap(s) left out as implausible.</value>
+  </data>
+  <data name="CycleStatsNoCompleteCycle" xml:space="preserve">
+    <value>No complete cycle recorded yet — mark a second period to see the length.</value>
+  </data>
+  <data name="StatsHabitStrength" xml:space="preserve">
+    <value>Strength</value>
+  </data>
+  <data name="HabitEditorTitle" xml:space="preserve">
+    <value>Habit</value>
+  </data>
+  <data name="HabitNamePlaceholder" xml:space="preserve">
+    <value>Habit name</value>
+  </data>
+  <data name="HabitScheduleLabel" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="HabitScheduleDaily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="HabitScheduleSpecificDays" xml:space="preserve">
+    <value>Specific days</value>
+  </data>
+  <data name="HabitEditorDelete" xml:space="preserve">
+    <value>Delete habit</value>
+  </data>
+  <data name="HabitEditorNameRequired" xml:space="preserve">
+    <value>Please enter a habit name.</value>
+  </data>
+  <data name="HabitEditorDaysRequired" xml:space="preserve">
+    <value>Pick at least one day.</value>
+  </data>
+  <data name="HabitScheduleTimesPerWeek" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="HabitScheduleTimesPerWeekFormat" xml:space="preserve">
+    <value>{0}× per week</value>
+  </data>
+  <data name="RecurrenceEveryNDaysFormat" xml:space="preserve">
+    <value>Every {0} days</value>
+  </data>
+  <data name="RecurrenceMonthlyOnDayFormat" xml:space="preserve">
+    <value>Monthly on day {0}</value>
+  </data>
+  <data name="PlannedTransactionsLabel" xml:space="preserve">
+    <value>Planned</value>
+  </data>
+  <data name="AddPlannedButton" xml:space="preserve">
+    <value>+ Planned</value>
+  </data>
+  <data name="PlannedFormTitle" xml:space="preserve">
+    <value>Planned transaction</value>
+  </data>
+  <data name="PlannedRepeatLabel" xml:space="preserve">
+    <value>Repeats</value>
+  </data>
+  <data name="PlannedStartsOnLabel" xml:space="preserve">
+    <value>Starts on</value>
+  </data>
+  <data name="PlannedAutoPostLabel" xml:space="preserve">
+    <value>Add automatically</value>
+  </data>
+  <data name="PlannedAutoPostHint" xml:space="preserve">
+    <value>Off: each one waits for your confirmation.</value>
+  </data>
+  <data name="PlannedConfirmButton" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="PlannedSkipButton" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="DeletePlannedConfirm" xml:space="preserve">
+    <value>Delete this plan? Transactions it already added stay.</value>
+  </data>
+  <data name="SettingsPlannedToggle" xml:space="preserve">
+    <value>Planned transactions</value>
+  </data>
+  <data name="RecurrenceMonthlyLabel" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="RecurrenceWeeklyLabel" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="RecurrenceDailyLabel" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="HabitStreakWeeksSuffix" xml:space="preserve">
+    <value>w</value>
+  </data>
+  <data name="HabitReminderLabel" xml:space="preserve">
+    <value>Reminder</value>
+  </data>
+  <data name="HabitReminderMessage" xml:space="preserve">
+    <value>Time for your habit</value>
   </data>
   <data name="NoTasks" xml:space="preserve">
     <value>No tasks for this day</value>
@@ -191,7 +335,46 @@
     <value>TODAY</value>
   </data>
   <data name="HabitTrackerTitle" xml:space="preserve">
-    <value>Harmful Habit Tracker</value>
+    <value>Habit Tracker</value>
+  </data>
+  <data name="QuitCleanTimeLabel" xml:space="preserve">
+    <value>Clean time</value>
+  </data>
+  <data name="QuitMoneySavedLabel" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="QuitRelapseButton" xml:space="preserve">
+    <value>I relapsed</value>
+  </data>
+  <data name="QuitRelapsesLabel" xml:space="preserve">
+    <value>Relapses</value>
+  </data>
+  <data name="QuitLiveTimeFormat" xml:space="preserve">
+    <value>{0}d {1:D2}:{2:D2}:{3:D2}</value>
+  </data>
+  <data name="QuitNextMilestoneFormat" xml:space="preserve">
+    <value>Next milestone: {0} days</value>
+  </data>
+  <data name="QuitAllMilestones" xml:space="preserve">
+    <value>All milestones reached 🎉</value>
+  </data>
+  <data name="QuitRelapseConfirmTitle" xml:space="preserve">
+    <value>Log a relapse?</value>
+  </data>
+  <data name="QuitRelapseConfirmMessage" xml:space="preserve">
+    <value>This resets your clean-time counter.</value>
+  </data>
+  <data name="HabitTrackerSaveButton" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="HabitTrackerEditTitle" xml:space="preserve">
+    <value>Edit tracker</value>
+  </data>
+  <data name="HabitTrackerCostLabel" xml:space="preserve">
+    <value>Cost per unit</value>
+  </data>
+  <data name="HabitTrackerUnitsLabel" xml:space="preserve">
+    <value>Units per day</value>
   </data>
   <data name="HabitTrackerSubtitle" xml:space="preserve">
     <value>Create a separate tracker for each habit and mark every clean day.</value>
@@ -200,10 +383,10 @@
     <value>New tracker</value>
   </data>
   <data name="HabitTrackerSetupSubtitle" xml:space="preserve">
-    <value>Add the harmful habit name, choose the start date, and keep daily marks in one place.</value>
+    <value>Add the habit name, choose the start date, and keep daily marks in one place.</value>
   </data>
   <data name="HabitTrackerNameLabel" xml:space="preserve">
-    <value>Harmful habit name</value>
+    <value>Habit name</value>
   </data>
   <data name="HabitTrackerNamePlaceholder" xml:space="preserve">
     <value>For example: smoking or doomscrolling</value>
@@ -224,7 +407,7 @@
     <value>Marked days</value>
   </data>
   <data name="HabitTrackerNameRequiredMessage" xml:space="preserve">
-    <value>Enter the harmful habit name.</value>
+    <value>Enter the habit name.</value>
   </data>
   <data name="HabitTrackerDuplicateMessage" xml:space="preserve">
     <value>A tracker with this name already exists.</value>
@@ -418,14 +601,131 @@
   <data name="SoulFoodLabel" xml:space="preserve">
     <value>FOR MYSELF:</value>
   </data>
+  <data name="TriggersPlaceholder" xml:space="preserve">
+    <value>For example: work stress, a traffic jam...</value>
+  </data>
+  <data name="GratitudePlaceholder" xml:space="preserve">
+    <value>For example: tasty morning coffee, a friend called...</value>
+  </data>
+  <data name="SoulFoodPlaceholder" xml:space="preserve">
+    <value>For example: read a book, listened to music...</value>
+  </data>
+  <data name="HomeBlocksTitle" xml:space="preserve">
+    <value>HOME SCREEN BLOCKS</value>
+  </data>
+  <data name="BlockMoodLabel" xml:space="preserve">
+    <value>Mood</value>
+  </data>
+  <data name="BlockSleepLabel" xml:space="preserve">
+    <value>Sleep</value>
+  </data>
+  <data name="BlockHealthLabel" xml:space="preserve">
+    <value>Health</value>
+  </data>
+  <data name="BlockFoodLabel" xml:space="preserve">
+    <value>Food</value>
+  </data>
+  <data name="BlockHabitsLabel" xml:space="preserve">
+    <value>Habits</value>
+  </data>
+  <data name="BlockGuidedPromptLabel" xml:space="preserve">
+    <value>Question of the day</value>
+  </data>
+  <data name="MoodHourlyLabel" xml:space="preserve">
+    <value>By the hour</value>
+  </data>
+  <data name="MoodHourlyHint" xml:space="preserve">
+    <value>Pick an hour, then tap a mood above</value>
+  </data>
+  <data name="MoodHourlyDayHint" xml:space="preserve">
+    <value>Tap a mood above to set the whole day</value>
+  </data>
+  <data name="MoodHourAccessibility" xml:space="preserve">
+    <value>{0}:00 — {1}</value>
+  </data>
+  <data name="MoodHourEmpty" xml:space="preserve">
+    <value>not set</value>
+  </data>
+  <data name="BlockReflectionLabel" xml:space="preserve">
+    <value>Reflection</value>
+  </data>
+  <data name="SettingsTabProfile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="SettingsTabScreen" xml:space="preserve">
+    <value>Screen</value>
+  </data>
+  <data name="SettingsTabData" xml:space="preserve">
+    <value>Data</value>
+  </data>
   <data name="AddTimeLabel" xml:space="preserve">
     <value>Add target time</value>
   </data>
   <data name="TimeLabel" xml:space="preserve">
     <value>Time:</value>
   </data>
-  <data name="DailyRepeatLabel" xml:space="preserve">
-    <value>Repeat daily</value>
+  <data name="TaskRepeatLabel" xml:space="preserve">
+    <value>Repeat</value>
+  </data>
+  <data name="RecurrenceEndDateLabel" xml:space="preserve">
+    <value>Repeat until</value>
+  </data>
+  <data name="RecurrenceDaysRequired" xml:space="preserve">
+    <value>Pick at least one day.</value>
+  </data>
+  <data name="TaskDurationLabel" xml:space="preserve">
+    <value>Lasts a while</value>
+  </data>
+  <data name="TaskEndTimeLabel" xml:space="preserve">
+    <value>Until</value>
+  </data>
+  <data name="EndTimeMustFollowStart" xml:space="preserve">
+    <value>The end has to come after the start.</value>
+  </data>
+  <data name="TaskContinuesLabel" xml:space="preserve">
+    <value>ongoing</value>
+  </data>
+  <data name="TaskSpanAccessibility" xml:space="preserve">
+    <value>{0}, runs from {1} to {2}</value>
+  </data>
+  <data name="RecurringTaskAccessibility" xml:space="preserve">
+    <value>Repeating task</value>
+  </data>
+  <data name="ParseHintFormat" xml:space="preserve">
+    <value>Read from the text: {0}</value>
+  </data>
+  <data name="ParseUndoLabel" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="CancelButtonLabel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ToggleCalendarAccessibility" xml:space="preserve">
+    <value>Show or hide the calendar</value>
+  </data>
+  <data name="PlannerHoursAccessibility" xml:space="preserve">
+    <value>Planned by hour</value>
+  </data>
+  <data name="PlannerByHourLabel" xml:space="preserve">
+    <value>By hour</value>
+  </data>
+  <data name="DeleteTaskAccessibility" xml:space="preserve">
+    <value>Delete task</value>
+  </data>
+  <data name="TaskWhenLabel" xml:space="preserve">
+    <value>When</value>
+  </data>
+  <data name="RecurrenceIntervalChip" xml:space="preserve">
+    <value>Every N days</value>
+  </data>
+  <data name="DeleteRecurringTaskTitle" xml:space="preserve">
+    <value>This task repeats</value>
+  </data>
+  <data name="DeleteThisOccurrenceOption" xml:space="preserve">
+    <value>Delete only this day</value>
+  </data>
+  <data name="DeleteWholeSeriesOption" xml:space="preserve">
+    <value>Delete the whole series</value>
   </data>
   <data name="ReminderLabel" xml:space="preserve">
     <value>Enable reminder</value>
@@ -478,29 +778,77 @@
   <data name="PeriodLengthLabel" xml:space="preserve">
     <value>Average period length (days):</value>
   </data>
-  <data name="LastPeriodDateLabel" xml:space="preserve">
-    <value>Last period start date:</value>
-  </data>
   <data name="SaveProfileButton" xml:space="preserve">
     <value>SAVE SETTINGS</value>
   </data>
   <data name="ProfileSavedMessage" xml:space="preserve">
     <value>Settings successfully saved!</value>
   </data>
-  <data name="PregnancyProbabilityLabel" xml:space="preserve">
-    <value>Pregnancy probability:</value>
-  </data>
-  <data name="ProbLow" xml:space="preserve">
-    <value>Low</value>
-  </data>
-  <data name="ProbMedium" xml:space="preserve">
-    <value>Medium</value>
-  </data>
-  <data name="ProbHigh" xml:space="preserve">
-    <value>High</value>
-  </data>
   <data name="CycleDayFormat" xml:space="preserve">
     <value>Day {0}</value>
+  </data>
+  <data name="CycleTitle" xml:space="preserve">
+    <value>Cycle</value>
+  </data>
+  <data name="CycleOpenLink" xml:space="preserve">
+    <value>Recorded periods and forecast</value>
+  </data>
+  <data name="CycleForecastTitle" xml:space="preserve">
+    <value>Forecast</value>
+  </data>
+  <data name="CycleAddTitle" xml:space="preserve">
+    <value>Record a period</value>
+  </data>
+  <data name="CycleAddButton" xml:space="preserve">
+    <value>ADD</value>
+  </data>
+  <data name="CycleAddHint" xml:space="preserve">
+    <value>Pick the first day. Each period you record makes the forecast more accurate.</value>
+  </data>
+  <data name="CycleHistoryTitle" xml:space="preserve">
+    <value>Recorded periods</value>
+  </data>
+  <data name="CycleHistoryEmpty" xml:space="preserve">
+    <value>Nothing recorded yet</value>
+  </data>
+  <data name="CycleIntervalFormat" xml:space="preserve">
+    <value>{0} days to the next</value>
+  </data>
+  <data name="CycleDeleteConfirmTitle" xml:space="preserve">
+    <value>Delete this record?</value>
+  </data>
+  <data name="CycleDeleteConfirmMessage" xml:space="preserve">
+    <value>"{0}" will be removed and the forecast recalculated.</value>
+  </data>
+  <data name="CycleNextPeriodFormat" xml:space="preserve">
+    <value>Next period ~{0}</value>
+  </data>
+  <data name="CycleUncertaintyFormat" xml:space="preserve">
+    <value>±{0} days</value>
+  </data>
+  <data name="CycleFertileWindowLabel" xml:space="preserve">
+    <value>Fertile window (estimate)</value>
+  </data>
+  <data name="CycleBasisProfileDefaultFormat" xml:space="preserve">
+    <value>Based on your settings ({0} days) — log more periods for a personal forecast</value>
+  </data>
+  <data name="CycleBasisSingleCycle" xml:space="preserve">
+    <value>Based on 1 recorded cycle</value>
+  </data>
+  <data name="CycleBasisAveragedFormat" xml:space="preserve">
+    <value>Based on {0} recorded cycles (avg {1} days)</value>
+  </data>
+  <data name="CycleNoDataHint" xml:space="preserve">
+    <value>Mark the first day of your period to start the forecast</value>
+  </data>
+  <data name="CycleLateFormat" xml:space="preserve">
+    <value>Expected {0} days ago</value>
+  </data>
+  <data name="CycleHighVariabilityNote" xml:space="preserve">
+    <value>Your cycles vary a lot, so this estimate is rough</value>
+  </data>
+  <data name="CycleDisclaimer" xml:space="preserve">
+    <value>A statistical estimate from your own records — not medical advice and not a method of contraception.</value>
   </data>
   <data name="HabitPhysicalActivity" xml:space="preserve">
     <value>Physical Activity</value>
@@ -537,6 +885,138 @@
   </data>
   <data name="StatsTasksCompleted" xml:space="preserve">
     <value>Tasks Completed:</value>
+  </data>
+  <data name="StatsKpiTopMood" xml:space="preserve">
+    <value>Top mood</value>
+  </data>
+  <data name="StatsKpiEntries" xml:space="preserve">
+    <value>Entries</value>
+  </data>
+  <data name="StatsKpiDuration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="StatsKpiQuality" xml:space="preserve">
+    <value>Quality</value>
+  </data>
+  <data name="StatsKpiTasks" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="StatsKpiCompletion" xml:space="preserve">
+    <value>Completion</value>
+  </data>
+  <data name="StatsKpiBalance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="StatsMoodTrend" xml:space="preserve">
+    <value>Mood trend</value>
+  </data>
+  <data name="StatsYearInPixels" xml:space="preserve">
+    <value>Year in pixels</value>
+  </data>
+  <data name="StatsMoodByHour" xml:space="preserve">
+    <value>Mood by hour</value>
+  </data>
+  <data name="StatsMoodByHourSubtitle" xml:space="preserve">
+    <value>Average mood at each time of day</value>
+  </data>
+  <data name="StatsMoodByHourPositive" xml:space="preserve">
+    <value>Positive</value>
+  </data>
+  <data name="StatsMoodByHourNegative" xml:space="preserve">
+    <value>Negative</value>
+  </data>
+  <data name="StatsMoodByHourNeutral" xml:space="preserve">
+    <value>Neutral on average</value>
+  </data>
+  <data name="StatsMoodByHourSparse" xml:space="preserve">
+    <value>Few days (1–2)</value>
+  </data>
+  <data name="StatsMoodByHourNoHourlyData" xml:space="preserve">
+    <value>You've only logged mood for the whole day. Mark mood by hour in your diary to see this chart.</value>
+  </data>
+  <data name="StreaksTitle" xml:space="preserve">
+    <value>STREAKS</value>
+  </data>
+  <data name="PromptLibraryTitle" xml:space="preserve">
+    <value>Prompt library</value>
+  </data>
+  <data name="PromptLibraryManage" xml:space="preserve">
+    <value>Manage prompts</value>
+  </data>
+  <data name="PromptHistoryOpen" xml:space="preserve">
+    <value>Answer history</value>
+  </data>
+  <data name="PromptHistoryTitle" xml:space="preserve">
+    <value>Answer history</value>
+  </data>
+  <data name="PromptHistorySubtitle" xml:space="preserve">
+    <value>Everything you have answered, newest first</value>
+  </data>
+  <data name="PromptHistorySearch" xml:space="preserve">
+    <value>Search answers</value>
+  </data>
+  <data name="PromptHistoryEmpty" xml:space="preserve">
+    <value>No answers yet. Answer the question of the day and it will appear here.</value>
+  </data>
+  <data name="PromptHistoryNoMatches" xml:space="preserve">
+    <value>Nothing matches that search.</value>
+  </data>
+  <data name="PromptLibraryEmptyCategory" xml:space="preserve">
+    <value>No prompts in this category yet</value>
+  </data>
+  <data name="PromptEditorTitle" xml:space="preserve">
+    <value>Prompt</value>
+  </data>
+  <data name="PromptEditorTextUkLabel" xml:space="preserve">
+    <value>Text (Ukrainian)</value>
+  </data>
+  <data name="PromptEditorTextEnLabel" xml:space="preserve">
+    <value>Text (English)</value>
+  </data>
+  <data name="PromptEditorCategoryLabel" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="PromptEditorTextRequired" xml:space="preserve">
+    <value>Enter the prompt in at least one language</value>
+  </data>
+  <data name="PromptEditorTextTooLong" xml:space="preserve">
+    <value>The prompt is too long (max 300 characters)</value>
+  </data>
+  <data name="DeletePromptConfirmTitle" xml:space="preserve">
+    <value>Delete prompt?</value>
+  </data>
+  <data name="DeletePromptConfirmMessage" xml:space="preserve">
+    <value>"{0}" will no longer be offered. Answers you already wrote are kept.</value>
+  </data>
+  <data name="PromptCategoryCbtReframe" xml:space="preserve">
+    <value>Reframing</value>
+  </data>
+  <data name="PromptCategorySavouring" xml:space="preserve">
+    <value>Savouring</value>
+  </data>
+  <data name="PromptCategoryOpenReflection" xml:space="preserve">
+    <value>Open reflection</value>
+  </data>
+  <data name="PromptCategoryEveningGratitude" xml:space="preserve">
+    <value>Evening gratitude</value>
+  </data>
+  <data name="StreakForgivingLabel" xml:space="preserve">
+    <value>Forgiving streaks</value>
+  </data>
+  <data name="StreakGraceDaysLabel" xml:space="preserve">
+    <value>Missed days allowed</value>
+  </data>
+  <data name="StreakForgivingHint" xml:space="preserve">
+    <value>Your streak survives this many missed days before it resets.</value>
+  </data>
+  <data name="StatsPeriod" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="StatsRangeStartHint" xml:space="preserve">
+    <value>Start of the period</value>
+  </data>
+  <data name="StatsRangeEndHint" xml:space="preserve">
+    <value>End of the period</value>
   </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Week</value>
@@ -625,6 +1105,240 @@
   <data name="AddTransactionButton" xml:space="preserve">
     <value>Add Transaction</value>
   </data>
+  <data name="BudgetsLabel" xml:space="preserve">
+    <value>Budgets</value>
+  </data>
+  <data name="AddBudgetButton" xml:space="preserve">
+    <value>Add budget</value>
+  </data>
+  <data name="BudgetFormTitle" xml:space="preserve">
+    <value>Budget</value>
+  </data>
+  <data name="BudgetLimitPlaceholder" xml:space="preserve">
+    <value>Monthly limit</value>
+  </data>
+  <data name="BudgetRemainingFormat" xml:space="preserve">
+    <value>{0} left</value>
+  </data>
+  <data name="BudgetOverspentFormat" xml:space="preserve">
+    <value>Over by {0}</value>
+  </data>
+  <data name="BudgetNoExpenses" xml:space="preserve">
+    <value>No expenses in this category this month.</value>
+  </data>
+  <data name="BudgetEditButton" xml:space="preserve">
+    <value>Edit budget</value>
+  </data>
+  <data name="BudgetDeleteButton" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="SettingsBudgetsToggle" xml:space="preserve">
+    <value>Show budgets in Finance</value>
+  </data>
+  <data name="DefaultAccountName" xml:space="preserve">
+    <value>Main</value>
+  </data>
+  <data name="AllAccounts" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="AccountsLabel" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
+  <data name="AddAccountButton" xml:space="preserve">
+    <value>+ Account</value>
+  </data>
+  <data name="AccountFormTitle" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="AccountNamePlaceholder" xml:space="preserve">
+    <value>Account name</value>
+  </data>
+  <data name="InitialBalancePlaceholder" xml:space="preserve">
+    <value>Initial balance</value>
+  </data>
+  <data name="SelectAccountLabel" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="DeleteAccountConfirm" xml:space="preserve">
+    <value>Delete this account? Its transactions move to another account.</value>
+  </data>
+  <data name="DeleteAccountLastError" xml:space="preserve">
+    <value>You need at least one account.</value>
+  </data>
+  <data name="AccountIconLabel" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="AccountColorLabel" xml:space="preserve">
+    <value>Colour</value>
+  </data>
+  <data name="DeleteAccountButton" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ArchiveAccountButton" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="UnarchiveAccountButton" xml:space="preserve">
+    <value>Unarchive</value>
+  </data>
+  <data name="ArchiveAccountLastError" xml:space="preserve">
+    <value>You need at least one active account.</value>
+  </data>
+  <data name="ShowArchivedAccountsButton" xml:space="preserve">
+    <value>Archived</value>
+  </data>
+  <data name="ReassignToLabel" xml:space="preserve">
+    <value>Move transactions to</value>
+  </data>
+  <data name="TransfersLabel" xml:space="preserve">
+    <value>Transfers</value>
+  </data>
+  <data name="AddTransferButton" xml:space="preserve">
+    <value>+ Transfer</value>
+  </data>
+  <data name="TransferFormTitle" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="TransferFromLabel" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="TransferToLabel" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="TransferAmountError" xml:space="preserve">
+    <value>Enter an amount greater than zero.</value>
+  </data>
+  <data name="TransferSameAccountError" xml:space="preserve">
+    <value>Choose two different accounts.</value>
+  </data>
+  <data name="GuidedPromptLabel" xml:space="preserve">
+    <value>Question of the day</value>
+  </data>
+  <data name="GuidedPromptPlaceholder" xml:space="preserve">
+    <value>Write it however it comes</value>
+  </data>
+  <data name="GuidedPromptShuffle" xml:space="preserve">
+    <value>Another question</value>
+  </data>
+  <data name="PromptCbt01" xml:space="preserve">
+    <value>Which thought kept coming back today? Write it down word for word, the way it sounds in your head.</value>
+  </data>
+  <data name="PromptCbt02" xml:space="preserve">
+    <value>What actually shows that this thought is true? And what argues against it?</value>
+  </data>
+  <data name="PromptCbt03" xml:space="preserve">
+    <value>If a friend told you exactly this — what would you say back?</value>
+  </data>
+  <data name="PromptCbt04" xml:space="preserve">
+    <value>The worst that could happen. The best. Now the most likely.</value>
+  </data>
+  <data name="PromptCbt05" xml:space="preserve">
+    <value>You decided this was about you. What other explanation would fit?</value>
+  </data>
+  <data name="PromptCbt06" xml:space="preserve">
+    <value>What part of today was genuinely yours to influence, and what are you carrying for nothing?</value>
+  </data>
+  <data name="PromptCbt07" xml:space="preserve">
+    <value>How much of what you worried about today was even slightly up to you?</value>
+  </data>
+  <data name="PromptCbt08" xml:space="preserve">
+    <value>Will this matter in a year? Will it matter in a week?</value>
+  </data>
+  <data name="PromptCbt09" xml:space="preserve">
+    <value>You said something to yourself today that you would never say to anyone else. What was it?</value>
+  </data>
+  <data name="PromptCbt10" xml:space="preserve">
+    <value>Describe what happened without a single judging word — just the facts.</value>
+  </data>
+  <data name="PromptSavour01" xml:space="preserve">
+    <value>What went well today — and don't you dare call it nothing.</value>
+  </data>
+  <data name="PromptSavour02" xml:space="preserve">
+    <value>There was a moment when you simply felt fine. Catch it and describe it.</value>
+  </data>
+  <data name="PromptSavour03" xml:space="preserve">
+    <value>Who are you owing a thank-you to, and still haven't said it?</value>
+  </data>
+  <data name="PromptSavour04" xml:space="preserve">
+    <value>What part of today would you gladly live through again?</value>
+  </data>
+  <data name="PromptSavour05" xml:space="preserve">
+    <value>What can you credit yourself for today, even if it feels a bit awkward?</value>
+  </data>
+  <data name="PromptSavour06" xml:space="preserve">
+    <value>What made you laugh today?</value>
+  </data>
+  <data name="PromptSavour07" xml:space="preserve">
+    <value>Describe today so that a year from now you'll want to read it again.</value>
+  </data>
+  <data name="PromptSavour08" xml:space="preserve">
+    <value>Which small thing made the day better than it had any right to be?</value>
+  </data>
+  <data name="PromptSavour09" xml:space="preserve">
+    <value>You did something better today than you would have a month ago. What was it?</value>
+  </data>
+  <data name="PromptSavour10" xml:space="preserve">
+    <value>What would you tell yourself of a year ago about today?</value>
+  </data>
+  <data name="PromptOpen01" xml:space="preserve">
+    <value>What took the most out of you today — and was it worth it?</value>
+  </data>
+  <data name="PromptOpen02" xml:space="preserve">
+    <value>What did you think about the longest today?</value>
+  </data>
+  <data name="PromptOpen03" xml:space="preserve">
+    <value>What did you put off today? And why that in particular.</value>
+  </data>
+  <data name="PromptOpen04" xml:space="preserve">
+    <value>What were you missing today?</value>
+  </data>
+  <data name="PromptOpen05" xml:space="preserve">
+    <value>Which moment of the day would you replay differently?</value>
+  </data>
+  <data name="PromptOpen06" xml:space="preserve">
+    <value>What did you learn today — about yourself or about someone else?</value>
+  </data>
+  <data name="PromptOpen07" xml:space="preserve">
+    <value>What did you spend time on that you now regret?</value>
+  </data>
+  <data name="PromptOpen08" xml:space="preserve">
+    <value>What has to happen tomorrow for the day to count as a good one?</value>
+  </data>
+  <data name="PromptOpen09" xml:space="preserve">
+    <value>Did you tell someone you were fine today when you weren't? Who, and why?</value>
+  </data>
+  <data name="PromptOpen10" xml:space="preserve">
+    <value>What are you feeling in your body right now — and what might it be about?</value>
+  </data>
+  <data name="PromptGratitude01" xml:space="preserve">
+    <value>Three things you're thankful for today. The smallest ones count.</value>
+  </data>
+  <data name="PromptGratitude02" xml:space="preserve">
+    <value>Who made your day easier today without even noticing?</value>
+  </data>
+  <data name="PromptGratitude03" xml:space="preserve">
+    <value>What can you thank yourself for today?</value>
+  </data>
+  <data name="PromptGratitude04" xml:space="preserve">
+    <value>What was exactly where it should be today?</value>
+  </data>
+  <data name="PromptGratitude05" xml:space="preserve">
+    <value>Which small thing turned out to be exactly what you needed today?</value>
+  </data>
+  <data name="PromptGratitude06" xml:space="preserve">
+    <value>What do you have now that felt out of reach a year ago?</value>
+  </data>
+  <data name="PromptGratitude07" xml:space="preserve">
+    <value>Who should hear this out loud — not the journal, the person?</value>
+  </data>
+  <data name="PromptGratitude08" xml:space="preserve">
+    <value>What are you grateful to your body for today?</value>
+  </data>
+  <data name="PromptGratitude09" xml:space="preserve">
+    <value>What went easier today than you feared it would?</value>
+  </data>
+  <data name="PromptGratitude10" xml:space="preserve">
+    <value>Close the day with one sentence you'd thank it for.</value>
+  </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Not enough data for this period.</value>
   </data>
@@ -655,6 +1369,9 @@
   <data name="MinutesShort" xml:space="preserve">
     <value>m</value>
   </data>
+  <data name="SecondsShort" xml:space="preserve">
+    <value>s</value>
+  </data>
   <data name="SecurityLabel" xml:space="preserve">
     <value>SECURITY</value>
   </data>
@@ -672,5 +1389,740 @@
   </data>
   <data name="EditTransactionTitle" xml:space="preserve">
     <value>Edit Transaction</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="SearchNotes" xml:space="preserve">
+    <value>Search notes...</value>
+  </data>
+  <data name="NewNote" xml:space="preserve">
+    <value>New Note</value>
+  </data>
+  <data name="NoteTitlePlaceholder" xml:space="preserve">
+    <value>Note title...</value>
+  </data>
+  <data name="NoteContentPlaceholder" xml:space="preserve">
+    <value>Write your note here...</value>
+  </data>
+  <data name="NoteUntitled" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
+  <data name="NoteFormatChecklist" xml:space="preserve">
+    <value>Checklist</value>
+  </data>
+  <data name="NoteFormatBullet" xml:space="preserve">
+    <value>Bulleted list</value>
+  </data>
+  <data name="NoteFormatNumbered" xml:space="preserve">
+    <value>Numbered list</value>
+  </data>
+  <data name="NoteFormatHeading" xml:space="preserve">
+    <value>Heading size</value>
+  </data>
+  <data name="NoteFormatQuote" xml:space="preserve">
+    <value>Quote</value>
+  </data>
+  <data name="NoteFormatBold" xml:space="preserve">
+    <value>Bold</value>
+  </data>
+  <data name="NoteFormatItalic" xml:space="preserve">
+    <value>Italic</value>
+  </data>
+  <data name="NoteFormatStrikethrough" xml:space="preserve">
+    <value>Strikethrough</value>
+  </data>
+  <data name="DeleteNoteConfirmTitle" xml:space="preserve">
+    <value>Delete note?</value>
+  </data>
+  <data name="DeleteNoteConfirmMessage" xml:space="preserve">
+    <value>The note will be gone for good — this cannot be undone.</value>
+  </data>
+  <data name="EmptyNotes" xml:space="preserve">
+    <value>No notes found.</value>
+  </data>
+  <data name="NotesTags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="NotesLinked" xml:space="preserve">
+    <value>Linked notes</value>
+  </data>
+  <data name="NotesBacklinks" xml:space="preserve">
+    <value>Backlinks</value>
+  </data>
+  <data name="NotesFilterAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="NotesFilterInbox" xml:space="preserve">
+    <value>Inbox</value>
+  </data>
+  <data name="NotesQuickCapturePlaceholder" xml:space="preserve">
+    <value>Quick note…</value>
+  </data>
+  <data name="StatsTrendByMonth" xml:space="preserve">
+    <value>By month</value>
+  </data>
+  <data name="StatsTrendByWeek" xml:space="preserve">
+    <value>By week</value>
+  </data>
+  <data name="StatsComparisonTitle" xml:space="preserve">
+    <value>Compared with</value>
+  </data>
+  <data name="StatsNoBaseline" xml:space="preserve">
+    <value>No earlier data to compare with yet.</value>
+  </data>
+  <data name="StatsAccountBreakdown" xml:space="preserve">
+    <value>By account</value>
+  </data>
+  <data name="StatsTransfersRow" xml:space="preserve">
+    <value>Transfers</value>
+  </data>
+  <data name="StatsMoverNew" xml:space="preserve">
+    <value>new</value>
+  </data>
+  <data name="StatsMoverGone" xml:space="preserve">
+    <value>gone</value>
+  </data>
+  <data name="StatsBiggestMoves" xml:space="preserve">
+    <value>Biggest moves</value>
+  </data>
+  <data name="AccountUnassigned" xml:space="preserve">
+    <value>No account</value>
+  </data>
+  <data name="CategoryOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="HealthSyncUnsupported" xml:space="preserve">
+    <value>Health sync is not available on this device yet.</value>
+  </data>
+  <data name="StreakHeldByGraceHint" xml:space="preserve">
+    <value>A forgiven day is holding this streak.</value>
+  </data>
+  <data name="CycleSymptomsLabel" xml:space="preserve">
+    <value>Symptoms</value>
+  </data>
+  <data name="PlannerUntimedLabel" xml:space="preserve">
+    <value>No time set</value>
+  </data>
+  <data name="CycleSymptomCramps" xml:space="preserve">
+    <value>Cramps</value>
+  </data>
+  <data name="CycleSymptomHeadache" xml:space="preserve">
+    <value>Headache</value>
+  </data>
+  <data name="CycleSymptomBloating" xml:space="preserve">
+    <value>Bloating</value>
+  </data>
+  <data name="CycleSymptomFatigue" xml:space="preserve">
+    <value>Fatigue</value>
+  </data>
+  <data name="CycleSymptomMoodSwings" xml:space="preserve">
+    <value>Mood swings</value>
+  </data>
+  <data name="CycleSymptomTenderness" xml:space="preserve">
+    <value>Tenderness</value>
+  </data>
+  <data name="CycleSymptomAcne" xml:space="preserve">
+    <value>Acne</value>
+  </data>
+  <data name="CycleSymptomCravings" xml:space="preserve">
+    <value>Cravings</value>
+  </data>
+  <data name="BackupPassphraseTitle" xml:space="preserve">
+    <value>Backup passphrase</value>
+  </data>
+  <data name="BackupPassphraseExportPrompt" xml:space="preserve">
+    <value>Choose a passphrase for this backup. You will need it to restore on a new phone. It is not stored anywhere and cannot be recovered.</value>
+  </data>
+  <data name="BackupPassphraseRestorePrompt" xml:space="preserve">
+    <value>Enter the passphrase this backup was created with.</value>
+  </data>
+  <data name="BackupWrongPassphrase" xml:space="preserve">
+    <value>That passphrase does not open this backup. Nothing was changed.</value>
+  </data>
+  <data name="BackupNotDiarionFile" xml:space="preserve">
+    <value>That file is not a Diarion backup. Nothing was changed.</value>
+  </data>
+  <data name="BackupNewerSchema" xml:space="preserve">
+    <value>This backup was made by a newer version of Diarion. Update the app first. Nothing was changed.</value>
+  </data>
+  <data name="BackupLegacyOtherDevice" xml:space="preserve">
+    <value>This is an older backup that only opens on the phone that created it. Newer backups use a passphrase and restore anywhere.</value>
+  </data>
+  <data name="BackupFailed" xml:space="preserve">
+    <value>The backup could not be completed. Nothing was changed.</value>
+  </data>
+  <data name="ClearAllDataButton" xml:space="preserve">
+    <value>Delete all my data</value>
+  </data>
+  <data name="ClearAllDataConfirmTitle" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="ClearAllDataConfirmMsg" xml:space="preserve">
+    <value>Are you absolutely sure you want to delete all your data? This action cannot be undone.</value>
+  </data>
+  <data name="ClearAllDataSuccessMsg" xml:space="preserve">
+    <value>All your data has been successfully deleted.</value>
+  </data>
+  <data name="AppLockTitle" xml:space="preserve">
+    <value>App Lock</value>
+  </data>
+  <data name="EnterPinTitle" xml:space="preserve">
+    <value>Enter PIN</value>
+  </data>
+  <data name="EnterPinPrompt" xml:space="preserve">
+    <value>Enter a 4-digit PIN</value>
+  </data>
+  <data name="ConfirmPinPrompt" xml:space="preserve">
+    <value>Confirm your PIN</value>
+  </data>
+  <data name="EnterCurrentPinPrompt" xml:space="preserve">
+    <value>Enter current PIN</value>
+  </data>
+  <data name="EnterNewPinPrompt" xml:space="preserve">
+    <value>Enter new PIN</value>
+  </data>
+  <data name="PinInvalidMessage" xml:space="preserve">
+    <value>The PIN must be 4 digits.</value>
+  </data>
+  <data name="PinMismatchMessage" xml:space="preserve">
+    <value>The PINs do not match.</value>
+  </data>
+  <data name="PinSetSuccessMessage" xml:space="preserve">
+    <value>App lock enabled.</value>
+  </data>
+  <data name="PinIncorrectMessage" xml:space="preserve">
+    <value>Incorrect PIN</value>
+  </data>
+  <data name="PinLockedOutMessage" xml:space="preserve">
+    <value>Too many attempts. Try again in {0}s.</value>
+  </data>
+  <data name="RemovePinConfirmMessage" xml:space="preserve">
+    <value>Remove the app lock PIN?</value>
+  </data>
+  <data name="SetPinButton" xml:space="preserve">
+    <value>Set PIN</value>
+  </data>
+  <data name="ChangePinButton" xml:space="preserve">
+    <value>Change PIN</value>
+  </data>
+  <data name="RemovePinButton" xml:space="preserve">
+    <value>Remove PIN</value>
+  </data>
+  <data name="UnlockWithBiometricsButton" xml:space="preserve">
+    <value>Unlock with biometrics</value>
+  </data>
+  <data name="DeleteButtonLabel" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="OnboardingTitle" xml:space="preserve">
+    <value>Welcome to Diarion</value>
+  </data>
+  <data name="OnboardingSubtitle" xml:space="preserve">
+    <value>Your private, offline diary</value>
+  </data>
+  <data name="OnboardingPrivacyText" xml:space="preserve">
+    <value>Everything stays on your device. No cloud, no account — nothing to leak.</value>
+  </data>
+  <data name="OnboardingReminderLabel" xml:space="preserve">
+    <value>Remind me to journal daily</value>
+  </data>
+  <data name="OnboardingGetStartedButton" xml:space="preserve">
+    <value>Get started</value>
+  </data>
+  <data name="OnboardingNextButton" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="OnboardingBackButton" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="OnboardingSkipButton" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="TourQuickMenuTitle" xml:space="preserve">
+    <value>The sections live here</value>
+  </data>
+  <data name="TourQuickMenuText" xml:space="preserve">
+    <value>Notes, habits, finances, the dashboard with the month's statistics — all of it opens from this strip. You set the order on the previous screen; it can be changed in Settings.</value>
+  </data>
+  <data name="TourDayStripTitle" xml:space="preserve">
+    <value>This is the day you are on</value>
+  </data>
+  <data name="TourDayStripText" xml:space="preserve">
+    <value>Everything below belongs to it. Tap the date, or pull the handle down, to open the calendar and move to another day.</value>
+  </data>
+  <data name="TourTabsTitle" xml:space="preserve">
+    <value>Diary and planner, same day</value>
+  </data>
+  <data name="TourTabsText" xml:space="preserve">
+    <value>On the left, what already happened; on the right, what is planned. Switching does not change the date.</value>
+  </data>
+  <data name="TourBlocksTitle" xml:space="preserve">
+    <value>A day fits in one entry</value>
+  </data>
+  <data name="TourBlocksText" xml:space="preserve">
+    <value>Mood, sleep, meals, how the body felt, the text. None of it is required — the fields you skip simply stay empty. After a couple of weeks there is enough here for the dashboard to start comparing days with each other.</value>
+  </data>
+  <data name="TourStatsPeriodTitle" xml:space="preserve">
+    <value>Everything here is about one window</value>
+  </data>
+  <data name="TourStatsPeriodText" xml:space="preserve">
+    <value>The two dates are the filter; the chips beside them are shortcuts that write into those dates. Change the window and every card below is recalculated.</value>
+  </data>
+  <data name="TourStatsTabsTitle" xml:space="preserve">
+    <value>Several boards, one period</value>
+  </data>
+  <data name="TourStatsTabsText" xml:space="preserve">
+    <value>Mood, sleep, tasks, money, habits, cycle. Switching a tab keeps the dates you picked.</value>
+  </data>
+  <data name="TourStatsThemesTitle" xml:space="preserve">
+    <value>What you keep coming back to</value>
+  </data>
+  <data name="TourStatsThemesText" xml:space="preserve">
+    <value>Once there are a couple of weeks of entries, the subjects that repeat gather here, counted in days rather than in passages. Your own wording, grouped on the device.</value>
+  </data>
+  <data name="TourStatsInfluencesTitle" xml:space="preserve">
+    <value>Guesses, checked</value>
+  </data>
+  <data name="TourStatsInfluencesText" xml:space="preserve">
+    <value>Sleep, meals, habits and the days themselves are compared with how you felt, and only what survives the check is listed — with the number of days it rests on. Often nothing survives, and the card says that too.</value>
+  </data>
+  <data name="TourSettingsTabsTitle" xml:space="preserve">
+    <value>Four groups of settings</value>
+  </data>
+  <data name="TourSettingsTabsText" xml:space="preserve">
+    <value>You, the screen, your data, and on-device AI. Nothing set here leaves the device.</value>
+  </data>
+  <data name="TourSettingsBlocksTitle" xml:space="preserve">
+    <value>Choose what the day asks you</value>
+  </data>
+  <data name="TourSettingsBlocksText" xml:space="preserve">
+    <value>A block switched off disappears from the home screen and stops asking. Nothing already written is deleted — switch it back on and it is all there.</value>
+  </data>
+  <data name="TourSettingsPromptsTitle" xml:space="preserve">
+    <value>The question of the day lives here</value>
+  </data>
+  <data name="TourSettingsPromptsText" xml:space="preserve">
+    <value>These two blocks ask something instead of recording it. The prompt library is yours to edit, and the answer history keeps everything you have written to those questions.</value>
+  </data>
+  <data name="TourSettingsSaveTitle" xml:space="preserve">
+    <value>Save applies to every tab</value>
+  </data>
+  <data name="TourSettingsSaveText" xml:space="preserve">
+    <value>One button for the whole screen. Leaving without it keeps the old settings.</value>
+  </data>
+  <data name="SettingsPromptsTitle" xml:space="preserve">
+    <value>PROMPTS AND REFLECTION</value>
+  </data>
+  <data name="SettingsPromptsHint" xml:space="preserve">
+    <value>The two blocks that ask you something instead of recording an answer.</value>
+  </data>
+  <data name="SettingsReflectionHint" xml:space="preserve">
+    <value>Three fields at the end of the day: triggers, gratitude, something for yourself.</value>
+  </data>
+  <data name="SettingsFinanceTitle" xml:space="preserve">
+    <value>FINANCES</value>
+  </data>
+  <data name="TourDoneButton" xml:space="preserve">
+    <value>Got it</value>
+  </data>
+  <data name="TourReplayLabel" xml:space="preserve">
+    <value>Show the guides again</value>
+  </data>
+  <data name="TourReplayMessage" xml:space="preserve">
+    <value>This screen's guide starts now. The home screen and the dashboard show theirs the next time you open them.</value>
+  </data>
+  <data name="OnboardingModulesTitle" xml:space="preserve">
+    <value>Choose what you'll keep</value>
+  </data>
+  <data name="OnboardingModulesSubtitle" xml:space="preserve">
+    <value>Uncheck anything you don't need and it leaves the screens instead of sitting there empty. All of it is in Settings afterwards.</value>
+  </data>
+  <data name="OnboardingModulesEntryGroup" xml:space="preserve">
+    <value>In the daily entry</value>
+  </data>
+  <data name="OnboardingModulesSectionsGroup" xml:space="preserve">
+    <value>Sections of their own</value>
+  </data>
+  <data name="OnboardingReminderTitle" xml:space="preserve">
+    <value>One quiet reminder</value>
+  </data>
+  <data name="OnboardingReminderText" xml:space="preserve">
+    <value>An invitation, not a scolding. Turn it off here or in Settings whenever you like.</value>
+  </data>
+  <data name="RemindersTitle" xml:space="preserve">
+    <value>REMINDERS</value>
+  </data>
+  <data name="DailyReminderLabel" xml:space="preserve">
+    <value>Daily journaling reminder</value>
+  </data>
+  <data name="ReminderTimeLabel" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="DailyReminderTitle" xml:space="preserve">
+    <value>Time for your diary</value>
+  </data>
+  <data name="DailyReminderMessage" xml:space="preserve">
+    <value>A quiet minute for yourself?</value>
+  </data>
+  <data name="StatsMoodInfluencesTitle" xml:space="preserve">
+    <value>WORTH CHECKING</value>
+  </data>
+  <data name="StatsCorrelationDisclaimer" xml:space="preserve">
+    <value>These are patterns in your own log, not causes. The way to find out is on purpose: change one of them for a week and see whether the pattern follows.</value>
+  </data>
+  <data name="StatsHypothesesCheckedFormat" xml:space="preserve">
+    <value>Checked {0}, still holding {1}</value>
+  </data>
+  <data name="StatsCorrelationEvidenceFormat" xml:space="preserve">
+    <value>holds across {0} days</value>
+  </data>
+  <data name="StatsNoHypothesisHolds" xml:space="preserve">
+    <value>Nothing holds up yet</value>
+  </data>
+  <data name="StatsNoHypothesisHoldsHintFormat" xml:space="preserve">
+    <value>Checked {0}, none of them survived. That is the ordinary result — most coincidences do not, and saying so is more use than a pattern that is not there.</value>
+  </data>
+  <data name="ExportDataTitle" xml:space="preserve">
+    <value>EXPORT DATA</value>
+  </data>
+  <data name="ExportDataDescription" xml:space="preserve">
+    <value>Export your data in open formats you can keep or move anywhere.</value>
+  </data>
+  <data name="ExportJsonButton" xml:space="preserve">
+    <value>JSON</value>
+  </data>
+  <data name="ExportCsvButton" xml:space="preserve">
+    <value>CSV</value>
+  </data>
+  <data name="ExportMarkdownButton" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
+  <data name="ExportSuccessMessage" xml:space="preserve">
+    <value>Export ready to share.</value>
+  </data>
+  <data name="CloseButtonLabel" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="CrashReportTitle" xml:space="preserve">
+    <value>Crash report</value>
+  </data>
+  <data name="CrashReportDescription" xml:space="preserve">
+    <value>The app closed unexpectedly last time. This report describes what went wrong. It stays on your phone unless you share it.</value>
+  </data>
+  <data name="CrashReportShareButton" xml:space="preserve">
+    <value>Share report</value>
+  </data>
+  <data name="CrashReportClearButton" xml:space="preserve">
+    <value>Delete report</value>
+  </data>
+  <data name="CrashReportClearConfirm" xml:space="preserve">
+    <value>Delete the stored crash report?</value>
+  </data>
+  <data name="FactorHabitCompletion" xml:space="preserve">
+    <value>Habits done</value>
+  </data>
+  <data name="FactorMealsLogged" xml:space="preserve">
+    <value>Meals logged</value>
+  </data>
+  <data name="FactorTaskCompletion" xml:space="preserve">
+    <value>Tasks done</value>
+  </data>
+  <data name="FactorDailySpend" xml:space="preserve">
+    <value>Money spent</value>
+  </data>
+  <data name="FactorThemeFormat" xml:space="preserve">
+    <value>Theme: {0}</value>
+  </data>
+  <data name="SettingsCurrencyLabel" xml:space="preserve">
+    <value>Currency</value>
+  </data>
+  <data name="StatsNoLeadingEmotion" xml:space="preserve">
+    <value>Tied</value>
+  </data>
+  <data name="StatsInsightProgressFormat" xml:space="preserve">
+    <value>{0} of {1} days logged</value>
+  </data>
+  <data name="StatsInsightProgressHint" xml:space="preserve">
+    <value>Links between your mood and sleep, habits, meals, tasks and spending appear once there is enough to compare.</value>
+  </data>
+  <data name="SettingsTabAi" xml:space="preserve">
+    <value>AI</value>
+  </data>
+  <data name="AiSectionTitle" xml:space="preserve">
+    <value>ON-DEVICE AI</value>
+  </data>
+  <data name="AiEnableToggle" xml:space="preserve">
+    <value>Enable on-device AI</value>
+  </data>
+  <data name="AiIntro" xml:space="preserve">
+    <value>See what your months were about, get weekly summaries, and find out how what you wrote about tracks your mood. Everything runs on this device.</value>
+  </data>
+  <data name="AiNetworkNotice" xml:space="preserve">
+    <value>The only thing Diarion downloads is the model file itself. Your entries are never sent anywhere.</value>
+  </data>
+  <data name="AiDeviceHeader" xml:space="preserve">
+    <value>YOUR DEVICE</value>
+  </data>
+  <data name="AiDeviceSummaryFormat" xml:space="preserve">
+    <value>{0} RAM · {1} free</value>
+  </data>
+  <data name="AiTierLow" xml:space="preserve">
+    <value>Search and summaries</value>
+  </data>
+  <data name="AiTierMid" xml:space="preserve">
+    <value>Search, summaries and chat</value>
+  </data>
+  <data name="AiTierHigh" xml:space="preserve">
+    <value>Everything, including larger models</value>
+  </data>
+  <data name="AiTierEmbeddingsOnly" xml:space="preserve">
+    <value>Themes and summaries — 123 MB, runs on any device</value>
+  </data>
+  <data name="AiModelsHeader" xml:space="preserve">
+    <value>MODELS</value>
+  </data>
+  <data name="AiRecommendedBadge" xml:space="preserve">
+    <value>recommended</value>
+  </data>
+  <data name="AiModelTooLargeForDevice" xml:space="preserve">
+    <value>Not enough memory on this device</value>
+  </data>
+  <data name="AiDownloadAction" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="AiResumeAction" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="AiDeleteAction" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="AiCancelAction" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="AiRetryAction" xml:space="preserve">
+    <value>Try again</value>
+  </data>
+  <data name="AiStateNotInstalled" xml:space="preserve">
+    <value>Not downloaded</value>
+  </data>
+  <data name="AiStateDownloading" xml:space="preserve">
+    <value>Downloading</value>
+  </data>
+  <data name="AiStateInstalled" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="AiStateCorrupt" xml:space="preserve">
+    <value>Damaged — download again</value>
+  </data>
+  <data name="AiStateInterrupted" xml:space="preserve">
+    <value>Interrupted — resume to finish</value>
+  </data>
+  <data name="AiDownloadFailed" xml:space="preserve">
+    <value>Download failed. Check the connection and try again.</value>
+  </data>
+  <data name="AiDownloadWifiOnlyStopped" xml:space="preserve">
+    <value>Stopped: Wi-Fi is gone. Downloaded files are kept — resume once you are back on Wi-Fi.</value>
+  </data>
+  <data name="AiMobileDataTitle" xml:space="preserve">
+    <value>You are on mobile data</value>
+  </data>
+  <data name="AiMobileDataConfirmFormat" xml:space="preserve">
+    <value>This model is {0} and will be downloaded over your mobile data allowance. Download anyway?</value>
+  </data>
+  <data name="AiMobileDataDownloadAnyway" xml:space="preserve">
+    <value>Download anyway</value>
+  </data>
+  <data name="AiWifiOnlyToggle" xml:space="preserve">
+    <value>Download over Wi-Fi only</value>
+  </data>
+  <data name="AiKeepOpenNotice" xml:space="preserve">
+    <value>Keep the app open while the model downloads.</value>
+  </data>
+  <data name="AiBackgroundNotice" xml:space="preserve">
+    <value>You can leave the app — the download continues in the background.</value>
+  </data>
+  <data name="AiStateVerifying" xml:space="preserve">
+    <value>Verifying</value>
+  </data>
+  <data name="AiDownloadOfFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="AiDownloadRateFormat" xml:space="preserve">
+    <value>{0}/s</value>
+  </data>
+  <data name="AiDownloadEtaFormat" xml:space="preserve">
+    <value>~{0} left</value>
+  </data>
+  <data name="AiDownloadNotificationChannel" xml:space="preserve">
+    <value>Model downloads</value>
+  </data>
+  <data name="AiDownloadNotificationChannelDescription" xml:space="preserve">
+    <value>Progress of on-device AI model downloads.</value>
+  </data>
+  <data name="AiDownloadNotificationTitle" xml:space="preserve">
+    <value>Downloading AI model</value>
+  </data>
+  <data name="AiIndexHeader" xml:space="preserve">
+    <value>INDEX</value>
+  </data>
+  <data name="AiIndexIdle" xml:space="preserve">
+    <value>Not started</value>
+  </data>
+  <data name="AiIndexScanning" xml:space="preserve">
+    <value>Checking what changed</value>
+  </data>
+  <data name="AiIndexEmbeddingFormat" xml:space="preserve">
+    <value>Reading your entries — {0} of {1}</value>
+  </data>
+  <data name="AiIndexComplete" xml:space="preserve">
+    <value>Up to date</value>
+  </data>
+  <data name="AiIndexCancelled" xml:space="preserve">
+    <value>Paused</value>
+  </data>
+  <data name="AiIndexChunksFormat" xml:space="preserve">
+    <value>{0} fragments indexed</value>
+  </data>
+  <data name="AiIndexRebuildAction" xml:space="preserve">
+    <value>Rebuild index</value>
+  </data>
+  <data name="AiIndexClearAction" xml:space="preserve">
+    <value>Delete index</value>
+  </data>
+  <data name="AiIndexClearConfirm" xml:space="preserve">
+    <value>Delete the search index? Your entries are not affected — it can be rebuilt.</value>
+  </data>
+  <data name="UnitByte" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="UnitKilobyte" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="UnitMegabyte" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="UnitGigabyte" xml:space="preserve">
+    <value>GB</value>
+  </data>
+  <data name="UnitTerabyte" xml:space="preserve">
+    <value>TB</value>
+  </data>
+  <data name="SearchTitle" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>What are you looking for?</value>
+  </data>
+  <data name="SearchHintPhrase" xml:space="preserve">
+    <value>A phrase works better than a single word — the model reads sentences.</value>
+  </data>
+  <data name="SearchScopeAll" xml:space="preserve">
+    <value>Everything</value>
+  </data>
+  <data name="SearchScopeDiary" xml:space="preserve">
+    <value>Diary</value>
+  </data>
+  <data name="SearchScopeNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="SearchNoResults" xml:space="preserve">
+    <value>Nothing found</value>
+  </data>
+  <data name="SearchLexicalOnlyNotice" xml:space="preserve">
+    <value>Searching words only. Turn on AI in settings to search by meaning.</value>
+  </data>
+  <data name="SearchResultsCountFormat" xml:space="preserve">
+    <value>{0} found</value>
+  </data>
+  <data name="SearchSourceDiary" xml:space="preserve">
+    <value>Diary</value>
+  </data>
+  <data name="SearchSourceNote" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="QuickMenuSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="StatsDigestHeader" xml:space="preserve">
+    <value>WHAT THIS PERIOD WAS ABOUT</value>
+  </data>
+  <data name="StatsDigestHint" xml:space="preserve">
+    <value>Your own words, picked as the most typical of the period — nothing here is generated.</value>
+  </data>
+  <data name="StatsThemesHeader" xml:space="preserve">
+    <value>RECURRING THEMES</value>
+  </data>
+  <data name="StatsThemeDaysFormat" xml:space="preserve">
+    <value>{0} days</value>
+  </data>
+  <data name="AiChatTitle" xml:space="preserve">
+    <value>Ask your diary</value>
+  </data>
+  <data name="AiChatPlaceholder" xml:space="preserve">
+    <value>Ask about your entries…</value>
+  </data>
+  <data name="AiChatIntro" xml:space="preserve">
+    <value>Answers come only from what you wrote, with the entries they came from shown underneath.</value>
+  </data>
+  <data name="AiChatUnavailable" xml:space="preserve">
+    <value>No chat model is installed. You can add one in Settings → AI.</value>
+  </data>
+  <data name="AiChatNothingRelevant" xml:space="preserve">
+    <value>I did not find entries to answer this from.</value>
+  </data>
+  <data name="AiChatUngrounded" xml:space="preserve">
+    <value>I could not answer this from your entries without guessing, so I would rather not.</value>
+  </data>
+  <data name="AiChatSourcesLabel" xml:space="preserve">
+    <value>Sources</value>
+  </data>
+  <data name="AiChatStop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="QuickMenuAiChat" xml:space="preserve">
+    <value>Ask diary</value>
+  </data>
+  <data name="SnapshotPreviewTitle" xml:space="preserve">
+    <value>What would be sent</value>
+  </data>
+  <data name="SnapshotPreviewSubtitle" xml:space="preserve">
+    <value>This is the request itself, word for word. Nothing has been sent.</value>
+  </data>
+  <data name="SnapshotPreviewSizeFormat" xml:space="preserve">
+    <value>{0} days · {1:N0} characters</value>
+  </data>
+  <data name="SnapshotPreviewIncludeIntimate" xml:space="preserve">
+    <value>Include intimate life notes</value>
+  </data>
+  <data name="SnapshotPreviewIncludeCycle" xml:space="preserve">
+    <value>Include the cycle log</value>
+  </data>
+  <data name="SnapshotPreviewNothingWritten" xml:space="preserve">
+    <value>Nothing was written in this period, so a report would have only the numbers to go on.</value>
+  </data>
+  <data name="SnapshotPreviewRefresh" xml:space="preserve">
+    <value>Rebuild</value>
+  </data>
+  <data name="BirthDateLabel" xml:space="preserve">
+    <value>Date of birth</value>
+  </data>
+  <data name="BirthDateNotSet" xml:space="preserve">
+    <value>not set</value>
+  </data>
+  <data name="BirthDateSetAction" xml:space="preserve">
+    <value>Set</value>
+  </data>
+  <data name="BirthDateClearAction" xml:space="preserve">
+    <value>Clear the date of birth</value>
+  </data>
+  <data name="BirthDatePrivacyHint" xml:space="preserve">
+    <value>Stays on the phone. Used only to show the sections that have an age.</value>
+  </data>
+  <data name="IntimateLifeAgeHint" xml:space="preserve">
+    <value>Intimate life is an 18+ row. Set your date of birth in profile settings to see it.</value>
+  </data>
+  <data name="CycleAgeHint" xml:space="preserve">
+    <value>The cycle calendar is available from age 14. Set your date of birth above to see it.</value>
   </data>
 </root>

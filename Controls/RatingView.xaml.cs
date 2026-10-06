@@ -23,7 +23,7 @@ public partial class RatingView : ContentView
         BindableProperty.Create(nameof(Value), typeof(int), typeof(RatingView), 0, BindingMode.TwoWay, propertyChanged: OnValueChanged);
 
     public static readonly BindableProperty MaxValueProperty =
-        BindableProperty.Create(nameof(MaxValue), typeof(int), typeof(RatingView), 10, propertyChanged: OnMaxValueChanged);
+        BindableProperty.Create(nameof(MaxValue), typeof(int), typeof(RatingView), Diarion.Models.DiaryEntry.MaxRating, propertyChanged: OnMaxValueChanged);
 
     public int Value
     {

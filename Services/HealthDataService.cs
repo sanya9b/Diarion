@@ -2,17 +2,24 @@ using System;
 using System.Threading.Tasks;
 using Diarion.Core.Services;
 
-#if IOS
+#if IOS && HEALTHKIT
 using HealthKit;
 using Foundation;
 #endif
 
-#if ANDROID
-using AndroidX.Health.Connect.Client;
-using AndroidX.Health.Connect.Client.Records;
-using AndroidX.Health.Connect.Client.Request;
-using AndroidX.Health.Connect.Client.Time;
-#endif
+// No Android usings: every Android branch below returns unsupported, so the Health Connect client,
+// its NuGet package and the health.READ_SLEEP permission were all removed. Reviving the feature means
+// bringing back all three together — see the health row in PRODUCT_ROADMAP.md.
+
+// HEALTHKIT, not plain IOS, since v1 ships without Health. The symbol is defined nowhere — the line
+// that would define it sits commented in Diarion.csproj — so on iOS these branches compile to the
+// same "unsupported" answers Android already gives, and the binary references no HealthKit type.
+// That last part is the point: the usage string and the entitlement are gone with them, and Apple
+// rejects a build that references HKHealthStore without a purpose string (ITMS-90683). Deleting the
+// keys while leaving the code compiled would trade a working feature for a failed upload.
+//
+// Nothing here is deleted, and nothing here is dead either way: ImportSleepDataAsync in MainViewModel
+// is the only caller, and no XAML binds it — the button that would reach Health was never built.
 
 namespace Diarion.Services;
 
@@ -20,20 +27,20 @@ public class HealthDataService : IHealthDataService
 {
     public Task<bool> IsSupportedAsync()
     {
-#if IOS
+#if IOS && HEALTHKIT
         return Task.FromResult(HKHealthStore.IsHealthDataAvailable);
-#elif ANDROID
-        var context = Microsoft.Maui.ApplicationModel.Platform.AppContext;
-        var status = HealthConnectClient.GetSdkStatus(context);
-        return Task.FromResult(status == HealthConnectClient.SdkAvailable || status == 3); // 3 is usually SdkAvailable
 #else
+        // Android reports unsupported on purpose. Reading Health Connect needs Kotlin coroutine interop
+        // that is not written yet, and the placeholder that stood here returned invented sleep times
+        // which the caller wrote straight into the user's diary entry. An unavailable feature is honest;
+        // a feature that fabricates personal history is not. Flip this back on with the real read.
         return Task.FromResult(false);
 #endif
     }
 
     public async Task<bool> RequestPermissionsAsync()
     {
-#if IOS
+#if IOS && HEALTHKIT
         if (!HKHealthStore.IsHealthDataAvailable) return false;
         var healthStore = new HKHealthStore();
         var sleepType = HKCategoryType.Create(HKCategoryTypeIdentifier.SleepAnalysis);
@@ -46,19 +53,16 @@ public class HealthDataService : IHealthDataService
             tcs.TrySetResult(success);
         });
         return await tcs.Task;
-#elif ANDROID
-        // For Android Health Connect, permissions require launching an intent from MainActivity.
-        // For simplicity in this demo, we assume the user has granted them, 
-        // or they will be handled by a specific ActivityResult launcher.
-        return true; 
 #else
-        return false;
+        // Never claim a grant that was never asked for. Android needs an ActivityResult launcher from
+        // MainActivity, which arrives with the real Health Connect read.
+        return await Task.FromResult(false);
 #endif
     }
 
     public async Task<(TimeSpan? SleepStart, TimeSpan? SleepEnd)> GetSleepDataAsync(DateTime targetDate)
     {
-#if IOS
+#if IOS && HEALTHKIT
         if (!HKHealthStore.IsHealthDataAvailable) return (null, null);
         
         var healthStore = new HKHealthStore();
@@ -92,26 +96,9 @@ public class HealthDataService : IHealthDataService
         
         healthStore.ExecuteQuery(query);
         return await tcs.Task;
-#elif ANDROID
-        try
-        {
-            // Fully functional Health Connect requires Kotlin Coroutines interop (RunBlocking or similar).
-            // This is a placeholder for the actual suspend function call.
-            var context = Microsoft.Maui.ApplicationModel.Platform.AppContext;
-            var client = HealthConnectClient.GetOrCreate(context);
-            
-            // Normally you would call:
-            // var response = await client.ReadRecordsAsync(...);
-            
-            // Returning realistic dummy data to prove compilation passes with the namespace imported
-            return (new TimeSpan(23, 30, 0), new TimeSpan(7, 15, 0));
-        }
-        catch
-        {
-            return (null, null);
-        }
 #else
-        return (null, null);
+        // Unreachable while IsSupportedAsync says no, and empty rather than invented if it ever is.
+        return await Task.FromResult<(TimeSpan?, TimeSpan?)>((null, null));
 #endif
     }
 }

@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
+using Diarion.Services;
 
 namespace Diarion.ViewModels;
 
@@ -10,17 +13,27 @@ public partial class DiaryEntryViewModel : ObservableObject
 {
     public DiaryEntry Model { get; }
 
-    public DiaryEntryViewModel(DiaryEntry model)
+    private readonly PromptLibrary? _promptLibrary;
+
+    /// <summary>
+    /// The library is optional so the view model stays constructible from a bare entry. Without it the
+    /// guided prompt simply does not render — there is nothing to resolve a stored reference against.
+    /// </summary>
+    public DiaryEntryViewModel(DiaryEntry model, PromptLibrary? promptLibrary = null)
     {
         Model = model;
+        _promptLibrary = promptLibrary;
         _id = model.Id;
         _date = model.Date;
         _sleepStart = model.SleepStart;
         _sleepEnd = model.SleepEnd;
         _sleepQuality = model.SleepQuality;
+        _sleepNotes = model.SleepNotes;
         _cycleDay = model.CycleDay;
         _healthStatus = model.HealthStatus;
+        _isIntimateLifeDone = model.IsIntimateLifeDone;
         _intimateLife = model.IntimateLife;
+        _healthNotes = model.HealthNotes;
         _isBreakfastDone = model.IsBreakfastDone;
         _breakfastFood = model.BreakfastFood;
         _isSecondBreakfastDone = model.IsSecondBreakfastDone;
@@ -35,11 +48,12 @@ public partial class DiaryEntryViewModel : ObservableObject
         _gratitude = model.Gratitude;
         _soulFood = model.SoulFood;
         _supportForOthers = model.SupportForOthers;
+        _promptResourceKey = model.PromptResourceKey;
+        _promptAnswer = model.PromptAnswer;
         _title = model.Title;
         _content = model.Content;
         _createdAt = model.CreatedAt;
         _emotion = model.Emotion;
-        _aiSummary = model.AiSummary;
 
         if (model.HabitsList != null)
         {
@@ -50,6 +64,10 @@ public partial class DiaryEntryViewModel : ObservableObject
         }
 
         Habits.CollectionChanged += (s, e) => UpdateModelHabits();
+
+        BuildHourlyMood(model);
+        RefreshPrompt();
+        RefreshPromptText();
     }
 
     private void UpdateModelHabits()
@@ -60,6 +78,91 @@ public partial class DiaryEntryViewModel : ObservableObject
             h.SyncToModel();
             Model.HabitsList.Add(h.Model);
         }
+    }
+
+    // --- Hourly mood ---
+
+    public const int FirstHour = MoodAggregate.FirstHour;
+    public const int LastHour = MoodAggregate.LastHour;
+
+    /// <summary>
+    /// One slot per waking hour, always materialised so the grid has a stable shape. Slots left at
+    /// <see cref="Emotion.None"/> are dropped on the way back to the model rather than stored.
+    /// </summary>
+    public ObservableCollection<HourMoodViewModel> HourlyMood { get; } = new();
+
+    /// <summary>Which hour the emotion row writes to; null means the day-level scalar.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentMood))]
+    [NotifyPropertyChangedFor(nameof(IsHourSelected))]
+    private int? _selectedHour;
+
+    public bool IsHourSelected => SelectedHour != null;
+
+    /// <summary>
+    /// What the emotion row should show as selected: the chosen hour's mood while an hour is picked,
+    /// otherwise the day-level scalar. Without this the row would keep highlighting the day's mood
+    /// while the user edits an hour.
+    /// </summary>
+    public Emotion CurrentMood => SelectedHour is int hour
+        ? HourlyMood.FirstOrDefault(h => h.Hour == hour)?.Mood ?? Emotion.None
+        : Emotion;
+
+    /// <summary>Collapsed by default — the day screen already stacks several cards.</summary>
+    [ObservableProperty]
+    private bool _isHourlyExpanded;
+
+    private void BuildHourlyMood(DiaryEntry model)
+    {
+        for (var hour = FirstHour; hour <= LastHour; hour++)
+        {
+            var stored = model.HourlyMood?.FirstOrDefault(h => h.Hour == hour);
+            HourlyMood.Add(new HourMoodViewModel(hour, stored?.Mood ?? Emotion.None));
+        }
+    }
+
+    private void UpdateModelHourlyMood()
+    {
+        Model.HourlyMood.Clear();
+        foreach (var h in HourlyMood.Where(h => h.Mood != Emotion.None))
+        {
+            Model.HourlyMood.Add(new HourMood { Hour = h.Hour, Mood = h.Mood });
+        }
+    }
+
+    [RelayCommand]
+    private void ToggleHourly() => IsHourlyExpanded = !IsHourlyExpanded;
+
+    [RelayCommand]
+    private void SelectHour(HourMoodViewModel item)
+    {
+        if (item == null) return;
+
+        // Tapping the selected hour again returns the emotion row to day level.
+        SelectedHour = SelectedHour == item.Hour ? null : item.Hour;
+        foreach (var h in HourlyMood) h.IsSelected = h.Hour == SelectedHour;
+    }
+
+    // Mood selection is 2-tap. With no hour selected it sets the day-level scalar, exactly as before;
+    // with an hour selected it writes that hour instead. Either way PropertyChanged reaches the main
+    // ViewModel, which triggers the debounced auto-save.
+    [RelayCommand]
+    private void SelectEmotion(Emotion emotion)
+    {
+        if (SelectedHour is not int hour)
+        {
+            Emotion = emotion;
+            return;
+        }
+
+        var slot = HourlyMood.FirstOrDefault(h => h.Hour == hour);
+        if (slot == null) return;
+
+        // Re-picking the same emotion clears the hour — otherwise there would be no way to undo it.
+        slot.Mood = slot.Mood == emotion ? Emotion.None : emotion;
+        OnPropertyChanged(nameof(CurrentMood));
+        UpdateModelHourlyMood();
+        RefreshPrompt();
     }
 
     [ObservableProperty]
@@ -76,6 +179,7 @@ public partial class DiaryEntryViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(HasSleepStart))]
     [NotifyPropertyChangedFor(nameof(IsSleepStartEmpty))]
     [NotifyPropertyChangedFor(nameof(SleepDurationText))]
+    [NotifyPropertyChangedFor(nameof(SleepStartTime))]
     private TimeSpan? _sleepStart;
 
     partial void OnSleepStartChanged(TimeSpan? value) => Model.SleepStart = value;
@@ -83,16 +187,29 @@ public partial class DiaryEntryViewModel : ObservableObject
     public bool HasSleepStart => SleepStart.HasValue;
     public bool IsSleepStartEmpty => !SleepStart.HasValue;
 
+    public TimeSpan SleepStartTime
+    {
+        get => SleepStart ?? TimeSpan.Zero;
+        set => SleepStart = value;
+    }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSleepEnd))]
     [NotifyPropertyChangedFor(nameof(IsSleepEndEmpty))]
     [NotifyPropertyChangedFor(nameof(SleepDurationText))]
+    [NotifyPropertyChangedFor(nameof(SleepEndTime))]
     private TimeSpan? _sleepEnd;
 
     partial void OnSleepEndChanged(TimeSpan? value) => Model.SleepEnd = value;
 
     public bool HasSleepEnd => SleepEnd.HasValue;
     public bool IsSleepEndEmpty => !SleepEnd.HasValue;
+
+    public TimeSpan SleepEndTime
+    {
+        get => SleepEnd ?? TimeSpan.Zero;
+        set => SleepEnd = value;
+    }
 
     public string SleepDurationText
     {
@@ -117,9 +234,22 @@ public partial class DiaryEntryViewModel : ObservableObject
     partial void OnSleepQualityChanged(int value) => Model.SleepQuality = value;
 
     [ObservableProperty]
+    private string _sleepNotes = string.Empty;
+
+    partial void OnSleepNotesChanged(string value) => Model.SleepNotes = value;
+
+    /// <summary>
+    /// Which day of the cycle this entry falls on, as a number. Written by the day screen rather than
+    /// typed, so it is a read-only line in the health block; empty whenever tracking is off or nothing
+    /// has been logged yet, which is what <see cref="HasCycleDay"/> hides the row by.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCycleDay))]
     private string _cycleDay = string.Empty;
 
     partial void OnCycleDayChanged(string value) => Model.CycleDay = value;
+
+    public bool HasCycleDay => !string.IsNullOrWhiteSpace(CycleDay);
 
     [ObservableProperty]
     private int _healthStatus;
@@ -127,9 +257,19 @@ public partial class DiaryEntryViewModel : ObservableObject
     partial void OnHealthStatusChanged(int value) => Model.HealthStatus = value;
 
     [ObservableProperty]
+    private bool _isIntimateLifeDone;
+
+    partial void OnIsIntimateLifeDoneChanged(bool value) => Model.IsIntimateLifeDone = value;
+
+    [ObservableProperty]
     private string _intimateLife = string.Empty;
 
     partial void OnIntimateLifeChanged(string value) => Model.IntimateLife = value;
+
+    [ObservableProperty]
+    private string _healthNotes = string.Empty;
+
+    partial void OnHealthNotesChanged(string value) => Model.HealthNotes = value;
 
     [ObservableProperty]
     private bool _isBreakfastDone;
@@ -202,6 +342,60 @@ public partial class DiaryEntryViewModel : ObservableObject
     partial void OnSupportForOthersChanged(string value) => Model.SupportForOthers = value;
 
     [ObservableProperty]
+    private string _promptResourceKey = string.Empty;
+
+    partial void OnPromptResourceKeyChanged(string value)
+    {
+        Model.PromptResourceKey = value;
+        RefreshPromptText();
+    }
+
+    [ObservableProperty]
+    private string _promptAnswer = string.Empty;
+
+    partial void OnPromptAnswerChanged(string value) => Model.PromptAnswer = value;
+
+    /// <summary>The day's question in the current UI language, empty when there is nothing to show.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPrompt))]
+    private string _promptText = string.Empty;
+
+    /// <summary>False when the user has emptied the category the day would draw from — the card hides
+    /// rather than rendering a blank question.</summary>
+    public bool HasPrompt => !string.IsNullOrWhiteSpace(PromptText);
+
+    private void RefreshPromptText() =>
+        PromptText = PromptLocalization.ResolveText(_promptLibrary?.Find(PromptResourceKey));
+
+    /// <summary>
+    /// Picks the question that fits the day's mood. Re-picks while the answer is still empty — the mood
+    /// is usually recorded after the day screen first opens — but never once the user has written
+    /// something, so the question they are answering cannot change under them.
+    /// </summary>
+    public void RefreshPrompt()
+    {
+        if (_promptLibrary is null) return;
+        if (!string.IsNullOrWhiteSpace(PromptAnswer)) return;
+
+        var wanted = PromptSelector.SelectCategory(Emotion, Model.HourlyMood, !string.IsNullOrWhiteSpace(Gratitude));
+        if (_promptLibrary.Find(PromptResourceKey)?.Category == wanted) return;
+
+        var picked = PromptSelector.Select(
+            Date, Emotion, Model.HourlyMood, !string.IsNullOrWhiteSpace(Gratitude), _promptLibrary);
+
+        PromptResourceKey = PromptLibrary.ReferenceFor(picked);
+    }
+
+    [RelayCommand]
+    private void ShufflePrompt()
+    {
+        if (_promptLibrary is null) return;
+
+        var next = PromptSelector.Next(_promptLibrary.Find(PromptResourceKey), Date, _promptLibrary);
+        PromptResourceKey = PromptLibrary.ReferenceFor(next);
+    }
+
+    [ObservableProperty]
     private string _title = string.Empty;
 
     partial void OnTitleChanged(string value) => Model.Title = value;
@@ -219,12 +413,12 @@ public partial class DiaryEntryViewModel : ObservableObject
     [ObservableProperty]
     private Emotion _emotion;
 
-    partial void OnEmotionChanged(Emotion value) => Model.Emotion = value;
-
-    [ObservableProperty]
-    private string _aiSummary = string.Empty;
-
-    partial void OnAiSummaryChanged(string value) => Model.AiSummary = value;
+    partial void OnEmotionChanged(Emotion value)
+    {
+        Model.Emotion = value;
+        OnPropertyChanged(nameof(CurrentMood));
+        RefreshPrompt();
+    }
 
     [ObservableProperty]
     private ObservableCollection<HabitItemViewModel> _habits = new();
@@ -236,9 +430,12 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.SleepStart = SleepStart;
         Model.SleepEnd = SleepEnd;
         Model.SleepQuality = SleepQuality;
+        Model.SleepNotes = SleepNotes;
         Model.CycleDay = CycleDay;
         Model.HealthStatus = HealthStatus;
+        Model.IsIntimateLifeDone = IsIntimateLifeDone;
         Model.IntimateLife = IntimateLife;
+        Model.HealthNotes = HealthNotes;
         Model.IsBreakfastDone = IsBreakfastDone;
         Model.BreakfastFood = BreakfastFood;
         Model.IsSecondBreakfastDone = IsSecondBreakfastDone;
@@ -252,13 +449,51 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.Triggers = Triggers;
         Model.Gratitude = Gratitude;
         Model.SoulFood = SoulFood;
+        Model.PromptResourceKey = PromptResourceKey;
+        Model.PromptAnswer = PromptAnswer;
         Model.SupportForOthers = SupportForOthers;
         Model.Title = Title;
         Model.Content = Content;
         Model.CreatedAt = CreatedAt;
         Model.Emotion = Emotion;
-        Model.AiSummary = AiSummary;
-        
+
         UpdateModelHabits();
+        UpdateModelHourlyMood();
     }
+}
+
+/// <summary>One hour slot in the mood grid.</summary>
+public partial class HourMoodViewModel : ObservableObject
+{
+    public HourMoodViewModel(int hour, Emotion mood)
+    {
+        Hour = hour;
+        _mood = mood;
+    }
+
+    public int Hour { get; }
+
+    public string HourLabel => Hour.ToString("00");
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ColorHex))]
+    [NotifyPropertyChangedFor(nameof(HasMood))]
+    [NotifyPropertyChangedFor(nameof(AccessibilityText))]
+    private Emotion _mood;
+
+    /// <summary>Selected in the grid, so the emotion row writes here instead of the day.</summary>
+    [ObservableProperty]
+    private bool _isSelected;
+
+    /// <summary>Transparent while unset; MAUI parses the hex straight into BackgroundColor.</summary>
+    public string ColorHex => Mood == Emotion.None ? "#00000000" : Mood.ToColorHex();
+
+    public bool HasMood => Mood != Emotion.None;
+
+    public string AccessibilityText => string.Format(
+        Diarion.Resources.Localization.AppResources.MoodHourAccessibility,
+        Hour,
+        Mood == Emotion.None
+            ? Diarion.Resources.Localization.AppResources.MoodHourEmpty
+            : Mood.ToLocalizedName());
 }

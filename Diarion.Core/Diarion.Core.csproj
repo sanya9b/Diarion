@@ -27,6 +27,16 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
+    <!-- ONNX Runtime lives here rather than in the head project, unlike the Maui* services: the
+         embedder touches no MAUI API, and keeping it in Core is what makes the tokenizer remap and
+         the pooling reachable from Diarion.Tests. Tokenizers has no tokenizer.json loader, so XLM-R
+         goes through SentencePieceTokenizer plus the fairseq id remap in Services/Ai/XlmrIdMap.cs. -->
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.28.0" />
+    <!-- Pinned, and the pin is load-bearing: 0.15.1's Android AAR declares INTERNET and
+         installs a telemetry ContentProvider. Building a model with a newer builder is fine —
+         that happens on a desktop and never touches the app manifest. -->
+    <PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI" Version="0.14.1" />
+    <PackageReference Include="Microsoft.ML.Tokenizers" Version="2.0.0" />
     <PackageReference Include="Plugin.Fingerprint" Version="2.1.5" />
     <PackageReference Include="System.Resources.Extensions" Version="10.0.8" />
   </ItemGroup>

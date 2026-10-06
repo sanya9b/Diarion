@@ -480,3 +480,12 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Build output redirected to a file by hand. Committed once each, which is how build_errors2.txt
+# came to exist: the first name was taken. *.log above already covers the other half of the habit.
+build_errors*.txt
+
+# Throwaway diagnostic binaries. dump_types.exe was tracked for months — a committed executable is
+# not something a reviewer of a diff can check, and this repo ships a privacy claim.
+dump_types.exe
+*.exe

@@ -9,15 +9,20 @@ namespace Diarion.ViewModels;
 
 [QueryProperty(nameof(TargetDateValue), "Date")]
 [QueryProperty(nameof(TodoId), "Id")]
+[QueryProperty(nameof(HourValue), "Hour")]
 public partial class TodoDetailViewModel : BaseViewModel
 {
     private readonly ITodoService _todoService;
+    private readonly INavigationService _navigationService;
+    private readonly IDialogService _dialogService;
     private DateTime _targetDate = DateTime.Today;
     private TodoItem? _currentTodo;
 
-    public TodoDetailViewModel(ITodoService todoService)
+    public TodoDetailViewModel(ITodoService todoService, INavigationService navigationService, IDialogService dialogService)
     {
         _todoService = todoService;
+        _navigationService = navigationService;
+        _dialogService = dialogService;
         Title = Diarion.Resources.Localization.AppResources.NewTaskTitle;
         PrioritiesList[1].IsSelected = true; // Medium is default
         UpdateTargetDateDisplay();
@@ -29,11 +34,26 @@ public partial class TodoDetailViewModel : BaseViewModel
     [ObservableProperty]
     public partial string TodoId { get; set; } = string.Empty;
 
+    /// <summary>Set when the form is opened from an empty row of the hour grid, so it starts scheduled.</summary>
+    [ObservableProperty]
+    public partial string HourValue { get; set; } = string.Empty;
+
+    partial void OnHourValueChanged(string value)
+    {
+        if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var hour)) return;
+        if (hour is < 0 or > 23) return;
+
+        HasTime = true;
+        TargetTime = TimeSpan.FromHours(hour);
+    }
+
     [ObservableProperty]
     private string _targetDateDisplay = string.Empty;
 
     [ObservableProperty]
     private string _taskDescription = string.Empty;
+
+    partial void OnTaskDescriptionChanged(string value) => ApplyParse(value);
 
     [ObservableProperty]
     private bool _isCompleted;
@@ -41,11 +61,291 @@ public partial class TodoDetailViewModel : BaseViewModel
     [ObservableProperty]
     private bool _hasTime;
 
-    [ObservableProperty]
-    private TimeSpan _targetTime;
+    /// <summary>Dropping the time drops the range with it — a stretch of the day needs a point to start from.</summary>
+    partial void OnHasTimeChanged(bool value)
+    {
+        if (!value) HasEndTime = false;
+    }
 
     [ObservableProperty]
-    private bool _isDailyRepeat;
+    [NotifyPropertyChangedFor(nameof(TargetTimeDisplay))]
+    private TimeSpan _targetTime;
+
+    /// <summary>
+    /// The time as we want it read — "08:30", zero-padded. TimePicker.Format is honoured on Android and
+    /// iOS but not on Windows, where the native control draws its own hour and minute fields and drops
+    /// the leading zero. Drawing the text ourselves is the only way the three platforms agree.
+    /// </summary>
+    public string TargetTimeDisplay => TargetTime.ToString(@"hh\:mm");
+
+    /// <summary>Whether the task occupies a stretch of the day — 13:00 to 16:00 — rather than a moment.</summary>
+    [ObservableProperty]
+    private bool _hasEndTime;
+
+    partial void OnHasEndTimeChanged(bool value)
+    {
+        if (value) PushEndPastStart();
+        else TimeRangeError = string.Empty;
+    }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(EndTimeDisplay))]
+    private TimeSpan _endTime;
+
+    public string EndTimeDisplay => EndTime.ToString(@"hh\:mm");
+
+    partial void OnTargetTimeChanged(TimeSpan value) => PushEndPastStart();
+
+    /// <summary>
+    /// Keeps the end ahead of the start by moving it, rather than by refusing the start the user just
+    /// picked. Dragging the start of a 13:00–14:00 block to 15:00 is a request to move the block, and
+    /// answering it with a validation error puts the form in a state the user has to argue their way out
+    /// of. An hour is the default length because it is the one a picker lands on with the least work.
+    /// </summary>
+    private void PushEndPastStart()
+    {
+        if (!HasEndTime) return;
+        if (EndTime > TargetTime) return;
+
+        // Capped at the end of the day: the grid is one day wide and a block cannot run past midnight.
+        var pushed = TargetTime.Add(TimeSpan.FromHours(1));
+        EndTime = pushed < TimeSpan.FromDays(1) ? pushed : new TimeSpan(23, 59, 0);
+        TimeRangeError = string.Empty;
+    }
+
+    /// <summary>Set when the picked end cannot follow the start at all — 23:30 to 23:30, say.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasTimeRangeError))]
+    private string _timeRangeError = string.Empty;
+
+    public bool HasTimeRangeError => !string.IsNullOrWhiteSpace(TimeRangeError);
+
+    /// <summary>The range as it should be stored, or null when the task is a point in the day.</summary>
+    private TimeSpan? EndTimeToSave() => HasTime && HasEndTime ? EndTime : null;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RecurrenceSummary))]
+    private bool _isRecurring;
+
+    [ObservableProperty]
+    // Every one of the four, including Daily. Leaving it out meant the Daily chip never repainted, so it
+    // stayed lit next to whichever kind was actually chosen.
+    [NotifyPropertyChangedFor(nameof(IsRecurrenceDaily))]
+    [NotifyPropertyChangedFor(nameof(IsRecurrenceWeekly))]
+    [NotifyPropertyChangedFor(nameof(IsRecurrenceInterval))]
+    [NotifyPropertyChangedFor(nameof(IsRecurrenceMonthly))]
+    [NotifyPropertyChangedFor(nameof(RecurrenceSummary))]
+    private RecurrenceKind _recurrenceKind = RecurrenceKind.Daily;
+
+    public bool IsRecurrenceDaily => RecurrenceKind == RecurrenceKind.Daily;
+    public bool IsRecurrenceWeekly => RecurrenceKind == RecurrenceKind.Weekly;
+    public bool IsRecurrenceInterval => RecurrenceKind == RecurrenceKind.IntervalDays;
+    public bool IsRecurrenceMonthly => RecurrenceKind == RecurrenceKind.MonthlyByDay;
+
+    public List<WeekdayToggle> Weekdays { get; } = WeekdayToggle.BuildMondayFirst();
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RecurrenceSummary))]
+    private int _everyNDays = 2;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RecurrenceSummary))]
+    private int _dayOfMonth = DateTime.Today.Day;
+
+    [ObservableProperty]
+    private bool _hasRecurrenceEnd;
+
+    [ObservableProperty]
+    private DateTime _recurrenceEndDate = DateTime.Today.AddMonths(1);
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasRecurrenceError))]
+    private string _recurrenceError = string.Empty;
+
+    public bool HasRecurrenceError => !string.IsNullOrWhiteSpace(RecurrenceError);
+
+    /// <summary>Reads the rule back in words, through the formatter finance and habits already share.</summary>
+    public string RecurrenceSummary => IsRecurring ? RecurrenceFormatter.Describe(ComposeRule()) : string.Empty;
+
+    [RelayCommand]
+    public void SetRecurrenceKind(string kindName)
+    {
+        if (!Enum.TryParse<RecurrenceKind>(kindName, out var kind)) return;
+        RecurrenceKind = kind;
+        _scheduleTouchedByUser = true;
+    }
+
+    [RelayCommand]
+    public void ToggleWeekday(WeekdayToggle? day)
+    {
+        if (day == null) return;
+        day.IsSelected = !day.IsSelected;
+        // Picking days means the user wants specific days, whatever the chips above say.
+        RecurrenceKind = RecurrenceKind.Weekly;
+        _scheduleTouchedByUser = true;
+        OnPropertyChanged(nameof(RecurrenceSummary));
+    }
+
+    // --- reading the schedule out of what was typed ---
+
+    private ParsedTaskInput? _parsed;
+    private bool _parseDismissed;
+    private bool _scheduleTouchedByUser;
+    private ScheduleSnapshot? _beforeParse;
+
+    /// <summary>What the parser read, phrased for the user, or empty when it read nothing.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasParseHint))]
+    private string _parseHint = string.Empty;
+
+    public bool HasParseHint => !string.IsNullOrEmpty(ParseHint);
+
+    private void ApplyParse(string text)
+    {
+        // Loading an existing task must not re-read its own title: the phrase was already cut out when it
+        // was saved, and anything that survived is there because the user chose to keep it.
+        if (_parseDismissed || _loadingExisting) return;
+
+        var parsed = TaskInputParser.Parse(text, DateTime.Today);
+        if (!parsed.FoundAnything)
+        {
+            _parsed = null;
+            ParseHint = string.Empty;
+            return;
+        }
+
+        // Taken once, before anything is overwritten, so undo puts back what was there rather than a
+        // guess at defaults — which matters most when an existing task is being edited.
+        _beforeParse ??= Snapshot();
+        _parsed = parsed;
+
+        if (parsed.Recurrence != null && !_scheduleTouchedByUser)
+        {
+            IsRecurring = true;
+            RecurrenceKind = parsed.Recurrence.Kind;
+            EveryNDays = Math.Max(1, parsed.Recurrence.EveryN);
+            DayOfMonth = Math.Clamp(parsed.Recurrence.DayOfMonth, 1, 31);
+            foreach (var day in Weekdays)
+            {
+                day.IsSelected = parsed.Recurrence.DaysOfWeek.Contains(day.DayOfWeek);
+            }
+        }
+
+        if (parsed.Date != null && !_scheduleTouchedByUser)
+        {
+            _targetDate = parsed.Date.Value;
+            UpdateTargetDateDisplay();
+        }
+
+        if (parsed.TimeOfDay != null && !_scheduleTouchedByUser)
+        {
+            HasTime = true;
+            TargetTime = parsed.TimeOfDay.Value;
+            // Naming an hour out loud is asking to be told about it. Typing one into the picker is not,
+            // which is why the reminder follows the parser and not the TargetTime property.
+            HasReminder = true;
+
+            // After the start, so the nudge that keeps the end ahead of it cannot overwrite what was read.
+            if (parsed.EndTimeOfDay != null)
+            {
+                HasEndTime = true;
+                EndTime = parsed.EndTimeOfDay.Value;
+            }
+        }
+
+        ParseHint = string.Format(
+            Diarion.Resources.Localization.AppResources.ParseHintFormat,
+            string.Join(" · ", parsed.Matched));
+        OnPropertyChanged(nameof(RecurrenceSummary));
+    }
+
+    /// <summary>
+    /// The title as it should be stored: with the recognized phrase cut out, unless cutting it would
+    /// leave nothing at all. "щовівторка" on its own is a badly named weekly task, which is still better
+    /// than a task with no name.
+    /// </summary>
+    private string DescriptionToSave()
+    {
+        var typed = TaskDescription.Trim();
+        if (_parsed == null || _parseDismissed) return typed;
+        if (!string.Equals(_parsed.OriginalText, TaskDescription, StringComparison.Ordinal)) return typed;
+
+        var cut = _parsed.Description.Trim();
+        return cut.Length == 0 ? typed : cut;
+    }
+
+    /// <summary>Puts the schedule back and stops reading this task's text, leaving it exactly as typed.</summary>
+    [RelayCommand]
+    public void DismissParse()
+    {
+        _parseDismissed = true;
+        _parsed = null;
+        ParseHint = string.Empty;
+        _beforeParse?.RestoreTo(this);
+        _beforeParse = null;
+        OnPropertyChanged(nameof(RecurrenceSummary));
+    }
+
+    private ScheduleSnapshot Snapshot() => new()
+    {
+        IsRecurring = IsRecurring,
+        Kind = RecurrenceKind,
+        SelectedDays = Weekdays.Where(d => d.IsSelected).Select(d => d.DayOfWeek).ToList(),
+        EveryN = EveryNDays,
+        DayOfMonth = DayOfMonth,
+        HasTime = HasTime,
+        TargetTime = TargetTime,
+        HasEndTime = HasEndTime,
+        EndTime = EndTime,
+        HasReminder = HasReminder,
+        TargetDate = _targetDate
+    };
+
+    private sealed class ScheduleSnapshot
+    {
+        public bool IsRecurring { get; init; }
+        public RecurrenceKind Kind { get; init; }
+        public List<int> SelectedDays { get; init; } = new();
+        public int EveryN { get; init; }
+        public int DayOfMonth { get; init; }
+        public bool HasTime { get; init; }
+        public TimeSpan TargetTime { get; init; }
+        public bool HasEndTime { get; init; }
+        public TimeSpan EndTime { get; init; }
+        public bool HasReminder { get; init; }
+        public DateTime TargetDate { get; init; }
+
+        public void RestoreTo(TodoDetailViewModel vm)
+        {
+            vm.IsRecurring = IsRecurring;
+            vm.RecurrenceKind = Kind;
+            vm.EveryNDays = EveryN;
+            vm.DayOfMonth = DayOfMonth;
+            foreach (var day in vm.Weekdays) day.IsSelected = SelectedDays.Contains(day.DayOfWeek);
+            vm.HasTime = HasTime;
+            vm.TargetTime = TargetTime;
+            // After the start, and the end last of all: switching the range on nudges the end past the
+            // start, so restoring it first would only have it overwritten by that nudge.
+            vm.HasEndTime = HasEndTime;
+            vm.EndTime = EndTime;
+            vm.TimeRangeError = string.Empty;
+            vm.HasReminder = HasReminder;
+            vm._targetDate = TargetDate;
+            vm.UpdateTargetDateDisplay();
+        }
+    }
+
+    [RelayCommand]
+    public void IncrementEveryN() => EveryNDays = Math.Min(EveryNDays + 1, 365);
+
+    [RelayCommand]
+    public void DecrementEveryN() => EveryNDays = Math.Max(EveryNDays - 1, 1);
+
+    [RelayCommand]
+    public void IncrementDayOfMonth() => DayOfMonth = Math.Min(DayOfMonth + 1, 31);
+
+    [RelayCommand]
+    public void DecrementDayOfMonth() => DayOfMonth = Math.Max(DayOfMonth - 1, 1);
 
     [ObservableProperty]
     private bool _hasReminder;
@@ -97,16 +397,32 @@ public partial class TodoDetailViewModel : BaseViewModel
         }
     }
 
+    private bool _loadingExisting;
+
     private async Task LoadTodoAsync(Guid id)
     {
         _currentTodo = await _todoService.GetTodoByIdAsync(id);
         if (_currentTodo != null)
         {
+            _loadingExisting = true;
+            try
+            {
             TaskDescription = _currentTodo.TaskDescription;
             IsCompleted = _currentTodo.IsCompleted;
             HasTime = _currentTodo.HasTime;
             TargetTime = _currentTodo.TargetTime;
-            IsDailyRepeat = _currentTodo.IsDailyRepeat;
+            HasEndTime = _currentTodo.EndTime != null;
+            if (_currentTodo.EndTime != null) EndTime = _currentTodo.EndTime.Value;
+            // Through the rule, not the id. The id stays on the row after the series ends, so reading the
+            // checkbox off it made an ended series come back ticked — which is what switching the repeat
+            // off looked like never having worked.
+            var rule = _currentTodo.RecurringTaskId != null
+                ? await _todoService.GetRecurringTaskAsync(_currentTodo.RecurringTaskId.Value)
+                : null;
+            IsRecurring = rule != null && rule.IsActiveOn(_currentTodo.TargetDate);
+            // Only a live series fills the form. An ended one left an end date of the day before it
+            // stopped, and putting that on screen is how the next save wrote it straight back.
+            if (IsRecurring) ApplyRecurrence(rule!);
             HasReminder = _currentTodo.HasReminder;
             
             foreach (var item in PrioritiesList)
@@ -118,13 +434,63 @@ public partial class TodoDetailViewModel : BaseViewModel
             _targetDate = _currentTodo.TargetDate;
             UpdateTargetDateDisplay();
             Title = Diarion.Resources.Localization.AppResources.EditTaskTitle;
+            }
+            finally
+            {
+                _loadingExisting = false;
+            }
         }
     }
+
+    private void ApplyRecurrence(RecurringTask rule)
+    {
+        if (rule.Recurrence == null) return;
+
+        RecurrenceKind = rule.Recurrence.Kind;
+        // Only read the interval off a rule that actually has one. A daily rule leaves EveryN at 1, and
+        // letting that reach the chip makes it read "every 1 day" — the daily chip beside it, worded
+        // differently, so neither says what tapping it would do.
+        if (rule.Recurrence.Kind == RecurrenceKind.IntervalDays)
+        {
+            EveryNDays = Math.Max(1, rule.Recurrence.EveryN);
+        }
+        DayOfMonth = Math.Clamp(rule.Recurrence.DayOfMonth, 1, 31);
+        foreach (var day in Weekdays)
+        {
+            day.IsSelected = rule.Recurrence.DaysOfWeek?.Contains(day.DayOfWeek) == true;
+        }
+
+        HasRecurrenceEnd = rule.Recurrence.EndDate != null;
+        if (rule.Recurrence.EndDate != null) RecurrenceEndDate = rule.Recurrence.EndDate.Value;
+
+        OnPropertyChanged(nameof(RecurrenceSummary));
+    }
+
+    /// <summary>The rule the form currently describes. Built for the summary as well as for saving.</summary>
+    private RecurrenceRule ComposeRule() => new()
+    {
+        Kind = RecurrenceKind,
+        DaysOfWeek = Weekdays.Where(d => d.IsSelected).Select(d => d.DayOfWeek).ToList(),
+        EveryN = EveryNDays,
+        DayOfMonth = DayOfMonth,
+        Anchor = _targetDate,
+        EndDate = HasRecurrenceEnd ? RecurrenceEndDate.Date : null
+    };
+
+    /// <summary>The rule to save, or null to end the series.</summary>
+    private RecurrenceRule? BuildRecurrence() => IsRecurring ? ComposeRule() : null;
+
+    /// <summary>
+    /// A weekly rule with no day selected never fires, so it would read as "saved" and then quietly do
+    /// nothing at all.
+    /// </summary>
+    private bool RecurrenceIsIncomplete()
+        => IsRecurring && RecurrenceKind == RecurrenceKind.Weekly && !Weekdays.Any(d => d.IsSelected);
 
     [RelayCommand]
     public async Task CloseAsync()
     {
-        await Shell.Current.GoToAsync("..");
+        await _navigationService.NavigateBackAsync();
     }
 
     [RelayCommand]
@@ -134,6 +500,22 @@ public partial class TodoDetailViewModel : BaseViewModel
         {
             return;
         }
+
+        if (RecurrenceIsIncomplete())
+        {
+            RecurrenceError = Diarion.Resources.Localization.AppResources.RecurrenceDaysRequired;
+            return;
+        }
+        RecurrenceError = string.Empty;
+
+        // A range that ends where it starts, or before it, covers no hours at all. Saved, it would read as
+        // a block on the form and draw as a plain point task on the grid.
+        if (HasTime && HasEndTime && EndTime <= TargetTime)
+        {
+            TimeRangeError = Diarion.Resources.Localization.AppResources.EndTimeMustFollowStart;
+            return;
+        }
+        TimeRangeError = string.Empty;
 
         try
         {
@@ -148,12 +530,12 @@ public partial class TodoDetailViewModel : BaseViewModel
                 var currentId = _currentTodo?.Id ?? Guid.Empty;
                 int highPriorityCount = existingTodos.Count(t => t.Priority == TodoPriority.High && t.Id != currentId);
                 
-                if (highPriorityCount >= 3)
+                if (highPriorityCount >= RecurringTaskPlanner.MaxHighPriorityPerDay)
                 {
                     IsBusy = false;
                     var title = Diarion.Resources.Localization.AppResources.MaxHighPriorityAlertTitle;
                     var message = Diarion.Resources.Localization.AppResources.MaxHighPriorityAlertMessage;
-                    await Shell.Current.DisplayAlertAsync(title, message, Diarion.Resources.Localization.AppResources.OkButtonLabel);
+                    await _dialogService.ShowAlertAsync(title, message, Diarion.Resources.Localization.AppResources.OkButtonLabel);
                     return;
                 }
             }
@@ -170,14 +552,15 @@ public partial class TodoDetailViewModel : BaseViewModel
             _currentTodo.TargetDate = _targetDate;
             _currentTodo.HasTime = HasTime;
             _currentTodo.TargetTime = HasTime ? TargetTime : TimeSpan.Zero;
-            _currentTodo.TaskDescription = TaskDescription.Trim();
+            _currentTodo.EndTime = EndTimeToSave();
+            _currentTodo.TaskDescription = DescriptionToSave();
             _currentTodo.IsCompleted = IsCompleted;
             _currentTodo.Priority = SelectedPriority;
-            _currentTodo.IsDailyRepeat = IsDailyRepeat;
             _currentTodo.HasReminder = HasReminder;
 
             await _todoService.SaveTodoAsync(_currentTodo);
-            await Shell.Current.GoToAsync("..");
+            await _todoService.SetRecurrenceAsync(_currentTodo.Id, BuildRecurrence());
+            await _navigationService.NavigateBackAsync();
         }
         finally
         {

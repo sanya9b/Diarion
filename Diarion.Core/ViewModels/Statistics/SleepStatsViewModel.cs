@@ -30,35 +30,51 @@ public partial class SleepStatsViewModel : ObservableObject
     [ObservableProperty]
     private System.Collections.ObjectModel.ObservableCollection<SleepBarChartItem> _sleepChartData = new();
 
+    /// <summary>Daily sleep hours for the KPI-tile sparkline; null marks a day with no sleep logged.</summary>
+    [ObservableProperty]
+    private System.Collections.ObjectModel.ObservableCollection<double?> _durationSparkline = new();
+
+    /// <summary>Daily sleep quality for the KPI-tile sparkline; null marks a day with no quality logged.</summary>
+    [ObservableProperty]
+    private System.Collections.ObjectModel.ObservableCollection<double?> _qualitySparkline = new();
+
     public SleepStatsViewModel(IStatisticsService statisticsService)
     {
         _statisticsService = statisticsService;
     }
 
-    public async Task LoadDataAsync(int days)
+    public async Task LoadDataAsync(StatsRange range)
     {
         IsBusy = true;
         try
         {
-            var sleepStats = await _statisticsService.GetSleepStatisticsAsync(days);
+            var sleepStats = await _statisticsService.GetSleepStatisticsAsync(range);
             
             // Check if there's any actual sleep data > 0
             if (!sleepStats.DailyData.Any(x => x.Duration.TotalHours > 0))
             {
                 IsEmpty = true;
                 AverageSleepDurationText = "0h 0m";
-                AverageSleepQualityText = "0 / 10";
+                AverageSleepQualityText = $"0 / {DiaryEntry.MaxRating}";
                 SleepChartData.Clear();
+                DurationSparkline = new System.Collections.ObjectModel.ObservableCollection<double?>();
+                QualitySparkline = new System.Collections.ObjectModel.ObservableCollection<double?>();
                 return;
             }
 
             IsEmpty = false;
             AverageSleepDurationText = $"{sleepStats.AverageSleepDuration.Hours}h {sleepStats.AverageSleepDuration.Minutes}m";
-            AverageSleepQualityText = $"{sleepStats.AverageSleepQuality:F1} / 10";
+            AverageSleepQualityText = $"{sleepStats.AverageSleepQuality:F1} / {DiaryEntry.MaxRating}";
+
+            DurationSparkline = new System.Collections.ObjectModel.ObservableCollection<double?>(
+                sleepStats.DailyData.Select(d => d.Duration.TotalHours > 0 ? (double?)d.Duration.TotalHours : null));
+            QualitySparkline = new System.Collections.ObjectModel.ObservableCollection<double?>(
+                sleepStats.DailyData.Select(d => d.Quality > 0 ? (double?)d.Quality : null));
 
             var sleepData = new System.Collections.ObjectModel.ObservableCollection<SleepBarChartItem>();
             
             // If less than 30 days, show daily. Else, group by week or month.
+            var days = range.Normalized().Days;
             if (days <= 14)
             {
                 foreach (var pt in sleepStats.DailyData)

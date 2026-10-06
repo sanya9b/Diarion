@@ -22,6 +22,11 @@ public partial class MainViewModel : BaseViewModel
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
     private readonly IHealthDataService _healthDataService;
+    private readonly IProfileService _profileService;
+    private readonly IGuidedPromptService _guidedPromptService;
+
+    // Read once and reused across day loads; the library only changes when the user edits it.
+    private PromptLibrary? _promptLibrary;
 
     public CalendarSectionViewModel CalendarSection { get; }
     public PlannerSectionViewModel PlannerSection { get; }
@@ -29,8 +34,26 @@ public partial class MainViewModel : BaseViewModel
     public HabitsSectionViewModel HabitsSection { get; }
     public CycleStatusViewModel CycleStatusSection { get; }
 
+    /// <summary>The first-run coach marks over this screen. Idle until the page starts it.</summary>
+    public TourViewModel Tour { get; }
+
     [ObservableProperty]
     private DiaryEntryViewModel? _currentEntry;
+
+    // Drives which home-screen blocks are shown; the sections bind their IsVisible to these flags.
+    [ObservableProperty]
+    private UserProfile _profile = new();
+
+    // False until the first LoadEntriesAsync completes. Home content stays hidden behind the
+    // loading indicator until then, so the user never sees the default all-blocks-visible layout
+    // (Profile starts as new() with every block flag true) before the real profile is applied.
+    [ObservableProperty]
+    private bool _isContentReady;
+
+    public bool IsLoading => IsBusy || !IsContentReady;
+
+    partial void OnIsContentReadyChanged(bool value) => OnPropertyChanged(nameof(IsLoading));
+    protected override void OnBusyStateChanged() => OnPropertyChanged(nameof(IsLoading));
 
     [ObservableProperty]
     private int _currentStreak;
@@ -51,11 +74,14 @@ public partial class MainViewModel : BaseViewModel
         INavigationService navigationService,
         IDialogService dialogService,
         IHealthDataService healthDataService,
+        IProfileService profileService,
+        IGuidedPromptService guidedPromptService,
         CalendarSectionViewModel calendarSection,
         PlannerSectionViewModel plannerSection,
         QuickMenuViewModel quickMenuSection,
         HabitsSectionViewModel habitsSection,
-        CycleStatusViewModel cycleStatusSection)
+        CycleStatusViewModel cycleStatusSection,
+        TourViewModel tour)
     {
         using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
@@ -63,12 +89,15 @@ public partial class MainViewModel : BaseViewModel
         _navigationService = navigationService;
         _dialogService = dialogService;
         _healthDataService = healthDataService;
-        
+        _profileService = profileService;
+        _guidedPromptService = guidedPromptService;
+
         CalendarSection = calendarSection;
         PlannerSection = plannerSection;
         QuickMenuSection = quickMenuSection;
         HabitsSection = habitsSection;
         CycleStatusSection = cycleStatusSection;
+        Tour = tour;
 
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
 
@@ -80,6 +109,17 @@ public partial class MainViewModel : BaseViewModel
         WeakReferenceMessenger.Default.Register<TodoChangedMessage>(this, (r, m) =>
         {
             _ = CalendarSection.UpdateCalendarTasksForDayAsync(m.Date);
+        });
+
+        WeakReferenceMessenger.Default.Register<PromptLibraryChangedMessage>(this, (r, m) =>
+        {
+            _promptLibrary = null;
+        });
+
+        WeakReferenceMessenger.Default.Register<CycleLogChangedMessage>(this, (r, m) =>
+        {
+            // Marking one day moves every later prediction, so the whole grid is repainted, not that cell.
+            _ = CalendarSection.UpdateCalendarTasksCompletionAsync();
         });
 
         CalendarSection.Initialize();
@@ -114,6 +154,11 @@ public partial class MainViewModel : BaseViewModel
             {
                 h.PropertyChanged -= OnEntryPropertyChanged;
             }
+            // Fixed 17 slots, never added or removed, so no CollectionChanged handling is needed.
+            foreach (var h in oldValue.HourlyMood)
+            {
+                h.PropertyChanged -= OnEntryPropertyChanged;
+            }
         }
 
         if (newValue != null)
@@ -121,6 +166,10 @@ public partial class MainViewModel : BaseViewModel
             newValue.PropertyChanged += OnEntryPropertyChanged;
             newValue.Habits.CollectionChanged += OnHabitsCollectionChanged;
             foreach (var h in newValue.Habits)
+            {
+                h.PropertyChanged += OnEntryPropertyChanged;
+            }
+            foreach (var h in newValue.HourlyMood)
             {
                 h.PropertyChanged += OnEntryPropertyChanged;
             }
@@ -139,48 +188,87 @@ public partial class MainViewModel : BaseViewModel
         {
             foreach (HabitItemViewModel item in e.NewItems) item.PropertyChanged += OnEntryPropertyChanged;
         }
+
+        // Subscriptions above must always be rebuilt; only the save is skipped while loading, matching
+        // OnEntryPropertyChanged. Repopulating the list on load is not a user edit.
+        if (IsBusy) return;
         ScheduleAutoSave();
     }
 
+    /// <summary>
+    /// Presentation-only state that lives on the entry view-models but is not part of the entry.
+    /// Saving on these would persist a blank row just because the user expanded a panel or highlighted
+    /// an hour — the same way browsing a day used to create entries.
+    /// </summary>
+    private static readonly HashSet<string> NonPersistedProperties = new()
+    {
+        nameof(IsBusy),
+        nameof(DiaryEntryViewModel.SelectedHour),
+        nameof(DiaryEntryViewModel.IsHourSelected),
+        nameof(DiaryEntryViewModel.IsHourlyExpanded),
+        nameof(DiaryEntryViewModel.CurrentMood),
+        nameof(HourMoodViewModel.IsSelected),
+    };
+
     private void OnEntryPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (IsBusy || CurrentEntry == null || e.PropertyName == "IsBusy") return;
+        if (IsBusy || CurrentEntry == null) return;
+        if (e.PropertyName != null && NonPersistedProperties.Contains(e.PropertyName)) return;
         ScheduleAutoSave();
     }
 
     private void ScheduleAutoSave()
     {
+        // Capture the entry being edited NOW; the debounced save must persist THIS entry even if
+        // the user switches to another day before the debounce fires (otherwise edits are lost).
+        var entry = CurrentEntry;
+        if (entry == null)
+        {
+            return;
+        }
+
         _autoSaveDebouncer.Debounce(async () =>
         {
-            if (CurrentEntry != null)
-            {
-                CurrentEntry.SyncToModel();
-                await _diaryService.SaveEntryAsync(CurrentEntry.Model);
-                System.Diagnostics.Debug.WriteLine($"Auto-saved entry for {CurrentEntry.Date:dd.MM.yyyy}");
-            }
+            entry.SyncToModel();
+            await _diaryService.SaveEntryAsync(entry.Model);
+            System.Diagnostics.Debug.WriteLine($"Auto-saved entry for {entry.Date:dd.MM.yyyy}");
         });
     }
 
     public Task FlushAutoSaveAsync()
     {
-        return _autoSaveDebouncer.FlushAsync(async () =>
-        {
-            if (CurrentEntry != null)
-            {
-                CurrentEntry.SyncToModel();
-                await _diaryService.SaveEntryAsync(CurrentEntry.Model);
-            }
-        });
+        // The pending action already captured the correct entry (see ScheduleAutoSave).
+        return _autoSaveDebouncer.FlushAsync();
     }
 
     private async Task LoadDayContentAsync(DateTime date)
     {
         using var _ = StartupTrace.Measure("MainViewModel.LoadDayContentAsync");
-        await LoadEntriesForDateAsync(date);
-        await CycleStatusSection.UpdateForDateAsync(date);
 
-        if (CurrentEntry != null && CycleStatusSection.IsVisible) {
-            CurrentEntry.CycleDay = CycleStatusSection.CycleDay;
+        // Persist any pending edits for the currently-open day BEFORE switching, otherwise the
+        // debounced save would still be pending and the previous day's edits could be lost.
+        await FlushAutoSaveAsync();
+
+        // Own the busy scope for the whole load. CycleDay below is written by us, not by the user, so
+        // autosave must stay suppressed until it is set — otherwise merely browsing a day persists an
+        // otherwise-empty entry, which then counts as a journaled day in the streak.
+        var wasBusy = IsBusy;
+        IsBusy = true;
+        try
+        {
+            await LoadEntriesForDateAsync(date);
+            await CycleStatusSection.UpdateForDateAsync(date);
+
+            if (CurrentEntry != null)
+            {
+                // Cleared, not left alone, when tracking is off: the health block renders this number,
+                // and a day that no longer counts must not keep showing the one it was given.
+                CurrentEntry.CycleDay = CycleStatusSection.IsVisible ? CycleStatusSection.CycleDay : string.Empty;
+            }
+        }
+        finally
+        {
+            IsBusy = wasBusy;
         }
 
         if (IsPlannerMode)
@@ -195,12 +283,16 @@ public partial class MainViewModel : BaseViewModel
     private async Task LoadEntriesForDateAsync(DateTime date)
     {
         using var _ = StartupTrace.Measure("MainViewModel.LoadEntriesForDateAsync");
-        IsBusy = true;
         var entry = await _diaryService.GetEntryForDateAsync(date.Date);
         await _diaryHabitSyncService.SyncHabitsForEntryAsync(entry);
-        CurrentEntry = new DiaryEntryViewModel(entry);
-        IsBusy = false;
+        CurrentEntry = new DiaryEntryViewModel(entry, await EnsurePromptLibraryAsync());
     }
+
+    private async Task<PromptLibrary> EnsurePromptLibraryAsync()
+        => _promptLibrary ??= await _guidedPromptService.GetLibraryAsync();
+
+    [RelayCommand]
+    public async Task OpenPromptLibraryAsync() => await _navigationService.NavigateToAsync("PromptLibrary");
 
     [RelayCommand]
     public async Task ImportSleepDataAsync()
@@ -209,7 +301,9 @@ public partial class MainViewModel : BaseViewModel
 
         if (!await _healthDataService.IsSupportedAsync())
         {
-            await _dialogService.ShowAlertAsync("Error", "Health sync is not supported on this device.", "OK");
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.AlertError,
+                Diarion.Resources.Localization.AppResources.HealthSyncUnsupported);
             return;
         }
 
@@ -257,6 +351,8 @@ public partial class MainViewModel : BaseViewModel
         try
         {
             IsBusy = true;
+            // Reload so home-screen block visibility reflects changes made in settings.
+            Profile = await _profileService.GetUserProfileAsync();
             await LoadDayContentAsync(CalendarSection.GetSelectedDate());
             await CalendarSection.UpdateCalendarTasksCompletionAsync();
             await UpdateStreakAsync();
@@ -267,20 +363,21 @@ public partial class MainViewModel : BaseViewModel
         }
         finally
         {
+            IsContentReady = true;
             IsBusy = false;
         }
     }
 
     private async Task UpdateStreakAsync()
     {
-        CurrentStreak = await _diaryService.GetCurrentStreakAsync();
+        CurrentStreak = (await _diaryService.GetCurrentStreakAsync()).Length;
         OnPropertyChanged(nameof(IsStreakVisible));
     }
 
     [RelayCommand]
     public void OpenMenu()
     {
-        Microsoft.Maui.Controls.Shell.Current.FlyoutIsPresented = true;
+        _ = _navigationService.OpenFlyoutAsync();
     }
 
     [RelayCommand]

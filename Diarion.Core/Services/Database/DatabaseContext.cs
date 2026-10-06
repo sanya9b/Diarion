@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Diarion.Diagnostics;
 using Diarion.Models;
+using Diarion.Models.Ai;
 using LiteDB;
 
 namespace Diarion.Services.Database;
@@ -11,13 +12,19 @@ public class DatabaseContext : IDatabaseContext, IDisposable
 {
     private const string DbFileName = "diarion_local.db";
     private readonly object _lock = new();
+    private readonly IEncryptionKeyProvider? _keyProvider;
+    private readonly IDatabaseSeeder? _seeder;
+    private readonly bool _useInMemory;
     private LiteDatabase? _db;
     private string _dbPath = string.Empty;
 
     public string DatabasePath => _dbPath;
 
-    public DatabaseContext(IDatabaseSeeder? seeder = null, bool useInMemory = false)
+    public DatabaseContext(IDatabaseSeeder? seeder = null, IEncryptionKeyProvider? keyProvider = null, bool useInMemory = false)
     {
+        _keyProvider = keyProvider;
+        _seeder = seeder;
+        _useInMemory = useInMemory;
         Initialize(seeder, useInMemory);
     }
 
@@ -32,7 +39,10 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         else
         {
             _dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DbFileName);
-            _db = new LiteDatabase(_dbPath);
+            // Encrypt the database at rest using a device-keychain-backed key. On the first run
+            // after upgrading, a pre-existing plaintext file is migrated transparently and safely.
+            var password = _keyProvider?.GetOrCreateKey();
+            _db = EncryptedLiteDatabaseFactory.Open(_dbPath, password);
         }
         
         var entriesCollection = _db.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
@@ -45,15 +55,31 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         var profileCollection = _db.GetCollection<UserProfile>(DatabaseConstants.ProfileCollection);
         var wishlistCollection = _db.GetCollection<WishlistEntry>(DatabaseConstants.WishlistCollection);
         var financeCollection = _db.GetCollection<FinanceTransaction>(DatabaseConstants.FinanceCollection);
+        var transfersCollection = _db.GetCollection<Transfer>(DatabaseConstants.TransfersCollection);
+        // No index: a few dozen rows, read once per day-load, and every write would have to maintain it.
+        _db.GetCollection<GuidedPrompt>(DatabaseConstants.GuidedPromptsCollection);
+        // No index either: a handful of rules read once per finance-page load, and a Date index would be
+        // meaningless on a rule, which has a recurrence rather than a date.
+        _db.GetCollection<RecurringTransaction>(DatabaseConstants.RecurringTransactionsCollection);
+        // Same again for repeating tasks: a handful of rules, read once per day-load, no date to index.
+        _db.GetCollection<RecurringTask>(DatabaseConstants.RecurringTasksCollection);
+        var embeddingsCollection = _db.GetCollection<EmbeddingChunk>(DatabaseConstants.EmbeddingsCollection);
 
         entriesCollection.EnsureIndex(x => x.Date);
         wishlistCollection.EnsureIndex(x => x.Date);
         financeCollection.EnsureIndex(x => x.Date);
+        transfersCollection.EnsureIndex(x => x.Date);
         todosCollection.EnsureIndex(x => x.TargetDate);
         harmfulHabitTrackersCollection.EnsureIndex(x => x.StartDate);
         readingTrackerBooksCollection.EnsureIndex(x => x.SlotNumber, true);
         happyMomentsCollection.EnsureIndex(x => x.SlotNumber, true);
         goodDeedsCollection.EnsureIndex(x => x.SlotNumber, true);
+        // Indexed on the source, not the vector: every re-index and every entry edit deletes by
+        // SourceId, while similarity search is a full scan by design and no index would help it.
+        embeddingsCollection.EnsureIndex(x => x.SourceId);
+
+        // Apply any pending schema migrations before seeding/using the data.
+        MigrationRunner.Run(_db);
 
         seeder?.Seed(_db);
     }
@@ -85,6 +111,16 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         {
             _db?.Dispose();
             _db = null;
+        }
+    }
+
+    public void Reopen()
+    {
+        lock (_lock)
+        {
+            _db?.Dispose();
+            _db = null;
+            Initialize(_seeder, _useInMemory);
         }
     }
 

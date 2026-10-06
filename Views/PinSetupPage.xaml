@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Views.PinSetupPage"
+             x:DataType="viewmodels:PinSetupViewModel"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *, Auto, Auto, *" Padding="32">
+
+        <!-- Close / cancel -->
+        <Button Grid.Row="0" Text="✕"
+                HorizontalOptions="Start" VerticalOptions="Start"
+                BackgroundColor="Transparent" BorderWidth="0"
+                FontSize="22" Padding="0" HeightRequest="44" WidthRequest="44"
+                TextColor="{DynamicResource Theme_Midnight_Snow}"
+                Command="{Binding CancelCommand}"
+                SemanticProperties.Description="{x:Static localization:AppResources.DeleteConfirmNo}" />
+
+        <!-- Header + PIN dots -->
+        <VerticalStackLayout Grid.Row="2" Spacing="18" VerticalOptions="End" HorizontalOptions="Center">
+            <Label Text="🔒" FontSize="52" HorizontalOptions="Center" />
+            <Label Text="{Binding Prompt}"
+                   FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"
+                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            <Label Text="{Binding PinDisplay}"
+                   FontSize="34" CharacterSpacing="10" HorizontalOptions="Center"
+                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            <Label Text="{Binding ErrorMessage}"
+                   FontSize="13" HorizontalOptions="Center" MinimumHeightRequest="18"
+                   TextColor="{DynamicResource Theme_Coral}" />
+        </VerticalStackLayout>
+
+        <!-- Numeric keypad -->
+        <Grid Grid.Row="3" Margin="0,32,0,0"
+              ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto"
+              ColumnSpacing="20" RowSpacing="20" HorizontalOptions="Center">
+
+            <Button Grid.Row="0" Grid.Column="0" Text="1" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="1" />
+            <Button Grid.Row="0" Grid.Column="1" Text="2" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="2" />
+            <Button Grid.Row="0" Grid.Column="2" Text="3" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="3" />
+
+            <Button Grid.Row="1" Grid.Column="0" Text="4" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="4" />
+            <Button Grid.Row="1" Grid.Column="1" Text="5" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="5" />
+            <Button Grid.Row="1" Grid.Column="2" Text="6" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="6" />
+
+            <Button Grid.Row="2" Grid.Column="0" Text="7" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="7" />
+            <Button Grid.Row="2" Grid.Column="1" Text="8" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="8" />
+            <Button Grid.Row="2" Grid.Column="2" Text="9" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="9" />
+
+            <Button Grid.Row="3" Grid.Column="1" Text="0" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="0" />
+
+            <Button Grid.Row="3" Grid.Column="2" Text="⌫"
+                    Style="{StaticResource PinKey}"
+                    BackgroundColor="Transparent" BorderWidth="0"
+                    Command="{Binding DeleteDigitCommand}"
+                    SemanticProperties.Description="{x:Static localization:AppResources.DeleteButtonLabel}" />
+        </Grid>
+    </Grid>
+</ContentPage>

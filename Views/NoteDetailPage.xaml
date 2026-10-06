@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:selectors="clr-namespace:Diarion.Selectors"
+             x:Class="Diarion.Views.NoteDetailPage"
+             x:Name="RootPage"
+             x:DataType="viewModels:NoteDetailViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{localization:Translate Key=EditEntryTitle}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior EventName="Disappearing" Command="{Binding FlushSaveCommand}" />
+        <!-- The keyboard is watched only while this page is on screen: the service is a singleton and
+             would hold every note ever opened. -->
+        <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding WatchKeyboardCommand}" />
+        <toolkit:EventToCommandBehavior EventName="Disappearing" Command="{Binding ForgetKeyboardCommand}" />
+    </ContentPage.Behaviors>
+
+    <!--
+        One line of the note, one editable field, with its marker drawn beside it instead of typed into
+        it. Neither the markdown nor its emphasis ever reaches the screen: "# " turns the line into a
+        heading and disappears, "- [ ] " becomes a tick box you can tap, and bold is bold — the field is
+        a RichTextBlock, a native rich text control on every platform, see Controls/Handlers.
+    -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style x:Key="NoteBlockEditor" TargetType="controls:NoteLine">
+                <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                <Setter Property="DimColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                <Setter Property="CodeColor" Value="{DynamicResource Theme_Amber}" />
+                <Setter Property="LinkColor" Value="{DynamicResource Theme_Coral}" />
+                <Setter Property="ActivePlaceholderColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="VerticalOptions" Value="Start" />
+                <!-- On iOS the formatting bar rides on the keyboard; the page hands it over here. -->
+                <Setter Property="InputAccessory" Value="{Binding Source={x:Reference RootPage}, Path=AccessoryBar}" />
+            </Style>
+
+            <Style x:Key="NoteBlockHeading1" TargetType="controls:NoteLine" BasedOn="{StaticResource NoteBlockEditor}">
+                <Setter Property="FontSize" Value="28" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+            <Style x:Key="NoteBlockHeading2" TargetType="controls:NoteLine" BasedOn="{StaticResource NoteBlockEditor}">
+                <Setter Property="FontSize" Value="23" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+            <Style x:Key="NoteBlockHeading3" TargetType="controls:NoteLine" BasedOn="{StaticResource NoteBlockEditor}">
+                <Setter Property="FontSize" Value="19" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+            <Style x:Key="NoteBlockMarker" TargetType="Label">
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                <Setter Property="VerticalOptions" Value="Start" />
+                <Setter Property="HorizontalOptions" Value="End" />
+                <Setter Property="Margin" Value="0,8,0,0" />
+            </Style>
+
+            <DataTemplate x:Key="NoteParagraphBlock" x:DataType="viewModels:NoteBlockViewModel">
+                <controls:NoteLine Style="{StaticResource NoteBlockEditor}"
+                                   Placeholder="{localization:Translate Key=NoteContentPlaceholder}" />
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteHeading1Block" x:DataType="viewModels:NoteBlockViewModel">
+                <controls:NoteLine Style="{StaticResource NoteBlockHeading1}" />
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteHeading2Block" x:DataType="viewModels:NoteBlockViewModel">
+                <controls:NoteLine Style="{StaticResource NoteBlockHeading2}" />
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteHeading3Block" x:DataType="viewModels:NoteBlockViewModel">
+                <controls:NoteLine Style="{StaticResource NoteBlockHeading3}" />
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteBulletBlock" x:DataType="viewModels:NoteBlockViewModel">
+                <Grid ColumnDefinitions="26,*">
+                    <Label Grid.Column="0" Text="•" Style="{StaticResource NoteBlockMarker}"
+                           TextColor="{DynamicResource Theme_Coral}" FontSize="20" Margin="0,6,0,0" />
+                    <controls:NoteLine Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteNumberedBlock" x:DataType="viewModels:NoteBlockViewModel">
+                <Grid ColumnDefinitions="26,*">
+                    <Label Grid.Column="0" Text="{Binding NumberLabel}" Style="{StaticResource NoteBlockMarker}"
+                           TextColor="{DynamicResource Theme_Coral}" FontSize="16" />
+                    <controls:NoteLine Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteChecklistBlock" x:DataType="viewModels:NoteBlockViewModel">
+                <Grid ColumnDefinitions="32,*">
+                    <!-- Round, and it ticks on tap. The control writes its own state back to the block. -->
+                    <controls:RoundedCheckBox Grid.Column="0"
+                                              IsChecked="{Binding IsChecked}"
+                                              CornerRadius="9"
+                                              Color="{DynamicResource Theme_Coral}"
+                                              VerticalOptions="Start"
+                                              Margin="0,2,0,0" />
+                    <!-- A ticked item goes grey and crossed out; the field does both, see IsStruck. -->
+                    <controls:NoteLine Grid.Column="1" Style="{StaticResource NoteBlockEditor}" />
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="NoteQuoteBlock" x:DataType="viewModels:NoteBlockViewModel">
+                <Grid ColumnDefinitions="26,*">
+                    <BoxView Grid.Column="0" WidthRequest="3" HorizontalOptions="Start" Margin="4,6,0,6"
+                             CornerRadius="2" Color="{DynamicResource Theme_Amber}" />
+                    <controls:NoteLine Grid.Column="1" Style="{StaticResource NoteBlockEditor}"
+                                       FontAttributes="Italic"
+                                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                </Grid>
+            </DataTemplate>
+
+            <selectors:NoteBlockTemplateSelector x:Key="NoteBlockSelector"
+                                                 ParagraphTemplate="{StaticResource NoteParagraphBlock}"
+                                                 Heading1Template="{StaticResource NoteHeading1Block}"
+                                                 Heading2Template="{StaticResource NoteHeading2Block}"
+                                                 Heading3Template="{StaticResource NoteHeading3Block}"
+                                                 BulletTemplate="{StaticResource NoteBulletBlock}"
+                                                 NumberedTemplate="{StaticResource NoteNumberedBlock}"
+                                                 ChecklistTemplate="{StaticResource NoteChecklistBlock}"
+                                                 QuoteTemplate="{StaticResource NoteQuoteBlock}" />
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Top Custom Bar -->
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SaveNoteCommand}" />
+                </Grid.GestureRecognizers>
+                <!-- Back/Close arrow -->
+                <Path Data="M 20 24 L 12 16 L 20 8 M 12 16 H 32"
+                      Stroke="{DynamicResource Theme_Midnight_Snow}"
+                      StrokeThickness="2"
+                      StrokeLineCap="Round"
+                      StrokeLineJoin="Round"
+                      VerticalOptions="Center"
+                      HorizontalOptions="Center"
+                      WidthRequest="32"
+                      HeightRequest="32" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <!-- Empty for minimal look -->
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Editor + metadata -->
+        <ScrollView Grid.Row="1" Padding="24,10,24,32">
+            <VerticalStackLayout Spacing="20">
+
+                <!-- Tapping the empty space below the text puts the caret at the end of the note. -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Blocks}"
+                                     BindableLayout.ItemTemplateSelector="{StaticResource NoteBlockSelector}"
+                                     Spacing="2"
+                                     BackgroundColor="Transparent"
+                                     MinimumHeightRequest="240">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.FocusEndCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                </VerticalStackLayout>
+
+                <!-- Tags -->
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding HasTags}">
+                    <Label Text="{localization:Translate Key=NotesTags}" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Amber}" />
+                    <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding Tags}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Border Margin="0,0,8,8" Padding="10,4" StrokeThickness="1"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                        BackgroundColor="Transparent" StrokeShape="RoundRectangle 14">
+                                    <Label Text="{Binding ., StringFormat='#{0}'}" FontSize="13" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+
+                <!-- Linked notes (outgoing) -->
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding HasOutgoingLinks}">
+                    <Label Text="{localization:Translate Key=NotesLinked}" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Amber}" />
+                    <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding OutgoingLinks}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:NoteLinkItem">
+                                <Border Margin="0,0,8,8" Padding="12,5" StrokeThickness="1"
+                                        Stroke="{DynamicResource Theme_Coral}"
+                                        BackgroundColor="Transparent" StrokeShape="RoundRectangle 14">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding Exists}" Value="False">
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenLinkedNoteCommand}" CommandParameter="{Binding Title}" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{Binding Title}" FontSize="13" FontAttributes="Bold">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Exists}" Value="True">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Exists}" Value="False">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+
+                <!-- Backlinks -->
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding HasBacklinks}">
+                    <Label Text="{localization:Translate Key=NotesBacklinks}" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Amber}" />
+                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Backlinks}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:Note">
+                                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                        StrokeShape="RoundRectangle 12" Padding="12">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenBacklinkCommand}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding Preview}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="1" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!--
+            The formatting bar sits under the note rather than inside the scroll, so it is where the
+            thumb already is and stays there while the note is scrolled. The spacer beneath it is the
+            keyboard, measured — zero on Android, which moves the window itself.
+
+            Not on iOS. There the keyboard slides over the page, and a bar laid out in the page would
+            need to know how tall the keyboard is to climb over it; the system does not say reliably.
+            So on iOS the bar is the keyboard's accessory view instead — the same NoteFormatBar,
+            created in the code-behind and handed to every line through AccessoryBar — and the system
+            raises and lowers it with the keyboard, whatever height the keyboard has.
+        -->
+        <VerticalStackLayout Grid.Row="2">
+            <controls:NoteFormatBar IsVisible="{OnPlatform True, iOS=False}" />
+            <BoxView HeightRequest="{Binding KeyboardInset}" Color="Transparent" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

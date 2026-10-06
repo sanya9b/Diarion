@@ -16,7 +16,7 @@
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCloseTapped" />
                 </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="✕" FontSize="22" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </Grid>
 
             <VerticalStackLayout Grid.Column="1" Spacing="4">
@@ -82,6 +82,7 @@
                                                    FontSize="14"
                                                    FontAttributes="Bold"
                                                    InputTransparent="True"
+                                                   VerticalOptions="Center"
                                                    TextColor="{DynamicResource Theme_Midnight_Snow}">
                                                 <Label.Triggers>
                                                     <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
@@ -135,17 +136,48 @@
                                         StrokeShape="RoundRectangle 18"
                                         BackgroundColor="{DynamicResource Theme_Val_148FA083_18FFFFFF}"
                                         Padding="14,12">
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Text="{localization:Translate Key=HabitTrackerMarkedDaysLabel}"
-                                               FontSize="11"
-                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Label Text="{Binding SelectedTracker.MarkedDaysCountText}"
-                                               FontSize="16"
-                                               FontAttributes="Bold"
-                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                    </VerticalStackLayout>
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                                            <Label Text="{localization:Translate Key=HabitTrackerMarkedDaysLabel}"
+                                                   FontSize="11"
+                                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Label Text="{Binding SelectedTracker.MarkedDaysCountText}"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        </VerticalStackLayout>
+                                        
+                                        <Grid Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8" Margin="0,-4,-4,0">
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteTrackerCommand}"
+                                                                      CommandParameter="{Binding SelectedTracker}" />
+                                            </Grid.GestureRecognizers>
+                                            <Label Text="✕" FontSize="20" TextColor="{DynamicResource Theme_Coral}" />
+                                        </Grid>
+                                    </Grid>
                                 </Border>
                             </Grid>
+
+                            <!-- Quit-tracker stats -->
+                            <VerticalStackLayout Spacing="12">
+                                <!-- Edit tracker (name / start / cost / units / reminder) -->
+                                <Label Text="✎" FontSize="16" HorizontalOptions="End" TextColor="{DynamicResource Theme_Ocean_Dust}"
+                                       SemanticProperties.Description="{localization:Translate Key=HabitTrackerEditTitle}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding EditTrackerCommand}" CommandParameter="{Binding SelectedTracker}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+
+                                <!-- Money saved -->
+                                <Border IsVisible="{Binding SelectedTracker.HasMoney}" StrokeThickness="0" StrokeShape="RoundRectangle 18"
+                                        BackgroundColor="{DynamicResource Theme_Val_148FA083_18FFFFFF}" Padding="14,12">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0" Text="{localization:Translate Key=QuitMoneySavedLabel}" FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Grid.Column="1" Text="{Binding SelectedTracker.MoneySavedText}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}" />
+                                    </Grid>
+                                </Border>
+
+                            </VerticalStackLayout>
 
                             <FlexLayout BindableLayout.ItemsSource="{Binding TrackerDays}"
                                         Padding="0"
@@ -175,7 +207,8 @@
                                                 <DataTrigger TargetType="Border" Binding="{Binding IsFuture}" Value="True">
                                                     <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Val_1A000000_33000000}" />
                                                     <Setter Property="StrokeThickness" Value="0" />
-                                                    <Setter Property="Opacity" Value="0.5" />
+                                                    <Setter Property="Opacity" Value="0.4" />
+                                                    <Setter Property="InputTransparent" Value="True" />
                                                 </DataTrigger>
                                             </Border.Triggers>
 
@@ -240,7 +273,7 @@
                 <VerticalStackLayout Spacing="16">
                     <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
                         <VerticalStackLayout VerticalOptions="Center" Spacing="4">
-                            <Label Text="{localization:Translate Key=HabitTrackerSetupTitle}"
+                            <Label Text="{Binding FormTitleText}"
                                    FontSize="18"
                                    FontAttributes="Bold"
                                    TextColor="{DynamicResource Theme_Midnight_Snow}" />
@@ -271,12 +304,36 @@
                                 MaximumDate="{Binding MaxTrackerStartDate}"
                                 TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="{localization:Translate Key=HabitTrackerCostLabel}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Entry Text="{Binding NewTrackerCost}" Keyboard="Numeric" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Dust_Ocean}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="{localization:Translate Key=HabitTrackerUnitsLabel}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Entry Text="{Binding NewTrackerUnits}" Keyboard="Numeric" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Dust_Ocean}" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Reminder -->
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="{localization:Translate Key=HabitReminderLabel}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding NewTrackerReminderEnabled}" VerticalOptions="Center" />
+                        </Grid>
+                        <TimePicker Time="{Binding NewTrackerReminderTime}"
+                                    Format="HH:mm"
+                                    IsVisible="{Binding NewTrackerReminderEnabled}"
+                                    HorizontalOptions="Start"
+                                    TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    </VerticalStackLayout>
+
                     <Label Text="{Binding ValidationMessage}"
                            IsVisible="{Binding HasValidationMessage}"
                            FontSize="12"
                            TextColor="{DynamicResource Theme_Coral}" />
 
-                    <Button Text="{localization:Translate Key=HabitTrackerAddButton}"
+                    <Button Text="{Binding FormButtonText}"
                             Command="{Binding AddTrackerCommand}"
                             CornerRadius="18"
                             Padding="18,12"

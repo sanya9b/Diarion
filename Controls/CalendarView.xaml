@@ -43,7 +43,12 @@
             </Grid>
         </Grid>
 
+        <!-- Height stated, not measured. A wrapping FlexLayout with a percentage Basis measures itself a
+             row taller than it lays out, and AlignContent="Start" packs the weeks upward — so the surplus
+             appeared as a band of empty space under the calendar that no padding in this file explained.
+             The number comes from the cell height and spacing below; keep the three in step. -->
         <FlexLayout Grid.Row="1" x:Name="CalendarGrid" BindableLayout.ItemsSource="{Binding CalendarDays}"
+                HeightRequest="{Binding CalendarGridHeight}"
                 Wrap="Wrap"
                 Direction="Row"
                 JustifyContent="SpaceBetween"
@@ -63,8 +68,12 @@
                             </Border.GestureRecognizers>
                             
                             <Border.Triggers>
+                                <!-- Predicted days are outlined, logged days filled: now that one is a
+                                     record and the other a guess, they must not look identical. -->
                                 <DataTrigger TargetType="Border" Binding="{Binding IsPredictedCycleDay}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_BerryTransparent}" />
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Berry}" />
+                                    <Setter Property="StrokeThickness" Value="1" />
+                                    <Setter Property="StrokeDashArray" Value="2,2" />
                                 </DataTrigger>
                                 <DataTrigger TargetType="Border" Binding="{Binding IsCycleDay}" Value="True">
                                     <Setter Property="BackgroundColor" Value="{DynamicResource Theme_BerryTransparent}" />
@@ -88,8 +97,12 @@
                                     </Label.Triggers>
                                 </Label>
                                 
-                                <!-- Pacifier icon for fertile window (Bottom Left) -->
-                                <Image Source="pacifier.png" WidthRequest="16" HeightRequest="16" HorizontalOptions="Start" VerticalOptions="End" Aspect="AspectFit" InputTransparent="True" IsVisible="{Binding IsFertileWindow}" Margin="-2,0,0,-2">
+                                <!-- Pacifier icon for fertile window (Bottom Left). Bound to
+                                     ShowsFertileWindow, not IsFertileWindow: off for v1, and the
+                                     reason is in CycleDisplay.FertileWindowMarkerOffered. Binding
+                                     this back to IsFertileWindow puts it on screen again while
+                                     leaving that flag reading false, so don't. -->
+                                <Image Source="pacifier.png" WidthRequest="16" HeightRequest="16" HorizontalOptions="Start" VerticalOptions="End" Aspect="AspectFit" InputTransparent="True" IsVisible="{Binding ShowsFertileWindow}" Margin="-2,0,0,-2">
                                     <Image.Behaviors>
                                         <toolkit:IconTintColorBehavior TintColor="{DynamicResource Theme_Berry}" />
                                     </Image.Behaviors>

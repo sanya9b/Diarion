@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support — Diarion</title>
+<meta name="description" content="How to reach the Diarion developer, move your data to a new phone, what to do about a forgotten backup passphrase or PIN, and how to export or delete your data.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#E9E7E1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#22282C" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://diarion.org/en/support">
+<link rel="alternate" hreflang="uk" href="https://diarion.org/support">
+<link rel="alternate" hreflang="en" href="https://diarion.org/en/support">
+<link rel="alternate" hreflang="x-default" href="https://diarion.org/support">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/icon-512.png" type="image/png" sizes="512x512">
+<link rel="apple-touch-icon" href="/icon-512.png">
+<link rel="stylesheet" href="/styles.css">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Diarion">
+<meta property="og:title" content="Diarion Support">
+<meta property="og:description" content="Developer contact and answers to common questions.">
+<meta property="og:url" content="https://diarion.org/en/support">
+<meta property="og:image" content="https://diarion.org/og-en.png">
+<meta property="og:locale" content="en_US">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/en/" aria-label="Diarion — home">
+      <svg viewBox="0 0 280 280" aria-hidden="true" focusable="false"><rect width="280" height="280" rx="56" fill="#22282C"/><path fill-rule="evenodd" fill="#E9E7E1" d="M 78 70 L 78 218 L 148 218 C 215 218 222 175 222 144 C 222 113 215 70 148 70 Z M 112 102 L 112 186 L 148 186 C 184 186 190 165 190 144 C 190 123 184 102 148 102 Z"/><path fill="#C26D53" d="M 168 58 L 168 138 L 190 122 L 212 138 L 212 58 Z"/></svg>
+      Diarion
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="/en/">Home</a>
+      <a href="/en/privacy">Privacy</a>
+      <a href="/en/support" aria-current="page">Support</a>
+      <a class="lang" href="/support" lang="uk" hreflang="uk">Українська</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap prose">
+  <h1>Support</h1>
+  <p class="lead">Diarion is made by one person. Write to <!--email_off--><a href="mailto:support@diarion.org">support@diarion.org</a><!--/email_off--> with questions, bugs and ideas. A reply can take a few days.</p>
+
+  <div class="notice">
+    <p><strong>Good to know up front:</strong> the developer has none of your data, none of your backup passphrases and none of your PINs. That is not a support limitation, it is how the app is built: everything stays on your phone. Which is why the first question below is about backups.</p>
+  </div>
+
+  <h2>Common questions</h2>
+  <div class="faq">
+
+    <details>
+      <summary>How do I move my data to a new phone?</summary>
+      <ol>
+        <li>On the old phone: <span class="path">Settings → Data → Backup &amp; Restore → Export Backup</span>.</li>
+        <li>Choose a passphrase for the backup. The app does not store it anywhere, so keep it somewhere safe.</li>
+        <li>In the share sheet, save the <code>.diarionbackup</code> file anywhere you like: your phone's files, a message to yourself, a drive.</li>
+        <li>On the new phone, install Diarion, open <span class="path">Settings → Data → Backup &amp; Restore → Import Backup</span>, pick the file and enter the same passphrase.</li>
+      </ol>
+      <p>Restoring overwrites the current data on the new phone, and the app warns you before it does. Restart it afterwards.</p>
+    </details>
+
+    <details>
+      <summary>I do not remember my backup passphrase</summary>
+      <p>Nobody can open that backup, the developer included: the file is encrypted with a key derived from your passphrase, and the app never stores the passphrase. This is deliberate. Otherwise anyone who got hold of the file could open it.</p>
+      <p>If the data is still on your phone, simply make a new backup with a new passphrase.</p>
+    </details>
+
+    <details>
+      <summary>I forgot my PIN</summary>
+      <p>There is no “reset by email”, because there is no account: the PIN is a lock against exactly the person who picked up your phone.</p>
+      <ul>
+        <li>If Face ID or fingerprint unlock is on, unlock with it, then go to <span class="path">Settings → Security</span> and tap “Remove PIN” or “Change PIN”.</li>
+        <li>If biometrics are off, access to the data on this phone cannot be recovered. What remains is to reinstall the app (the data is lost) and restore a backup, if you have one.</li>
+      </ul>
+      <p>After five wrong attempts the app pauses for 30 seconds. That is brute-force protection, not a permanent lock.</p>
+    </details>
+
+    <details>
+      <summary>How do I export my entries to ordinary files?</summary>
+      <p><span class="path">Settings → Data → Export data</span>, then JSON, CSV or Markdown. The file is produced on the phone and handed to the share sheet. These are open formats: JSON for programs, CSV for spreadsheets, Markdown reads as plain text.</p>
+    </details>
+
+    <details>
+      <summary>How do I delete all my data?</summary>
+      <p>Either <span class="path">Settings → Data → “Delete all my data”</span>, or simply delete the app: its storage goes with it. There is no need to write to the developer, who has none of your data and never did.</p>
+    </details>
+
+    <details>
+      <summary>The app closed unexpectedly. What now?</summary>
+      <p>On the next launch, <span class="path">Settings → Data</span> shows a “Crash report” block. Tap “Share report” and send it to <!--email_off-->support@diarion.org<!--/email_off-->. The report is a technical description of the crash (error type, location in the code, time and app version), not your entries. It stays on the phone until you send or delete it yourself.</p>
+    </details>
+
+    <details>
+      <summary>Do I need an internet connection?</summary>
+      <p>Not for the diary. The network is used in exactly one case: downloading the language model for the AI section (about 123 MB), and only if you start it yourself in <span class="path">Settings → AI</span>. The model runs on the phone and entry text never goes to the network. The app works in full without it.</p>
+    </details>
+
+    <details>
+      <summary>Which devices does Diarion run on?</summary>
+      <p>iPhone with iOS 15 or later, and Android 8.0 or later. The interface is available in Ukrainian and English, with three themes.</p>
+    </details>
+
+  </div>
+
+  <h2>Reporting a bug</h2>
+  <p>To get it fixed faster, please include:</p>
+  <ul>
+    <li>your phone model and system version (for example, iPhone 13, iOS 18.2);</li>
+    <li>what you did and what you expected to see;</li>
+    <li>what happened instead. A screenshot helps a lot;</li>
+    <li>if the app crashed, the crash report from the Data tab.</li>
+  </ul>
+  <p>There is no need to send the text of your entries. It is not needed to find the bug.</p>
+
+  <h2>Contact</h2>
+  <p><!--email_off--><a href="mailto:support@diarion.org">support@diarion.org</a><!--/email_off--> · <a href="/en/privacy">privacy policy</a></p>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>© 2026 Diarion · Nothing leaves your phone.</div>
+    <nav aria-label="Footer links">
+      <a href="/en/">Home</a>
+      <a href="/en/privacy">Privacy policy</a>
+      <a href="/support" lang="uk" hreflang="uk">Українська</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

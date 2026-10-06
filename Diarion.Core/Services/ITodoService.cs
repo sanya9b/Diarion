@@ -14,6 +14,26 @@ public interface ITodoService
     Task<List<TodoItem>> GetAllTodosAsync();
     Task SaveTodoAsync(TodoItem todo);
     Task DeleteTodoAsync(Guid todoId);
+
+    /// <summary>The rule behind a repeating task, or null if this one does not repeat.</summary>
+    Task<RecurringTask?> GetRecurringTaskAsync(Guid ruleId);
+
+    /// <summary>Every series. A handful of rows, read once per day-load.</summary>
+    Task<List<RecurringTask>> GetRecurringTasksAsync();
+
+    /// <summary>
+    /// Starts, changes or ends the series a task belongs to. Null ends it. Separate from
+    /// <see cref="SaveTodoAsync"/> rather than an argument on it because a nullable rule cannot say
+    /// "leave this alone", which is what every caller that only ticks a task complete needs to say.
+    /// </summary>
+    Task SetRecurrenceAsync(Guid todoId, RecurrenceRule? recurrence);
+
+    /// <summary>
+    /// Removes a series: the rule, its standing reminder, and every occurrence still outstanding.
+    /// Completed occurrences stay — they are a record of what was actually done, and deleting the plan
+    /// is not the same as denying the history.
+    /// </summary>
+    Task DeleteRecurringTaskAsync(Guid ruleId);
     Task DeleteTodosByDiaryEntryAsync(Guid diaryEntryId);
     Task<IEnumerable<TodoStatsDto>> GetTodosForStatsAsync(DateTime startDate, DateTime endDate);
     Task<TodoStatistics> GetTodoStatsSummaryAsync(DateTime startDate, DateTime endDate);

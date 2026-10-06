@@ -19,7 +19,8 @@ public class MainViewModelTests
     private readonly Mock<ITodoService> _todoServiceMock;
     private readonly Mock<IHabitService> _habitServiceMock;
     private readonly Mock<IProfileService> _profileServiceMock;
-    private readonly Mock<IMenstrualCycleService> _menstrualCycleServiceMock;
+    private readonly Mock<IGuidedPromptService> _guidedPromptServiceMock;
+    private readonly Mock<ICycleLogService> _cycleLogServiceMock;
     private readonly Mock<INavigationService> _navigationServiceMock;
     private readonly Mock<IDialogService> _dialogServiceMock;
     private readonly Mock<ICalendarService> _calendarServiceMock;
@@ -36,7 +37,9 @@ public class MainViewModelTests
         _todoServiceMock = new Mock<ITodoService>();
         _habitServiceMock = new Mock<IHabitService>();
         _profileServiceMock = new Mock<IProfileService>();
-        _menstrualCycleServiceMock = new Mock<IMenstrualCycleService>();
+        _guidedPromptServiceMock = new Mock<IGuidedPromptService>();
+        _guidedPromptServiceMock.Setup(s => s.GetLibraryAsync()).ReturnsAsync(Diarion.Models.PromptLibrary.Empty);
+        _cycleLogServiceMock = new Mock<ICycleLogService>();
         _navigationServiceMock = new Mock<INavigationService>();
         _dialogServiceMock = new Mock<IDialogService>();
         _calendarServiceMock = new Mock<ICalendarService>();
@@ -46,6 +49,10 @@ public class MainViewModelTests
             .Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>()))
             .ReturnsAsync(new List<TodoItem>());
 
+        _todoServiceMock
+            .Setup(s => s.GetRecurringTasksAsync())
+            .ReturnsAsync(new List<RecurringTask>());
+
         _profileServiceMock
             .Setup(s => s.GetUserProfileAsync())
             .ReturnsAsync(new UserProfile());
@@ -54,9 +61,9 @@ public class MainViewModelTests
             .Setup(s => s.GetEntryForDateAsync(It.IsAny<DateTime>()))
             .ReturnsAsync(new DiaryEntry());
 
-        _menstrualCycleServiceMock
-            .Setup(s => s.GetCycleInfoForDate(It.IsAny<DateTime>(), It.IsAny<UserProfile>()))
-            .Returns(new CycleDayInfo());
+        _cycleLogServiceMock
+            .Setup(s => s.GetMarkedDatesAsync())
+            .ReturnsAsync(new List<DateTime>());
 
         _calendarServiceMock
             .Setup(s => s.GenerateCalendarDays(It.IsAny<DateTime>()))
@@ -68,40 +75,52 @@ public class MainViewModelTests
 
         _calendarSection = new CalendarSectionViewModel(
             _calendarServiceMock.Object,
-            _menstrualCycleServiceMock.Object,
+            _cycleLogServiceMock.Object,
             _profileServiceMock.Object,
-            _todoServiceMock.Object);
+            _todoServiceMock.Object,
+            new Mock<IDispatcherService>().Object);
 
         _plannerSection = new PlannerSectionViewModel(
             _todoServiceMock.Object,
-            _navigationServiceMock.Object);
+            _navigationServiceMock.Object,
+            new Mock<IDialogService>().Object);
 
         _quickMenuSection = new QuickMenuViewModel(
             _menuConfigServiceMock.Object,
             _profileServiceMock.Object,
-            _navigationServiceMock.Object);
+            _navigationServiceMock.Object,
+            new FakeAiAvailability());
 
         _habitsSection = new HabitsSectionViewModel(
             _habitServiceMock.Object,
             _dialogServiceMock.Object,
-            _calendarSection);
+            _calendarSection,
+            _navigationServiceMock.Object);
+    }
+
+    private MainViewModel CreateViewModel()
+    {
+        return new MainViewModel(
+            _diaryServiceMock.Object,
+            new Mock<IDiaryHabitSyncService>().Object,
+            _navigationServiceMock.Object,
+            _dialogServiceMock.Object,
+            new Mock<IHealthDataService>().Object,
+            _profileServiceMock.Object,
+            _guidedPromptServiceMock.Object,
+            _calendarSection,
+            _plannerSection,
+            _quickMenuSection,
+            _habitsSection,
+            new Mock<CycleStatusViewModel>(_cycleLogServiceMock.Object, _profileServiceMock.Object).Object,
+            new TourViewModel(_profileServiceMock.Object, new TourService()));
     }
 
     [Fact]
     public void SwitchModes_ChangesPropertiesCorrectly()
     {
         // Arrange
-        var viewModel = new MainViewModel(
-            _diaryServiceMock.Object,
-            new Mock<IDiaryHabitSyncService>().Object,
-            _navigationServiceMock.Object,
-            _dialogServiceMock.Object,
-            new Mock<IHealthDataService>().Object,
-            _calendarSection,
-            _plannerSection,
-            _quickMenuSection,
-            _habitsSection,
-            new Mock<CycleStatusViewModel>(_menstrualCycleServiceMock.Object, _profileServiceMock.Object).Object);
+        var viewModel = CreateViewModel();
 
         // Act - Switch to Planner
         viewModel.SwitchToPlannerModeCommand.Execute(null);
@@ -116,5 +135,144 @@ public class MainViewModelTests
         // Assert
         viewModel.IsPlannerMode.Should().BeFalse();
         viewModel.IsDiaryMode.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task LoadEntries_WithCycleTrackingOn_DoesNotPersistAnUntouchedDay()
+    {
+        // Regression: LoadEntriesForDateAsync used to clear IsBusy before LoadDayContentAsync assigned
+        // CurrentEntry.CycleDay, so the autosave guard was already down and browsing any day wrote a row
+        // containing nothing but Date and CycleDay. Those rows then counted towards the diary streak.
+        _profileServiceMock
+            .Setup(s => s.GetUserProfileAsync())
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
+        _cycleLogServiceMock
+            .Setup(s => s.GetMarkedDatesAsync())
+            .ReturnsAsync(new List<DateTime> { DateTime.Today.AddDays(-14) });
+
+        var viewModel = CreateViewModel();
+
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+        await viewModel.FlushAutoSaveAsync();
+
+        _diaryServiceMock.Verify(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task LoadEntries_WithCycleTrackingOn_GivesTheEntryItsCycleDay()
+    {
+        // The health block renders this number, so it has to reach the entry the day screen is showing.
+        _profileServiceMock
+            .Setup(s => s.GetUserProfileAsync())
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
+        _cycleLogServiceMock
+            .Setup(s => s.GetMarkedDatesAsync())
+            .ReturnsAsync(new List<DateTime> { DateTime.Today.AddDays(-14) });
+
+        var viewModel = CreateViewModel();
+
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+
+        viewModel.CurrentEntry!.CycleDay.Should().Be("15");
+        viewModel.CurrentEntry.HasCycleDay.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task LoadEntries_WithCycleTrackingOff_LeavesNoCycleDayBehind()
+    {
+        // A number stored while tracking was on must not keep showing after it is switched off.
+        _diaryServiceMock
+            .Setup(s => s.GetEntryForDateAsync(It.IsAny<DateTime>()))
+            .ReturnsAsync(new DiaryEntry { CycleDay = "15" });
+
+        var viewModel = CreateViewModel();
+
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+
+        viewModel.CurrentEntry!.HasCycleDay.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ChangingAnHourlyMood_IsPersisted()
+    {
+        // The hour slots are their own view-models, so MainViewModel has to subscribe to each of them
+        // the way it does for habits — otherwise editing an hour never reaches autosave.
+        var saved = new List<DiaryEntry>();
+        _diaryServiceMock
+            .Setup(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()))
+            .Callback<DiaryEntry>(e => saved.Add(e))
+            .Returns(Task.CompletedTask);
+
+        var viewModel = CreateViewModel();
+        // Sad day scalar and an Angry hour are both negative, so the guided prompt keeps its category
+        // and does not fire a property change of its own — the hour edit is the only thing that can
+        // reach autosave here.
+        var entry = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 1, 10), Emotion = Emotion.Sad });
+        viewModel.CurrentEntry = entry;
+        var promptBefore = entry.PromptResourceKey;
+
+        entry.SelectHourCommand.Execute(entry.HourlyMood.Single(h => h.Hour == 14));
+        entry.SelectEmotionCommand.Execute(Emotion.Angry);
+        await viewModel.FlushAutoSaveAsync();
+
+        entry.PromptResourceKey.Should().Be(promptBefore, "guard: this test must not be saved by a prompt change");
+
+        saved.Should().ContainSingle();
+        saved[0].HourlyMood.Should().ContainSingle(h => h.Hour == 14 && h.Mood == Emotion.Angry);
+    }
+
+    [Fact]
+    public async Task FlushAutoSaveAsync_PersistsPendingEditsOfCurrentEntry()
+    {
+        // Arrange
+        var saved = new List<DiaryEntry>();
+        _diaryServiceMock
+            .Setup(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()))
+            .Callback<DiaryEntry>(e => saved.Add(e))
+            .Returns(Task.CompletedTask);
+
+        var viewModel = CreateViewModel();
+        var entry = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 1, 10) });
+        viewModel.CurrentEntry = entry;
+
+        // Act - editing the entry schedules a debounced autosave; flush persists it immediately.
+        entry.SleepQuality = 7;
+        await viewModel.FlushAutoSaveAsync();
+
+        // Assert
+        saved.Should().ContainSingle();
+        saved[0].SleepQuality.Should().Be(7);
+    }
+
+    [Fact]
+    public async Task PendingSave_TargetsTheEditedEntry_NotTheEntrySwitchedToAfterwards()
+    {
+        // Regression for the autosave data-loss bug: editing day A then switching to day B
+        // within the debounce window must still persist day A's edits (the debounced save
+        // captured entry A), not silently re-save day B.
+        var saved = new List<DiaryEntry>();
+        _diaryServiceMock
+            .Setup(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()))
+            .Callback<DiaryEntry>(e => saved.Add(e))
+            .Returns(Task.CompletedTask);
+
+        var viewModel = CreateViewModel();
+        var entryA = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 1, 10) });
+        var entryB = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 1, 11) });
+
+        // Open day A and edit it -> schedules a debounced save bound to entry A.
+        viewModel.CurrentEntry = entryA;
+        entryA.SleepQuality = 5;
+
+        // Switch the current entry to day B before the debounce fires.
+        viewModel.CurrentEntry = entryB;
+
+        // Flush now: the pending save must persist day A's edit, not day B.
+        await viewModel.FlushAutoSaveAsync();
+
+        // Assert
+        saved.Should().ContainSingle();
+        saved[0].Date.Date.Should().Be(new DateTime(2026, 1, 10));
+        saved[0].SleepQuality.Should().Be(5);
     }
 }

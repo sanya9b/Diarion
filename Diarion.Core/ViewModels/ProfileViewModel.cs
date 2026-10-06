@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
+using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.Services.Ai;
 using Microsoft.Maui.Controls;
 
 namespace Diarion.ViewModels;
@@ -16,12 +18,75 @@ public partial class ProfileViewModel : BaseViewModel
 {
     private readonly IProfileService _profileService;
     private readonly IBackupService _backupService;
+    private readonly IAppLockService _appLockService;
+    private readonly IBiometricService _biometricService;
+    private readonly IDialogService _dialogService;
+    private readonly INotificationService _notificationService;
+    private readonly IExportService _exportService;
+    private readonly INavigationService _navigationService;
+    private readonly Diarion.Diagnostics.ICrashReporter _crashReporter;
+    private readonly IShareService _shareService;
+    private readonly ITourService _tourService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
 
     [ObservableProperty]
     private GenderItem? _selectedGenderItem;
+
+    /// <summary>
+    /// The date picker's value. A <c>DatePicker</c> cannot show "nothing", so an unknown birth date is
+    /// represented by <see cref="HasBirthDate"/> being false and the picker hidden; this only carries a
+    /// value while the profile has one. Writes through on every change, so Save picks it up.
+    /// </summary>
+    [ObservableProperty]
+    private DateTime _birthDateInput = DefaultBirthDateInput;
+
+    [ObservableProperty]
+    private bool _hasBirthDate;
+
+    /// <summary>Where the picker opens the first time: an adult's date, a few flicks from most real ones.</summary>
+    private static DateTime DefaultBirthDateInput => DateTime.Today.AddYears(-25);
+
+    public DateTime MinimumBirthDate => DateTime.Today.AddYears(-120);
+    public DateTime MaximumBirthDate => DateTime.Today;
+
+    /// <summary>The AI tab's own state. A section view model rather than more fields here.</summary>
+    public AiSettingsViewModel Ai { get; }
+
+    /// <summary>The first-visit coach marks over this screen. Idle until the page starts it.</summary>
+    public TourViewModel Tour { get; }
+
+    // Settings tabs: 0 = Profile, 1 = Screen, 2 = Data, 3 = AI.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsProfileTab))]
+    [NotifyPropertyChangedFor(nameof(IsScreenTab))]
+    [NotifyPropertyChangedFor(nameof(IsDataTab))]
+    [NotifyPropertyChangedFor(nameof(IsAiTab))]
+    private int _selectedTabIndex;
+
+    public bool IsProfileTab => SelectedTabIndex == 0;
+    public bool IsScreenTab => SelectedTabIndex == 1;
+    public bool IsDataTab => SelectedTabIndex == 2;
+    public bool IsAiTab => SelectedTabIndex == 3 && IsAiTabAvailable;
+
+    /// <summary>
+    /// Whether the AI tab is shown at all. False only when nothing local is offered any more.
+    /// </summary>
+    /// <remarks>
+    /// The point is not to offer a download for something nothing is allowed to call — the worst of
+    /// both, a long wait for a feature that stays switched off. The encoder is still called, by the
+    /// themes in statistics and the mood factors, so the tab stays; the generative model is not, so
+    /// its row is gone from inside it. It is the last tab, so hiding it renumbers nothing.
+    /// </remarks>
+    public bool IsAiTabAvailable => OnDeviceAi.IsOffered;
+
+    [RelayCommand]
+    private void SelectTab(string index)
+    {
+        if (int.TryParse(index, out var i))
+            SelectedTabIndex = i;
+    }
 
     public List<GenderItem> GenderList { get; } = new()
     {
@@ -31,10 +96,34 @@ public partial class ProfileViewModel : BaseViewModel
         new(GenderType.Other, Diarion.Resources.Localization.AppResources.GenderOther)
     };
 
-    public ProfileViewModel(IProfileService profileService, IBackupService backupService)
+    public ProfileViewModel(
+        IProfileService profileService,
+        IBackupService backupService,
+        IAppLockService appLockService,
+        IBiometricService biometricService,
+        IDialogService dialogService,
+        INotificationService notificationService,
+        IExportService exportService,
+        INavigationService navigationService,
+        Diarion.Diagnostics.ICrashReporter crashReporter,
+        IShareService shareService,
+        ITourService tourService,
+        TourViewModel tour,
+        AiSettingsViewModel ai)
     {
+        Ai = ai;
+        Tour = tour;
+        _tourService = tourService;
+        _crashReporter = crashReporter;
+        _shareService = shareService;
         _profileService = profileService;
         _backupService = backupService;
+        _appLockService = appLockService;
+        _biometricService = biometricService;
+        _dialogService = dialogService;
+        _notificationService = notificationService;
+        _exportService = exportService;
+        _navigationService = navigationService;
         Title = Diarion.Resources.Localization.AppResources.ProfileMenuTitle;
     }
 
@@ -43,66 +132,193 @@ public partial class ProfileViewModel : BaseViewModel
         IsBusy = true;
         Profile = await _profileService.GetUserProfileAsync();
         SelectedGenderItem = GenderList.FirstOrDefault(g => g.Value == Profile.Gender) ?? GenderList[0];
-        
-        // Prevent triggering the change event during load
-        _isBiometricAuthEnabled = Profile.IsBiometricAuthEnabled;
-        OnPropertyChanged(nameof(IsBiometricAuthEnabled));
-        
+        HasBirthDate = Profile.BirthDate.HasValue;
+        BirthDateInput = Profile.BirthDate ?? DefaultBirthDateInput;
+
+        SelectedCurrency = MoneyFormatter.Resolve(Profile.GetEffectiveCurrencyCode());
+
+        NotifyLockState();
+        RefreshCrashReport();
+
+        // Load() stats the model directory and subscribes to download progress. Neither is free, and
+        // neither leads anywhere while the tab is hidden.
+        if (IsAiTabAvailable)
+        {
+            Ai.Load();
+        }
+
         IsBusy = false;
     }
 
-    private bool _isBiometricAuthEnabled;
-    public bool IsBiometricAuthEnabled
+    // ---- Currency ----
+    // One currency for the whole profile, with no conversion anywhere. Per-account currencies would
+    // need exchange rates, rates need the network, and this app deliberately has none — a total
+    // converted at a rate the app invented would be worse than no feature.
+
+    public IReadOnlyList<Currency> CurrencyList { get; } = MoneyFormatter.Supported;
+
+    [ObservableProperty]
+    private Currency? _selectedCurrency;
+
+    partial void OnSelectedCurrencyChanged(Currency? value)
     {
-        get => _isBiometricAuthEnabled;
+        // Guard the load itself: LoadProfileAsync sets this from the profile, and writing back then
+        // would mark a profile dirty that nobody edited.
+        if (value == null || IsBusy || Profile.CurrencyCode == value.Code)
+        {
+            return;
+        }
+
+        Profile.CurrencyCode = value.Code;
+    }
+
+    // ---- Crash report ----
+    // The section stays invisible until something has actually crashed, so in the normal case this
+    // costs the settings screen nothing.
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCrashReport))]
+    private string? _crashReportText;
+
+    public bool HasCrashReport => !string.IsNullOrEmpty(CrashReportText);
+
+    public void RefreshCrashReport() => CrashReportText = _crashReporter.ReadLast();
+
+    [RelayCommand]
+    private async Task ShareCrashReportAsync()
+    {
+        var path = _crashReporter.ReportPath;
+        if (string.IsNullOrEmpty(path))
+        {
+            return;
+        }
+
+        await _shareService.ShareFileAsync(AppResources.CrashReportTitle, path);
+    }
+
+    [RelayCommand]
+    private async Task ClearCrashReportAsync()
+    {
+        var confirmed = await _dialogService.ShowConfirmationAsync(
+            AppResources.CrashReportTitle,
+            AppResources.CrashReportClearConfirm,
+            AppResources.DeleteConfirmYes,
+            AppResources.DeleteConfirmNo);
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+        _crashReporter.Clear();
+        RefreshCrashReport();
+    }
+
+    // ---- App lock (PIN + optional biometrics) ----
+
+    public bool IsLockEnabled => _appLockService.IsLockEnabled;
+    public bool IsLockDisabled => !_appLockService.IsLockEnabled;
+
+    public bool IsBiometricEnabled
+    {
+        get => _appLockService.IsBiometricEnabled;
         set
         {
-            if (_isBiometricAuthEnabled != value)
+            if (_appLockService.IsBiometricEnabled == value) return;
+
+            if (value)
             {
-                // If turning on, we need to authenticate first
-                if (value)
-                {
-                    // Store locally, but don't set immediately to prevent UI flicker until verified
-                    _isBiometricAuthEnabled = true;
-                    OnPropertyChanged();
-                    VerifyAndEnableBiometricsAsync();
-                }
-                else
-                {
-                    _isBiometricAuthEnabled = false;
-                    Profile.IsBiometricAuthEnabled = false;
-                    OnPropertyChanged();
-                    _ = SaveProfileAsync();
-                }
+                _ = EnableBiometricAsync();
+            }
+            else
+            {
+                _appLockService.IsBiometricEnabled = false;
+                OnPropertyChanged();
             }
         }
     }
 
-    private async void VerifyAndEnableBiometricsAsync()
+    private async Task EnableBiometricAsync()
     {
-        var result = await Plugin.Fingerprint.CrossFingerprint.Current.AuthenticateAsync(new Plugin.Fingerprint.Abstractions.AuthenticationRequestConfiguration(
-            Diarion.Resources.Localization.AppResources.SecurityLabel,
-            Diarion.Resources.Localization.AppResources.BiometricPromptReason)
+        var available = await _biometricService.IsAvailableAsync();
+        if (!available)
         {
-            AllowAlternativeAuthentication = true
-        });
-
-        if (result.Authenticated)
-        {
-            Profile.IsBiometricAuthEnabled = true;
-            await SaveProfileAsync();
-        }
-        else
-        {
-            // Revert UI toggle if failed
-            _isBiometricAuthEnabled = false;
-            OnPropertyChanged(nameof(IsBiometricAuthEnabled));
-            
-            await Shell.Current.DisplayAlertAsync(
+            await _dialogService.ShowAlertAsync(
                 Diarion.Resources.Localization.AppResources.BiometricErrorTitle,
                 Diarion.Resources.Localization.AppResources.BiometricErrorMessage,
                 Diarion.Resources.Localization.AppResources.OkButtonLabel);
+            OnPropertyChanged(nameof(IsBiometricEnabled)); // revert the switch in the UI
+            return;
         }
+
+        _appLockService.IsBiometricEnabled = true;
+        OnPropertyChanged(nameof(IsBiometricEnabled));
+    }
+
+    [RelayCommand]
+    public async Task SetPinAsync()
+    {
+        // Full-screen keypad flow (verify current when changing → enter new → repeat) instead of
+        // the plain OS prompt dialogs. Lock state refreshes on return via ProfilePage.OnAppearing.
+        await _navigationService.NavigateToAsync("PinSetup");
+    }
+
+    [RelayCommand]
+    public async Task OpenPromptLibraryAsync()
+    {
+        await _navigationService.NavigateToAsync("PromptLibrary");
+    }
+
+    [RelayCommand]
+    public async Task OpenPromptHistoryAsync()
+    {
+        await _navigationService.NavigateToAsync("PromptHistory");
+    }
+
+    /// <summary>
+    /// Arms every guide again, and runs this screen's one straight away.
+    /// </summary>
+    /// <remarks>
+    /// Only the settings guide can start from here; the other two draw over pages that are not this
+    /// one, so they wait to be walked into. The alert says so before the spotlight appears, because
+    /// otherwise a guide about settings looks like the whole of what the row promised.
+    /// </remarks>
+    [RelayCommand]
+    public async Task ReplayTourAsync()
+    {
+        _tourService.ResetSeen(Profile);
+        await _profileService.SaveUserProfileAsync(Profile);
+        await _dialogService.ShowAlertAsync(AppResources.TourReplayLabel, AppResources.TourReplayMessage);
+
+        await Tour.StartAsync(TourId.Settings);
+    }
+
+    [RelayCommand]
+    public async Task OpenCycleAsync()
+    {
+        await _navigationService.NavigateToAsync("Cycle");
+    }
+
+    [RelayCommand]
+    public async Task RemovePinAsync()
+    {
+        var confirm = await _dialogService.ShowConfirmationAsync(
+            Diarion.Resources.Localization.AppResources.AppLockTitle,
+            Diarion.Resources.Localization.AppResources.RemovePinConfirmMessage,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
+            Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
+
+        if (!confirm) return;
+
+        _appLockService.RemovePin();
+        NotifyLockState();
+    }
+
+    private void NotifyLockState()
+    {
+        OnPropertyChanged(nameof(IsLockEnabled));
+        OnPropertyChanged(nameof(IsLockDisabled));
+        OnPropertyChanged(nameof(IsBiometricEnabled));
     }
 
     partial void OnSelectedGenderItemChanged(GenderItem? value)
@@ -110,18 +326,44 @@ public partial class ProfileViewModel : BaseViewModel
         if (value != null && Profile != null)
         {
             Profile.Gender = value.Value;
-            // Автоматично пропонуємо увімкнути календар, якщо вибрано "Жіноча", а він ще не активований
-            if (value.Value == GenderType.Female && !Profile.IsMenstrualTrackingEnabled && Profile.LastPeriodStartDate == null)
+            // Автоматично пропонуємо увімкнути календар, якщо вибрано "Жіноча", а він ще не активований.
+            // Лише коли вік це дозволяє: інакше прапорець став би true під картою, якої не видно, і
+            // календар увімкнувся б сам у день, коли дата народження нарешті вказана.
+            if (value.Value == GenderType.Female && !Profile.IsMenstrualTrackingEnabled && Profile.IsCycleFeatureAvailable)
             {
                 Profile.IsMenstrualTrackingEnabled = true;
             }
         }
     }
 
+    partial void OnBirthDateInputChanged(DateTime value)
+    {
+        if (HasBirthDate && Profile != null)
+        {
+            Profile.BirthDate = value.Date;
+        }
+    }
+
+    /// <summary>Reveals the picker with a plausible default; the user adjusts from there.</summary>
+    [RelayCommand]
+    private void SetBirthDate()
+    {
+        HasBirthDate = true;
+        Profile.BirthDate = BirthDateInput.Date;
+    }
+
+    /// <summary>Back to "not told". The age-gated sections close; nothing behind them is deleted.</summary>
+    [RelayCommand]
+    private void ClearBirthDate()
+    {
+        HasBirthDate = false;
+        Profile.BirthDate = null;
+    }
+
     [RelayCommand]
     public void OpenMenu()
     {
-        Microsoft.Maui.Controls.Shell.Current.FlyoutIsPresented = true;
+        _ = _navigationService.OpenFlyoutAsync();
     }
 
     [RelayCommand]
@@ -129,44 +371,114 @@ public partial class ProfileViewModel : BaseViewModel
     {
         IsBusy = true;
         await _profileService.SaveUserProfileAsync(Profile);
+        await ApplyDailyReminderAsync();
         IsBusy = false;
-        
-        await Shell.Current.DisplayAlertAsync(
-            Title, 
-            Diarion.Resources.Localization.AppResources.ProfileSavedMessage, 
+
+        await _dialogService.ShowAlertAsync(
+            Title,
+            Diarion.Resources.Localization.AppResources.ProfileSavedMessage,
             Diarion.Resources.Localization.AppResources.OkButtonLabel);
+    }
+
+    private async Task ApplyDailyReminderAsync()
+    {
+        if (Profile.IsDailyReminderEnabled)
+        {
+            await _notificationService.RequestPermissionsAsync();
+            _notificationService.ScheduleDailyJournalReminder(Profile.DailyReminderTime);
+        }
+        else
+        {
+            _notificationService.CancelDailyJournalReminder();
+        }
     }
 
     [RelayCommand]
     public async Task ExportBackupAsync()
     {
-        bool success = await _backupService.ExportBackupAsync();
-        if (success)
-        {
-            await Shell.Current.DisplayAlertAsync(
-                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup", 
-                Diarion.Resources.Localization.AppResources.BackupExportSuccess ?? "Backup created successfully.", 
-                Diarion.Resources.Localization.AppResources.OkButtonLabel);
-        }
+        var outcome = await _backupService.ExportBackupAsync(
+            () => PromptForPassphraseAsync(AppResources.BackupPassphraseExportPrompt));
+
+        await ReportBackupOutcomeAsync(
+            outcome,
+            AppResources.BackupExportSuccess ?? "Backup created successfully.");
     }
 
     [RelayCommand]
     public async Task ImportBackupAsync()
     {
-        bool confirm = await Shell.Current.DisplayAlertAsync(
-            Diarion.Resources.Localization.AppResources.BackupTitle ?? "Restore Backup", 
-            Diarion.Resources.Localization.AppResources.BackupImportWarning ?? "This will overwrite your current data. Are you sure?", 
-            Diarion.Resources.Localization.AppResources.DeleteConfirmYes, 
+        bool confirm = await _dialogService.ShowConfirmationAsync(
+            Diarion.Resources.Localization.AppResources.BackupTitle ?? "Restore Backup",
+            Diarion.Resources.Localization.AppResources.BackupImportWarning ?? "This will overwrite your current data. Are you sure?",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
             Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
-            
+
         if (!confirm) return;
 
-        bool success = await _backupService.ImportBackupAsync();
+        var outcome = await _backupService.ImportBackupAsync(
+            () => PromptForPassphraseAsync(AppResources.BackupPassphraseRestorePrompt));
+
+        await ReportBackupOutcomeAsync(
+            outcome,
+            AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.");
+    }
+
+    private async Task<string?> PromptForPassphraseAsync(string message)
+    {
+        var entered = await _dialogService.ShowPromptAsync(
+            AppResources.BackupPassphraseTitle,
+            message,
+            AppResources.OkButtonLabel,
+            AppResources.DeleteConfirmNo);
+
+        // The prompt returns an empty string on cancel as well as on an empty entry; neither is a
+        // usable passphrase, so both mean "the user did not go through with it".
+        return string.IsNullOrWhiteSpace(entered) ? null : entered;
+    }
+
+    /// <summary>
+    /// Says what happened, including when it failed. The previous version reported only success, so a
+    /// restore that silently did nothing looked identical to one that worked.
+    /// </summary>
+    private Task ReportBackupOutcomeAsync(BackupOutcome outcome, string successMessage)
+    {
+        if (outcome == BackupOutcome.Cancelled)
+        {
+            return Task.CompletedTask;
+        }
+
+        var message = outcome switch
+        {
+            BackupOutcome.Success => successMessage,
+            BackupOutcome.WrongPassphrase => AppResources.BackupWrongPassphrase,
+            BackupOutcome.NotADiarionBackup => AppResources.BackupNotDiarionFile,
+            BackupOutcome.NewerSchema => AppResources.BackupNewerSchema,
+            BackupOutcome.LegacyBackupFromAnotherDevice => AppResources.BackupLegacyOtherDevice,
+            _ => AppResources.BackupFailed
+        };
+
+        return _dialogService.ShowAlertAsync(
+            AppResources.BackupTitle ?? "Backup",
+            message,
+            AppResources.OkButtonLabel);
+    }
+
+    [RelayCommand]
+    public async Task ExportDataAsync(string format)
+    {
+        var exportFormat = (format ?? string.Empty).ToLowerInvariant() switch
+        {
+            "csv" => ExportFormat.Csv,
+            "markdown" => ExportFormat.Markdown,
+            _ => ExportFormat.Json
+        };
+
+        var success = await _exportService.ExportAndShareAsync(exportFormat);
         if (success)
         {
-            await Shell.Current.DisplayAlertAsync(
-                Diarion.Resources.Localization.AppResources.BackupTitle ?? "Backup", 
-                Diarion.Resources.Localization.AppResources.BackupImportSuccess ?? "Backup restored. Please restart the app.", 
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.ExportDataTitle,
+                Diarion.Resources.Localization.AppResources.ExportSuccessMessage,
                 Diarion.Resources.Localization.AppResources.OkButtonLabel);
         }
     }
@@ -174,10 +486,10 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     public async Task ClearAllDataAsync()
     {
-        bool confirm = await Shell.Current.DisplayAlertAsync(
-            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning", 
-            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmMsg ?? "Are you sure you want to delete all your data?", 
-            Diarion.Resources.Localization.AppResources.DeleteConfirmYes, 
+        bool confirm = await _dialogService.ShowConfirmationAsync(
+            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning",
+            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmMsg ?? "Are you sure you want to delete all your data?",
+            Diarion.Resources.Localization.AppResources.DeleteConfirmYes,
             Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
             
         if (!confirm) return;
@@ -189,9 +501,9 @@ public partial class ProfileViewModel : BaseViewModel
         await LoadProfileAsync();
         IsBusy = false;
 
-        await Shell.Current.DisplayAlertAsync(
-            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning", 
-            Diarion.Resources.Localization.AppResources.ClearAllDataSuccessMsg ?? "All your data has been successfully deleted.", 
+        await _dialogService.ShowAlertAsync(
+            Diarion.Resources.Localization.AppResources.ClearAllDataConfirmTitle ?? "Warning",
+            Diarion.Resources.Localization.AppResources.ClearAllDataSuccessMsg ?? "All your data has been successfully deleted.",
             Diarion.Resources.Localization.AppResources.OkButtonLabel);
     }
 }

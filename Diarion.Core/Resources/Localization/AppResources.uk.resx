@@ -176,13 +176,145 @@
     <value>Нотатки</value>
   </data>
   <data name="TabGeneral" xml:space="preserve">
-    <value>Огляд</value>
+    <value>Настрій</value>
   </data>
   <data name="TabSleep" xml:space="preserve">
     <value>Сон</value>
   </data>
   <data name="TabProductivity" xml:space="preserve">
     <value>Продуктивність</value>
+  </data>
+  <data name="TabHabits" xml:space="preserve">
+    <value>Звички</value>
+  </data>
+  <data name="TabCycle" xml:space="preserve">
+    <value>Цикл</value>
+  </data>
+  <data name="CycleStatsAllTimeNote" xml:space="preserve">
+    <value>Показано за весь час — цикл не вміщається в коротші періоди вище.</value>
+  </data>
+  <data name="CycleStatsAverage" xml:space="preserve">
+    <value>Середній цикл</value>
+  </data>
+  <data name="CycleStatsShortest" xml:space="preserve">
+    <value>Найкоротший</value>
+  </data>
+  <data name="CycleStatsLongest" xml:space="preserve">
+    <value>Найдовший</value>
+  </data>
+  <data name="CycleStatsPeriodLength" xml:space="preserve">
+    <value>Тривалість місячних</value>
+  </data>
+  <data name="CycleStatsDaysCaption" xml:space="preserve">
+    <value>днів</value>
+  </data>
+  <data name="CycleStatsLengthChart" xml:space="preserve">
+    <value>Довжина циклів</value>
+  </data>
+  <data name="CycleStatsCalendar" xml:space="preserve">
+    <value>Позначені дні</value>
+  </data>
+  <data name="CycleStatsSymptoms" xml:space="preserve">
+    <value>Найчастіші симптоми</value>
+  </data>
+  <data name="CycleStatsBasisFormat" xml:space="preserve">
+    <value>Пораховано з {0} записаних циклів.</value>
+  </data>
+  <data name="CycleStatsDiscardedFormat" xml:space="preserve">
+    <value>{0} проміжок(-ки) відкинуто як неправдоподібні.</value>
+  </data>
+  <data name="CycleStatsNoCompleteCycle" xml:space="preserve">
+    <value>Жодного повного циклу ще не записано — позначте другі місячні, щоб побачити довжину.</value>
+  </data>
+  <data name="StatsHabitStrength" xml:space="preserve">
+    <value>Сила</value>
+  </data>
+  <data name="HabitEditorTitle" xml:space="preserve">
+    <value>Звичка</value>
+  </data>
+  <data name="HabitNamePlaceholder" xml:space="preserve">
+    <value>Назва звички</value>
+  </data>
+  <data name="HabitScheduleLabel" xml:space="preserve">
+    <value>Розклад</value>
+  </data>
+  <data name="HabitScheduleDaily" xml:space="preserve">
+    <value>Щодня</value>
+  </data>
+  <data name="HabitScheduleSpecificDays" xml:space="preserve">
+    <value>Певні дні</value>
+  </data>
+  <data name="HabitEditorDelete" xml:space="preserve">
+    <value>Видалити звичку</value>
+  </data>
+  <data name="HabitEditorNameRequired" xml:space="preserve">
+    <value>Введіть назву звички.</value>
+  </data>
+  <data name="HabitEditorDaysRequired" xml:space="preserve">
+    <value>Оберіть хоча б один день.</value>
+  </data>
+  <data name="HabitScheduleTimesPerWeek" xml:space="preserve">
+    <value>Щотижня</value>
+  </data>
+  <data name="HabitScheduleTimesPerWeekFormat" xml:space="preserve">
+    <value>{0}× на тиждень</value>
+  </data>
+  <data name="RecurrenceEveryNDaysFormat" xml:space="preserve">
+    <value>Кожні {0} дн.</value>
+  </data>
+  <data name="RecurrenceMonthlyOnDayFormat" xml:space="preserve">
+    <value>Щомісяця {0}-го</value>
+  </data>
+  <data name="PlannedTransactionsLabel" xml:space="preserve">
+    <value>Заплановані</value>
+  </data>
+  <data name="AddPlannedButton" xml:space="preserve">
+    <value>+ Планова</value>
+  </data>
+  <data name="PlannedFormTitle" xml:space="preserve">
+    <value>Планова транзакція</value>
+  </data>
+  <data name="PlannedRepeatLabel" xml:space="preserve">
+    <value>Повторення</value>
+  </data>
+  <data name="PlannedStartsOnLabel" xml:space="preserve">
+    <value>Початок</value>
+  </data>
+  <data name="PlannedAutoPostLabel" xml:space="preserve">
+    <value>Додавати автоматично</value>
+  </data>
+  <data name="PlannedAutoPostHint" xml:space="preserve">
+    <value>Вимкнено: кожна чекатиме вашого підтвердження.</value>
+  </data>
+  <data name="PlannedConfirmButton" xml:space="preserve">
+    <value>Підтвердити</value>
+  </data>
+  <data name="PlannedSkipButton" xml:space="preserve">
+    <value>Пропустити</value>
+  </data>
+  <data name="DeletePlannedConfirm" xml:space="preserve">
+    <value>Видалити цей план? Уже додані транзакції лишаться.</value>
+  </data>
+  <data name="SettingsPlannedToggle" xml:space="preserve">
+    <value>Планові транзакції</value>
+  </data>
+  <data name="RecurrenceMonthlyLabel" xml:space="preserve">
+    <value>Щомісяця</value>
+  </data>
+  <data name="RecurrenceWeeklyLabel" xml:space="preserve">
+    <value>Щотижня</value>
+  </data>
+  <data name="RecurrenceDailyLabel" xml:space="preserve">
+    <value>Щодня</value>
+  </data>
+  <data name="HabitStreakWeeksSuffix" xml:space="preserve">
+    <value>тиж</value>
+  </data>
+  <data name="HabitReminderLabel" xml:space="preserve">
+    <value>Нагадування</value>
+  </data>
+  <data name="HabitReminderMessage" xml:space="preserve">
+    <value>Час для вашої звички</value>
   </data>
   <data name="NoTasks" xml:space="preserve">
     <value>Немає завдань на цей день</value>
@@ -191,7 +323,46 @@
     <value>СЬОГОДНІ</value>
   </data>
   <data name="HabitTrackerTitle" xml:space="preserve">
-    <value>Трекер шкідливих звичок</value>
+    <value>Трекер звичок</value>
+  </data>
+  <data name="QuitCleanTimeLabel" xml:space="preserve">
+    <value>Чистий час</value>
+  </data>
+  <data name="QuitMoneySavedLabel" xml:space="preserve">
+    <value>Заощаджено</value>
+  </data>
+  <data name="QuitRelapseButton" xml:space="preserve">
+    <value>Я зірвався</value>
+  </data>
+  <data name="QuitRelapsesLabel" xml:space="preserve">
+    <value>Зриви</value>
+  </data>
+  <data name="QuitLiveTimeFormat" xml:space="preserve">
+    <value>{0}д {1:D2}:{2:D2}:{3:D2}</value>
+  </data>
+  <data name="QuitNextMilestoneFormat" xml:space="preserve">
+    <value>Наступна ціль: {0} днів</value>
+  </data>
+  <data name="QuitAllMilestones" xml:space="preserve">
+    <value>Усі цілі досягнуто 🎉</value>
+  </data>
+  <data name="QuitRelapseConfirmTitle" xml:space="preserve">
+    <value>Зафіксувати зрив?</value>
+  </data>
+  <data name="QuitRelapseConfirmMessage" xml:space="preserve">
+    <value>Це скине лічильник чистого часу.</value>
+  </data>
+  <data name="HabitTrackerSaveButton" xml:space="preserve">
+    <value>Зберегти</value>
+  </data>
+  <data name="HabitTrackerEditTitle" xml:space="preserve">
+    <value>Редагувати трекер</value>
+  </data>
+  <data name="HabitTrackerCostLabel" xml:space="preserve">
+    <value>Ціна за одиницю</value>
+  </data>
+  <data name="HabitTrackerUnitsLabel" xml:space="preserve">
+    <value>Одиниць на день</value>
   </data>
   <data name="HabitTrackerSubtitle" xml:space="preserve">
     <value>Створи окремий трекер для кожної звички та відмічай кожен чистий день.</value>
@@ -200,10 +371,10 @@
     <value>Новий трекер</value>
   </data>
   <data name="HabitTrackerSetupSubtitle" xml:space="preserve">
-    <value>Додай назву шкідливої звички, обери дату старту та веди щоденні відмітки в одному місці.</value>
+    <value>Додай назву звички, обери дату старту та веди щоденні відмітки в одному місці.</value>
   </data>
   <data name="HabitTrackerNameLabel" xml:space="preserve">
-    <value>Назва шкідливої звички</value>
+    <value>Назва звички</value>
   </data>
   <data name="HabitTrackerNamePlaceholder" xml:space="preserve">
     <value>Наприклад: куріння або безкінечний скролінг</value>
@@ -224,7 +395,7 @@
     <value>Відмічено днів</value>
   </data>
   <data name="HabitTrackerNameRequiredMessage" xml:space="preserve">
-    <value>Вкажи назву шкідливої звички.</value>
+    <value>Вкажи назву звички.</value>
   </data>
   <data name="HabitTrackerDuplicateMessage" xml:space="preserve">
     <value>Трекер з такою назвою вже існує.</value>
@@ -418,20 +589,137 @@
   <data name="SoulFoodLabel" xml:space="preserve">
     <value>ДЛЯ СЕБЕ:</value>
   </data>
+  <data name="TriggersPlaceholder" xml:space="preserve">
+    <value>Наприклад: стрес на роботі, затори...</value>
+  </data>
+  <data name="GratitudePlaceholder" xml:space="preserve">
+    <value>Наприклад: смачна ранкова кава, зателефонував друг...</value>
+  </data>
+  <data name="SoulFoodPlaceholder" xml:space="preserve">
+    <value>Наприклад: почитав книгу, послухав музику...</value>
+  </data>
+  <data name="HomeBlocksTitle" xml:space="preserve">
+    <value>БЛОКИ ГОЛОВНОГО ЕКРАНА</value>
+  </data>
+  <data name="BlockMoodLabel" xml:space="preserve">
+    <value>Настрій</value>
+  </data>
+  <data name="BlockSleepLabel" xml:space="preserve">
+    <value>Сон</value>
+  </data>
+  <data name="BlockHealthLabel" xml:space="preserve">
+    <value>Здоров'я</value>
+  </data>
+  <data name="BlockFoodLabel" xml:space="preserve">
+    <value>Їжа</value>
+  </data>
+  <data name="BlockHabitsLabel" xml:space="preserve">
+    <value>Звички</value>
+  </data>
+  <data name="BlockGuidedPromptLabel" xml:space="preserve">
+    <value>Питання дня</value>
+  </data>
+  <data name="MoodHourlyLabel" xml:space="preserve">
+    <value>По годинах</value>
+  </data>
+  <data name="MoodHourlyHint" xml:space="preserve">
+    <value>Оберіть годину, тоді натисніть настрій вище</value>
+  </data>
+  <data name="MoodHourlyDayHint" xml:space="preserve">
+    <value>Натисніть настрій вище, щоб задати весь день</value>
+  </data>
+  <data name="MoodHourAccessibility" xml:space="preserve">
+    <value>{0}:00 — {1}</value>
+  </data>
+  <data name="MoodHourEmpty" xml:space="preserve">
+    <value>не задано</value>
+  </data>
+  <data name="BlockReflectionLabel" xml:space="preserve">
+    <value>Рефлексія</value>
+  </data>
+  <data name="SettingsTabProfile" xml:space="preserve">
+    <value>Профіль</value>
+  </data>
+  <data name="SettingsTabScreen" xml:space="preserve">
+    <value>Екран</value>
+  </data>
+  <data name="SettingsTabData" xml:space="preserve">
+    <value>Дані</value>
+  </data>
   <data name="AddTimeLabel" xml:space="preserve">
     <value>Додати час виконання</value>
   </data>
   <data name="TimeLabel" xml:space="preserve">
     <value>Час:</value>
   </data>
-  <data name="DailyRepeatLabel" xml:space="preserve">
-    <value>Повторювати щодня</value>
+  <data name="TaskRepeatLabel" xml:space="preserve">
+    <value>Повторювати</value>
+  </data>
+  <data name="RecurrenceEndDateLabel" xml:space="preserve">
+    <value>Повторювати до</value>
+  </data>
+  <data name="RecurrenceDaysRequired" xml:space="preserve">
+    <value>Оберіть хоча б один день.</value>
+  </data>
+  <data name="TaskDurationLabel" xml:space="preserve">
+    <value>Триває проміжок</value>
+  </data>
+  <data name="TaskEndTimeLabel" xml:space="preserve">
+    <value>До</value>
+  </data>
+  <data name="EndTimeMustFollowStart" xml:space="preserve">
+    <value>Кінець має бути пізніше за початок.</value>
+  </data>
+  <data name="TaskContinuesLabel" xml:space="preserve">
+    <value>триває</value>
+  </data>
+  <data name="TaskSpanAccessibility" xml:space="preserve">
+    <value>{0}, триває з {1} до {2}</value>
+  </data>
+  <data name="RecurringTaskAccessibility" xml:space="preserve">
+    <value>Повторювана задача</value>
+  </data>
+  <data name="ParseHintFormat" xml:space="preserve">
+    <value>Розпізнано з тексту: {0}</value>
+  </data>
+  <data name="ParseUndoLabel" xml:space="preserve">
+    <value>Повернути</value>
+  </data>
+  <data name="CancelButtonLabel" xml:space="preserve">
+    <value>Скасувати</value>
+  </data>
+  <data name="ToggleCalendarAccessibility" xml:space="preserve">
+    <value>Показати або сховати календар</value>
+  </data>
+  <data name="PlannerHoursAccessibility" xml:space="preserve">
+    <value>Розклад по годинах</value>
+  </data>
+  <data name="PlannerByHourLabel" xml:space="preserve">
+    <value>За годинами</value>
+  </data>
+  <data name="DeleteTaskAccessibility" xml:space="preserve">
+    <value>Видалити задачу</value>
+  </data>
+  <data name="TaskWhenLabel" xml:space="preserve">
+    <value>Коли</value>
+  </data>
+  <data name="RecurrenceIntervalChip" xml:space="preserve">
+    <value>Кожні N днів</value>
+  </data>
+  <data name="DeleteRecurringTaskTitle" xml:space="preserve">
+    <value>Ця задача повторюється</value>
+  </data>
+  <data name="DeleteThisOccurrenceOption" xml:space="preserve">
+    <value>Видалити лише цей день</value>
+  </data>
+  <data name="DeleteWholeSeriesOption" xml:space="preserve">
+    <value>Видалити всю серію</value>
   </data>
   <data name="ReminderLabel" xml:space="preserve">
     <value>Увімкнути нагадування</value>
   </data>
   <data name="ProfileMenuTitle" xml:space="preserve">
-    <value>Особисті налаштування</value>
+    <value>Налаштування</value>
   </data>
   <data name="GeneralInfoLabel" xml:space="preserve">
     <value>ЗАГАЛЬНА ІНФОРМАЦІЯ</value>
@@ -478,29 +766,77 @@
   <data name="PeriodLengthLabel" xml:space="preserve">
     <value>Середня тривалість менструації (днів):</value>
   </data>
-  <data name="LastPeriodDateLabel" xml:space="preserve">
-    <value>Дата початку останнього циклу:</value>
-  </data>
   <data name="SaveProfileButton" xml:space="preserve">
     <value>ЗБЕРЕГТИ НАЛАШТУВАННЯ</value>
   </data>
   <data name="ProfileSavedMessage" xml:space="preserve">
     <value>Налаштування успішно збережено!</value>
   </data>
-  <data name="PregnancyProbabilityLabel" xml:space="preserve">
-    <value>Вірогідність вагітності:</value>
-  </data>
-  <data name="ProbLow" xml:space="preserve">
-    <value>Низька</value>
-  </data>
-  <data name="ProbMedium" xml:space="preserve">
-    <value>Середня</value>
-  </data>
-  <data name="ProbHigh" xml:space="preserve">
-    <value>Висока</value>
-  </data>
   <data name="CycleDayFormat" xml:space="preserve">
     <value>День {0}</value>
+  </data>
+  <data name="CycleTitle" xml:space="preserve">
+    <value>Цикл</value>
+  </data>
+  <data name="CycleOpenLink" xml:space="preserve">
+    <value>Записані місячні та прогноз</value>
+  </data>
+  <data name="CycleForecastTitle" xml:space="preserve">
+    <value>Прогноз</value>
+  </data>
+  <data name="CycleAddTitle" xml:space="preserve">
+    <value>Записати місячні</value>
+  </data>
+  <data name="CycleAddButton" xml:space="preserve">
+    <value>ДОДАТИ</value>
+  </data>
+  <data name="CycleAddHint" xml:space="preserve">
+    <value>Оберіть перший день. Кожні записані місячні роблять прогноз точнішим.</value>
+  </data>
+  <data name="CycleHistoryTitle" xml:space="preserve">
+    <value>Записані місячні</value>
+  </data>
+  <data name="CycleHistoryEmpty" xml:space="preserve">
+    <value>Поки нічого не записано</value>
+  </data>
+  <data name="CycleIntervalFormat" xml:space="preserve">
+    <value>{0} дн. до наступних</value>
+  </data>
+  <data name="CycleDeleteConfirmTitle" xml:space="preserve">
+    <value>Видалити цей запис?</value>
+  </data>
+  <data name="CycleDeleteConfirmMessage" xml:space="preserve">
+    <value>«{0}» буде видалено, прогноз перерахується.</value>
+  </data>
+  <data name="CycleNextPeriodFormat" xml:space="preserve">
+    <value>Наступні ~{0}</value>
+  </data>
+  <data name="CycleUncertaintyFormat" xml:space="preserve">
+    <value>±{0} дн.</value>
+  </data>
+  <data name="CycleFertileWindowLabel" xml:space="preserve">
+    <value>Фертильне вікно (оцінка)</value>
+  </data>
+  <data name="CycleBasisProfileDefaultFormat" xml:space="preserve">
+    <value>За вашими налаштуваннями ({0} дн.) — позначте більше циклів для персонального прогнозу</value>
+  </data>
+  <data name="CycleBasisSingleCycle" xml:space="preserve">
+    <value>На основі 1 записаного циклу</value>
+  </data>
+  <data name="CycleBasisAveragedFormat" xml:space="preserve">
+    <value>На основі {0} записаних циклів (у середньому {1} дн.)</value>
+  </data>
+  <data name="CycleNoDataHint" xml:space="preserve">
+    <value>Позначте перший день місячних, щоб почати прогноз</value>
+  </data>
+  <data name="CycleLateFormat" xml:space="preserve">
+    <value>Очікувались {0} дн. тому</value>
+  </data>
+  <data name="CycleHighVariabilityNote" xml:space="preserve">
+    <value>Ваші цикли дуже різняться, тож ця оцінка приблизна</value>
+  </data>
+  <data name="CycleDisclaimer" xml:space="preserve">
+    <value>Статистична оцінка на основі ваших записів — не медична порада і не метод контрацепції.</value>
   </data>
   <data name="HabitPhysicalActivity" xml:space="preserve">
     <value>Фізична активність</value>
@@ -521,7 +857,7 @@
     <value>Статистика</value>
   </data>
   <data name="StatisticsTitle" xml:space="preserve">
-    <value>Дашборд</value>
+    <value>Дошка</value>
   </data>
   <data name="StatsSleepDuration" xml:space="preserve">
     <value>Середня тривалість:</value>
@@ -537,6 +873,138 @@
   </data>
   <data name="StatsTasksCompleted" xml:space="preserve">
     <value>Виконано завдань:</value>
+  </data>
+  <data name="StatsKpiTopMood" xml:space="preserve">
+    <value>Настрій</value>
+  </data>
+  <data name="StatsKpiEntries" xml:space="preserve">
+    <value>Записів</value>
+  </data>
+  <data name="StatsKpiDuration" xml:space="preserve">
+    <value>Тривалість</value>
+  </data>
+  <data name="StatsKpiQuality" xml:space="preserve">
+    <value>Якість</value>
+  </data>
+  <data name="StatsKpiTasks" xml:space="preserve">
+    <value>Задачі</value>
+  </data>
+  <data name="StatsKpiCompletion" xml:space="preserve">
+    <value>Виконано</value>
+  </data>
+  <data name="StatsKpiBalance" xml:space="preserve">
+    <value>Баланс</value>
+  </data>
+  <data name="StatsMoodTrend" xml:space="preserve">
+    <value>Динаміка настрою</value>
+  </data>
+  <data name="StatsYearInPixels" xml:space="preserve">
+    <value>Рік у пікселях</value>
+  </data>
+  <data name="StatsMoodByHour" xml:space="preserve">
+    <value>Настрій за годинами</value>
+  </data>
+  <data name="StatsMoodByHourSubtitle" xml:space="preserve">
+    <value>Середній настрій у різні години дня</value>
+  </data>
+  <data name="StatsMoodByHourPositive" xml:space="preserve">
+    <value>Позитивний</value>
+  </data>
+  <data name="StatsMoodByHourNegative" xml:space="preserve">
+    <value>Негативний</value>
+  </data>
+  <data name="StatsMoodByHourNeutral" xml:space="preserve">
+    <value>У середньому нейтральний</value>
+  </data>
+  <data name="StatsMoodByHourSparse" xml:space="preserve">
+    <value>Мало днів (1–2)</value>
+  </data>
+  <data name="StatsMoodByHourNoHourlyData" xml:space="preserve">
+    <value>Ви позначали настрій лише для всього дня. Відмічайте настрій погодинно у щоденнику, щоб побачити цей графік.</value>
+  </data>
+  <data name="StreaksTitle" xml:space="preserve">
+    <value>СЕРІЇ</value>
+  </data>
+  <data name="PromptLibraryTitle" xml:space="preserve">
+    <value>Бібліотека промптів</value>
+  </data>
+  <data name="PromptLibraryManage" xml:space="preserve">
+    <value>Керувати промптами</value>
+  </data>
+  <data name="PromptHistoryOpen" xml:space="preserve">
+    <value>Історія відповідей</value>
+  </data>
+  <data name="PromptHistoryTitle" xml:space="preserve">
+    <value>Історія відповідей</value>
+  </data>
+  <data name="PromptHistorySubtitle" xml:space="preserve">
+    <value>Усе, що ви відповіли, від найновішого</value>
+  </data>
+  <data name="PromptHistorySearch" xml:space="preserve">
+    <value>Пошук у відповідях</value>
+  </data>
+  <data name="PromptHistoryEmpty" xml:space="preserve">
+    <value>Відповідей ще немає. Дайте відповідь на питання дня — і вона з'явиться тут.</value>
+  </data>
+  <data name="PromptHistoryNoMatches" xml:space="preserve">
+    <value>За цим запитом нічого не знайдено.</value>
+  </data>
+  <data name="PromptLibraryEmptyCategory" xml:space="preserve">
+    <value>У цій категорії ще немає промптів</value>
+  </data>
+  <data name="PromptEditorTitle" xml:space="preserve">
+    <value>Промпт</value>
+  </data>
+  <data name="PromptEditorTextUkLabel" xml:space="preserve">
+    <value>Текст (українською)</value>
+  </data>
+  <data name="PromptEditorTextEnLabel" xml:space="preserve">
+    <value>Текст (англійською)</value>
+  </data>
+  <data name="PromptEditorCategoryLabel" xml:space="preserve">
+    <value>Категорія</value>
+  </data>
+  <data name="PromptEditorTextRequired" xml:space="preserve">
+    <value>Введіть промпт хоча б однією мовою</value>
+  </data>
+  <data name="PromptEditorTextTooLong" xml:space="preserve">
+    <value>Промпт задовгий (максимум 300 символів)</value>
+  </data>
+  <data name="DeletePromptConfirmTitle" xml:space="preserve">
+    <value>Видалити промпт?</value>
+  </data>
+  <data name="DeletePromptConfirmMessage" xml:space="preserve">
+    <value>«{0}» більше не пропонуватиметься. Уже написані відповіді збережуться.</value>
+  </data>
+  <data name="PromptCategoryCbtReframe" xml:space="preserve">
+    <value>Переосмислення</value>
+  </data>
+  <data name="PromptCategorySavouring" xml:space="preserve">
+    <value>Смакування</value>
+  </data>
+  <data name="PromptCategoryOpenReflection" xml:space="preserve">
+    <value>Вільна рефлексія</value>
+  </data>
+  <data name="PromptCategoryEveningGratitude" xml:space="preserve">
+    <value>Вечірня вдячність</value>
+  </data>
+  <data name="StreakForgivingLabel" xml:space="preserve">
+    <value>Прощаючі серії</value>
+  </data>
+  <data name="StreakGraceDaysLabel" xml:space="preserve">
+    <value>Дозволено пропусків</value>
+  </data>
+  <data name="StreakForgivingHint" xml:space="preserve">
+    <value>Серія витримує стільки пропущених днів, перш ніж обнулиться.</value>
+  </data>
+  <data name="StatsPeriod" xml:space="preserve">
+    <value>Період</value>
+  </data>
+  <data name="StatsRangeStartHint" xml:space="preserve">
+    <value>Початок періоду</value>
+  </data>
+  <data name="StatsRangeEndHint" xml:space="preserve">
+    <value>Кінець періоду</value>
   </data>
   <data name="TimeRangeWeek" xml:space="preserve">
     <value>1 Тиждень</value>
@@ -625,6 +1093,240 @@
   <data name="AddTransactionButton" xml:space="preserve">
     <value>Додати транзакцію</value>
   </data>
+  <data name="BudgetsLabel" xml:space="preserve">
+    <value>Бюджети</value>
+  </data>
+  <data name="AddBudgetButton" xml:space="preserve">
+    <value>Додати бюджет</value>
+  </data>
+  <data name="BudgetFormTitle" xml:space="preserve">
+    <value>Бюджет</value>
+  </data>
+  <data name="BudgetLimitPlaceholder" xml:space="preserve">
+    <value>Місячний ліміт</value>
+  </data>
+  <data name="BudgetRemainingFormat" xml:space="preserve">
+    <value>Залишок {0}</value>
+  </data>
+  <data name="BudgetOverspentFormat" xml:space="preserve">
+    <value>Перевитрата {0}</value>
+  </data>
+  <data name="BudgetNoExpenses" xml:space="preserve">
+    <value>Немає витрат у цій категорії цього місяця.</value>
+  </data>
+  <data name="BudgetEditButton" xml:space="preserve">
+    <value>Редагувати</value>
+  </data>
+  <data name="BudgetDeleteButton" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="SettingsBudgetsToggle" xml:space="preserve">
+    <value>Показувати бюджети у Фінансах</value>
+  </data>
+  <data name="DefaultAccountName" xml:space="preserve">
+    <value>Основний</value>
+  </data>
+  <data name="AllAccounts" xml:space="preserve">
+    <value>Всі</value>
+  </data>
+  <data name="AccountsLabel" xml:space="preserve">
+    <value>Рахунки</value>
+  </data>
+  <data name="AddAccountButton" xml:space="preserve">
+    <value>+ Рахунок</value>
+  </data>
+  <data name="AccountFormTitle" xml:space="preserve">
+    <value>Рахунок</value>
+  </data>
+  <data name="AccountNamePlaceholder" xml:space="preserve">
+    <value>Назва рахунку</value>
+  </data>
+  <data name="InitialBalancePlaceholder" xml:space="preserve">
+    <value>Початковий баланс</value>
+  </data>
+  <data name="SelectAccountLabel" xml:space="preserve">
+    <value>Рахунок</value>
+  </data>
+  <data name="DeleteAccountConfirm" xml:space="preserve">
+    <value>Видалити цей рахунок? Його транзакції перейдуть на інший рахунок.</value>
+  </data>
+  <data name="DeleteAccountLastError" xml:space="preserve">
+    <value>Потрібен щонайменше один рахунок.</value>
+  </data>
+  <data name="AccountIconLabel" xml:space="preserve">
+    <value>Іконка</value>
+  </data>
+  <data name="AccountColorLabel" xml:space="preserve">
+    <value>Колір</value>
+  </data>
+  <data name="DeleteAccountButton" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="ArchiveAccountButton" xml:space="preserve">
+    <value>Архівувати</value>
+  </data>
+  <data name="UnarchiveAccountButton" xml:space="preserve">
+    <value>Розархівувати</value>
+  </data>
+  <data name="ArchiveAccountLastError" xml:space="preserve">
+    <value>Потрібен щонайменше один активний рахунок.</value>
+  </data>
+  <data name="ShowArchivedAccountsButton" xml:space="preserve">
+    <value>Архів</value>
+  </data>
+  <data name="ReassignToLabel" xml:space="preserve">
+    <value>Перенести транзакції на</value>
+  </data>
+  <data name="TransfersLabel" xml:space="preserve">
+    <value>Перекази</value>
+  </data>
+  <data name="AddTransferButton" xml:space="preserve">
+    <value>+ Переказ</value>
+  </data>
+  <data name="TransferFormTitle" xml:space="preserve">
+    <value>Переказ</value>
+  </data>
+  <data name="TransferFromLabel" xml:space="preserve">
+    <value>Звідки</value>
+  </data>
+  <data name="TransferToLabel" xml:space="preserve">
+    <value>Куди</value>
+  </data>
+  <data name="TransferAmountError" xml:space="preserve">
+    <value>Введіть суму більшу за нуль.</value>
+  </data>
+  <data name="TransferSameAccountError" xml:space="preserve">
+    <value>Оберіть два різні рахунки.</value>
+  </data>
+  <data name="GuidedPromptLabel" xml:space="preserve">
+    <value>Питання дня</value>
+  </data>
+  <data name="GuidedPromptPlaceholder" xml:space="preserve">
+    <value>Пиши як думається</value>
+  </data>
+  <data name="GuidedPromptShuffle" xml:space="preserve">
+    <value>Інше питання</value>
+  </data>
+  <data name="PromptCbt01" xml:space="preserve">
+    <value>Яка думка сьогодні крутилася найчастіше? Запиши її дослівно, як вона звучить у голові.</value>
+  </data>
+  <data name="PromptCbt02" xml:space="preserve">
+    <value>Що насправді свідчить, що ця думка правдива? А що свідчить проти?</value>
+  </data>
+  <data name="PromptCbt03" xml:space="preserve">
+    <value>Якби це саме розповів тобі друг — що б ти йому відповів?</value>
+  </data>
+  <data name="PromptCbt04" xml:space="preserve">
+    <value>Найгірше, що може статися. Найкраще. А тепер — найімовірніше.</value>
+  </data>
+  <data name="PromptCbt05" xml:space="preserve">
+    <value>Ти вирішив, що це про тебе. Яке ще пояснення тут можливе?</value>
+  </data>
+  <data name="PromptCbt06" xml:space="preserve">
+    <value>Що з сьогоднішнього справді в твоїй зоні впливу, а що ти просто тягнеш на собі дарма?</value>
+  </data>
+  <data name="PromptCbt07" xml:space="preserve">
+    <value>Скільки з того, через що ти сьогодні переживав, залежало від тебе хоч трохи?</value>
+  </data>
+  <data name="PromptCbt08" xml:space="preserve">
+    <value>Через рік це матиме значення? А через тиждень?</value>
+  </data>
+  <data name="PromptCbt09" xml:space="preserve">
+    <value>Ти сказав собі сьогодні щось таке, чого не сказав би нікому іншому. Що саме?</value>
+  </data>
+  <data name="PromptCbt10" xml:space="preserve">
+    <value>Опиши ситуацію без жодного оцінного слова — тільки те, що сталося.</value>
+  </data>
+  <data name="PromptSavour01" xml:space="preserve">
+    <value>Що сьогодні вийшло добре — і не смій казати «та то дрібниця».</value>
+  </data>
+  <data name="PromptSavour02" xml:space="preserve">
+    <value>Був момент, коли тобі було просто нормально. Впіймай його й опиши.</value>
+  </data>
+  <data name="PromptSavour03" xml:space="preserve">
+    <value>Кому ти сьогодні винен «дякую» і досі не сказав?</value>
+  </data>
+  <data name="PromptSavour04" xml:space="preserve">
+    <value>Що з сьогоднішнього ти б із задоволенням прожив ще раз?</value>
+  </data>
+  <data name="PromptSavour05" xml:space="preserve">
+    <value>За що сьогодні можна себе похвалити, навіть якщо трохи соромно?</value>
+  </data>
+  <data name="PromptSavour06" xml:space="preserve">
+    <value>Що тебе сьогодні розсмішило?</value>
+  </data>
+  <data name="PromptSavour07" xml:space="preserve">
+    <value>Опиши сьогоднішній день так, щоб через рік захотілося його перечитати.</value>
+  </data>
+  <data name="PromptSavour08" xml:space="preserve">
+    <value>Яка дрібниця зробила день кращим, ніж він мав бути?</value>
+  </data>
+  <data name="PromptSavour09" xml:space="preserve">
+    <value>Ти сьогодні щось зробив краще, ніж місяць тому. Що саме?</value>
+  </data>
+  <data name="PromptSavour10" xml:space="preserve">
+    <value>Що б ти сьогодні порадив собі торішньому?</value>
+  </data>
+  <data name="PromptOpen01" xml:space="preserve">
+    <value>Що сьогодні забрало найбільше сил — і чи воно було того варте?</value>
+  </data>
+  <data name="PromptOpen02" xml:space="preserve">
+    <value>Про що ти думав сьогодні найдовше?</value>
+  </data>
+  <data name="PromptOpen03" xml:space="preserve">
+    <value>Що ти сьогодні відкладав? І чому саме це.</value>
+  </data>
+  <data name="PromptOpen04" xml:space="preserve">
+    <value>Чого тобі сьогодні бракувало?</value>
+  </data>
+  <data name="PromptOpen05" xml:space="preserve">
+    <value>Який момент дня ти хотів би переграти?</value>
+  </data>
+  <data name="PromptOpen06" xml:space="preserve">
+    <value>Що ти сьогодні дізнався — про себе або про когось?</value>
+  </data>
+  <data name="PromptOpen07" xml:space="preserve">
+    <value>На що ти витратив час, про який шкода?</value>
+  </data>
+  <data name="PromptOpen08" xml:space="preserve">
+    <value>Що завтра має статися, щоб день вийшов вдалим?</value>
+  </data>
+  <data name="PromptOpen09" xml:space="preserve">
+    <value>Ти сьогодні комусь сказав, що все гаразд, хоч це було не так? Кому й навіщо?</value>
+  </data>
+  <data name="PromptOpen10" xml:space="preserve">
+    <value>Що ти зараз відчуваєш у тілі — і про що це може бути?</value>
+  </data>
+  <data name="PromptGratitude01" xml:space="preserve">
+    <value>Три речі, за які сьогодні дякуєш. Хоч найменші.</value>
+  </data>
+  <data name="PromptGratitude02" xml:space="preserve">
+    <value>Хто сьогодні полегшив тобі день, навіть не помітивши цього?</value>
+  </data>
+  <data name="PromptGratitude03" xml:space="preserve">
+    <value>За що сьогодні можеш подякувати самому собі?</value>
+  </data>
+  <data name="PromptGratitude04" xml:space="preserve">
+    <value>Що сьогодні було на своєму місці?</value>
+  </data>
+  <data name="PromptGratitude05" xml:space="preserve">
+    <value>Яка дрібниця виявилася сьогодні дуже доречною?</value>
+  </data>
+  <data name="PromptGratitude06" xml:space="preserve">
+    <value>Що з того, що ти маєш зараз, торік здавалося недосяжним?</value>
+  </data>
+  <data name="PromptGratitude07" xml:space="preserve">
+    <value>Кому варто сказати це вголос — не в щоденник, а людині?</value>
+  </data>
+  <data name="PromptGratitude08" xml:space="preserve">
+    <value>За що ти вдячний своєму тілу сьогодні?</value>
+  </data>
+  <data name="PromptGratitude09" xml:space="preserve">
+    <value>Що сьогодні минуло легше, ніж ти боявся?</value>
+  </data>
+  <data name="PromptGratitude10" xml:space="preserve">
+    <value>Заверши день однією фразою, за яку йому дякуєш.</value>
+  </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Недостатньо даних за цей період.</value>
   </data>
@@ -667,6 +1369,9 @@
   <data name="MinutesShort" xml:space="preserve">
     <value>хв</value>
   </data>
+  <data name="SecondsShort" xml:space="preserve">
+    <value>с</value>
+  </data>
   <data name="SecurityLabel" xml:space="preserve">
     <value>БЕЗПЕКА</value>
   </data>
@@ -684,5 +1389,740 @@
   </data>
   <data name="EditTransactionTitle" xml:space="preserve">
     <value>Редагувати транзакцію</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Нотатки</value>
+  </data>
+  <data name="SearchNotes" xml:space="preserve">
+    <value>Пошук нотаток...</value>
+  </data>
+  <data name="NewNote" xml:space="preserve">
+    <value>Нова нотатка</value>
+  </data>
+  <data name="NoteTitlePlaceholder" xml:space="preserve">
+    <value>Заголовок...</value>
+  </data>
+  <data name="NoteContentPlaceholder" xml:space="preserve">
+    <value>Напишіть щось тут...</value>
+  </data>
+  <data name="NoteUntitled" xml:space="preserve">
+    <value>Без назви</value>
+  </data>
+  <data name="NoteFormatChecklist" xml:space="preserve">
+    <value>Список із галочками</value>
+  </data>
+  <data name="NoteFormatBullet" xml:space="preserve">
+    <value>Маркований список</value>
+  </data>
+  <data name="NoteFormatNumbered" xml:space="preserve">
+    <value>Нумерований список</value>
+  </data>
+  <data name="NoteFormatHeading" xml:space="preserve">
+    <value>Розмір заголовка</value>
+  </data>
+  <data name="NoteFormatQuote" xml:space="preserve">
+    <value>Цитата</value>
+  </data>
+  <data name="NoteFormatBold" xml:space="preserve">
+    <value>Жирний</value>
+  </data>
+  <data name="NoteFormatItalic" xml:space="preserve">
+    <value>Курсив</value>
+  </data>
+  <data name="NoteFormatStrikethrough" xml:space="preserve">
+    <value>Закреслений</value>
+  </data>
+  <data name="DeleteNoteConfirmTitle" xml:space="preserve">
+    <value>Видалити нотатку?</value>
+  </data>
+  <data name="DeleteNoteConfirmMessage" xml:space="preserve">
+    <value>Нотатку буде видалено назавжди — скасувати не вийде.</value>
+  </data>
+  <data name="EmptyNotes" xml:space="preserve">
+    <value>Нотаток ще немає. Створіть першу.</value>
+  </data>
+  <data name="NotesTags" xml:space="preserve">
+    <value>Теги</value>
+  </data>
+  <data name="NotesLinked" xml:space="preserve">
+    <value>Повʼязані нотатки</value>
+  </data>
+  <data name="NotesBacklinks" xml:space="preserve">
+    <value>Зворотні посилання</value>
+  </data>
+  <data name="NotesFilterAll" xml:space="preserve">
+    <value>Всі</value>
+  </data>
+  <data name="NotesFilterInbox" xml:space="preserve">
+    <value>Вхідні</value>
+  </data>
+  <data name="NotesQuickCapturePlaceholder" xml:space="preserve">
+    <value>Швидка нотатка…</value>
+  </data>
+  <data name="AppLockTitle" xml:space="preserve">
+    <value>Блокування застосунку</value>
+  </data>
+  <data name="EnterPinTitle" xml:space="preserve">
+    <value>Введіть PIN</value>
+  </data>
+  <data name="EnterPinPrompt" xml:space="preserve">
+    <value>Введіть 4-значний PIN</value>
+  </data>
+  <data name="ConfirmPinPrompt" xml:space="preserve">
+    <value>Підтвердіть PIN</value>
+  </data>
+  <data name="EnterCurrentPinPrompt" xml:space="preserve">
+    <value>Введіть поточний PIN</value>
+  </data>
+  <data name="EnterNewPinPrompt" xml:space="preserve">
+    <value>Введіть новий PIN</value>
+  </data>
+  <data name="PinInvalidMessage" xml:space="preserve">
+    <value>PIN має містити 4 цифри.</value>
+  </data>
+  <data name="PinMismatchMessage" xml:space="preserve">
+    <value>PIN-коди не збігаються.</value>
+  </data>
+  <data name="PinSetSuccessMessage" xml:space="preserve">
+    <value>Блокування увімкнено.</value>
+  </data>
+  <data name="PinIncorrectMessage" xml:space="preserve">
+    <value>Невірний PIN</value>
+  </data>
+  <data name="PinLockedOutMessage" xml:space="preserve">
+    <value>Забагато спроб. Спробуйте через {0} с.</value>
+  </data>
+  <data name="RemovePinConfirmMessage" xml:space="preserve">
+    <value>Прибрати PIN блокування?</value>
+  </data>
+  <data name="SetPinButton" xml:space="preserve">
+    <value>Встановити PIN</value>
+  </data>
+  <data name="ChangePinButton" xml:space="preserve">
+    <value>Змінити PIN</value>
+  </data>
+  <data name="RemovePinButton" xml:space="preserve">
+    <value>Прибрати PIN</value>
+  </data>
+  <data name="UnlockWithBiometricsButton" xml:space="preserve">
+    <value>Розблокувати біометрією</value>
+  </data>
+  <data name="DeleteButtonLabel" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="OnboardingTitle" xml:space="preserve">
+    <value>Ласкаво просимо до Diarion</value>
+  </data>
+  <data name="OnboardingSubtitle" xml:space="preserve">
+    <value>Ваш приватний офлайн-щоденник</value>
+  </data>
+  <data name="OnboardingPrivacyText" xml:space="preserve">
+    <value>Усе лишається на вашому пристрої. Без хмари й акаунтів — нічого витікати.</value>
+  </data>
+  <data name="OnboardingReminderLabel" xml:space="preserve">
+    <value>Нагадувати вести щоденник щодня</value>
+  </data>
+  <data name="OnboardingGetStartedButton" xml:space="preserve">
+    <value>Почати</value>
+  </data>
+  <data name="OnboardingNextButton" xml:space="preserve">
+    <value>Далі</value>
+  </data>
+  <data name="OnboardingBackButton" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+  <data name="OnboardingSkipButton" xml:space="preserve">
+    <value>Пропустити</value>
+  </data>
+  <data name="TourQuickMenuTitle" xml:space="preserve">
+    <value>Розділи живуть тут</value>
+  </data>
+  <data name="TourQuickMenuText" xml:space="preserve">
+    <value>Нотатки, звички, фінанси, дошка зі статистикою за місяць — усе відкривається з цієї смуги. Порядок ви щойно задали в попередньому кроці, змінити його можна в налаштуваннях.</value>
+  </data>
+  <data name="TourDayStripTitle" xml:space="preserve">
+    <value>Це — обраний день</value>
+  </data>
+  <data name="TourDayStripText" xml:space="preserve">
+    <value>Усе нижче стосується саме його. Торкніться дати або потягніть ручку вниз, щоб відкрити календар і перейти на інший день.</value>
+  </data>
+  <data name="TourTabsTitle" xml:space="preserve">
+    <value>Щоденник і планер — той самий день</value>
+  </data>
+  <data name="TourTabsText" xml:space="preserve">
+    <value>Ліворуч те, що вже сталося, праворуч те, що заплановано. Перемикання не змінює дату.</value>
+  </data>
+  <data name="TourBlocksTitle" xml:space="preserve">
+    <value>День уміщається в один запис</value>
+  </data>
+  <data name="TourBlocksText" xml:space="preserve">
+    <value>Настрій, сон, їжа, самопочуття, текст. Обов'язкового немає нічого — пропущені поля просто лишаються порожніми. За кілька тижнів записаного вистачить, щоб дошка почала зіставляти дні між собою.</value>
+  </data>
+  <data name="TourStatsPeriodTitle" xml:space="preserve">
+    <value>Усе на дошці — про один проміжок</value>
+  </data>
+  <data name="TourStatsPeriodText" xml:space="preserve">
+    <value>Дві дати — це і є фільтр, а чіпи поруч лише вписують у них готові проміжки. Змініть вікно — і всі картки нижче перерахуються.</value>
+  </data>
+  <data name="TourStatsTabsTitle" xml:space="preserve">
+    <value>Кілька дошок, один період</value>
+  </data>
+  <data name="TourStatsTabsText" xml:space="preserve">
+    <value>Настрій, сон, задачі, гроші, звички, цикл. Перемикання вкладки не змінює обрані дати.</value>
+  </data>
+  <data name="TourStatsThemesTitle" xml:space="preserve">
+    <value>До чого ви повертаєтесь</value>
+  </data>
+  <data name="TourStatsThemesText" xml:space="preserve">
+    <value>Коли назбирається кілька тижнів записів, теми, що повторюються, зберуться тут — рахунок у днях, а не в абзацах. Це ваші власні формулювання, згруповані на пристрої.</value>
+  </data>
+  <data name="TourStatsInfluencesTitle" xml:space="preserve">
+    <value>Здогади, які перевіряються</value>
+  </data>
+  <data name="TourStatsInfluencesText" xml:space="preserve">
+    <value>Сон, їжа, звички й самі дні зіставляються з тим, як ви почувалися, і в списку лишається тільки те, що витримало перевірку, — разом із кількістю днів, на яких воно тримається. Часто не лишається нічого, і картка про це теж скаже.</value>
+  </data>
+  <data name="TourSettingsTabsTitle" xml:space="preserve">
+    <value>Чотири групи налаштувань</value>
+  </data>
+  <data name="TourSettingsTabsText" xml:space="preserve">
+    <value>Ви, екран, ваші дані та ШІ на пристрої. Нічого зі змінюваного тут не залишає телефон.</value>
+  </data>
+  <data name="TourSettingsBlocksTitle" xml:space="preserve">
+    <value>Оберіть, про що питатиме день</value>
+  </data>
+  <data name="TourSettingsBlocksText" xml:space="preserve">
+    <value>Вимкнений блок зникає з головного екрана і більше не питає. Записане не видаляється — увімкніть назад, і все на місці.</value>
+  </data>
+  <data name="TourSettingsPromptsTitle" xml:space="preserve">
+    <value>Питання дня живе тут</value>
+  </data>
+  <data name="TourSettingsPromptsText" xml:space="preserve">
+    <value>Ці два блоки питають, а не записують. Бібліотеку промптів можна редагувати, а історія відповідей зберігає все, що ви на ті питання написали.</value>
+  </data>
+  <data name="TourSettingsSaveTitle" xml:space="preserve">
+    <value>«Зберегти» стосується всіх вкладок</value>
+  </data>
+  <data name="TourSettingsSaveText" xml:space="preserve">
+    <value>Одна кнопка на весь екран. Якщо піти без неї, залишаться старі налаштування.</value>
+  </data>
+  <data name="SettingsPromptsTitle" xml:space="preserve">
+    <value>ПРОМПТИ Й РЕФЛЕКСІЯ</value>
+  </data>
+  <data name="SettingsPromptsHint" xml:space="preserve">
+    <value>Два блоки, які ставлять запитання, а не записують відповідь.</value>
+  </data>
+  <data name="SettingsReflectionHint" xml:space="preserve">
+    <value>Три поля наприкінці дня: тригери, вдячність і щось для себе.</value>
+  </data>
+  <data name="SettingsFinanceTitle" xml:space="preserve">
+    <value>ФІНАНСИ</value>
+  </data>
+  <data name="TourDoneButton" xml:space="preserve">
+    <value>Зрозуміло</value>
+  </data>
+  <data name="TourReplayLabel" xml:space="preserve">
+    <value>Показати гіди знову</value>
+  </data>
+  <data name="TourReplayMessage" xml:space="preserve">
+    <value>Гід по цьому екрану почнеться зараз. Головний екран і дошка покажуть свої, щойно ви їх відкриєте.</value>
+  </data>
+  <data name="OnboardingModulesTitle" xml:space="preserve">
+    <value>Оберіть, що вестимете</value>
+  </data>
+  <data name="OnboardingModulesSubtitle" xml:space="preserve">
+    <value>Зніміть позначку з того, що не потрібне, — воно піде з екранів, а не стоятиме порожнім. Усе це потім є в налаштуваннях.</value>
+  </data>
+  <data name="OnboardingModulesEntryGroup" xml:space="preserve">
+    <value>У щоденному записі</value>
+  </data>
+  <data name="OnboardingModulesSectionsGroup" xml:space="preserve">
+    <value>Окремі розділи</value>
+  </data>
+  <data name="OnboardingReminderTitle" xml:space="preserve">
+    <value>Одне тихе нагадування</value>
+  </data>
+  <data name="OnboardingReminderText" xml:space="preserve">
+    <value>Запрошення, а не докір. Вимкнути можна тут або в налаштуваннях будь-коли.</value>
+  </data>
+  <data name="RemindersTitle" xml:space="preserve">
+    <value>НАГАДУВАННЯ</value>
+  </data>
+  <data name="DailyReminderLabel" xml:space="preserve">
+    <value>Щоденне нагадування</value>
+  </data>
+  <data name="ReminderTimeLabel" xml:space="preserve">
+    <value>Час</value>
+  </data>
+  <data name="DailyReminderTitle" xml:space="preserve">
+    <value>Час для щоденника</value>
+  </data>
+  <data name="DailyReminderMessage" xml:space="preserve">
+    <value>Хвилинка для себе?</value>
+  </data>
+  <data name="StatsMoodInfluencesTitle" xml:space="preserve">
+    <value>ВАРТО ПЕРЕВІРИТИ</value>
+  </data>
+  <data name="StatsCorrelationDisclaimer" xml:space="preserve">
+    <value>Це збіги у ваших записах, а не причини. Дізнатися можна лише навмисне: змініть щось одне на тиждень і подивіться, чи піде збіг слідом.</value>
+  </data>
+  <data name="StatsHypothesesCheckedFormat" xml:space="preserve">
+    <value>Перевірено: {0}. Тримаються: {1}</value>
+  </data>
+  <data name="StatsCorrelationEvidenceFormat" xml:space="preserve">
+    <value>тримається на {0} днях</value>
+  </data>
+  <data name="StatsNoHypothesisHolds" xml:space="preserve">
+    <value>Поки не тримається жодна</value>
+  </data>
+  <data name="StatsNoHypothesisHoldsHintFormat" xml:space="preserve">
+    <value>Перевірено: {0}. Жодна не витримала перевірки. Це звичайний результат — більшість збігів її не витримує, і сказати про це чесніше, ніж показати зв'язок, якого немає.</value>
+  </data>
+  <data name="FactorSleepDuration" xml:space="preserve">
+    <value>Тривалість сну</value>
+  </data>
+  <data name="FactorSleepQuality" xml:space="preserve">
+    <value>Якість сну</value>
+  </data>
+  <data name="FactorCyclePeriodDay" xml:space="preserve">
+    <value>Дні місячних</value>
+  </data>
+  <data name="FactorCycleSymptoms" xml:space="preserve">
+    <value>Симптоми циклу</value>
+  </data>
+  <data name="ExportDataTitle" xml:space="preserve">
+    <value>ЕКСПОРТ ДАНИХ</value>
+  </data>
+  <data name="ExportDataDescription" xml:space="preserve">
+    <value>Експортуйте свої дані у відкритих форматах — зберігайте чи переносьте будь-куди.</value>
+  </data>
+  <data name="ExportJsonButton" xml:space="preserve">
+    <value>JSON</value>
+  </data>
+  <data name="ExportCsvButton" xml:space="preserve">
+    <value>CSV</value>
+  </data>
+  <data name="ExportMarkdownButton" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
+  <data name="ExportSuccessMessage" xml:space="preserve">
+    <value>Експорт готовий до надсилання.</value>
+  </data>
+  <data name="CloseButtonLabel" xml:space="preserve">
+    <value>Закрити</value>
+  </data>
+  <data name="StatsTrendByMonth" xml:space="preserve">
+    <value>По місяцях</value>
+  </data>
+  <data name="StatsTrendByWeek" xml:space="preserve">
+    <value>По тижнях</value>
+  </data>
+  <data name="StatsComparisonTitle" xml:space="preserve">
+    <value>Порівняно з</value>
+  </data>
+  <data name="StatsNoBaseline" xml:space="preserve">
+    <value>Ще немає ранніх даних для порівняння.</value>
+  </data>
+  <data name="StatsAccountBreakdown" xml:space="preserve">
+    <value>За рахунками</value>
+  </data>
+  <data name="StatsTransfersRow" xml:space="preserve">
+    <value>Перекази</value>
+  </data>
+  <data name="StatsMoverNew" xml:space="preserve">
+    <value>нове</value>
+  </data>
+  <data name="StatsMoverGone" xml:space="preserve">
+    <value>зникло</value>
+  </data>
+  <data name="StatsBiggestMoves" xml:space="preserve">
+    <value>Найбільші зміни</value>
+  </data>
+  <data name="AccountUnassigned" xml:space="preserve">
+    <value>Без рахунку</value>
+  </data>
+  <data name="CategoryOther" xml:space="preserve">
+    <value>Інше</value>
+  </data>
+  <data name="HealthSyncUnsupported" xml:space="preserve">
+    <value>Синхронізація зі здоровʼям поки недоступна на цьому пристрої.</value>
+  </data>
+  <data name="StreakHeldByGraceHint" xml:space="preserve">
+    <value>Серію тримає прощений день.</value>
+  </data>
+  <data name="CycleSymptomsLabel" xml:space="preserve">
+    <value>Симптоми</value>
+  </data>
+  <data name="PlannerUntimedLabel" xml:space="preserve">
+    <value>Без часу</value>
+  </data>
+  <data name="CycleSymptomCramps" xml:space="preserve">
+    <value>Спазми</value>
+  </data>
+  <data name="CycleSymptomHeadache" xml:space="preserve">
+    <value>Головний біль</value>
+  </data>
+  <data name="CycleSymptomBloating" xml:space="preserve">
+    <value>Здуття</value>
+  </data>
+  <data name="CycleSymptomFatigue" xml:space="preserve">
+    <value>Втома</value>
+  </data>
+  <data name="CycleSymptomMoodSwings" xml:space="preserve">
+    <value>Перепади настрою</value>
+  </data>
+  <data name="CycleSymptomTenderness" xml:space="preserve">
+    <value>Чутливість грудей</value>
+  </data>
+  <data name="CycleSymptomAcne" xml:space="preserve">
+    <value>Висипання</value>
+  </data>
+  <data name="CycleSymptomCravings" xml:space="preserve">
+    <value>Тяга до їжі</value>
+  </data>
+  <data name="BackupPassphraseTitle" xml:space="preserve">
+    <value>Пароль резервної копії</value>
+  </data>
+  <data name="BackupPassphraseExportPrompt" xml:space="preserve">
+    <value>Придумайте пароль для цієї копії. Він знадобиться, щоб відновити її на новому телефоні. Ми його ніде не зберігаємо і не можемо відновити.</value>
+  </data>
+  <data name="BackupPassphraseRestorePrompt" xml:space="preserve">
+    <value>Введіть пароль, з яким створювалася ця копія.</value>
+  </data>
+  <data name="BackupWrongPassphrase" xml:space="preserve">
+    <value>Цей пароль не відкриває копію. Нічого не змінено.</value>
+  </data>
+  <data name="BackupNotDiarionFile" xml:space="preserve">
+    <value>Це не резервна копія Diarion. Нічого не змінено.</value>
+  </data>
+  <data name="BackupNewerSchema" xml:space="preserve">
+    <value>Копію зроблено новішою версією Diarion. Спершу оновіть застосунок. Нічого не змінено.</value>
+  </data>
+  <data name="BackupLegacyOtherDevice" xml:space="preserve">
+    <value>Це стара копія, яка відкривається лише на телефоні, де її створено. Нові копії захищені паролем і відновлюються будь-де.</value>
+  </data>
+  <data name="BackupFailed" xml:space="preserve">
+    <value>Не вдалося виконати операцію. Нічого не змінено.</value>
+  </data>
+  <data name="CrashReportTitle" xml:space="preserve">
+    <value>Звіт про збій</value>
+  </data>
+  <data name="CrashReportDescription" xml:space="preserve">
+    <value>Минулого разу застосунок закрився несподівано. Цей звіт описує, що сталося. Він лишається на телефоні, доки ви самі його не надішлете.</value>
+  </data>
+  <data name="CrashReportShareButton" xml:space="preserve">
+    <value>Надіслати звіт</value>
+  </data>
+  <data name="CrashReportClearButton" xml:space="preserve">
+    <value>Видалити звіт</value>
+  </data>
+  <data name="CrashReportClearConfirm" xml:space="preserve">
+    <value>Видалити збережений звіт про збій?</value>
+  </data>
+  <data name="FactorHabitCompletion" xml:space="preserve">
+    <value>Виконані звички</value>
+  </data>
+  <data name="FactorMealsLogged" xml:space="preserve">
+    <value>Записані прийоми їжі</value>
+  </data>
+  <data name="FactorTaskCompletion" xml:space="preserve">
+    <value>Виконані задачі</value>
+  </data>
+  <data name="FactorDailySpend" xml:space="preserve">
+    <value>Витрати</value>
+  </data>
+  <data name="FactorThemeFormat" xml:space="preserve">
+    <value>Тема: {0}</value>
+  </data>
+  <data name="SettingsCurrencyLabel" xml:space="preserve">
+    <value>Валюта</value>
+  </data>
+  <data name="StatsNoLeadingEmotion" xml:space="preserve">
+    <value>Порівну</value>
+  </data>
+  <data name="StatsInsightProgressFormat" xml:space="preserve">
+    <value>{0} з {1} днів записано</value>
+  </data>
+  <data name="StatsInsightProgressHint" xml:space="preserve">
+    <value>Зв’язки між настроєм і сном, звичками, їжею, задачами та витратами з’являться, коли буде що порівнювати.</value>
+  </data>
+  <data name="SettingsTabAi" xml:space="preserve">
+    <value>ШІ</value>
+  </data>
+  <data name="AiSectionTitle" xml:space="preserve">
+    <value>ШІ НА ПРИСТРОЇ</value>
+  </data>
+  <data name="AiEnableToggle" xml:space="preserve">
+    <value>Увімкнути ШІ на пристрої</value>
+  </data>
+  <data name="AiIntro" xml:space="preserve">
+    <value>Теми місяця, тижневі підсумки і те, про що ви писали, як фактор настрою. Усе працює на цьому пристрої.</value>
+  </data>
+  <data name="AiNetworkNotice" xml:space="preserve">
+    <value>Єдине, що Diarion завантажує, — це файл самої моделі. Ваші записи нікуди не надсилаються.</value>
+  </data>
+  <data name="AiDeviceHeader" xml:space="preserve">
+    <value>ВАШ ПРИСТРІЙ</value>
+  </data>
+  <data name="AiDeviceSummaryFormat" xml:space="preserve">
+    <value>{0} памʼяті · {1} вільно</value>
+  </data>
+  <data name="AiTierLow" xml:space="preserve">
+    <value>Пошук і підсумки</value>
+  </data>
+  <data name="AiTierMid" xml:space="preserve">
+    <value>Пошук, підсумки і чат</value>
+  </data>
+  <data name="AiTierHigh" xml:space="preserve">
+    <value>Усе, включно з більшими моделями</value>
+  </data>
+  <data name="AiTierEmbeddingsOnly" xml:space="preserve">
+    <value>Теми і підсумки — 123 МБ, працює на будь-якому пристрої</value>
+  </data>
+  <data name="AiModelsHeader" xml:space="preserve">
+    <value>МОДЕЛІ</value>
+  </data>
+  <data name="AiRecommendedBadge" xml:space="preserve">
+    <value>рекомендовано</value>
+  </data>
+  <data name="AiModelTooLargeForDevice" xml:space="preserve">
+    <value>На цьому пристрої замало памʼяті</value>
+  </data>
+  <data name="AiDownloadAction" xml:space="preserve">
+    <value>Завантажити</value>
+  </data>
+  <data name="AiResumeAction" xml:space="preserve">
+    <value>Продовжити</value>
+  </data>
+  <data name="AiDeleteAction" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="AiCancelAction" xml:space="preserve">
+    <value>Скасувати</value>
+  </data>
+  <data name="AiRetryAction" xml:space="preserve">
+    <value>Спробувати ще раз</value>
+  </data>
+  <data name="AiStateNotInstalled" xml:space="preserve">
+    <value>Не завантажено</value>
+  </data>
+  <data name="AiStateDownloading" xml:space="preserve">
+    <value>Завантаження</value>
+  </data>
+  <data name="AiStateInstalled" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="AiStateCorrupt" xml:space="preserve">
+    <value>Пошкоджено — завантажте ще раз</value>
+  </data>
+  <data name="AiStateInterrupted" xml:space="preserve">
+    <value>Перервано — продовжте, щоб завершити</value>
+  </data>
+  <data name="AiDownloadFailed" xml:space="preserve">
+    <value>Не вдалося завантажити. Перевірте зʼєднання і спробуйте ще раз.</value>
+  </data>
+  <data name="AiDownloadWifiOnlyStopped" xml:space="preserve">
+    <value>Зупинено: зник Wi-Fi. Завантажене збережено — продовжте, коли повернетеся в мережу Wi-Fi.</value>
+  </data>
+  <data name="AiMobileDataTitle" xml:space="preserve">
+    <value>Ви в мобільній мережі</value>
+  </data>
+  <data name="AiMobileDataConfirmFormat" xml:space="preserve">
+    <value>Модель важить {0} і буде завантажена за рахунок мобільного трафіку. Завантажити все одно?</value>
+  </data>
+  <data name="AiMobileDataDownloadAnyway" xml:space="preserve">
+    <value>Все одно завантажити</value>
+  </data>
+  <data name="AiWifiOnlyToggle" xml:space="preserve">
+    <value>Завантажувати лише через Wi-Fi</value>
+  </data>
+  <data name="AiKeepOpenNotice" xml:space="preserve">
+    <value>Не закривайте застосунок, поки модель завантажується.</value>
+  </data>
+  <data name="AiBackgroundNotice" xml:space="preserve">
+    <value>Застосунок можна згорнути — завантаження триває у фоні.</value>
+  </data>
+  <data name="AiStateVerifying" xml:space="preserve">
+    <value>Перевірка</value>
+  </data>
+  <data name="AiDownloadOfFormat" xml:space="preserve">
+    <value>{0} з {1}</value>
+  </data>
+  <data name="AiDownloadRateFormat" xml:space="preserve">
+    <value>{0}/с</value>
+  </data>
+  <data name="AiDownloadEtaFormat" xml:space="preserve">
+    <value>лишилось ~{0}</value>
+  </data>
+  <data name="AiDownloadNotificationChannel" xml:space="preserve">
+    <value>Завантаження моделей</value>
+  </data>
+  <data name="AiDownloadNotificationChannelDescription" xml:space="preserve">
+    <value>Перебіг завантаження моделей ШІ на пристрій.</value>
+  </data>
+  <data name="AiDownloadNotificationTitle" xml:space="preserve">
+    <value>Завантаження моделі ШІ</value>
+  </data>
+  <data name="AiIndexHeader" xml:space="preserve">
+    <value>ІНДЕКС</value>
+  </data>
+  <data name="AiIndexIdle" xml:space="preserve">
+    <value>Не розпочато</value>
+  </data>
+  <data name="AiIndexScanning" xml:space="preserve">
+    <value>Перевіряю, що змінилось</value>
+  </data>
+  <data name="AiIndexEmbeddingFormat" xml:space="preserve">
+    <value>Читаю ваші записи — {0} з {1}</value>
+  </data>
+  <data name="AiIndexComplete" xml:space="preserve">
+    <value>Актуальний</value>
+  </data>
+  <data name="AiIndexCancelled" xml:space="preserve">
+    <value>Призупинено</value>
+  </data>
+  <data name="AiIndexChunksFormat" xml:space="preserve">
+    <value>Проіндексовано фрагментів: {0}</value>
+  </data>
+  <data name="AiIndexRebuildAction" xml:space="preserve">
+    <value>Перебудувати індекс</value>
+  </data>
+  <data name="AiIndexClearAction" xml:space="preserve">
+    <value>Видалити індекс</value>
+  </data>
+  <data name="AiIndexClearConfirm" xml:space="preserve">
+    <value>Видалити пошуковий індекс? Записи не постраждають — його можна перебудувати.</value>
+  </data>
+  <data name="UnitByte" xml:space="preserve">
+    <value>Б</value>
+  </data>
+  <data name="UnitKilobyte" xml:space="preserve">
+    <value>КБ</value>
+  </data>
+  <data name="UnitMegabyte" xml:space="preserve">
+    <value>МБ</value>
+  </data>
+  <data name="UnitGigabyte" xml:space="preserve">
+    <value>ГБ</value>
+  </data>
+  <data name="UnitTerabyte" xml:space="preserve">
+    <value>ТБ</value>
+  </data>
+  <data name="SearchTitle" xml:space="preserve">
+    <value>Пошук</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Що ви шукаєте?</value>
+  </data>
+  <data name="SearchHintPhrase" xml:space="preserve">
+    <value>Фраза працює краще за одне слово — модель читає речення.</value>
+  </data>
+  <data name="SearchScopeAll" xml:space="preserve">
+    <value>Усе</value>
+  </data>
+  <data name="SearchScopeDiary" xml:space="preserve">
+    <value>Щоденник</value>
+  </data>
+  <data name="SearchScopeNotes" xml:space="preserve">
+    <value>Нотатки</value>
+  </data>
+  <data name="SearchNoResults" xml:space="preserve">
+    <value>Нічого не знайдено</value>
+  </data>
+  <data name="SearchLexicalOnlyNotice" xml:space="preserve">
+    <value>Шукаю лише за словами. Увімкніть ШІ в налаштуваннях, щоб шукати за змістом.</value>
+  </data>
+  <data name="SearchResultsCountFormat" xml:space="preserve">
+    <value>Знайдено: {0}</value>
+  </data>
+  <data name="SearchSourceDiary" xml:space="preserve">
+    <value>Щоденник</value>
+  </data>
+  <data name="SearchSourceNote" xml:space="preserve">
+    <value>Нотатка</value>
+  </data>
+  <data name="QuickMenuSearch" xml:space="preserve">
+    <value>Пошук</value>
+  </data>
+  <data name="StatsDigestHeader" xml:space="preserve">
+    <value>ПРО ЩО БУВ ЦЕЙ ПЕРІОД</value>
+  </data>
+  <data name="StatsDigestHint" xml:space="preserve">
+    <value>Ваші власні слова, обрані як найтиповіші для періоду — тут нічого не згенеровано.</value>
+  </data>
+  <data name="StatsThemesHeader" xml:space="preserve">
+    <value>ЩО ПОВТОРЮВАЛОСЬ</value>
+  </data>
+  <data name="StatsThemeDaysFormat" xml:space="preserve">
+    <value>днів: {0}</value>
+  </data>
+  <data name="AiChatTitle" xml:space="preserve">
+    <value>Спитати щоденник</value>
+  </data>
+  <data name="AiChatPlaceholder" xml:space="preserve">
+    <value>Запитайте про свої записи…</value>
+  </data>
+  <data name="AiChatIntro" xml:space="preserve">
+    <value>Відповіді складаються лише з написаного вами, а під ними — записи, з яких вони взяті.</value>
+  </data>
+  <data name="AiChatUnavailable" xml:space="preserve">
+    <value>Модель для чату не встановлено. Її можна додати в Налаштуваннях → ШІ.</value>
+  </data>
+  <data name="AiChatNothingRelevant" xml:space="preserve">
+    <value>Не знайшов записів, щоб відповісти на це.</value>
+  </data>
+  <data name="AiChatUngrounded" xml:space="preserve">
+    <value>Я не зміг відповісти на це з ваших записів, не вигадуючи, тому краще не буду.</value>
+  </data>
+  <data name="AiChatSourcesLabel" xml:space="preserve">
+    <value>Джерела</value>
+  </data>
+  <data name="AiChatStop" xml:space="preserve">
+    <value>Зупинити</value>
+  </data>
+  <data name="QuickMenuAiChat" xml:space="preserve">
+    <value>Спитати</value>
+  </data>
+  <data name="SnapshotPreviewTitle" xml:space="preserve">
+    <value>Що саме піде</value>
+  </data>
+  <data name="SnapshotPreviewSubtitle" xml:space="preserve">
+    <value>Це сам запит, слово в слово. Нічого ще не надіслано.</value>
+  </data>
+  <data name="SnapshotPreviewSizeFormat" xml:space="preserve">
+    <value>{0} дн. · {1:N0} символів</value>
+  </data>
+  <data name="SnapshotPreviewIncludeIntimate" xml:space="preserve">
+    <value>Додати нотатки про інтимне життя</value>
+  </data>
+  <data name="SnapshotPreviewIncludeCycle" xml:space="preserve">
+    <value>Додати щоденник циклу</value>
+  </data>
+  <data name="SnapshotPreviewNothingWritten" xml:space="preserve">
+    <value>За цей період нічого не написано, тож звіт спиратиметься лише на числа.</value>
+  </data>
+  <data name="SnapshotPreviewRefresh" xml:space="preserve">
+    <value>Оновити</value>
+  </data>
+  <data name="BirthDateLabel" xml:space="preserve">
+    <value>Дата народження</value>
+  </data>
+  <data name="BirthDateNotSet" xml:space="preserve">
+    <value>не вказано</value>
+  </data>
+  <data name="BirthDateSetAction" xml:space="preserve">
+    <value>Вказати</value>
+  </data>
+  <data name="BirthDateClearAction" xml:space="preserve">
+    <value>Прибрати дату народження</value>
+  </data>
+  <data name="BirthDatePrivacyHint" xml:space="preserve">
+    <value>Лишається на телефоні. Потрібна лише щоб показувати розділи, які мають вік.</value>
+  </data>
+  <data name="IntimateLifeAgeHint" xml:space="preserve">
+    <value>Інтимне життя — рядок для 18+. Вкажіть дату народження в налаштуваннях профілю, щоб його побачити.</value>
+  </data>
+  <data name="CycleAgeHint" xml:space="preserve">
+    <value>Календар циклу доступний з 14 років. Вкажіть дату народження вище, щоб його побачити.</value>
   </data>
 </root>

@@ -15,7 +15,7 @@
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding CloseCommand}" />
                 </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="✕" FontSize="22" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </Grid>
 
             <VerticalStackLayout Grid.Column="1" Spacing="2">
@@ -32,8 +32,14 @@
                                Color="{DynamicResource Theme_Ocean_Dust}" />
         </Grid>
 
-        <Grid Grid.Row="1" Padding="24,10,24,24" RowSpacing="14" RowDefinitions="Auto, Auto">
-            <Border Grid.Row="0" StrokeShape="RoundRectangle 24"
+        <!-- The fields scroll, the button does not. Both rows used to be Auto with nothing scrolling, so
+             the form simply grew past the bottom of the screen and took Save with it — which is the one
+             control that must never be the thing off the edge. A cap on width keeps the card readable
+             when the window is wide; on a phone it never reaches it. -->
+        <Grid Grid.Row="1" Padding="24,10,24,24" RowSpacing="14" RowDefinitions="*, Auto"
+              MaximumWidthRequest="640">
+            <ScrollView Grid.Row="0" VerticalScrollBarVisibility="Never">
+            <Border StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
@@ -44,12 +50,31 @@
                     <VerticalStackLayout Spacing="14">
                         <VerticalStackLayout Spacing="8">
                             <Label Text="{x:Static localization:AppResources.TaskDescriptionLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                            <Entry Text="{Binding TaskDescription}"
-                                   Placeholder="{x:Static localization:AppResources.AddTodoPlaceholder}"
-                                   PlaceholderColor="{DynamicResource Theme_Ocean_Dust}"
-                                   TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                   BackgroundColor="Transparent"
-                                   HeightRequest="42" />
+                            <!-- An Editor, not an Entry: an Entry is one line by definition and scrolls
+                                 sideways, so a task longer than the field could only be read a word at a
+                                 time. This wraps and grows to two lines before it starts scrolling. -->
+                            <Editor Text="{Binding TaskDescription}"
+                                    Placeholder="{x:Static localization:AppResources.AddTodoPlaceholder}"
+                                    PlaceholderColor="{DynamicResource Theme_Ocean_Dust}"
+                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                    BackgroundColor="Transparent"
+                                    AutoSize="TextChanges"
+                                    MinimumHeightRequest="44"
+                                    MaximumHeightRequest="96" />
+
+                            <!-- Directly under the field it is about. What the parser read, with a way
+                                 back. The text itself is not touched until save: cutting words away
+                                 mid-typing moves the caret under the user's hands. -->
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasParseHint}">
+                                <Label Grid.Column="0" Text="{Binding ParseHint}" FontSize="12" VerticalOptions="Center"
+                                       LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Sage}" />
+                                <Label Grid.Column="1" Text="{x:Static localization:AppResources.ParseUndoLabel}" FontSize="12"
+                                       FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding DismissParseCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
                         </VerticalStackLayout>
 
                         <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
@@ -74,20 +99,198 @@
 
                         <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
 
-                        <!-- Options section -->
+                        <!-- Everything about when: the hour, how often it comes back, and whether to be
+                             told. They were an undivided run of checkboxes reading as one long list of
+                             unrelated switches; under one heading they read as one question. -->
+                        <Label Text="{x:Static localization:AppResources.TaskWhenLabel}" FontAttributes="Bold" FontSize="10"
+                               CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <CheckBox IsChecked="{Binding HasTime}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.AddTimeLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
-                        <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="12" IsVisible="{Binding HasTime}">
+                        <!-- The time is drawn as a label and the picker sits invisibly on top of it as the
+                             editor. Windows renders TimePicker as two native spin fields that ignore
+                             Format, so it read as a stray "8" beside a "30" with no colon and no leading
+                             zero, and the label next to it could not be lined up with either of them.
+                             Painting the text ourselves makes all three platforms agree and puts the row
+                             back on one baseline.
+
+                             Invisible via TextColor, never Opacity="0": an element at zero opacity is not
+                             hit-testable on Windows, so the picker was there, on top and bound, and simply
+                             could not be tapped. This is the same idiom as the sleep times in the diary,
+                             which is the one that has always worked. -->
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" IsVisible="{Binding HasTime}">
                             <Label Grid.Column="0" Text="{x:Static localization:AppResources.TimeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                            <TimePicker Grid.Column="1" Time="{Binding TargetTime}" Format="HH:mm" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
+                            <Grid Grid.Column="1" HorizontalOptions="Start" VerticalOptions="Center">
+                                <Label Text="{Binding TargetTimeDisplay}" FontSize="15" FontAttributes="Bold"
+                                       VerticalOptions="Center" HorizontalOptions="Start" InputTransparent="True"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <TimePicker Time="{Binding TargetTime}" Format="HH:mm"
+                                            WidthRequest="86" HeightRequest="30"
+                                            TextColor="Transparent" BackgroundColor="Transparent" />
+                            </Grid>
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                            <CheckBox IsChecked="{Binding IsDailyRepeat}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.DailyRepeatLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <!-- A task that holds a stretch of the day rather than a moment in it. Nested under
+                             the time rather than beside it: a block needs a point to start from, so this
+                             disappears with the hour it depends on. -->
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" IsVisible="{Binding HasTime}">
+                            <CheckBox IsChecked="{Binding HasEndTime}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskDurationLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
+                        <!-- Same invisible-picker-over-a-drawn-label idiom as the start time above, and for
+                             the same Windows reason. -->
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" IsVisible="{Binding HasEndTime}">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.TaskEndTimeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Grid Grid.Column="1" HorizontalOptions="Start" VerticalOptions="Center">
+                                <Label Text="{Binding EndTimeDisplay}" FontSize="15" FontAttributes="Bold"
+                                       VerticalOptions="Center" HorizontalOptions="Start" InputTransparent="True"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <TimePicker Time="{Binding EndTime}" Format="HH:mm"
+                                            WidthRequest="86" HeightRequest="30"
+                                            TextColor="Transparent" BackgroundColor="Transparent" />
+                            </Grid>
+                        </Grid>
+                        <Label Text="{Binding TimeRangeError}" IsVisible="{Binding HasTimeRangeError}"
+                               FontSize="12" TextColor="{DynamicResource Theme_Coral}" />
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <CheckBox IsChecked="{Binding IsRecurring}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskRepeatLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Grid>
+
+                        <VerticalStackLayout Spacing="10" IsVisible="{Binding IsRecurring}" Margin="34,0,0,0">
+                            <!-- Kind. Four chips in the priority idiom above, one bound bool each: DataTrigger
+                                 cannot compare an enum to a parameter, so the ViewModel exposes the comparison. -->
+                            <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Center">
+                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceDaily}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="Daily" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{x:Static localization:AppResources.RecurrenceDailyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </Border>
+
+                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceWeekly}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="Weekly" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{x:Static localization:AppResources.RecurrenceWeeklyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </Border>
+
+                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceInterval}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="IntervalDays" />
+                                    </Border.GestureRecognizers>
+                                    <!-- Names the kind, not a number. With the current value baked in it
+                                         read as a ready-made "every 2 days" rather than as the choice
+                                         whose count the stepper below sets. -->
+                                    <Label Text="{x:Static localization:AppResources.RecurrenceIntervalChip}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </Border>
+
+                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceMonthly}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="MonthlyByDay" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{x:Static localization:AppResources.RecurrenceMonthlyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </Border>
+                            </FlexLayout>
+
+                            <!-- Weekdays, only for the weekly kind. Monday first, named by the culture. -->
+                            <FlexLayout Wrap="Wrap" JustifyContent="Start" IsVisible="{Binding IsRecurrenceWeekly}"
+                                        BindableLayout.ItemsSource="{Binding Weekdays}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="viewmodels:WeekdayToggle">
+                                        <Border StrokeShape="RoundRectangle 15" StrokeThickness="1" WidthRequest="38" HeightRequest="30" Margin="0,0,6,6"
+                                                Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TodoDetailViewModel}}, Path=ToggleWeekdayCommand}" CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="{Binding ShortName}" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" FontSize="11" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </FlexLayout>
+
+                            <!-- Every N days -->
+                            <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10" IsVisible="{Binding IsRecurrenceInterval}">
+                                <Label Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding DecrementEveryNCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label Grid.Column="1" Text="{Binding EveryNDays}" FontSize="15" WidthRequest="34" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Label Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding IncrementEveryNCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <!-- Says what the number means, right beside it. -->
+                                <Label Grid.Column="3" Text="{Binding EveryNDays, StringFormat={x:Static localization:AppResources.RecurrenceEveryNDaysFormat}}"
+                                       FontSize="12" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            </Grid>
+
+                            <!-- Day of month -->
+                            <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10" IsVisible="{Binding IsRecurrenceMonthly}">
+                                <Label Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding DecrementDayOfMonthCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label Grid.Column="1" Text="{Binding DayOfMonth}" FontSize="15" WidthRequest="34" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Label Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding IncrementDayOfMonthCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <CheckBox IsChecked="{Binding HasRecurrenceEnd}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{x:Static localization:AppResources.RecurrenceEndDateLabel}" VerticalOptions="Center" FontSize="13" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </Grid>
+                            <DatePicker Date="{Binding RecurrenceEndDate}" IsVisible="{Binding HasRecurrenceEnd}" Format="dd.MM.yyyy"
+                                        TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
+
+                            <!-- The rule read back in words, so the chips above are never the only statement of it. -->
+                            <Label Text="{Binding RecurrenceSummary}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Label Text="{Binding RecurrenceError}" IsVisible="{Binding HasRecurrenceError}"
+                                   FontSize="12" TextColor="{DynamicResource Theme_Coral}" />
+                        </VerticalStackLayout>
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <CheckBox IsChecked="{Binding HasReminder}" VerticalOptions="Center" />
@@ -99,17 +302,19 @@
                         <VerticalStackLayout Spacing="8">
                             <Label Text="{x:Static localization:AppResources.TaskPriorityLabel}" FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                             
-                            <CollectionView ItemsSource="{Binding PrioritiesList}"
+                            <CollectionView BackgroundColor="Transparent" ItemsSource="{Binding PrioritiesList}"
                                             HeightRequest="48"
                                             HorizontalScrollBarVisibility="Never">
                                 <CollectionView.ItemsLayout>
-                                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" />
+                                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8" />
                                 </CollectionView.ItemsLayout>
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="viewmodels:PriorityItem">
-                                        <Border StrokeShape="RoundRectangle 20" 
+                                        <!-- 20 of padding each put the three chips past the width of a
+                                             phone card, so "Високий" was cut off the end. -->
+                                        <Border StrokeShape="RoundRectangle 20"
                                                 StrokeThickness="1"
-                                                Padding="20,0"
+                                                Padding="12,0"
                                                 VerticalOptions="Center"
                                                 HeightRequest="40"
                                                 BackgroundColor="Transparent">
@@ -169,6 +374,7 @@
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
+            </ScrollView>
 
                 <Border Grid.Row="1" StrokeShape="RoundRectangle 14"
                         StrokeThickness="0"

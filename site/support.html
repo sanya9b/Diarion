@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Підтримка — Diarion</title>
+<meta name="description" content="Як звʼязатися з розробником Diarion, як перенести дані на новий телефон, що робити із забутим паролем резервної копії чи PIN, як експортувати й видалити дані.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#E9E7E1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#22282C" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://diarion.org/support">
+<link rel="alternate" hreflang="uk" href="https://diarion.org/support">
+<link rel="alternate" hreflang="en" href="https://diarion.org/en/support">
+<link rel="alternate" hreflang="x-default" href="https://diarion.org/support">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/icon-512.png" type="image/png" sizes="512x512">
+<link rel="apple-touch-icon" href="/icon-512.png">
+<link rel="stylesheet" href="/styles.css">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Diarion">
+<meta property="og:title" content="Підтримка Diarion">
+<meta property="og:description" content="Контакт розробника й відповіді на часті питання.">
+<meta property="og:url" content="https://diarion.org/support">
+<meta property="og:image" content="https://diarion.org/og.png">
+<meta property="og:locale" content="uk_UA">
+</head>
+<body>
+<a class="skip" href="#main">Перейти до вмісту</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Diarion — головна">
+      <svg viewBox="0 0 280 280" aria-hidden="true" focusable="false"><rect width="280" height="280" rx="56" fill="#22282C"/><path fill-rule="evenodd" fill="#E9E7E1" d="M 78 70 L 78 218 L 148 218 C 215 218 222 175 222 144 C 222 113 215 70 148 70 Z M 112 102 L 112 186 L 148 186 C 184 186 190 165 190 144 C 190 123 184 102 148 102 Z"/><path fill="#C26D53" d="M 168 58 L 168 138 L 190 122 L 212 138 L 212 58 Z"/></svg>
+      Diarion
+    </a>
+    <nav class="nav" aria-label="Основна навігація">
+      <a href="/">Головна</a>
+      <a href="/privacy">Приватність</a>
+      <a href="/support" aria-current="page">Підтримка</a>
+      <a class="lang" href="/en/support" lang="en" hreflang="en">English</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap prose">
+  <h1>Підтримка</h1>
+  <p class="lead">Diarion робить одна людина. Пишіть на <!--email_off--><a href="mailto:support@diarion.org">support@diarion.org</a><!--/email_off--> — питання, помилки, ідеї. Відповідь може зайняти кілька днів.</p>
+
+  <div class="notice">
+    <p><strong>Важливо знати наперед:</strong> у розробника немає ваших даних, немає вашого пароля від резервної копії й немає вашого PIN. Це не обмеження підтримки, а те, як застосунок улаштований: усе лишається на вашому телефоні. Тому нижче найперше питання — про резервну копію.</p>
+  </div>
+
+  <h2>Часті питання</h2>
+  <div class="faq">
+
+    <details>
+      <summary>Як перенести дані на новий телефон?</summary>
+      <ol>
+        <li>На старому телефоні: <span class="path">Налаштування → Дані → Резервне копіювання → Експорт</span>.</li>
+        <li>Придумайте пароль для копії. Застосунок його ніде не зберігає — запишіть у надійне місце.</li>
+        <li>У вікні «Поділитися» збережіть файл <code>.diarionbackup</code> будь-куди: у файли телефона, у месенджер собі, на диск.</li>
+        <li>На новому телефоні встановіть Diarion, відкрийте <span class="path">Налаштування → Дані → Резервне копіювання → Відновити</span>, оберіть файл і введіть той самий пароль.</li>
+      </ol>
+      <p>Відновлення перезаписує поточні дані на новому телефоні, застосунок попередить про це. Після відновлення перезапустіть його.</p>
+    </details>
+
+    <details>
+      <summary>Я не пам'ятаю пароль від резервної копії</summary>
+      <p>Таку копію не відкрити нікому, включно з розробником: файл зашифровано ключем, який виводиться з вашого пароля, а сам пароль застосунок ніде не зберігає. Це навмисно — інакше копію міг би відкрити будь-хто, кому вона потрапила до рук.</p>
+      <p>Якщо дані ще є на телефоні, просто зробіть нову копію з новим паролем.</p>
+    </details>
+
+    <details>
+      <summary>Я забув(ла) PIN</summary>
+      <p>Скидання PIN «через пошту» немає, бо немає акаунта: PIN — це замок саме від тих, хто взяв ваш телефон.</p>
+      <ul>
+        <li>Якщо ввімкнено вхід за Face ID або відбитком — розблокуйте ним, а потім у <span class="path">Налаштування → Безпека</span> натисніть «Прибрати PIN» або «Змінити PIN».</li>
+        <li>Якщо біометрії немає, доступ до даних на цьому телефоні повернути неможливо. Лишається перевстановити застосунок (дані при цьому зникнуть) і відновити резервну копію, якщо вона є.</li>
+      </ul>
+      <p>Після п'яти неправильних спроб застосунок робить паузу на 30 секунд — це захист від перебору, а не блокування назавжди.</p>
+    </details>
+
+    <details>
+      <summary>Як експортувати записи у звичайні файли?</summary>
+      <p><span class="path">Налаштування → Дані → Експорт даних</span>, далі JSON, CSV або Markdown. Файл формується на телефоні й віддається через «Поділитися». Це відкриті формати: JSON підходить для програм, CSV відкривається в таблицях, Markdown читається як звичайний текст.</p>
+    </details>
+
+    <details>
+      <summary>Як видалити всі свої дані?</summary>
+      <p>Або <span class="path">Налаштування → Дані → «Видалити всі мої дані»</span>, або просто видаліть застосунок: його сховище зникає разом із ним. Писати розробнику для цього не потрібно — у нього ваших даних немає і ніколи не було.</p>
+    </details>
+
+    <details>
+      <summary>Застосунок закрився несподівано. Що робити?</summary>
+      <p>Після наступного запуску у <span class="path">Налаштування → Дані</span> з'явиться блок «Звіт про збій». Натисніть «Надіслати звіт» і перешліть його на <!--email_off-->support@diarion.org<!--/email_off-->. Звіт містить технічний опис збою (тип помилки, місце в коді, час і версію застосунку), а не ваші записи. Він лишається на телефоні, доки ви самі його не надішлете або не видалите.</p>
+    </details>
+
+    <details>
+      <summary>Чи потрібен інтернет?</summary>
+      <p>Для щоденника — ні. Мережа використовується рівно в одному випадку: щоб завантажити мовну модель для розділу ШІ (близько 123 МБ), і тільки якщо ви самі це запустите у <span class="path">Налаштування → ШІ</span>. Модель працює на телефоні, тексти записів у мережу не йдуть. Без неї застосунок повністю робочий.</p>
+    </details>
+
+    <details>
+      <summary>На яких пристроях працює Diarion?</summary>
+      <p>iPhone з iOS 15 і новішими та Android 8.0 і новіші. Мови інтерфейсу — українська та англійська, теми оформлення — три.</p>
+    </details>
+
+  </div>
+
+  <h2>Повідомити про помилку</h2>
+  <p>Щоб виправити швидше, напишіть у листі:</p>
+  <ul>
+    <li>модель телефона і версію системи (наприклад, iPhone 13, iOS 18.2);</li>
+    <li>що ви робили і що очікували побачити;</li>
+    <li>що сталося натомість — скриншот дуже допомагає;</li>
+    <li>якщо застосунок закрився, звіт про збій із вкладки «Дані».</li>
+  </ul>
+  <p>Тексти записів надсилати не потрібно — для пошуку помилки вони не знадобляться.</p>
+
+  <h2>Контакт</h2>
+  <p><!--email_off--><a href="mailto:support@diarion.org">support@diarion.org</a><!--/email_off--> · <a href="/privacy">політика приватності</a></p>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>© 2026 Diarion · Записи лишаються у телефоні.</div>
+    <nav aria-label="Службові посилання">
+      <a href="/">Головна</a>
+      <a href="/privacy">Політика приватності</a>
+      <a href="/en/support" lang="en" hreflang="en">English</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

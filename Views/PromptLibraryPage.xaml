@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             x:Class="Diarion.Views.PromptLibraryPage"
+             x:Name="RootPage"
+             x:DataType="viewModels:PromptLibraryViewModel"
+             Shell.PresentationMode="ModalAnimated"
+             Title="{Binding Title}"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
+            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CloseCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+            </Grid>
+
+            <Label Grid.Column="1" Text="{Binding Title}" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+            <Grid Grid.Column="2" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding AddPromptCommand}" />
+                </Grid.GestureRecognizers>
+                <Label Text="+" FontSize="26" FontAttributes="Bold" InputTransparent="True" TextColor="{DynamicResource Theme_Coral}" />
+            </Grid>
+        </Grid>
+
+        <ScrollView Grid.Row="1" Padding="24,10,24,32">
+            <VerticalStackLayout Spacing="24" BindableLayout.ItemsSource="{Binding Groups}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:PromptCategoryGroupViewModel">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Sage}" />
+
+                            <Label Text="{x:Static localization:AppResources.PromptLibraryEmptyCategory}"
+                                   IsVisible="{Binding IsEmpty}"
+                                   FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                            <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Prompts}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:PromptItemViewModel">
+                                        <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                                StrokeShape="RoundRectangle 14" Padding="14,12">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.EditPromptCommand}"
+                                                                      CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                                <Label Grid.Column="0" Text="{Binding Text}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                                <Label Grid.Column="1" Text="✎" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>
