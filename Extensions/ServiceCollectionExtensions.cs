@@ -19,12 +19,17 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IEncryptionKeyProvider, SecureStorageKeyProvider>();
         services.AddSingleton<IAppLockService, AppLockService>();
         services.AddSingleton<IBiometricService, BiometricService>();
-        // Subscription state (spec 15). The store client is the platform stub until the StoreKit
-        // facade lands; wherever there is no store, the state grants writing.
+        // Subscription state (spec 15). iOS talks to StoreKit 2 through the Swift facade; wherever
+        // there is no store yet (Android before Play Billing, Windows, Mac Catalyst) the state
+        // grants writing.
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IEntitlementStore, SecureStorageEntitlementStore>();
         services.AddSingleton<IInstallEvidence, MauiInstallEvidence>();
+#if IOS
+        services.AddSingleton<IStoreClient, StoreKitClient>();
+#else
         services.AddSingleton<IStoreClient, UnavailableStoreClient>();
+#endif
         services.AddSingleton<ILegacyAccessDetector, LegacyAccessDetector>();
         services.AddSingleton<IEntitlementService, EntitlementService>();
         services.AddSingleton<IAccessGuard, AccessGuard>();

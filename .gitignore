@@ -489,3 +489,11 @@ build_errors*.txt
 # not something a reviewer of a diff can check, and this repo ships a privacy claim.
 dump_types.exe
 *.exe
+
+# The StoreKit facade's build output. Produced on the macOS runner by
+# native/ios-storekit/build-xcframework.sh for every iOS build (spec 15, R3.5); a committed binary
+# would be one nobody could read in a diff, in a repo that ships a privacy claim.
+native/ios-storekit/DiarionStoreKit.xcframework/
+native/ios-storekit/.build/
+native/ios-storekit/.build-xcframework/
+native/ios-storekit/.swiftpm/

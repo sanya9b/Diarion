@@ -50,7 +50,9 @@
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
 
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+		<!-- iOS 16: AppTransaction, which tells a 1.0 install from a new one (spec 15, R2.5). Costs the
+		     iPhone 6s/7/SE 2016, nothing newer. -->
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">16.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
 		<!-- Android 8.0. The template's 21.0 sat two lines above this one and was simply overwritten,
 		     so nothing built against it ever — but a reader checking what the app supports found the
@@ -70,6 +72,10 @@
 		-->
 		<CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
 
+		<!-- Platforms/iOS/Store/StoreKitClient.cs hands the StoreKit facade unmanaged function
+		     pointers — the one place the app needs unsafe code, and only on this target. -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
 		<!--
 		  HealthKit is compiled out of v1. Removing NSHealthShareUsageDescription is not enough on
 		  its own: Apple scans the binary for API references, so a build that still links HKHealthStore
@@ -84,6 +90,20 @@
 		  <DefineConstants>$(DefineConstants);HEALTHKIT</DefineConstants>
 		-->
 	</PropertyGroup>
+
+	<!--
+	  The StoreKit 2 facade (spec 15, R3.3): a static library in xcframework clothing, built by
+	  native/ios-storekit/build-xcframework.sh on the macOS runner right before publish and linked
+	  into the main binary, so no new embedded framework appears in the bundle. Exists() is there for
+	  the Windows type-check, which has no Swift toolchain; the macOS workflow checks the symbols are
+	  in the IPA and fails loudly when they are not.
+	-->
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and Exists('native/ios-storekit/DiarionStoreKit.xcframework')">
+		<NativeReference Include="native/ios-storekit/DiarionStoreKit.xcframework">
+			<Kind>Framework</Kind>
+			<ForceLoad>true</ForceLoad>
+		</NativeReference>
+	</ItemGroup>
 
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(Configuration)' == 'Release'">
 		<!--
