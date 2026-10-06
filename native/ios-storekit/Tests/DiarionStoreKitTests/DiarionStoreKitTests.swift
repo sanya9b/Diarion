@@ -55,7 +55,8 @@ final class DiarionStoreKitTests: XCTestCase {
     func testBuyingThePlanIsReportedAsAnIntroductoryEntitlement() async throws {
         // Purchased through StoreKit directly: the facade's dsk_purchase presents a confirmation
         // sheet, which the headless test session has no window for.
-        let product = try XCTUnwrap(try await Product.products(for: ["diarion.base.yearly"]).first)
+        let products = try await Product.products(for: ["diarion.base.yearly"])
+        let product = try XCTUnwrap(products.first)
         _ = try await product.purchase()
 
         let entitlements = try call { ctx, cb in dsk_current_entitlements(ctx, cb) }
@@ -76,7 +77,8 @@ final class DiarionStoreKitTests: XCTestCase {
     }
 
     func testARefundShowsUpAsRevoked() async throws {
-        let product = try XCTUnwrap(try await Product.products(for: ["diarion.base.monthly"]).first)
+        let products = try await Product.products(for: ["diarion.base.monthly"])
+        let product = try XCTUnwrap(products.first)
         _ = try await product.purchase()
         let transactions = session.allTransactions()
         let id = try XCTUnwrap(transactions.first?.identifier)
