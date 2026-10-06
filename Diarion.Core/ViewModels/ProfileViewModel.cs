@@ -26,6 +26,7 @@ public partial class ProfileViewModel : BaseViewModel
     private readonly INavigationService _navigationService;
     private readonly Diarion.Diagnostics.ICrashReporter _crashReporter;
     private readonly IShareService _shareService;
+    private readonly ITourService _tourService;
 
     [ObservableProperty]
     private UserProfile _profile = new();
@@ -33,8 +34,28 @@ public partial class ProfileViewModel : BaseViewModel
     [ObservableProperty]
     private GenderItem? _selectedGenderItem;
 
+    /// <summary>
+    /// The date picker's value. A <c>DatePicker</c> cannot show "nothing", so an unknown birth date is
+    /// represented by <see cref="HasBirthDate"/> being false and the picker hidden; this only carries a
+    /// value while the profile has one. Writes through on every change, so Save picks it up.
+    /// </summary>
+    [ObservableProperty]
+    private DateTime _birthDateInput = DefaultBirthDateInput;
+
+    [ObservableProperty]
+    private bool _hasBirthDate;
+
+    /// <summary>Where the picker opens the first time: an adult's date, a few flicks from most real ones.</summary>
+    private static DateTime DefaultBirthDateInput => DateTime.Today.AddYears(-25);
+
+    public DateTime MinimumBirthDate => DateTime.Today.AddYears(-120);
+    public DateTime MaximumBirthDate => DateTime.Today;
+
     /// <summary>The AI tab's own state. A section view model rather than more fields here.</summary>
     public AiSettingsViewModel Ai { get; }
+
+    /// <summary>The first-visit coach marks over this screen. Idle until the page starts it.</summary>
+    public TourViewModel Tour { get; }
 
     // Settings tabs: 0 = Profile, 1 = Screen, 2 = Data, 3 = AI.
     [ObservableProperty]
@@ -50,12 +71,13 @@ public partial class ProfileViewModel : BaseViewModel
     public bool IsAiTab => SelectedTabIndex == 3 && IsAiTabAvailable;
 
     /// <summary>
-    /// Whether the AI tab is shown at all. False while the on-device models are retired.
+    /// Whether the AI tab is shown at all. False only when nothing local is offered any more.
     /// </summary>
     /// <remarks>
-    /// Without this the tab would still offer a 1.1 GB download for an encoder that nothing is
-    /// allowed to call — the worst of both, a long wait for a feature that stays switched off.
-    /// It is the last tab, so hiding it renumbers nothing.
+    /// The point is not to offer a download for something nothing is allowed to call — the worst of
+    /// both, a long wait for a feature that stays switched off. The encoder is still called, by the
+    /// themes in statistics and the mood factors, so the tab stays; the generative model is not, so
+    /// its row is gone from inside it. It is the last tab, so hiding it renumbers nothing.
     /// </remarks>
     public bool IsAiTabAvailable => OnDeviceAi.IsOffered;
 
@@ -85,9 +107,13 @@ public partial class ProfileViewModel : BaseViewModel
         INavigationService navigationService,
         Diarion.Diagnostics.ICrashReporter crashReporter,
         IShareService shareService,
+        ITourService tourService,
+        TourViewModel tour,
         AiSettingsViewModel ai)
     {
         Ai = ai;
+        Tour = tour;
+        _tourService = tourService;
         _crashReporter = crashReporter;
         _shareService = shareService;
         _profileService = profileService;
@@ -106,6 +132,8 @@ public partial class ProfileViewModel : BaseViewModel
         IsBusy = true;
         Profile = await _profileService.GetUserProfileAsync();
         SelectedGenderItem = GenderList.FirstOrDefault(g => g.Value == Profile.Gender) ?? GenderList[0];
+        HasBirthDate = Profile.BirthDate.HasValue;
+        BirthDateInput = Profile.BirthDate ?? DefaultBirthDateInput;
 
         SelectedCurrency = MoneyFormatter.Resolve(Profile.GetEffectiveCurrencyCode());
 
@@ -247,6 +275,24 @@ public partial class ProfileViewModel : BaseViewModel
         await _navigationService.NavigateToAsync("PromptHistory");
     }
 
+    /// <summary>
+    /// Arms every guide again, and runs this screen's one straight away.
+    /// </summary>
+    /// <remarks>
+    /// Only the settings guide can start from here; the other two draw over pages that are not this
+    /// one, so they wait to be walked into. The alert says so before the spotlight appears, because
+    /// otherwise a guide about settings looks like the whole of what the row promised.
+    /// </remarks>
+    [RelayCommand]
+    public async Task ReplayTourAsync()
+    {
+        _tourService.ResetSeen(Profile);
+        await _profileService.SaveUserProfileAsync(Profile);
+        await _dialogService.ShowAlertAsync(AppResources.TourReplayLabel, AppResources.TourReplayMessage);
+
+        await Tour.StartAsync(TourId.Settings);
+    }
+
     [RelayCommand]
     public async Task OpenCycleAsync()
     {
@@ -280,12 +326,38 @@ public partial class ProfileViewModel : BaseViewModel
         if (value != null && Profile != null)
         {
             Profile.Gender = value.Value;
-            // Автоматично пропонуємо увімкнути календар, якщо вибрано "Жіноча", а він ще не активований
-            if (value.Value == GenderType.Female && !Profile.IsMenstrualTrackingEnabled)
+            // Автоматично пропонуємо увімкнути календар, якщо вибрано "Жіноча", а він ще не активований.
+            // Лише коли вік це дозволяє: інакше прапорець став би true під картою, якої не видно, і
+            // календар увімкнувся б сам у день, коли дата народження нарешті вказана.
+            if (value.Value == GenderType.Female && !Profile.IsMenstrualTrackingEnabled && Profile.IsCycleFeatureAvailable)
             {
                 Profile.IsMenstrualTrackingEnabled = true;
             }
         }
+    }
+
+    partial void OnBirthDateInputChanged(DateTime value)
+    {
+        if (HasBirthDate && Profile != null)
+        {
+            Profile.BirthDate = value.Date;
+        }
+    }
+
+    /// <summary>Reveals the picker with a plausible default; the user adjusts from there.</summary>
+    [RelayCommand]
+    private void SetBirthDate()
+    {
+        HasBirthDate = true;
+        Profile.BirthDate = BirthDateInput.Date;
+    }
+
+    /// <summary>Back to "not told". The age-gated sections close; nothing behind them is deleted.</summary>
+    [RelayCommand]
+    private void ClearBirthDate()
+    {
+        HasBirthDate = false;
+        Profile.BirthDate = null;
     }
 
     [RelayCommand]

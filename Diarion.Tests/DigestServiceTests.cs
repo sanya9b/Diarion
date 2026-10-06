@@ -196,6 +196,48 @@ public class DigestServiceTests : IDisposable
         (await _service.BuildAsync(Start, End)).Excerpts[0].Text.Should().Be(text);
     }
 
+    [Fact]
+    public async Task Build_AVectorThatDoesNotMatchItsDim_IsSkippedInsteadOfFailingTheWholeScreen()
+    {
+        // A row whose Dim no longer describes the blob beside it — what a model swap under the same id
+        // leaves behind. Filtering on Dim alone let it through, and the dot product refuses two vectors
+        // of different lengths: the exception did not cost the user their digest, it stopped the
+        // statistics screen from opening at all. The search path has always checked both.
+        Indexed(new DateTime(2026, 6, 3), Long("справжній запис про день"), [1f, 0f]);
+        Stale(new DateTime(2026, 6, 4), Long("рядок від попередньої моделі"), declaredDim: 2, actual: [0f, 1f, 0f]);
+
+        var digest = await _service.BuildAsync(Start, End, maxExcerpts: 2);
+
+        digest.Excerpts.Should().ContainSingle().Which.Text.Should().Contain("справжній");
+    }
+
+    [Fact]
+    public async Task Build_EveryVectorStale_ReturnsEmptyRatherThanThrowing()
+    {
+        Stale(new DateTime(2026, 6, 3), Long("усе, що лишилось від старої моделі"), declaredDim: 2, actual: [1f, 0f, 0f]);
+
+        (await _service.BuildAsync(Start, End)).HasContent.Should().BeFalse();
+    }
+
+    /// <summary>Stores a chunk whose <c>Dim</c> disagrees with the width of the blob beside it.</summary>
+    private void Stale(DateTime date, string text, int declaredDim, float[] actual)
+    {
+        var id = date.ToString("yyyyMMdd") + "-stale";
+        EmbeddingMath.NormalizeInPlace(actual);
+        _store.UpsertBatch([new EmbeddingChunk
+        {
+            Id = EmbeddingChunk.BuildId(EmbeddingSourceKind.Diary, id, 0),
+            SourceKind = EmbeddingSourceKind.Diary,
+            SourceId = id,
+            SourceDate = date,
+            Text = text,
+            ContentHash = "h",
+            ModelId = Model,
+            Dim = declaredDim,
+            Vector = EmbeddingMath.ToBytes(actual),
+        }]);
+    }
+
     private sealed class StubEmbedder : ITextEmbedder
     {
         public string ModelId => Model;

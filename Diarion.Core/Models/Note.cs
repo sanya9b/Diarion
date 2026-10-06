@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Diarion.Services;
 using LiteDB;
 
 namespace Diarion.Models;
@@ -12,6 +13,13 @@ public class Note
     public string Title { get; set; } = string.Empty;
 
     public string Content { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The body as one line of readable text, for the row in the notes list. Computed rather than
+    /// stored: the list would otherwise show "# Покупки" and "- [x] молоко" back at the user.
+    /// </summary>
+    [BsonIgnore]
+    public string Preview => MarkdownParser.ToPlainText(Content);
 
     public string ColorTheme { get; set; } = "Theme_Amber";
 

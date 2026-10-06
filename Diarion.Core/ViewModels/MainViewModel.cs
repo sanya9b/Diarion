@@ -34,6 +34,9 @@ public partial class MainViewModel : BaseViewModel
     public HabitsSectionViewModel HabitsSection { get; }
     public CycleStatusViewModel CycleStatusSection { get; }
 
+    /// <summary>The first-run coach marks over this screen. Idle until the page starts it.</summary>
+    public TourViewModel Tour { get; }
+
     [ObservableProperty]
     private DiaryEntryViewModel? _currentEntry;
 
@@ -77,7 +80,8 @@ public partial class MainViewModel : BaseViewModel
         PlannerSectionViewModel plannerSection,
         QuickMenuViewModel quickMenuSection,
         HabitsSectionViewModel habitsSection,
-        CycleStatusViewModel cycleStatusSection)
+        CycleStatusViewModel cycleStatusSection,
+        TourViewModel tour)
     {
         using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
@@ -93,6 +97,7 @@ public partial class MainViewModel : BaseViewModel
         QuickMenuSection = quickMenuSection;
         HabitsSection = habitsSection;
         CycleStatusSection = cycleStatusSection;
+        Tour = tour;
 
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
 
@@ -254,9 +259,11 @@ public partial class MainViewModel : BaseViewModel
             await LoadEntriesForDateAsync(date);
             await CycleStatusSection.UpdateForDateAsync(date);
 
-            if (CurrentEntry != null && CycleStatusSection.IsVisible)
+            if (CurrentEntry != null)
             {
-                CurrentEntry.CycleDay = CycleStatusSection.CycleDay;
+                // Cleared, not left alone, when tracking is off: the health block renders this number,
+                // and a day that no longer counts must not keep showing the one it was given.
+                CurrentEntry.CycleDay = CycleStatusSection.IsVisible ? CycleStatusSection.CycleDay : string.Empty;
             }
         }
         finally

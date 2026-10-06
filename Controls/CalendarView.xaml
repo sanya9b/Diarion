@@ -97,8 +97,12 @@
                                     </Label.Triggers>
                                 </Label>
                                 
-                                <!-- Pacifier icon for fertile window (Bottom Left) -->
-                                <Image Source="pacifier.png" WidthRequest="16" HeightRequest="16" HorizontalOptions="Start" VerticalOptions="End" Aspect="AspectFit" InputTransparent="True" IsVisible="{Binding IsFertileWindow}" Margin="-2,0,0,-2">
+                                <!-- Pacifier icon for fertile window (Bottom Left). Bound to
+                                     ShowsFertileWindow, not IsFertileWindow: off for v1, and the
+                                     reason is in CycleDisplay.FertileWindowMarkerOffered. Binding
+                                     this back to IsFertileWindow puts it on screen again while
+                                     leaving that flag reading false, so don't. -->
+                                <Image Source="pacifier.png" WidthRequest="16" HeightRequest="16" HorizontalOptions="Start" VerticalOptions="End" Aspect="AspectFit" InputTransparent="True" IsVisible="{Binding ShowsFertileWindow}" Margin="-2,0,0,-2">
                                     <Image.Behaviors>
                                         <toolkit:IconTintColorBehavior TintColor="{DynamicResource Theme_Berry}" />
                                     </Image.Behaviors>

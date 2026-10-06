@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Diarion.Models;
 using Diarion.ViewModels;
 
@@ -6,16 +7,30 @@ namespace Diarion.Services;
 
 public class MenuConfigurationService : IMenuConfigurationService
 {
-    /// <summary>The one id that is conditional, so the filter and the catalogue cannot drift apart.</summary>
+    /// <summary>Ids that are conditional, so the filters and the catalogue cannot drift apart.</summary>
     public const string AiChatId = "AiChat";
+
+    public const string SearchId = "Search";
+
+    /// <summary>
+    /// Whether the search screen is reachable. Retired: its distinctive half was searching the diary
+    /// by meaning, which went with the generative model, and what is left is a keyword box that the
+    /// notes and reading screens each already have over their own contents.
+    /// </summary>
+    /// <remarks>
+    /// The tile is the only way in — no other screen navigates to the route — so this one flag is the
+    /// whole switch. <c>SearchPage</c>, <c>SearchViewModel</c> and their tests stay where they are;
+    /// flip this to <c>true</c> and the tile comes back in its old place, first in the strip.
+    /// </remarks>
+    public static bool SearchOffered { get; } = false;
 
     public List<QuickMenuItem> GetDefaultMenuItems()
     {
-        return new List<QuickMenuItem>
+        var items = new List<QuickMenuItem>
         {
             new QuickMenuItem
             {
-                Id = "Search",
+                Id = SearchId,
                 // Must be one of Sage/Berry/Amber/Coral: QuickMenuView.xaml resolves the stroke
                 // through DataTriggers on exactly those four, and any other key leaves the icon
                 // with no stroke at all — drawn, but invisible.
@@ -85,5 +100,9 @@ public class MenuConfigurationService : IMenuConfigurationService
                 PathData = "M 28,14 C 29.5,22 34,26.5 42,28 C 34,29.5 29.5,34 28,42 C 26.5,34 22,29.5 14,28 C 22,26.5 26.5,22 28,14 Z M 44,37 C 44.8,41 47,43.2 51,44 C 47,44.8 44.8,47 44,51 C 43.2,47 41,44.8 37,44 C 41,43.2 43.2,41 44,37 Z"
             }
         };
+
+        // Listed above and filtered here rather than left out of the list, so the tile keeps its
+        // place, its colour and its icon for whenever it is offered again.
+        return items.Where(item => item.Id != SearchId || SearchOffered).ToList();
     }
 }

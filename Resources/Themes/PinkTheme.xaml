@@ -10,6 +10,9 @@
     <Color x:Key="Theme_Ocean_Dust">#A66B81</Color>
     <!-- Borders are soft pink from user palette -->
     <Color x:Key="Theme_Dust_Ocean">#ffd5d5</Color>
+    <!-- Lines on the page background. #ffd5d5 disappears into the #FFF0F5 page the same way the light
+         theme's border did, so these carry a deeper rose instead. -->
+    <Color x:Key="Theme_GridLine">#D98BA6</Color>
     <!-- Surfaces are white or extremely light pink -->
     <Color x:Key="Theme_Snow_Black">#FFF7F9</Color>
     <Color x:Key="Theme_Ocean_Ocean">#ff92b0</Color>

@@ -857,7 +857,7 @@
     <value>Статистика</value>
   </data>
   <data name="StatisticsTitle" xml:space="preserve">
-    <value>Dashboard</value>
+    <value>Дошка</value>
   </data>
   <data name="StatsSleepDuration" xml:space="preserve">
     <value>Середня тривалість:</value>
@@ -1405,6 +1405,39 @@
   <data name="NoteContentPlaceholder" xml:space="preserve">
     <value>Напишіть щось тут...</value>
   </data>
+  <data name="NoteUntitled" xml:space="preserve">
+    <value>Без назви</value>
+  </data>
+  <data name="NoteFormatChecklist" xml:space="preserve">
+    <value>Список із галочками</value>
+  </data>
+  <data name="NoteFormatBullet" xml:space="preserve">
+    <value>Маркований список</value>
+  </data>
+  <data name="NoteFormatNumbered" xml:space="preserve">
+    <value>Нумерований список</value>
+  </data>
+  <data name="NoteFormatHeading" xml:space="preserve">
+    <value>Розмір заголовка</value>
+  </data>
+  <data name="NoteFormatQuote" xml:space="preserve">
+    <value>Цитата</value>
+  </data>
+  <data name="NoteFormatBold" xml:space="preserve">
+    <value>Жирний</value>
+  </data>
+  <data name="NoteFormatItalic" xml:space="preserve">
+    <value>Курсив</value>
+  </data>
+  <data name="NoteFormatStrikethrough" xml:space="preserve">
+    <value>Закреслений</value>
+  </data>
+  <data name="DeleteNoteConfirmTitle" xml:space="preserve">
+    <value>Видалити нотатку?</value>
+  </data>
+  <data name="DeleteNoteConfirmMessage" xml:space="preserve">
+    <value>Нотатку буде видалено назавжди — скасувати не вийде.</value>
+  </data>
   <data name="EmptyNotes" xml:space="preserve">
     <value>Нотаток ще немає. Створіть першу.</value>
   </data>
@@ -1492,6 +1525,126 @@
   <data name="OnboardingGetStartedButton" xml:space="preserve">
     <value>Почати</value>
   </data>
+  <data name="OnboardingNextButton" xml:space="preserve">
+    <value>Далі</value>
+  </data>
+  <data name="OnboardingBackButton" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+  <data name="OnboardingSkipButton" xml:space="preserve">
+    <value>Пропустити</value>
+  </data>
+  <data name="TourQuickMenuTitle" xml:space="preserve">
+    <value>Розділи живуть тут</value>
+  </data>
+  <data name="TourQuickMenuText" xml:space="preserve">
+    <value>Нотатки, звички, фінанси, дошка зі статистикою за місяць — усе відкривається з цієї смуги. Порядок ви щойно задали в попередньому кроці, змінити його можна в налаштуваннях.</value>
+  </data>
+  <data name="TourDayStripTitle" xml:space="preserve">
+    <value>Це — обраний день</value>
+  </data>
+  <data name="TourDayStripText" xml:space="preserve">
+    <value>Усе нижче стосується саме його. Торкніться дати або потягніть ручку вниз, щоб відкрити календар і перейти на інший день.</value>
+  </data>
+  <data name="TourTabsTitle" xml:space="preserve">
+    <value>Щоденник і планер — той самий день</value>
+  </data>
+  <data name="TourTabsText" xml:space="preserve">
+    <value>Ліворуч те, що вже сталося, праворуч те, що заплановано. Перемикання не змінює дату.</value>
+  </data>
+  <data name="TourBlocksTitle" xml:space="preserve">
+    <value>День уміщається в один запис</value>
+  </data>
+  <data name="TourBlocksText" xml:space="preserve">
+    <value>Настрій, сон, їжа, самопочуття, текст. Обов'язкового немає нічого — пропущені поля просто лишаються порожніми. За кілька тижнів записаного вистачить, щоб дошка почала зіставляти дні між собою.</value>
+  </data>
+  <data name="TourStatsPeriodTitle" xml:space="preserve">
+    <value>Усе на дошці — про один проміжок</value>
+  </data>
+  <data name="TourStatsPeriodText" xml:space="preserve">
+    <value>Дві дати — це і є фільтр, а чіпи поруч лише вписують у них готові проміжки. Змініть вікно — і всі картки нижче перерахуються.</value>
+  </data>
+  <data name="TourStatsTabsTitle" xml:space="preserve">
+    <value>Кілька дошок, один період</value>
+  </data>
+  <data name="TourStatsTabsText" xml:space="preserve">
+    <value>Настрій, сон, задачі, гроші, звички, цикл. Перемикання вкладки не змінює обрані дати.</value>
+  </data>
+  <data name="TourStatsThemesTitle" xml:space="preserve">
+    <value>До чого ви повертаєтесь</value>
+  </data>
+  <data name="TourStatsThemesText" xml:space="preserve">
+    <value>Коли назбирається кілька тижнів записів, теми, що повторюються, зберуться тут — рахунок у днях, а не в абзацах. Це ваші власні формулювання, згруповані на пристрої.</value>
+  </data>
+  <data name="TourStatsInfluencesTitle" xml:space="preserve">
+    <value>Здогади, які перевіряються</value>
+  </data>
+  <data name="TourStatsInfluencesText" xml:space="preserve">
+    <value>Сон, їжа, звички й самі дні зіставляються з тим, як ви почувалися, і в списку лишається тільки те, що витримало перевірку, — разом із кількістю днів, на яких воно тримається. Часто не лишається нічого, і картка про це теж скаже.</value>
+  </data>
+  <data name="TourSettingsTabsTitle" xml:space="preserve">
+    <value>Чотири групи налаштувань</value>
+  </data>
+  <data name="TourSettingsTabsText" xml:space="preserve">
+    <value>Ви, екран, ваші дані та ШІ на пристрої. Нічого зі змінюваного тут не залишає телефон.</value>
+  </data>
+  <data name="TourSettingsBlocksTitle" xml:space="preserve">
+    <value>Оберіть, про що питатиме день</value>
+  </data>
+  <data name="TourSettingsBlocksText" xml:space="preserve">
+    <value>Вимкнений блок зникає з головного екрана і більше не питає. Записане не видаляється — увімкніть назад, і все на місці.</value>
+  </data>
+  <data name="TourSettingsPromptsTitle" xml:space="preserve">
+    <value>Питання дня живе тут</value>
+  </data>
+  <data name="TourSettingsPromptsText" xml:space="preserve">
+    <value>Ці два блоки питають, а не записують. Бібліотеку промптів можна редагувати, а історія відповідей зберігає все, що ви на ті питання написали.</value>
+  </data>
+  <data name="TourSettingsSaveTitle" xml:space="preserve">
+    <value>«Зберегти» стосується всіх вкладок</value>
+  </data>
+  <data name="TourSettingsSaveText" xml:space="preserve">
+    <value>Одна кнопка на весь екран. Якщо піти без неї, залишаться старі налаштування.</value>
+  </data>
+  <data name="SettingsPromptsTitle" xml:space="preserve">
+    <value>ПРОМПТИ Й РЕФЛЕКСІЯ</value>
+  </data>
+  <data name="SettingsPromptsHint" xml:space="preserve">
+    <value>Два блоки, які ставлять запитання, а не записують відповідь.</value>
+  </data>
+  <data name="SettingsReflectionHint" xml:space="preserve">
+    <value>Три поля наприкінці дня: тригери, вдячність і щось для себе.</value>
+  </data>
+  <data name="SettingsFinanceTitle" xml:space="preserve">
+    <value>ФІНАНСИ</value>
+  </data>
+  <data name="TourDoneButton" xml:space="preserve">
+    <value>Зрозуміло</value>
+  </data>
+  <data name="TourReplayLabel" xml:space="preserve">
+    <value>Показати гіди знову</value>
+  </data>
+  <data name="TourReplayMessage" xml:space="preserve">
+    <value>Гід по цьому екрану почнеться зараз. Головний екран і дошка покажуть свої, щойно ви їх відкриєте.</value>
+  </data>
+  <data name="OnboardingModulesTitle" xml:space="preserve">
+    <value>Оберіть, що вестимете</value>
+  </data>
+  <data name="OnboardingModulesSubtitle" xml:space="preserve">
+    <value>Зніміть позначку з того, що не потрібне, — воно піде з екранів, а не стоятиме порожнім. Усе це потім є в налаштуваннях.</value>
+  </data>
+  <data name="OnboardingModulesEntryGroup" xml:space="preserve">
+    <value>У щоденному записі</value>
+  </data>
+  <data name="OnboardingModulesSectionsGroup" xml:space="preserve">
+    <value>Окремі розділи</value>
+  </data>
+  <data name="OnboardingReminderTitle" xml:space="preserve">
+    <value>Одне тихе нагадування</value>
+  </data>
+  <data name="OnboardingReminderText" xml:space="preserve">
+    <value>Запрошення, а не докір. Вимкнути можна тут або в налаштуваннях будь-коли.</value>
+  </data>
   <data name="RemindersTitle" xml:space="preserve">
     <value>НАГАДУВАННЯ</value>
   </data>
@@ -1508,10 +1661,22 @@
     <value>Хвилинка для себе?</value>
   </data>
   <data name="StatsMoodInfluencesTitle" xml:space="preserve">
-    <value>ЩО ВПЛИВАЄ НА НАСТРІЙ</value>
+    <value>ВАРТО ПЕРЕВІРИТИ</value>
   </data>
   <data name="StatsCorrelationDisclaimer" xml:space="preserve">
-    <value>Пов'язано з настроєм — не доведено, що є причиною.</value>
+    <value>Це збіги у ваших записах, а не причини. Дізнатися можна лише навмисне: змініть щось одне на тиждень і подивіться, чи піде збіг слідом.</value>
+  </data>
+  <data name="StatsHypothesesCheckedFormat" xml:space="preserve">
+    <value>Перевірено: {0}. Тримаються: {1}</value>
+  </data>
+  <data name="StatsCorrelationEvidenceFormat" xml:space="preserve">
+    <value>тримається на {0} днях</value>
+  </data>
+  <data name="StatsNoHypothesisHolds" xml:space="preserve">
+    <value>Поки не тримається жодна</value>
+  </data>
+  <data name="StatsNoHypothesisHoldsHintFormat" xml:space="preserve">
+    <value>Перевірено: {0}. Жодна не витримала перевірки. Це звичайний результат — більшість збігів її не витримує, і сказати про це чесніше, ніж показати зв'язок, якого немає.</value>
   </data>
   <data name="FactorSleepDuration" xml:space="preserve">
     <value>Тривалість сну</value>
@@ -1691,7 +1856,7 @@
     <value>Увімкнути ШІ на пристрої</value>
   </data>
   <data name="AiIntro" xml:space="preserve">
-    <value>Пошук по щоденнику за змістом, теми місяця і тижневі підсумки. Усе працює на цьому пристрої.</value>
+    <value>Теми місяця, тижневі підсумки і те, про що ви писали, як фактор настрою. Усе працює на цьому пристрої.</value>
   </data>
   <data name="AiNetworkNotice" xml:space="preserve">
     <value>Єдине, що Diarion завантажує, — це файл самої моделі. Ваші записи нікуди не надсилаються.</value>
@@ -1710,6 +1875,9 @@
   </data>
   <data name="AiTierHigh" xml:space="preserve">
     <value>Усе, включно з більшими моделями</value>
+  </data>
+  <data name="AiTierEmbeddingsOnly" xml:space="preserve">
+    <value>Теми і підсумки — 123 МБ, працює на будь-якому пристрої</value>
   </data>
   <data name="AiModelsHeader" xml:space="preserve">
     <value>МОДЕЛІ</value>
@@ -1935,5 +2103,26 @@
   </data>
   <data name="SnapshotPreviewRefresh" xml:space="preserve">
     <value>Оновити</value>
+  </data>
+  <data name="BirthDateLabel" xml:space="preserve">
+    <value>Дата народження</value>
+  </data>
+  <data name="BirthDateNotSet" xml:space="preserve">
+    <value>не вказано</value>
+  </data>
+  <data name="BirthDateSetAction" xml:space="preserve">
+    <value>Вказати</value>
+  </data>
+  <data name="BirthDateClearAction" xml:space="preserve">
+    <value>Прибрати дату народження</value>
+  </data>
+  <data name="BirthDatePrivacyHint" xml:space="preserve">
+    <value>Лишається на телефоні. Потрібна лише щоб показувати розділи, які мають вік.</value>
+  </data>
+  <data name="IntimateLifeAgeHint" xml:space="preserve">
+    <value>Інтимне життя — рядок для 18+. Вкажіть дату народження в налаштуваннях профілю, щоб його побачити.</value>
+  </data>
+  <data name="CycleAgeHint" xml:space="preserve">
+    <value>Календар циклу доступний з 14 років. Вкажіть дату народження вище, щоб його побачити.</value>
   </data>
 </root>

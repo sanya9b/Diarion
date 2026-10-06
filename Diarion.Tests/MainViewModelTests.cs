@@ -112,7 +112,8 @@ public class MainViewModelTests
             _plannerSection,
             _quickMenuSection,
             _habitsSection,
-            new Mock<CycleStatusViewModel>(_cycleLogServiceMock.Object, _profileServiceMock.Object).Object);
+            new Mock<CycleStatusViewModel>(_cycleLogServiceMock.Object, _profileServiceMock.Object).Object,
+            new TourViewModel(_profileServiceMock.Object, new TourService()));
     }
 
     [Fact]
@@ -144,7 +145,7 @@ public class MainViewModelTests
         // containing nothing but Date and CycleDay. Those rows then counted towards the diary streak.
         _profileServiceMock
             .Setup(s => s.GetUserProfileAsync())
-            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true });
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
         _cycleLogServiceMock
             .Setup(s => s.GetMarkedDatesAsync())
             .ReturnsAsync(new List<DateTime> { DateTime.Today.AddDays(-14) });
@@ -155,6 +156,40 @@ public class MainViewModelTests
         await viewModel.FlushAutoSaveAsync();
 
         _diaryServiceMock.Verify(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task LoadEntries_WithCycleTrackingOn_GivesTheEntryItsCycleDay()
+    {
+        // The health block renders this number, so it has to reach the entry the day screen is showing.
+        _profileServiceMock
+            .Setup(s => s.GetUserProfileAsync())
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
+        _cycleLogServiceMock
+            .Setup(s => s.GetMarkedDatesAsync())
+            .ReturnsAsync(new List<DateTime> { DateTime.Today.AddDays(-14) });
+
+        var viewModel = CreateViewModel();
+
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+
+        viewModel.CurrentEntry!.CycleDay.Should().Be("15");
+        viewModel.CurrentEntry.HasCycleDay.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task LoadEntries_WithCycleTrackingOff_LeavesNoCycleDayBehind()
+    {
+        // A number stored while tracking was on must not keep showing after it is switched off.
+        _diaryServiceMock
+            .Setup(s => s.GetEntryForDateAsync(It.IsAny<DateTime>()))
+            .ReturnsAsync(new DiaryEntry { CycleDay = "15" });
+
+        var viewModel = CreateViewModel();
+
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+
+        viewModel.CurrentEntry!.HasCycleDay.Should().BeFalse();
     }
 
     [Fact]

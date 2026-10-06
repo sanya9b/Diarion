@@ -180,6 +180,40 @@ public class DiaryEntryViewModelTests
     }
 
     [Fact]
+    public void HealthNotes_RoundTripThroughTheModel()
+    {
+        var model = new DiaryEntry { HealthNotes = "sore throat" };
+        var viewModel = new DiaryEntryViewModel(model);
+
+        viewModel.HealthNotes.Should().Be("sore throat");
+
+        viewModel.HealthNotes = "better by evening";
+        model.HealthNotes.Should().Be("better by evening");
+
+        viewModel.SyncToModel();
+        model.HealthNotes.Should().Be("better by evening");
+    }
+
+    [Fact]
+    public void HasCycleDay_FollowsTheNumberTheDayScreenWrote()
+    {
+        // The health block's cycle row hangs off this: no number, no row.
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry());
+        viewModel.HasCycleDay.Should().BeFalse();
+
+        var raised = new List<string?>();
+        viewModel.PropertyChanged += (_, e) => raised.Add(e.PropertyName);
+
+        viewModel.CycleDay = "14";
+
+        viewModel.HasCycleDay.Should().BeTrue();
+        raised.Should().Contain(nameof(DiaryEntryViewModel.HasCycleDay));
+
+        viewModel.CycleDay = string.Empty;
+        viewModel.HasCycleDay.Should().BeFalse();
+    }
+
+    [Fact]
     public void SyncToModel_CopiesHourlyMood()
     {
         // The original defect: hourly mood was modelled and read, but SyncToModel never copied it,

@@ -9,7 +9,6 @@
     
     <Grid>
         <Border x:Name="CheckBorder"
-                StrokeShape="RoundRectangle 6"
                 StrokeThickness="2"
                 Stroke="{Binding Color, Source={x:Reference RootView}, FallbackValue={DynamicResource Theme_Coral}, TargetNullValue={DynamicResource Theme_Coral}}"
                 BackgroundColor="{Binding ComputedBackgroundColor, Source={x:Reference RootView}}"
@@ -18,6 +17,10 @@
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
                 Padding="2">
+
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="{Binding CornerRadius, Source={x:Reference RootView}}" />
+            </Border.StrokeShape>
 
             <Path Data="M 4 11 L 9 16 L 19 6"
                   Stroke="{DynamicResource Theme_Snow}"

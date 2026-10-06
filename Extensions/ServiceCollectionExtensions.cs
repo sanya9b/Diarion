@@ -35,6 +35,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IStatisticsService, StatisticsService>();
         services.AddSingleton<ICorrelationService, CorrelationService>();
         services.AddSingleton<IMenuConfigurationService, MenuConfigurationService>();
+        services.AddSingleton<IOnboardingModuleService, OnboardingModuleService>();
+        services.AddSingleton<ITourService, TourService>();
         services.AddSingleton<IBackupService, BackupService>();
         services.AddSingleton<IExportService, ExportService>();
         services.AddSingleton<INavigationService, MauiNavigationService>();
@@ -44,6 +46,17 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IShareService, MauiShareService>();
         services.AddSingleton<IFilePickerService, MauiFilePickerService>();
         services.AddSingleton<IDispatcherService, MauiDispatcherService>();
+        // How much of the window the keyboard covers, for a formatting bar laid out under the note.
+        // Android moves the window instead and answers zero, which is measured rather than assumed.
+        // iOS is the platform that slides the keyboard over the page — and there the bar is not in
+        // the page at all: it rides on the keyboard as its accessory view (RichTextBlockHandler.Apple),
+        // so the system lifts it and nothing here has to know how tall the keyboard is. Singleton: it
+        // holds a subscription to the platform for the life of the app.
+#if ANDROID
+        services.AddSingleton<IKeyboardInsetService, AndroidKeyboardInsetService>();
+#else
+        services.AddSingleton<IKeyboardInsetService, NoKeyboardInsetService>();
+#endif
 
         services.AddAiServices();
 
@@ -104,12 +117,20 @@ public static class ServiceCollectionExtensions
         // The single answer to "may the AI read this diary". Every consumer asks it, so consent
         // cannot be honoured in one place and forgotten in the next four.
         //
-        // Answering "no" unconditionally while OnDeviceAi.IsOffered is false: the local models are
-        // off for everyone since 2026-08-10. AiAvailability itself is untouched and still tested, so
-        // the flag — not this line — is the switch.
-        services.AddSingleton<IAiAvailability>(sp => OnDeviceAi.IsOffered
-            ? ActivatorUtilities.CreateInstance<AiAvailability>(sp)
-            : new DisabledAiAvailability());
+        // Which of the three answers the app gives is decided here and nowhere else: everything off,
+        // embeddings only (where it stands — the generative model is retired), or the full stack.
+        // AiAvailability itself is untouched and still tested, so the flags — not this line — are the
+        // switch.
+        services.AddSingleton<IAiAvailability>(sp =>
+        {
+            if (!OnDeviceAi.IsOffered)
+            {
+                return new DisabledAiAvailability();
+            }
+
+            var full = ActivatorUtilities.CreateInstance<AiAvailability>(sp);
+            return OnDeviceAi.GenerationOffered ? full : new EmbeddingsOnlyAiAvailability(full);
+        });
         services.AddSingleton<IEmbeddingIndexService, EmbeddingIndexService>();
         services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
         services.AddSingleton<IDigestService, DigestService>();
@@ -139,6 +160,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<LockViewModel>();
         services.AddTransient<PinSetupViewModel>();
         services.AddTransient<OnboardingViewModel>();
+        services.AddTransient<TourViewModel>();
         services.AddTransient<DiaryDetailViewModel>();
         services.AddTransient<TodoDetailViewModel>();
         services.AddTransient<AiSettingsViewModel>();

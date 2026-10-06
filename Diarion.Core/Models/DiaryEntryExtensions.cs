@@ -26,6 +26,7 @@ public static class DiaryEntryExtensions
             || HasText(entry.Content)
             || HasText(entry.SleepNotes)
             || HasText(entry.IntimateLife)
+            || HasText(entry.HealthNotes)
             || entry.IsIntimateLifeDone
             || entry.SleepStart.HasValue
             || entry.SleepEnd.HasValue

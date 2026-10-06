@@ -12,7 +12,10 @@
              Title="{Binding Title}"
              BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
 
-    <ScrollView>
+    <!-- The grid exists for the guide layer alone: it has to sit over the scroller, not inside it,
+         or it would scroll away with the content it is explaining. -->
+    <Grid>
+    <ScrollView x:Name="PageScroll">
         <VerticalStackLayout Padding="24,18,24,32" Spacing="20">
 
             <!-- Header: title + streak pill -->
@@ -38,7 +41,10 @@
             </Grid>
 
             <!-- Tab selector: segmented pill-bar with icons inside a track -->
-            <Border StrokeShape="RoundRectangle 22" StrokeThickness="1"
+            <!-- x:Name here and on three cards below marks them as guide anchors; StatisticsPage.xaml.cs
+                 maps a TourStepId onto each one and measures it. -->
+            <Border x:Name="TabsAnchor"
+                    StrokeShape="RoundRectangle 22" StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
                     BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="4" Margin="0,4,0,0" HorizontalOptions="Fill">
@@ -77,7 +83,8 @@
             <!-- Period: the two dates come first and are the actual filter; the chips after them are
                  shortcuts that write into those same two dates. The old "PERIOD" caption is gone —
                  the row reads as a period without being told, and the space buys the date pair. -->
-            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,4,0,0"
+            <ScrollView x:Name="PeriodAnchor"
+                        Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,4,0,0"
                         SemanticProperties.Description="{x:Static localization:AppResources.StatsPeriod}">
                 <HorizontalStackLayout Spacing="0" VerticalOptions="Center">
 
@@ -152,7 +159,8 @@
                 <!-- Recurring themes. Labels are the user's own leading sentences, so this needs
                      only the encoder; day counts, not passage counts, because one long evening
                      about a subject is one day of it. -->
-                <Border IsVisible="{Binding HasThemes}"
+                <Border x:Name="ThemesAnchor"
+                        IsVisible="{Binding HasThemes}"
                         StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
@@ -345,19 +353,25 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- What affects your mood (on-device correlations) -->
-                <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasCorrelations}">
+                <!-- Guesses about your mood, checked on the device. The card is a test report: how many
+                     factors were compared, how many came through, and how many days each survivor rests
+                     on. Not a list of what the diary "found". -->
+                <Border x:Name="InfluencesAnchor" Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasCorrelations}">
                     <Border.Shadow>
                         <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsMoodInfluencesTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
+                        <Label Text="{Binding MoodStats.CorrelationSummaryText}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
                         <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding MoodStats.Correlations}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="viewmodels:MoodCorrelationItem">
                                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
-                                        <Label Grid.Column="0" Text="{Binding Description}" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                            <Label Text="{Binding Description}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Label Text="{Binding Evidence}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                        </VerticalStackLayout>
                                         <Label Grid.Column="1" Text="{Binding Dots}" FontSize="12" CharacterSpacing="1" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
                                     </Grid>
                                 </DataTemplate>
@@ -368,14 +382,15 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Progress towards the first insight. Takes the place of the card above while there
-                     is nothing to put in it, so a fortnight of waiting reads as progress rather than
-                     as a screen that does not work. -->
-                <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasInsightProgress}">
+                <!-- Takes the place of the card above whenever the list is empty, and says which kind of
+                     empty it is: too little to compare yet, or compared and nothing held. The headline
+                     and the line under it are both bound, because those two states want opposite things
+                     said — one promises links later, the other must not. -->
+                <Border x:Name="InsightProgressAnchor" Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasInsightProgress}">
                     <VerticalStackLayout Spacing="8">
                         <Label Text="{x:Static localization:AppResources.StatsMoodInfluencesTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                         <Label Text="{Binding MoodStats.InsightProgressText}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        <Label Text="{x:Static localization:AppResources.StatsInsightProgressHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{Binding MoodStats.InsightProgressHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>
@@ -529,25 +544,35 @@
                     <VerticalStackLayout Spacing="16">
                         <Label Text="{x:Static localization:AppResources.ExpenseLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
 
-                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="16">
-                            <VerticalStackLayout Grid.Column="0" Spacing="10" VerticalOptions="Center" BindableLayout.ItemsSource="{Binding FinanceStats.ExpenseByCategory}">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:CategoryStatItem">
-                                        <Grid ColumnDefinitions="12, *, Auto" ColumnSpacing="8">
-                                            <Border Grid.Column="0" BackgroundColor="{Binding ColorHex}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="12" HeightRequest="12" VerticalOptions="Center" HorizontalOptions="Start" />
-                                            <Label Grid.Column="1" Text="{Binding Category}" FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
-                                            <Label Grid.Column="2" Text="{Binding Percentage, StringFormat='{0:P0}'}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </VerticalStackLayout>
+                        <!-- The list is the legend, so it reads left to right in the order it is asked
+                             for: category, what it cost, what share of the month that was. The amount
+                             column is Auto and the star column ahead of it takes the slack, which is
+                             what lines the figures up on their right edge; the percentage is a fixed
+                             width for the same reason, since each row is a Grid of its own and Auto
+                             would size every one of them differently. -->
+                        <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding FinanceStats.ExpenseByCategory}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:CategoryStatItem">
+                                    <Grid ColumnDefinitions="12, *, Auto, 44" ColumnSpacing="8">
+                                        <Border Grid.Column="0" BackgroundColor="{Binding ColorHex}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="12" HeightRequest="12" VerticalOptions="Center" HorizontalOptions="Start" />
+                                        <Label Grid.Column="1" Text="{Binding Category}" FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                        <Label Grid.Column="2" Text="{Binding Amount, StringFormat='{0:N2}'}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        <Label Grid.Column="3" Text="{Binding Percentage, StringFormat='{0:P0}'}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" HorizontalTextAlignment="End" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
 
-                            <Grid Grid.Column="1" WidthRequest="120" HeightRequest="120" VerticalOptions="Center" HorizontalOptions="Center">
-                                <controls:CategoryDonutChart Items="{Binding FinanceStats.ExpenseByCategory}"
-                                                             SurfaceColor="{DynamicResource Theme_Snow_Black}"
-                                                             TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                                             MutedColor="{DynamicResource Theme_Ocean_Dust}" />
-                            </Grid>
+                        <!-- Under the list and across the card, where it is as wide as the phone allows
+                             instead of the 120px it had beside the list. The donut draws itself round
+                             inside whatever rectangle it is given, so the height is what sets its size —
+                             and it has to be stated: a self-sizing GraphicsView collapses to nothing on
+                             Android. -->
+                        <Grid HeightRequest="240">
+                            <controls:CategoryDonutChart Items="{Binding FinanceStats.ExpenseByCategory}"
+                                                         SurfaceColor="{DynamicResource Theme_Snow_Black}"
+                                                         TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                                         MutedColor="{DynamicResource Theme_Ocean_Dust}" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
@@ -825,4 +850,8 @@
 
         </VerticalStackLayout>
     </ScrollView>
+
+        <!-- Гід по дошці (онбординг, етап 3). Last child, so it covers the scroller. -->
+        <controls:TourOverlayView x:Name="TourOverlay" />
+    </Grid>
 </ContentPage>

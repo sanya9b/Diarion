@@ -1405,6 +1405,39 @@
   <data name="NoteContentPlaceholder" xml:space="preserve">
     <value>Write your note here...</value>
   </data>
+  <data name="NoteUntitled" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
+  <data name="NoteFormatChecklist" xml:space="preserve">
+    <value>Checklist</value>
+  </data>
+  <data name="NoteFormatBullet" xml:space="preserve">
+    <value>Bulleted list</value>
+  </data>
+  <data name="NoteFormatNumbered" xml:space="preserve">
+    <value>Numbered list</value>
+  </data>
+  <data name="NoteFormatHeading" xml:space="preserve">
+    <value>Heading size</value>
+  </data>
+  <data name="NoteFormatQuote" xml:space="preserve">
+    <value>Quote</value>
+  </data>
+  <data name="NoteFormatBold" xml:space="preserve">
+    <value>Bold</value>
+  </data>
+  <data name="NoteFormatItalic" xml:space="preserve">
+    <value>Italic</value>
+  </data>
+  <data name="NoteFormatStrikethrough" xml:space="preserve">
+    <value>Strikethrough</value>
+  </data>
+  <data name="DeleteNoteConfirmTitle" xml:space="preserve">
+    <value>Delete note?</value>
+  </data>
+  <data name="DeleteNoteConfirmMessage" xml:space="preserve">
+    <value>The note will be gone for good — this cannot be undone.</value>
+  </data>
   <data name="EmptyNotes" xml:space="preserve">
     <value>No notes found.</value>
   </data>
@@ -1597,6 +1630,126 @@
   <data name="OnboardingGetStartedButton" xml:space="preserve">
     <value>Get started</value>
   </data>
+  <data name="OnboardingNextButton" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="OnboardingBackButton" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="OnboardingSkipButton" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="TourQuickMenuTitle" xml:space="preserve">
+    <value>The sections live here</value>
+  </data>
+  <data name="TourQuickMenuText" xml:space="preserve">
+    <value>Notes, habits, finances, the dashboard with the month's statistics — all of it opens from this strip. You set the order on the previous screen; it can be changed in Settings.</value>
+  </data>
+  <data name="TourDayStripTitle" xml:space="preserve">
+    <value>This is the day you are on</value>
+  </data>
+  <data name="TourDayStripText" xml:space="preserve">
+    <value>Everything below belongs to it. Tap the date, or pull the handle down, to open the calendar and move to another day.</value>
+  </data>
+  <data name="TourTabsTitle" xml:space="preserve">
+    <value>Diary and planner, same day</value>
+  </data>
+  <data name="TourTabsText" xml:space="preserve">
+    <value>On the left, what already happened; on the right, what is planned. Switching does not change the date.</value>
+  </data>
+  <data name="TourBlocksTitle" xml:space="preserve">
+    <value>A day fits in one entry</value>
+  </data>
+  <data name="TourBlocksText" xml:space="preserve">
+    <value>Mood, sleep, meals, how the body felt, the text. None of it is required — the fields you skip simply stay empty. After a couple of weeks there is enough here for the dashboard to start comparing days with each other.</value>
+  </data>
+  <data name="TourStatsPeriodTitle" xml:space="preserve">
+    <value>Everything here is about one window</value>
+  </data>
+  <data name="TourStatsPeriodText" xml:space="preserve">
+    <value>The two dates are the filter; the chips beside them are shortcuts that write into those dates. Change the window and every card below is recalculated.</value>
+  </data>
+  <data name="TourStatsTabsTitle" xml:space="preserve">
+    <value>Several boards, one period</value>
+  </data>
+  <data name="TourStatsTabsText" xml:space="preserve">
+    <value>Mood, sleep, tasks, money, habits, cycle. Switching a tab keeps the dates you picked.</value>
+  </data>
+  <data name="TourStatsThemesTitle" xml:space="preserve">
+    <value>What you keep coming back to</value>
+  </data>
+  <data name="TourStatsThemesText" xml:space="preserve">
+    <value>Once there are a couple of weeks of entries, the subjects that repeat gather here, counted in days rather than in passages. Your own wording, grouped on the device.</value>
+  </data>
+  <data name="TourStatsInfluencesTitle" xml:space="preserve">
+    <value>Guesses, checked</value>
+  </data>
+  <data name="TourStatsInfluencesText" xml:space="preserve">
+    <value>Sleep, meals, habits and the days themselves are compared with how you felt, and only what survives the check is listed — with the number of days it rests on. Often nothing survives, and the card says that too.</value>
+  </data>
+  <data name="TourSettingsTabsTitle" xml:space="preserve">
+    <value>Four groups of settings</value>
+  </data>
+  <data name="TourSettingsTabsText" xml:space="preserve">
+    <value>You, the screen, your data, and on-device AI. Nothing set here leaves the device.</value>
+  </data>
+  <data name="TourSettingsBlocksTitle" xml:space="preserve">
+    <value>Choose what the day asks you</value>
+  </data>
+  <data name="TourSettingsBlocksText" xml:space="preserve">
+    <value>A block switched off disappears from the home screen and stops asking. Nothing already written is deleted — switch it back on and it is all there.</value>
+  </data>
+  <data name="TourSettingsPromptsTitle" xml:space="preserve">
+    <value>The question of the day lives here</value>
+  </data>
+  <data name="TourSettingsPromptsText" xml:space="preserve">
+    <value>These two blocks ask something instead of recording it. The prompt library is yours to edit, and the answer history keeps everything you have written to those questions.</value>
+  </data>
+  <data name="TourSettingsSaveTitle" xml:space="preserve">
+    <value>Save applies to every tab</value>
+  </data>
+  <data name="TourSettingsSaveText" xml:space="preserve">
+    <value>One button for the whole screen. Leaving without it keeps the old settings.</value>
+  </data>
+  <data name="SettingsPromptsTitle" xml:space="preserve">
+    <value>PROMPTS AND REFLECTION</value>
+  </data>
+  <data name="SettingsPromptsHint" xml:space="preserve">
+    <value>The two blocks that ask you something instead of recording an answer.</value>
+  </data>
+  <data name="SettingsReflectionHint" xml:space="preserve">
+    <value>Three fields at the end of the day: triggers, gratitude, something for yourself.</value>
+  </data>
+  <data name="SettingsFinanceTitle" xml:space="preserve">
+    <value>FINANCES</value>
+  </data>
+  <data name="TourDoneButton" xml:space="preserve">
+    <value>Got it</value>
+  </data>
+  <data name="TourReplayLabel" xml:space="preserve">
+    <value>Show the guides again</value>
+  </data>
+  <data name="TourReplayMessage" xml:space="preserve">
+    <value>This screen's guide starts now. The home screen and the dashboard show theirs the next time you open them.</value>
+  </data>
+  <data name="OnboardingModulesTitle" xml:space="preserve">
+    <value>Choose what you'll keep</value>
+  </data>
+  <data name="OnboardingModulesSubtitle" xml:space="preserve">
+    <value>Uncheck anything you don't need and it leaves the screens instead of sitting there empty. All of it is in Settings afterwards.</value>
+  </data>
+  <data name="OnboardingModulesEntryGroup" xml:space="preserve">
+    <value>In the daily entry</value>
+  </data>
+  <data name="OnboardingModulesSectionsGroup" xml:space="preserve">
+    <value>Sections of their own</value>
+  </data>
+  <data name="OnboardingReminderTitle" xml:space="preserve">
+    <value>One quiet reminder</value>
+  </data>
+  <data name="OnboardingReminderText" xml:space="preserve">
+    <value>An invitation, not a scolding. Turn it off here or in Settings whenever you like.</value>
+  </data>
   <data name="RemindersTitle" xml:space="preserve">
     <value>REMINDERS</value>
   </data>
@@ -1613,10 +1766,22 @@
     <value>A quiet minute for yourself?</value>
   </data>
   <data name="StatsMoodInfluencesTitle" xml:space="preserve">
-    <value>WHAT AFFECTS YOUR MOOD</value>
+    <value>WORTH CHECKING</value>
   </data>
   <data name="StatsCorrelationDisclaimer" xml:space="preserve">
-    <value>Linked to your mood — not proven to cause it.</value>
+    <value>These are patterns in your own log, not causes. The way to find out is on purpose: change one of them for a week and see whether the pattern follows.</value>
+  </data>
+  <data name="StatsHypothesesCheckedFormat" xml:space="preserve">
+    <value>Checked {0}, still holding {1}</value>
+  </data>
+  <data name="StatsCorrelationEvidenceFormat" xml:space="preserve">
+    <value>holds across {0} days</value>
+  </data>
+  <data name="StatsNoHypothesisHolds" xml:space="preserve">
+    <value>Nothing holds up yet</value>
+  </data>
+  <data name="StatsNoHypothesisHoldsHintFormat" xml:space="preserve">
+    <value>Checked {0}, none of them survived. That is the ordinary result — most coincidences do not, and saying so is more use than a pattern that is not there.</value>
   </data>
   <data name="ExportDataTitle" xml:space="preserve">
     <value>EXPORT DATA</value>
@@ -1691,7 +1856,7 @@
     <value>Enable on-device AI</value>
   </data>
   <data name="AiIntro" xml:space="preserve">
-    <value>Search your diary by meaning, see what your months were about, and get weekly summaries. Everything runs on this device.</value>
+    <value>See what your months were about, get weekly summaries, and find out how what you wrote about tracks your mood. Everything runs on this device.</value>
   </data>
   <data name="AiNetworkNotice" xml:space="preserve">
     <value>The only thing Diarion downloads is the model file itself. Your entries are never sent anywhere.</value>
@@ -1710,6 +1875,9 @@
   </data>
   <data name="AiTierHigh" xml:space="preserve">
     <value>Everything, including larger models</value>
+  </data>
+  <data name="AiTierEmbeddingsOnly" xml:space="preserve">
+    <value>Themes and summaries — 123 MB, runs on any device</value>
   </data>
   <data name="AiModelsHeader" xml:space="preserve">
     <value>MODELS</value>
@@ -1935,5 +2103,26 @@
   </data>
   <data name="SnapshotPreviewRefresh" xml:space="preserve">
     <value>Rebuild</value>
+  </data>
+  <data name="BirthDateLabel" xml:space="preserve">
+    <value>Date of birth</value>
+  </data>
+  <data name="BirthDateNotSet" xml:space="preserve">
+    <value>not set</value>
+  </data>
+  <data name="BirthDateSetAction" xml:space="preserve">
+    <value>Set</value>
+  </data>
+  <data name="BirthDateClearAction" xml:space="preserve">
+    <value>Clear the date of birth</value>
+  </data>
+  <data name="BirthDatePrivacyHint" xml:space="preserve">
+    <value>Stays on the phone. Used only to show the sections that have an age.</value>
+  </data>
+  <data name="IntimateLifeAgeHint" xml:space="preserve">
+    <value>Intimate life is an 18+ row. Set your date of birth in profile settings to see it.</value>
+  </data>
+  <data name="CycleAgeHint" xml:space="preserve">
+    <value>The cycle calendar is available from age 14. Set your date of birth above to see it.</value>
   </data>
 </root>

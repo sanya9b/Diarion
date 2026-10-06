@@ -10,6 +10,24 @@ More information: https://aka.ms/maui-privacy-manifest
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <!--
+        Declared rather than omitted. An absent key is read as "unanswered" by some tooling and as
+        "false" by other tooling, and the two facts below are the product's main claim about itself,
+        so they are worth saying out loud: no tracking, no domains reached for tracking, and nothing
+        collected. The last one is literally true - the only network call in the app fetches model
+        files from HuggingFace (Diarion.Core/Services/Ai/HttpModelFileTransfer.cs), the crash log is
+        a local file the user shares by hand or not at all, and there is no account, no analytics
+        and no ad SDK to collect through.
+
+        NSPrivacyCollectedDataTypes stops being an empty array the moment spec 14 ships: periodic
+        reports send diary text to a third-party API. Empty is a claim with an expiry date on it.
+    -->
+    <key>NSPrivacyTracking</key>
+    <false/>
+    <key>NSPrivacyTrackingDomains</key>
+    <array/>
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array/>
     <key>NSPrivacyAccessedAPITypes</key>
     <array>
         <dict>
@@ -37,7 +55,13 @@ More information: https://aka.ms/maui-privacy-manifest
             </array>
         </dict>
         <!--
-            The entry below is only needed when you're using the Preferences API in your app.
+            The Preferences API is used, so this is required and not optional: App.xaml.cs,
+            Services/ThemeManager.cs and Views/ProfilePage.xaml.cs all read or write it, and on iOS
+            MAUI Preferences is NSUserDefaults. Leaving it out does not fail the upload - it comes
+            back afterwards as an ITMS-91053 "Missing API declaration" email, which is a slower and
+            more confusing way to learn the same thing.
+            CA92.1: access is limited to this app's own container, never an app group.
+        -->
         <dict>
             <key>NSPrivacyAccessedAPIType</key>
             <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
@@ -45,7 +69,7 @@ More information: https://aka.ms/maui-privacy-manifest
             <array>
                 <string>CA92.1</string>
             </array>
-        </dict> -->
+        </dict>
     </array>
 </dict>
 </plist>

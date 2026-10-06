@@ -15,12 +15,32 @@ public partial class UserProfile : ObservableObject
     public Guid Id { get; set; } = Guid.NewGuid();
 
     [ObservableProperty] private string _name = string.Empty;
+
+    /// <summary>
+    /// Superseded by <see cref="BirthDate"/> on 2026-09-20 and no longer shown: a typed age goes stale
+    /// every birthday, and nothing ever read it. Kept so old profiles still deserialize untouched.
+    /// </summary>
     [ObservableProperty] private int? _age;
+
+    /// <summary>
+    /// Optional, and asked for exactly one reason: the intimate-life row and the cycle calendar are
+    /// shown by age (<see cref="Services.AgeGate"/>). Stays on the device like everything else; it is
+    /// not in any export or report. Null is "not told", which every gate reads as "not old enough".
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsBirthDateKnown))]
+    [NotifyPropertyChangedFor(nameof(IsIntimateLifeAvailable))]
+    [NotifyPropertyChangedFor(nameof(ShowsIntimateLifeAgeHint))]
+    [NotifyPropertyChangedFor(nameof(IsCycleFeatureAvailable))]
+    [NotifyPropertyChangedFor(nameof(IsCycleTrackingActive))]
+    [NotifyPropertyChangedFor(nameof(NeedsBirthDateForCycle))]
+    private DateTime? _birthDate;
     [ObservableProperty] private double? _weight;
     [ObservableProperty] private int? _height;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsCycleFeatureAvailable))]
     [NotifyPropertyChangedFor(nameof(IsCycleTrackingActive))]
+    [NotifyPropertyChangedFor(nameof(NeedsBirthDateForCycle))]
     private GenderType _gender = GenderType.NotSpecified;
 
     // Налаштування завдань
@@ -85,10 +105,43 @@ public partial class UserProfile : ObservableObject
     // Сортування меню
     [ObservableProperty] private System.Collections.Generic.List<string>? _quickMenuOrder;
 
+    /// <summary>
+    /// Which version of the home-screen guide this profile has already been walked through. Zero is
+    /// "none", which is also what LiteDB returns for every profile written before the field existed —
+    /// so an update offers the guide once and needs no migration. The rule lives in
+    /// <see cref="Services.TourService"/>; nothing outside it should compare this number.
+    /// </summary>
+    [ObservableProperty] private int _tourVersionSeen;
+
+    /// <summary>The same marker for the statistics guide. See <see cref="TourVersionSeen"/>.</summary>
+    [ObservableProperty] private int _statsTourVersionSeen;
+
+    /// <summary>The same marker for the settings guide. See <see cref="TourVersionSeen"/>.</summary>
+    [ObservableProperty] private int _settingsTourVersionSeen;
+
+    public bool IsBirthDateKnown => BirthDate.HasValue;
+
+    /// <summary>The intimate-life row of the health block: 18 and over, and only once the date is told.</summary>
+    public bool IsIntimateLifeAvailable
+        => Services.AgeGate.IsAtLeast(BirthDate, Services.AgeGate.IntimateLifeMinimumAge, DateTime.Today);
+
+    /// <summary>
+    /// The one-line hint that stands in for the intimate-life row while the birth date is unknown.
+    /// Deliberately not shown when the date is known and too young: a row that says "not for you
+    /// yet" is an invitation to lie about the date, and there is nothing to gain by advertising it.
+    /// </summary>
+    public bool ShowsIntimateLifeAgeHint => !IsBirthDateKnown;
+
     /// <summary>Whether the cycle feature is offered at all. Hidden for men rather than merely switched
     /// off, so it never has to be dismissed; the stored flag and logged days survive untouched, and a
-    /// mis-set gender is fully reversible.</summary>
-    public bool IsCycleFeatureAvailable => Gender != GenderType.Male;
+    /// mis-set gender is fully reversible. Since 2026-09-20 also hidden under 14 — and until the birth
+    /// date is told at all — by the same reversible rule: the flag and the logged days stay put.</summary>
+    public bool IsCycleFeatureAvailable
+        => Gender != GenderType.Male
+           && Services.AgeGate.IsAtLeast(BirthDate, Services.AgeGate.CycleMinimumAge, DateTime.Today);
+
+    /// <summary>The settings card that explains why the cycle card is missing: not a man, and no date yet.</summary>
+    public bool NeedsBirthDateForCycle => Gender != GenderType.Male && !IsBirthDateKnown;
 
     /// <summary>The one flag every consumer should read — availability and the user's choice together.</summary>
     public bool IsCycleTrackingActive => IsCycleFeatureAvailable && IsMenstrualTrackingEnabled;

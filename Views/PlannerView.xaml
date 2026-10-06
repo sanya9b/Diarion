@@ -151,7 +151,7 @@
         <DataTemplate x:Key="TodoSpanRow" x:DataType="viewmodels:TodoItemViewModel">
             <Border Margin="0,1" MinimumHeightRequest="0" Padding="0"
                     StrokeShape="RoundRectangle 10" StrokeThickness="1" StrokeDashArray="4,3"
-                    Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent"
+                    Stroke="{DynamicResource Theme_GridLine}" BackgroundColor="Transparent"
                     SemanticProperties.Description="{Binding SpanAccessibility}">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding BindingContext.GoToTodoDetailsCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
@@ -253,7 +253,7 @@
                      name between them they read as one list whose first few entries happen to be missing
                      their hour. Both are hidden when there is nothing untimed: with a single section
                      there is nothing to tell apart, and a rule across the top would be decoration. -->
-                <BoxView HeightRequest="1" Margin="0,4" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5"
+                <BoxView HeightRequest="1" Margin="0,4" Color="{DynamicResource Theme_GridLine}" Opacity="0.5"
                          IsVisible="{Binding HasUntimedTodos}" />
                 <Label Text="{x:Static localization:AppResources.PlannerByHourLabel}" FontSize="11.5" FontAttributes="Bold"
                        CharacterSpacing="1.2" TextTransform="Uppercase" Margin="0,0,0,2"
@@ -284,7 +284,7 @@
                                      target is not the smallest thing on a screen made of targets. -->
                                 <Border Grid.Column="1" IsVisible="{Binding IsEmpty}" HeightRequest="28"
                                         StrokeShape="RoundRectangle 8" StrokeThickness="1" StrokeDashArray="3,3"
-                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                        Stroke="{DynamicResource Theme_GridLine}" BackgroundColor="Transparent">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding BindingContext.AddAtHourCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>

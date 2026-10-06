@@ -33,6 +33,7 @@ public partial class DiaryEntryViewModel : ObservableObject
         _healthStatus = model.HealthStatus;
         _isIntimateLifeDone = model.IsIntimateLifeDone;
         _intimateLife = model.IntimateLife;
+        _healthNotes = model.HealthNotes;
         _isBreakfastDone = model.IsBreakfastDone;
         _breakfastFood = model.BreakfastFood;
         _isSecondBreakfastDone = model.IsSecondBreakfastDone;
@@ -237,10 +238,18 @@ public partial class DiaryEntryViewModel : ObservableObject
 
     partial void OnSleepNotesChanged(string value) => Model.SleepNotes = value;
 
+    /// <summary>
+    /// Which day of the cycle this entry falls on, as a number. Written by the day screen rather than
+    /// typed, so it is a read-only line in the health block; empty whenever tracking is off or nothing
+    /// has been logged yet, which is what <see cref="HasCycleDay"/> hides the row by.
+    /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCycleDay))]
     private string _cycleDay = string.Empty;
 
     partial void OnCycleDayChanged(string value) => Model.CycleDay = value;
+
+    public bool HasCycleDay => !string.IsNullOrWhiteSpace(CycleDay);
 
     [ObservableProperty]
     private int _healthStatus;
@@ -256,6 +265,11 @@ public partial class DiaryEntryViewModel : ObservableObject
     private string _intimateLife = string.Empty;
 
     partial void OnIntimateLifeChanged(string value) => Model.IntimateLife = value;
+
+    [ObservableProperty]
+    private string _healthNotes = string.Empty;
+
+    partial void OnHealthNotesChanged(string value) => Model.HealthNotes = value;
 
     [ObservableProperty]
     private bool _isBreakfastDone;
@@ -421,6 +435,7 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.HealthStatus = HealthStatus;
         Model.IsIntimateLifeDone = IsIntimateLifeDone;
         Model.IntimateLife = IntimateLife;
+        Model.HealthNotes = HealthNotes;
         Model.IsBreakfastDone = IsBreakfastDone;
         Model.BreakfastFood = BreakfastFood;
         Model.IsSecondBreakfastDone = IsSecondBreakfastDone;

@@ -45,13 +45,35 @@ public partial class MoodStatsViewModel : ObservableObject
     public bool HasCorrelations => Correlations.Count > 0;
 
     /// <summary>
-    /// How close the data is to its first insight, shown only while there is none. Correlations need
-    /// fourteen paired days, and until then the card was simply absent — during exactly the fortnight
-    /// in which people decide whether an app is worth keeping.
+    /// How many guesses were put to the test and how many came through, e.g. "Checked: 8. Holding: 2".
     /// </summary>
+    /// <remarks>
+    /// Without the first number the list looks like everything the diary has to say, and every row in
+    /// it looks inevitable. With it, the reader can see that six other candidates were tried and
+    /// dropped — which is what makes the two that remain worth anything.
+    /// </remarks>
+    [ObservableProperty]
+    private string _correlationSummaryText = string.Empty;
+
+    /// <summary>
+    /// The headline of the card that stands in for the list: either how close the data is to its
+    /// first comparison, or that comparisons were made and none held.
+    /// </summary>
+    /// <remarks>
+    /// Correlations need fourteen paired days, and until then the card was simply absent — during
+    /// exactly the fortnight in which people decide whether an app is worth keeping.
+    /// </remarks>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasInsightProgress))]
     private string _insightProgressText = string.Empty;
+
+    /// <summary>
+    /// The line under that headline. Bound rather than fixed in the page, because the two states it
+    /// stands for want opposite things said: one promises links later, the other explains why there
+    /// are none and does not promise.
+    /// </summary>
+    [ObservableProperty]
+    private string _insightProgressHint = string.Empty;
 
     public bool HasInsightProgress => !string.IsNullOrEmpty(InsightProgressText);
 
@@ -91,12 +113,23 @@ public partial class MoodStatsViewModel : ObservableObject
         _correlationService = correlationService;
     }
 
+    /// <summary>
+    /// Turns the period's correlations into the card, in whichever of its three states applies.
+    /// </summary>
+    /// <remarks>
+    /// The card reports a test, not a discovery. Every factor with enough paired days is a guess that
+    /// was checked; most of them fail, and the two numbers that matter are how many were tried and how
+    /// many came through. Before this there were only two states, and the empty one always blamed the
+    /// diary: with fourteen days logged and nothing significant it printed "14 of 14 days logged"
+    /// under a promise that links appear once there is enough to compare. There was enough. Nothing
+    /// held — which is a result, and now says so.
+    /// </remarks>
     private async Task LoadCorrelationsAsync(StatsRange range)
     {
         var correlations = await _correlationService.GetMoodCorrelationsAsync(range);
         var items = new System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem>();
 
-        // Only surface associations that are statistically significant (p < 0.05, i.e. >= 3 dots).
+        // Only surface associations that survive the check (p < 0.05 after adjustment, i.e. >= 3 dots).
         foreach (var c in correlations.Where(c => c.Confidence >= 3))
         {
             var arrow = c.Coefficient >= 0 ? "↑" : "↓";
@@ -104,26 +137,42 @@ public partial class MoodStatsViewModel : ObservableObject
             items.Add(new MoodCorrelationItem
             {
                 Description = $"{arrow}  {FactorName(c.FactorKey)}",
-                Dots = new string('●', c.Confidence) + new string('○', 5 - c.Confidence)
+                Dots = new string('●', c.Confidence) + new string('○', 5 - c.Confidence),
+                Evidence = string.Format(AppResources.StatsCorrelationEvidenceFormat, c.SampleSize)
             });
         }
 
         Correlations = items;
 
-        // Nothing to show yet is the normal state for the first fortnight, and an empty space says
-        // nothing about why. Ask how far along the data is and say so instead.
-        if (items.Count == 0)
+        if (items.Count > 0)
         {
-            var readiness = await _correlationService.GetReadinessAsync(range);
-            InsightProgressText = string.Format(
-                AppResources.StatsInsightProgressFormat,
-                Math.Min(readiness.PairedDays, readiness.RequiredDays),
-                readiness.RequiredDays);
-        }
-        else
-        {
+            CorrelationSummaryText = string.Format(
+                AppResources.StatsHypothesesCheckedFormat, correlations.Count, items.Count);
             InsightProgressText = string.Empty;
+            InsightProgressHint = string.Empty;
+            return;
         }
+
+        CorrelationSummaryText = string.Empty;
+
+        if (correlations.Count > 0)
+        {
+            // Comparisons were made and every one of them failed. Counting days here would be a lie
+            // about the reason, and the hint below would promise something already delivered.
+            InsightProgressText = AppResources.StatsNoHypothesisHolds;
+            InsightProgressHint = string.Format(
+                AppResources.StatsNoHypothesisHoldsHintFormat, correlations.Count);
+            return;
+        }
+
+        // Nothing could be compared yet — the normal state for the first fortnight, and an empty space
+        // says nothing about why. Ask how far along the data is and say so instead.
+        var readiness = await _correlationService.GetReadinessAsync(range);
+        InsightProgressText = string.Format(
+            AppResources.StatsInsightProgressFormat,
+            Math.Min(readiness.PairedDays, readiness.RequiredDays),
+            readiness.RequiredDays);
+        InsightProgressHint = AppResources.StatsInsightProgressHint;
     }
 
     /// <summary>
@@ -166,8 +215,10 @@ public partial class MoodStatsViewModel : ObservableObject
                 IsEmpty = true;
                 EmotionChartData.Clear();
                 Correlations = new System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem>();
+                CorrelationSummaryText = string.Empty;
                 InsightProgressText = string.Format(
                     AppResources.StatsInsightProgressFormat, 0, CorrelationService.MinSampleSize);
+                InsightProgressHint = AppResources.StatsInsightProgressHint;
                 TopEmotionText = AppResources.EmotionNone;
                 TopEmotionShareText = string.Empty;
                 EntriesCountText = "0";

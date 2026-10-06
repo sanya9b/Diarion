@@ -30,8 +30,11 @@ public class DiaryEntry
     public int HealthStatus { get; set; } = 0;
     
     public bool IsIntimateLifeDone { get; set; }
-    
+
     public string IntimateLife { get; set; } = string.Empty;
+
+    /// <summary>Free note for the day's health, the counterpart of <see cref="SleepNotes"/>.</summary>
+    public string HealthNotes { get; set; } = string.Empty;
 
     // Їжа (Food)
     public bool IsBreakfastDone { get; set; }

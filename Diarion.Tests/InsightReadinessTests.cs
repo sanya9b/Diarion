@@ -177,6 +177,111 @@ public class InsightReadinessTests
         vm.HasInsightProgress.Should().BeTrue();
     }
 
+    // ---- the card as a test report, not a list of discoveries ---------------
+
+    [Fact]
+    public async Task Comparisons_that_all_failed_are_reported_as_a_result_not_as_missing_days()
+    {
+        // Fourteen paired days and eight factors compared, none of which survived. The card used to
+        // fall back on readiness here and print "14 of 14 days logged" under a promise that links
+        // appear once there is enough to compare — with enough to compare already in hand.
+        var tried = Enumerable.Range(0, 8)
+            .Select(i => new MoodCorrelation
+            {
+                FactorKey = CorrelationService.Factors.SleepQuality,
+                Coefficient = 0.1,
+                Confidence = 2,
+                SampleSize = 14
+            })
+            .ToList<MoodCorrelation>();
+
+        var vm = BuildViewModel(
+            new Dictionary<Emotion, int> { { Emotion.Happy, 20 } },
+            Emotion.Happy,
+            correlations: tried,
+            readiness: new CorrelationReadiness(14, 14));
+
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
+
+        vm.HasCorrelations.Should().BeFalse();
+        vm.HasInsightProgress.Should().BeTrue();
+        vm.InsightProgressText.Should().Be(Diarion.Resources.Localization.AppResources.StatsNoHypothesisHolds);
+        vm.InsightProgressHint.Should().Contain("8", "how many guesses were tried is the point of saying it");
+        vm.InsightProgressHint.Should().NotBe(
+            Diarion.Resources.Localization.AppResources.StatsInsightProgressHint,
+            "that hint promises links later, and here the checking has already happened");
+    }
+
+    [Fact]
+    public async Task Nothing_to_compare_yet_is_still_a_different_answer_from_nothing_held()
+    {
+        var vm = BuildViewModel(
+            new Dictionary<Emotion, int> { { Emotion.Happy, 6 } },
+            Emotion.Happy,
+            readiness: new CorrelationReadiness(6, 14));
+
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
+
+        vm.InsightProgressText.Should().NotBe(Diarion.Resources.Localization.AppResources.StatsNoHypothesisHolds);
+        vm.InsightProgressHint.Should().Be(Diarion.Resources.Localization.AppResources.StatsInsightProgressHint);
+    }
+
+    [Fact]
+    public async Task A_surviving_finding_carries_the_number_of_days_it_rests_on()
+    {
+        var found = new List<MoodCorrelation>
+        {
+            new()
+            {
+                FactorKey = CorrelationService.Factors.SleepQuality,
+                Coefficient = 0.6,
+                Confidence = 4,
+                SampleSize = 23
+            }
+        };
+
+        var vm = BuildViewModel(
+            new Dictionary<Emotion, int> { { Emotion.Happy, 20 } },
+            Emotion.Happy,
+            correlations: found);
+
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
+
+        // The same coefficient over a fortnight and over three months is not the same claim, and only
+        // the reader can decide which of the two is worth acting on.
+        vm.Correlations.Should().ContainSingle();
+        vm.Correlations[0].Evidence.Should().Contain("23");
+    }
+
+    [Fact]
+    public async Task The_card_counts_the_guesses_that_were_tried_not_only_the_ones_that_held()
+    {
+        // Six factors compared, one through. Without the six the single row reads as everything the
+        // diary has to say, and looks inevitable rather than earned.
+        var tried = new List<MoodCorrelation>
+        {
+            new() { FactorKey = CorrelationService.Factors.SleepQuality, Coefficient = 0.6, Confidence = 4, SampleSize = 20 }
+        };
+        tried.AddRange(Enumerable.Range(0, 5).Select(_ => new MoodCorrelation
+        {
+            FactorKey = CorrelationService.Factors.MealsLogged,
+            Coefficient = 0.05,
+            Confidence = 1,
+            SampleSize = 20
+        }));
+
+        var vm = BuildViewModel(
+            new Dictionary<Emotion, int> { { Emotion.Happy, 20 } },
+            Emotion.Happy,
+            correlations: tried);
+
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
+
+        vm.Correlations.Should().ContainSingle();
+        vm.CorrelationSummaryText.Should().Contain("6").And.Contain("1");
+        vm.HasInsightProgress.Should().BeFalse();
+    }
+
     [Fact]
     public async Task Three_emotions_tied_means_no_most_common_mood_is_claimed()
     {

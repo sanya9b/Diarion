@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Diarion.Core.Services;
 
-#if IOS
+#if IOS && HEALTHKIT
 using HealthKit;
 using Foundation;
 #endif
@@ -11,13 +11,23 @@ using Foundation;
 // its NuGet package and the health.READ_SLEEP permission were all removed. Reviving the feature means
 // bringing back all three together — see the health row in PRODUCT_ROADMAP.md.
 
+// HEALTHKIT, not plain IOS, since v1 ships without Health. The symbol is defined nowhere — the line
+// that would define it sits commented in Diarion.csproj — so on iOS these branches compile to the
+// same "unsupported" answers Android already gives, and the binary references no HealthKit type.
+// That last part is the point: the usage string and the entitlement are gone with them, and Apple
+// rejects a build that references HKHealthStore without a purpose string (ITMS-90683). Deleting the
+// keys while leaving the code compiled would trade a working feature for a failed upload.
+//
+// Nothing here is deleted, and nothing here is dead either way: ImportSleepDataAsync in MainViewModel
+// is the only caller, and no XAML binds it — the button that would reach Health was never built.
+
 namespace Diarion.Services;
 
 public class HealthDataService : IHealthDataService
 {
     public Task<bool> IsSupportedAsync()
     {
-#if IOS
+#if IOS && HEALTHKIT
         return Task.FromResult(HKHealthStore.IsHealthDataAvailable);
 #else
         // Android reports unsupported on purpose. Reading Health Connect needs Kotlin coroutine interop
@@ -30,7 +40,7 @@ public class HealthDataService : IHealthDataService
 
     public async Task<bool> RequestPermissionsAsync()
     {
-#if IOS
+#if IOS && HEALTHKIT
         if (!HKHealthStore.IsHealthDataAvailable) return false;
         var healthStore = new HKHealthStore();
         var sleepType = HKCategoryType.Create(HKCategoryTypeIdentifier.SleepAnalysis);
@@ -52,7 +62,7 @@ public class HealthDataService : IHealthDataService
 
     public async Task<(TimeSpan? SleepStart, TimeSpan? SleepEnd)> GetSleepDataAsync(DateTime targetDate)
     {
-#if IOS
+#if IOS && HEALTHKIT
         if (!HKHealthStore.IsHealthDataAvailable) return (null, null);
         
         var healthStore = new HKHealthStore();

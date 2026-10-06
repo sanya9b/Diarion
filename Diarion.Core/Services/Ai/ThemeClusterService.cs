@@ -68,13 +68,33 @@ public class ThemeClusterService : IThemeClusterService
             return empty;
         }
 
-        var chunks = _store.GetByDateRange(_embedder.ModelId, start.Date, end.Date, SearchScope.Diary);
+        // Off the calling thread from here on. The statistics screen asks for this from the UI thread,
+        // and what follows is a scan of the whole embedding collection and a clustering pass that is
+        // O(k·n²) in vector comparisons — the second or two the memo below exists to avoid. Spent on
+        // the UI thread that is not slowness but a hang, which Android reports as ANR and the iOS
+        // watchdog answers by killing the app.
+        var modelId = _embedder.ModelId;
+        return await Task.Run(
+            () => Summarise(modelId, start, end, maxThemes, cancellationToken),
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    private ThemeSummary Summarise(
+        string modelId,
+        DateTime start,
+        DateTime end,
+        int maxThemes,
+        CancellationToken cancellationToken)
+    {
+        var empty = new ThemeSummary([], []);
+
+        var chunks = _store.GetByDateRange(modelId, start.Date, end.Date, SearchScope.Diary);
         if (chunks.Count == 0)
         {
             return empty;
         }
 
-        var key = MemoKey(start, end, maxThemes, chunks);
+        var key = MemoKey(modelId, start, end, maxThemes, chunks);
         lock (_memoLock)
         {
             if (_memo is { } memo && memo.Key == key)
@@ -88,9 +108,19 @@ public class ThemeClusterService : IThemeClusterService
         // did not, which is exactly what a correlation needs.
         var indexedDays = chunks.Select(c => c.SourceDate.Date).Distinct().Order().ToList();
 
-        var dimensions = chunks[0].Dim;
+        // A row's Dim and the width of its blob can disagree — a leftover from an earlier model that
+        // shared an id, which is why the search path skips those too. Here the mismatch would reach
+        // Dot() and throw on the length check, and an exception from this call does not cost the user
+        // their themes, it stops the statistics screen from opening.
+        var reference = chunks.FirstOrDefault(c => c.Vector.Length == c.Dim * sizeof(float));
+        if (reference is null)
+        {
+            return empty;
+        }
+
+        var dimensions = reference.Dim;
         var points = chunks
-            .Where(c => c.Dim == dimensions)
+            .Where(c => c.Dim == dimensions && c.Vector.Length == dimensions * sizeof(float))
             .Where(c => c.Text.Trim().Length >= MinThemeChars)
             .Select(c => new Point(c, EmbeddingMath.FromBytes(c.Vector)))
             .ToList();
@@ -118,7 +148,12 @@ public class ThemeClusterService : IThemeClusterService
     /// count changes. That is an acceptable trade on a statistics screen, and cheaper than hashing
     /// every vector on every call.
     /// </remarks>
-    private string MemoKey(DateTime start, DateTime end, int maxThemes, IReadOnlyList<EmbeddingChunk> chunks)
+    private static string MemoKey(
+        string modelId,
+        DateTime start,
+        DateTime end,
+        int maxThemes,
+        IReadOnlyList<EmbeddingChunk> chunks)
     {
         long totalChars = 0;
         foreach (var c in chunks)
@@ -126,7 +161,7 @@ public class ThemeClusterService : IThemeClusterService
             totalChars += c.Text.Length;
         }
 
-        return $"{_embedder.ModelId}|{start.Date:O}|{end.Date:O}|{maxThemes}|{chunks.Count}|{totalChars}";
+        return $"{modelId}|{start.Date:O}|{end.Date:O}|{maxThemes}|{chunks.Count}|{totalChars}";
     }
 
     /// <summary>

@@ -31,7 +31,7 @@ public class SnapshotPreviewViewModelTests
     public SnapshotPreviewViewModelTests()
     {
         _profile.Setup(p => p.GetUserProfileAsync())
-            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true });
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
 
         _builder
             .Setup(b => b.BuildAsync(
@@ -278,5 +278,28 @@ public class SnapshotPreviewViewModelTests
 
         await load.Should().ThrowAsync<InvalidOperationException>();
         vm.IsBusy.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Without_an_adult_birth_date_the_intimate_switch_is_gone_and_off()
+    {
+        // The row is age-gated at home (18+), so the report must not offer to send what the screen
+        // never showed. Same shape as the cycle switch for a profile the feature is not offered to.
+        _profile.Setup(p => p.GetUserProfileAsync())
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
+        var vm = CreateVm();
+        vm.IncludeIntimateLife = true;
+        await vm.LoadAsync();
+        vm.IsIntimateLifeAvailable.Should().BeTrue();
+
+        _profile.Setup(p => p.GetUserProfileAsync())
+            .ReturnsAsync(new UserProfile { BirthDate = DateTime.Today.AddYears(-16) });
+        vm = CreateVm();
+        vm.IncludeIntimateLife = true;
+        await vm.LoadAsync();
+
+        vm.IsIntimateLifeAvailable.Should().BeFalse();
+        vm.IncludeIntimateLife.Should().BeFalse();
+        vm.Options.IncludeIntimateLife.Should().BeFalse();
     }
 }
