@@ -2,8 +2,9 @@ name: Swift StoreKit facade
 
 # The short loop for the only Swift in the repository (spec 15, R3.5). Builds the static
 # xcframework exactly as build-ios.yml does and then runs the facade against a local StoreKit
-# configuration on a simulator — purchases, the free trial, refunds — with no Apple ID, no sandbox
-# and no App Store Connect. A compile error in DiarionStoreKit.swift costs these few minutes, not
+# configuration on a simulator — products, prices, the free-trial offer, empty entitlements and
+# the failure path — with no Apple ID, no sandbox and no App Store Connect. Purchases and the app
+# receipt need a host app, which a package test bundle is not; those are checked on a phone. A compile error in DiarionStoreKit.swift costs these few minutes, not
 # the twenty of a full iOS publish.
 
 on:
