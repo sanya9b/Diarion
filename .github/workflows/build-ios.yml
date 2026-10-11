@@ -103,6 +103,15 @@ jobs:
       with:
         dotnet-version: '10.0.300' # Використовуємо поточний SDK, сумісний з iOS workload 26.5
 
+    # setup-dotnet ставить 10.0.300 поруч із тим, що вже є на образі, а без global.json dotnet бере
+    # найновіший SDK. У жовтні 2026 на образі з'явився 10.0.4xx — і разом із ним набір воркладів
+    # 10.0.401.1 з iOS 27.0, який вимагає Xcode 27, якого на раннері немає. global.json лише тут, а
+    # не в корені: ci.yml на Linux бере «найновіший 10.0.x» і з таким файлом не знайшов би SDK.
+    - name: Pin the .NET SDK band the iOS workload matches
+      run: |
+        dotnet new globaljson --sdk-version 10.0.300 --roll-forward latestPatch --force
+        dotnet --version
+
     - name: Restore required workloads
       run: dotnet workload restore Diarion.csproj --skip-manifest-update
 
