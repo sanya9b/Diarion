@@ -56,6 +56,7 @@ final class DiarionStoreKitTests: XCTestCase {
         XCTAssertEqual((entitlements as? [Any])?.count, 0)
     }
 
+    @available(iOS 17.0, *) // SKTestSession.buyProduct; the CI simulator is far newer
     func testBuyingThePlanIsReportedAsAnIntroductoryEntitlement() async throws {
         // Bought through the test session: the facade's dsk_purchase presents Apple's confirmation
         // sheet, and a package test has no window to present it in.
@@ -77,6 +78,7 @@ final class DiarionStoreKitTests: XCTestCase {
         XCTAssertEqual(statusArray.first?["willAutoRenew"] as? Bool, true)
     }
 
+    @available(iOS 17.0, *) // SKTestSession.buyProduct; the CI simulator is far newer
     func testARefundIsNeverReportedAsALiveEntitlement() async throws {
         _ = try await session.buyProduct(identifier: "diarion.base.monthly", options: [])
         let id = try XCTUnwrap(session.allTransactions().first?.identifier)
