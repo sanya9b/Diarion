@@ -65,6 +65,7 @@ public partial class App : Application
         // keychain before the first frame (spec 15, R1.2, R2.1).
         var entitlements = services?.GetService<IEntitlementService>();
         services?.GetService<PaywallPresenter>()?.Start();
+        StartReminderCoordinator(services);
 
         var window = new Window();
 
@@ -116,6 +117,15 @@ public partial class App : Application
     /// Asks the store in the background. The service never downgrades the state for a missing
     /// answer, so nothing here is on the critical path of the first screen.
     /// </summary>
+    /// <summary>Pauses or restores reminders to match the access state (spec 15, R1.6). Off the
+    /// first frame's path: it reads the profile and habits from the database.</summary>
+    private static void StartReminderCoordinator(IServiceProvider? services)
+    {
+        var coordinator = services?.GetService<ReminderAccessCoordinator>();
+        if (coordinator is null) return;
+        _ = Task.Run(coordinator.StartAsync);
+    }
+
     private static void RefreshEntitlements(IEntitlementService? entitlements)
     {
         if (entitlements is null) return;

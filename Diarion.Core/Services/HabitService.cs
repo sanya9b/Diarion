@@ -24,6 +24,21 @@ public class HabitService : IHabitService
     private ILiteCollection<HarmfulHabitTracker> HarmfulHabitTrackersCollection => _dbContext.GetCollection<HarmfulHabitTracker>(DatabaseConstants.HarmfulHabitTrackersCollection);
     private ILiteCollection<DiaryEntry> EntriesCollection => _dbContext.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
 
+    public Task<List<HabitDefinition>> GetLiveHabitDefinitionsAsync()
+    {
+        return Task.Run(() =>
+        {
+            var defs = HabitsCollection.Query().Where(x => x.DeletedAt == null).ToList();
+            foreach (var def in defs)
+            {
+                var localized = HabitLocalization.ResolveName(def);
+                if (!string.IsNullOrEmpty(localized))
+                    def.Name = localized;
+            }
+            return defs;
+        });
+    }
+
     public Task<List<HabitDefinition>> GetActiveHabitsForDateAsync(DateTime date)
     {
         return Task.Run(() =>

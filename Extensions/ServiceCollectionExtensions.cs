@@ -37,11 +37,16 @@ public static class ServiceCollectionExtensions
 #endif
         services.AddSingleton<IExternalLinkService, MauiExternalLinkService>();
         services.AddSingleton<PaywallPresenter>();
+        services.AddSingleton<ReminderAccessCoordinator>();
         services.AddSingleton<ILegacyAccessDetector, LegacyAccessDetector>();
         services.AddSingleton<IEntitlementService, EntitlementService>();
         services.AddSingleton<IAccessGuard, AccessGuard>();
         services.AddSingleton<IDatabaseContext, DatabaseContext>();
-        services.AddSingleton<INotificationService, LocalNotificationService>();
+        // The platform service behind a read-only gate: no daily or habit reminder is scheduled
+        // while the diary is read-only; the coordinator puts them back when access returns.
+        services.AddSingleton<LocalNotificationService>();
+        services.AddSingleton<INotificationService>(sp => new AccessAwareNotificationService(
+            sp.GetRequiredService<LocalNotificationService>(), sp.GetRequiredService<IAccessGuard>()));
         services.AddSingleton<ITodoService, TodoService>();
         services.AddSingleton<IHabitService, HabitService>();
         services.AddSingleton<IGuidedPromptService, GuidedPromptService>();
