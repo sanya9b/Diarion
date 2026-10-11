@@ -30,6 +30,13 @@ public static class ServiceCollectionExtensions
 #else
         services.AddSingleton<IStoreClient, UnavailableStoreClient>();
 #endif
+#if DEBUG
+        // DIARION_FAKE_STORE=new|legacy: a pretend store for working on the paywall where no store
+        // exists (Windows). Debug builds only; Release cannot even see the type.
+        DebugStoreOverrides.Apply(services);
+#endif
+        services.AddSingleton<IExternalLinkService, MauiExternalLinkService>();
+        services.AddSingleton<PaywallPresenter>();
         services.AddSingleton<ILegacyAccessDetector, LegacyAccessDetector>();
         services.AddSingleton<IEntitlementService, EntitlementService>();
         services.AddSingleton<IAccessGuard, AccessGuard>();
@@ -180,6 +187,9 @@ public static class ServiceCollectionExtensions
         services.AddTransient<TodoDetailViewModel>();
         services.AddTransient<AiSettingsViewModel>();
         services.AddTransient<ProfileViewModel>();
+        services.AddTransient<PaywallViewModel>();
+        services.AddTransient<SubscriptionSectionViewModel>();
+        services.AddTransient<AccessBannerViewModel>();
         services.AddTransient<HabitTrackerViewModel>();
         services.AddTransient<GoodDeedsViewModel>();
         services.AddTransient<ReadingTrackerViewModel>();
@@ -235,6 +245,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<PromptHistoryPage>();
         services.AddTransient<CyclePage>();
         services.AddTransient<SnapshotPreviewPage>();
+        services.AddTransient<PaywallPage>();
 
         return services;
     }

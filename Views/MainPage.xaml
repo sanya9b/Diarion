@@ -26,6 +26,9 @@
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
             <VerticalStackLayout Grid.Row="0" Padding="24,4,24,10" Spacing="0">
+
+                <!-- Read-only banner or the one-time card for 1.0 users (spec 15). Its own view model. -->
+                <controls:AccessBanner />
                 
                 <controls:CalendarView IsExpanded="{Binding BindingContext.CalendarSection.IsCalendarExpanded, Source={x:Reference PageRoot}}" BindingContext="{Binding CalendarSection}" x:DataType="viewmodels:CalendarSectionViewModel" />
 

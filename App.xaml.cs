@@ -6,6 +6,8 @@ using Diarion.Diagnostics;
 using Diarion.Services;
 using Diarion.Services.Ai;
 using Diarion.Services.Store;
+using CommunityToolkit.Mvvm.Messaging;
+using Diarion.Messages;
 using Microsoft.Maui;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
@@ -62,6 +64,7 @@ public partial class App : Application
         // before onboarding can complete in this launch, and the access state is restored from the
         // keychain before the first frame (spec 15, R1.2, R2.1).
         var entitlements = services?.GetService<IEntitlementService>();
+        services?.GetService<PaywallPresenter>()?.Start();
 
         var window = new Window();
 
@@ -129,6 +132,16 @@ public partial class App : Application
         });
     }
 
+    /// <summary>
+    /// The paywall follows onboarding for a new user (spec 15, R4.2) — after the sheet is gone, so
+    /// the two never stack. The presenter drops the request for anyone who may already write.
+    /// </summary>
+    private static async Task CloseOnboardingAsync(INavigation navigation)
+    {
+        await navigation.PopModalAsync();
+        WeakReferenceMessenger.Default.Send(new PaywallRequestedMessage(PaywallReason.AfterOnboarding));
+    }
+
     private async Task CheckOnboardingAsync(Window window)
     {
         if (Preferences.Get(OnboardingCompletedKey, false)) return;
@@ -143,7 +156,7 @@ public partial class App : Application
         page.ViewModel.Completed = () =>
         {
             Preferences.Set(OnboardingCompletedKey, true);
-            _ = navigation.PopModalAsync();
+            _ = CloseOnboardingAsync(navigation);
         };
 
         await navigation.PushModalAsync(page);

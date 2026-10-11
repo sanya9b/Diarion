@@ -502,6 +502,46 @@
             <!-- ============ DATA TAB ============ -->
             <VerticalStackLayout Spacing="20" IsVisible="{Binding IsDataTab}">
 
+                <!-- Підписка (spec 15, R4.4). Its BindingContext is SubscriptionSectionViewModel, set in
+                     ProfilePage.xaml.cs; hidden on platforms with no store. First in the tab because it
+                     is the one card here that can change what the rest of the app lets you do. -->
+                <Border x:Name="SubscriptionCard" x:DataType="viewmodels:SubscriptionSectionViewModel"
+                        IsVisible="{Binding IsVisible}"
+                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{x:Static localization:AppResources.SubscriptionSectionTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Label Text="{Binding StatusText}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                        <Button Text="{x:Static localization:AppResources.SubscriptionManageButton}"
+                                Command="{Binding ManageCommand}" IsVisible="{Binding CanManage}"
+                                BackgroundColor="Transparent"
+                                BorderColor="{DynamicResource Theme_Ocean_Ocean}" BorderWidth="1"
+                                TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                CornerRadius="12" HeightRequest="44" />
+
+                        <Button Text="{x:Static localization:AppResources.PaywallSubscribeButton}"
+                                Command="{Binding SubscribeCommand}" IsVisible="{Binding CanSubscribe}"
+                                BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
+                                TextColor="{DynamicResource Theme_Snow_Black}"
+                                FontAttributes="Bold" CornerRadius="12" HeightRequest="44" />
+
+                        <Button Text="{x:Static localization:AppResources.SubscriptionSupportButton}"
+                                Command="{Binding SubscribeCommand}" IsVisible="{Binding CanSupport}"
+                                BackgroundColor="Transparent"
+                                BorderColor="{DynamicResource Theme_Ocean_Ocean}" BorderWidth="1"
+                                TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                CornerRadius="12" HeightRequest="44" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Безпека (Security) -->
                 <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
