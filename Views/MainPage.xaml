@@ -104,7 +104,7 @@
                          VerticalStackLayout collapses hidden blocks without leaving empty gaps.
                          The whole stack stays hidden (IsContentReady) until the real profile is
                          loaded, so the default all-blocks-visible layout never flashes on startup. -->
-                    <VerticalStackLayout x:Name="BlocksAnchor" Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+                    <VerticalStackLayout x:Name="BlocksAnchor" behaviors:ReadOnlyAccess.DisableWhenReadOnly="True" Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
                                          IsVisible="{Binding BindingContext.IsContentReady, Source={x:Reference PageRoot}}">
 
                         <controls:MoodSection BindingContext="{Binding}"

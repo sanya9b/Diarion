@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              x:Class="Diarion.Views.DiaryDetailPage"
              x:DataType="viewmodels:DiaryDetailViewModel"
              Title="{Binding Title}"
@@ -32,6 +33,7 @@
 
         <Grid Grid.Row="1" Padding="24,10,24,24" RowSpacing="14" RowDefinitions="Auto, Auto, Auto">
             <Border Grid.Row="0" StrokeShape="RoundRectangle 24"
+                    behaviors:ReadOnlyAccess.DisableWhenReadOnly="True"
                     StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
