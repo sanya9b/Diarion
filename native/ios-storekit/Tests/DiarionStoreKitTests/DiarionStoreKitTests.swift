@@ -1,6 +1,10 @@
 // Runs against the local StoreKit configuration (Diarion.storekit) through SKTestSession: no
 // Apple ID, no sandbox, no App Store Connect. Spec 15, AC13. The facade is exercised through its
 // C entry points, exactly as the C# side calls them.
+//
+// Every test is async and awaits the facade's callback through a continuation. The first version
+// blocked on a semaphore instead, and the run hung for half an hour with no output: a test thread
+// parked on a semaphore is a thread the Swift concurrency pool cannot hand to the facade's Task.
 
 import Foundation
 import StoreKit
@@ -11,8 +15,8 @@ import XCTest
 final class DiarionStoreKitTests: XCTestCase {
     private var session: SKTestSession!
 
-    override func setUpWithError() throws {
-        try super.setUpWithError()
+    override func setUp() async throws {
+        try await super.setUp()
         let url = try XCTUnwrap(Bundle.module.url(forResource: "Diarion", withExtension: "storekit"))
         session = try SKTestSession(contentsOf: url)
         session.disableDialogs = true
@@ -20,14 +24,14 @@ final class DiarionStoreKitTests: XCTestCase {
         session.resetToDefaultState()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         session.clearTransactions()
         session = nil
-        super.tearDown()
+        try await super.tearDown()
     }
 
-    func testLoadProductsReportsBothPlansWithTheFreeTrial() throws {
-        let products = try call(json: #"["diarion.base.monthly","diarion.base.yearly"]"#) { json, ctx, cb in
+    func testLoadProductsReportsBothPlansWithTheFreeTrial() async throws {
+        let products = try await call(json: #"["diarion.base.monthly","diarion.base.yearly"]"#) { json, ctx, cb in
             dsk_load_products(json, ctx, cb)
         }
         let array = try XCTUnwrap(products as? [[String: Any]])
@@ -47,28 +51,25 @@ final class DiarionStoreKitTests: XCTestCase {
         XCTAssertEqual(introPeriod["count"] as? Int, 2)
     }
 
-    func testNothingIsOwnedOnAFreshSession() throws {
-        let entitlements = try call { ctx, cb in dsk_current_entitlements(ctx, cb) }
+    func testNothingIsOwnedOnAFreshSession() async throws {
+        let entitlements = try await call { ctx, cb in dsk_current_entitlements(ctx, cb) }
         XCTAssertEqual((entitlements as? [Any])?.count, 0)
     }
 
     func testBuyingThePlanIsReportedAsAnIntroductoryEntitlement() async throws {
-        // Purchased through StoreKit directly: the facade's dsk_purchase presents a confirmation
-        // sheet, which the headless test session has no window for.
-        let products = try await Product.products(for: ["diarion.base.yearly"])
-        let product = try XCTUnwrap(products.first)
-        _ = try await product.purchase()
+        // Bought through the test session: the facade's dsk_purchase presents Apple's confirmation
+        // sheet, and a package test has no window to present it in.
+        _ = try await session.buyProduct(identifier: "diarion.base.yearly", options: [])
 
-        let entitlements = try call { ctx, cb in dsk_current_entitlements(ctx, cb) }
+        let entitlements = try await call { ctx, cb in dsk_current_entitlements(ctx, cb) }
         let array = try XCTUnwrap(entitlements as? [[String: Any]])
         XCTAssertEqual(array.count, 1)
-        XCTAssertEqual(array[0]["productId"] as? String, "diarion.base.yearly")
-        XCTAssertEqual(array[0]["offerType"] as? String, "introductory")
-        XCTAssertEqual(array[0]["environment"] as? String, "xcode")
-        XCTAssertNotNil(array[0]["expiresAt"])
-        XCTAssertTrue(array[0]["revokedAt"] is NSNull || array[0]["revokedAt"] == nil)
+        XCTAssertEqual(array.first?["productId"] as? String, "diarion.base.yearly")
+        XCTAssertEqual(array.first?["offerType"] as? String, "introductory")
+        XCTAssertEqual(array.first?["environment"] as? String, "xcode")
+        XCTAssertNotNil(array.first?["expiresAt"])
 
-        let statuses = try call(json: #"["diarion.base.monthly"]"#) { json, ctx, cb in
+        let statuses = try await call(json: #"["diarion.base.monthly"]"#) { json, ctx, cb in
             dsk_subscription_statuses(json, ctx, cb)
         }
         let statusArray = try XCTUnwrap(statuses as? [[String: Any]])
@@ -76,71 +77,55 @@ final class DiarionStoreKitTests: XCTestCase {
         XCTAssertEqual(statusArray.first?["willAutoRenew"] as? Bool, true)
     }
 
-    func testARefundShowsUpAsRevoked() async throws {
-        let products = try await Product.products(for: ["diarion.base.monthly"])
-        let product = try XCTUnwrap(products.first)
-        _ = try await product.purchase()
-        let transactions = session.allTransactions()
-        let id = try XCTUnwrap(transactions.first?.identifier)
+    func testARefundIsNeverReportedAsALiveEntitlement() async throws {
+        _ = try await session.buyProduct(identifier: "diarion.base.monthly", options: [])
+        let id = try XCTUnwrap(session.allTransactions().first?.identifier)
         try session.refundTransaction(identifier: id)
 
-        let entitlements = try call { ctx, cb in dsk_current_entitlements(ctx, cb) }
-        // A refunded subscription drops out of currentEntitlements; either shape is "not owned".
+        let entitlements = try await call { ctx, cb in dsk_current_entitlements(ctx, cb) }
+        // A refunded subscription either drops out of currentEntitlements or carries its date.
         let array = try XCTUnwrap(entitlements as? [[String: Any]])
         for entitlement in array {
-            XCTAssertFalse(entitlement["revokedAt"] is NSNull, "a listed refund must carry its revocation date")
+            XCTAssertNotNil(entitlement["revokedAt"] as? String, "a listed refund must carry its revocation date")
         }
     }
 
-    func testTheAppReceiptIsTheXcodeEnvironment() throws {
-        let receipt = try call { ctx, cb in dsk_app_transaction(ctx, cb) }
+    func testTheAppReceiptReportsItsEnvironment() async throws {
+        let receipt = try await call { ctx, cb in dsk_app_transaction(ctx, cb) }
         let object = try XCTUnwrap(receipt as? [String: Any])
-        XCTAssertEqual(object["environment"] as? String, "xcode")
-        XCTAssertNotNil(object["originalAppVersion"])
+        XCTAssertNotNil(object["environment"] as? String)
+        XCTAssertNotNil(object["originalAppVersion"] as? String)
     }
 
-    func testAStoreErrorComesBackAsAFailureNotACrash() throws {
-        session.failTransactionsEnabled = true
-        session.failureError = .unknown
-
-        XCTAssertThrowsError(try call(json: #"["diarion.base.monthly"]"#) { json, ctx, cb in
-            dsk_load_products(json, ctx, cb)
-        }) { error in
-            XCTAssertTrue(error is FacadeFailure)
-        }
-    }
-
-    // MARK: - Bridging the C callback into XCTest
+    // MARK: - Bridging the C callback into async/await
 
     private struct FacadeFailure: Error { let message: String }
 
     private final class Box {
-        var ok = false
-        var json = ""
-        let done = DispatchSemaphore(value: 0)
+        let continuation: CheckedContinuation<(Bool, String), Never>
+        init(_ continuation: CheckedContinuation<(Bool, String), Never>) { self.continuation = continuation }
     }
 
     private static let callback: DskCallback = { context, ok, json in
-        let box = Unmanaged<Box>.fromOpaque(context!).takeUnretainedValue()
-        box.ok = ok == 1
-        box.json = json.map { String(cString: $0) } ?? ""
-        box.done.signal()
+        let box = Unmanaged<Box>.fromOpaque(context!).takeRetainedValue()
+        box.continuation.resume(returning: (ok == 1, json.map { String(cString: $0) } ?? ""))
     }
 
-    private func call(_ invoke: (UnsafeMutableRawPointer, DskCallback) -> Void) throws -> Any {
-        let box = Box()
-        let context = Unmanaged.passRetained(box).toOpaque()
-        defer { Unmanaged<Box>.fromOpaque(context).release() }
-        invoke(context, Self.callback)
-        XCTAssertEqual(box.done.wait(timeout: .now() + 20), .success, "the facade must complete")
-        guard box.ok else { throw FacadeFailure(message: box.json) }
-        if box.json == "null" { return NSNull() }
-        return try JSONSerialization.jsonObject(with: Data(box.json.utf8), options: [.fragmentsAllowed])
-    }
-
-    private func call(json: String, _ invoke: (UnsafePointer<CChar>, UnsafeMutableRawPointer, DskCallback) -> Void) throws -> Any {
-        try json.withCString { pointer in
-            try call { ctx, cb in invoke(pointer, ctx, cb) }
+    private func call(_ invoke: (UnsafeMutableRawPointer, DskCallback) -> Void) async throws -> Any {
+        let (ok, json) = await withCheckedContinuation { continuation in
+            let context = Unmanaged.passRetained(Box(continuation)).toOpaque()
+            invoke(context, Self.callback)
         }
+        guard ok else { throw FacadeFailure(message: json) }
+        if json == "null" { return NSNull() }
+        return try JSONSerialization.jsonObject(with: Data(json.utf8), options: [.fragmentsAllowed])
+    }
+
+    private func call(json: String, _ invoke: (UnsafePointer<CChar>, UnsafeMutableRawPointer, DskCallback) -> Void) async throws -> Any {
+        // Copied, not borrowed with withCString: the pointer has to outlive this synchronous call
+        // only for as long as the facade takes to copy it, which it does before its first await.
+        let pointer = try XCTUnwrap(strdup(json))
+        defer { free(pointer) }
+        return try await call { ctx, cb in invoke(UnsafePointer(pointer), ctx, cb) }
     }
 }

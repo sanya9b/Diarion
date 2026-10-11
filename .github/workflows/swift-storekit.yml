@@ -21,6 +21,8 @@ jobs:
   facade:
     name: Build the xcframework and run the StoreKit tests
     runs-on: macos-26
+    # A hung test once ran for 34 minutes with no output. A normal run takes under ten.
+    timeout-minutes: 25
 
     steps:
     - name: Checkout repository
@@ -61,22 +63,37 @@ jobs:
 
     - name: Run the StoreKit tests on the simulator
       working-directory: native/ios-storekit
+      timeout-minutes: 15
       run: |
-        set -o pipefail
+        # The full log goes to a file, uploaded on failure; the console gets the test lines as they
+        # happen. The first version piped straight into grep, which buffered everything — so when a
+        # test hung, the run showed nothing at all for half an hour.
+        set +e
         xcodebuild test \
           -scheme DiarionStoreKit \
           -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}" \
           -resultBundlePath "$RUNNER_TEMP/DiarionStoreKit.xcresult" \
-          2>&1 | grep -E "Test Case|Test Suite|error:|warning:|\*\* TEST" || true
-        # grep eats the exit status; ask the result bundle instead.
-        xcrun xcresulttool get test-results summary --path "$RUNNER_TEMP/DiarionStoreKit.xcresult" \
-          | python3 -c '
-        import json, sys
-        summary = json.load(sys.stdin)
-        failed = summary.get("failedTests", 0)
-        passed = summary.get("passedTests", 0)
-        print(f"passed={passed} failed={failed}")
-        sys.exit(1 if failed or not passed else 0)'
+          -test-timeouts-enabled YES \
+          -default-test-execution-time-allowance 60 \
+          -maximum-test-execution-time-allowance 120 \
+          2>&1 | tee "$RUNNER_TEMP/xcodebuild-test.log" | grep --line-buffered -E "Test Case|Test Suite|error:|\*\* TEST"
+        status=${PIPESTATUS[0]}
+        set -e
+        if [ -d "$RUNNER_TEMP/DiarionStoreKit.xcresult" ]; then
+          xcrun xcresulttool get test-results summary --path "$RUNNER_TEMP/DiarionStoreKit.xcresult" \
+            | python3 -c 'import json, sys; s = json.load(sys.stdin); print("passed=%s failed=%s" % (s.get("passedTests", 0), s.get("failedTests", 0)))'
+        fi
+        exit $status
+
+    - name: Upload the test log
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: storekit-test-log
+        path: |
+          ${{ runner.temp }}/xcodebuild-test.log
+          ${{ runner.temp }}/DiarionStoreKit.xcresult
+        if-no-files-found: ignore
 
     - name: Upload the xcframework
       uses: actions/upload-artifact@v4
