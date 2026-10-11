@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -210,7 +211,7 @@ public partial class HabitEditorViewModel : BaseViewModel
             def.Schedule = schedule;
             def.Target = target;
             def.ReminderTime = reminder;
-            await _habitService.UpdateHabitDefinitionAsync(def);
+            if (!await WriteGate.TryAsync(() => _habitService.UpdateHabitDefinitionAsync(def))) return;
             savedId = def.Id;
         }
         else
@@ -223,7 +224,7 @@ public partial class HabitEditorViewModel : BaseViewModel
                 ReminderTime = reminder,
                 CreatedAt = DateTime.Today
             };
-            await _habitService.AddHabitDefinitionAsync(def);
+            if (!await WriteGate.TryAsync(() => _habitService.AddHabitDefinitionAsync(def))) return;
             savedId = def.Id;
         }
 
@@ -264,7 +265,7 @@ public partial class HabitEditorViewModel : BaseViewModel
 
         if (!confirm) return;
 
-        await _habitService.DeleteHabitDefinitionAsync(_editingId, DateTime.Today);
+        if (!await WriteGate.TryAsync(() => _habitService.DeleteHabitDefinitionAsync(_editingId, DateTime.Today))) return;
         _notificationService.CancelHabitReminder(_editingId);
         await _navigationService.NavigateBackAsync();
     }

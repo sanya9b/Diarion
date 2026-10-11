@@ -11,6 +11,7 @@ using Diarion.Diagnostics;
 using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -217,14 +218,14 @@ public partial class PlannerSectionViewModel : ObservableObject
 
                 if (choice == wholeSeries)
                 {
-                    await _todoService.DeleteRecurringTaskAsync(todo.Model.RecurringTaskId.Value);
+                    if (!await WriteGate.TryAsync(() => _todoService.DeleteRecurringTaskAsync(todo.Model.RecurringTaskId.Value))) return;
                     RemoveFromView(todo);
                     WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
                     return;
                 }
             }
 
-            await _todoService.DeleteTodoAsync(todo.Id);
+            if (!await WriteGate.TryAsync(() => _todoService.DeleteTodoAsync(todo.Id))) return;
             RemoveFromView(todo);
             WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
         }
@@ -257,7 +258,7 @@ public partial class PlannerSectionViewModel : ObservableObject
         {
             todo.IsCompleted = !todo.IsCompleted;
             todo.SyncToModel();
-            await _todoService.SaveTodoAsync(todo.Model);
+            if (!await WriteGate.TryAsync(() => _todoService.SaveTodoAsync(todo.Model))) return;
             await LoadTodosForDateAsync(todo.TargetDate);
             WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
         }

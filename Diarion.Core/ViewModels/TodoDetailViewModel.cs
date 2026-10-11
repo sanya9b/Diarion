@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Services;
 using Microsoft.Maui.Controls;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -558,8 +559,8 @@ public partial class TodoDetailViewModel : BaseViewModel
             _currentTodo.Priority = SelectedPriority;
             _currentTodo.HasReminder = HasReminder;
 
-            await _todoService.SaveTodoAsync(_currentTodo);
-            await _todoService.SetRecurrenceAsync(_currentTodo.Id, BuildRecurrence());
+            if (!await WriteGate.TryAsync(() => _todoService.SaveTodoAsync(_currentTodo))) return;
+            if (!await WriteGate.TryAsync(() => _todoService.SetRecurrenceAsync(_currentTodo.Id, BuildRecurrence()))) return;
             await _navigationService.NavigateBackAsync();
         }
         finally

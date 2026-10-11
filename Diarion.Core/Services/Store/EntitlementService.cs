@@ -113,7 +113,7 @@ public sealed class EntitlementService : IEntitlementService, IDisposable
 
     private AccessState Restore()
     {
-        if (_legacy.IsKnownLegacy) return AccessState.Legacy;
+        if (_legacy.ResolveLocally()) return AccessState.Legacy;
         if (!_storeClient.IsAvailable) return AccessState.StoreUnavailable;
         return Evaluate(ReadCache(), Now);
     }

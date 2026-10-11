@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -184,7 +185,7 @@ public partial class NotesViewModel : BaseViewModel
         if (string.IsNullOrWhiteSpace(text)) return;
 
         // Fast path: save straight to the inbox without opening the editor.
-        await _noteService.SaveNoteAsync(new Note { Content = text, IsInInbox = true });
+        if (!await WriteGate.TryAsync(() => _noteService.SaveNoteAsync(new Note { Content = text, IsInInbox = true }))) return;
         QuickCaptureText = string.Empty;
 
         await RebuildFiltersAsync(); // the "Inbox" chip appears once the first inbox note exists
@@ -215,7 +216,7 @@ public partial class NotesViewModel : BaseViewModel
 
         if (confirm)
         {
-            await _noteService.DeleteNoteAsync(note.Id.ToString());
+            if (!await WriteGate.TryAsync(() => _noteService.DeleteNoteAsync(note.Id.ToString()))) return;
             Notes.Remove(note);
             await RebuildFiltersAsync(); // a tag may no longer exist after deletion
         }

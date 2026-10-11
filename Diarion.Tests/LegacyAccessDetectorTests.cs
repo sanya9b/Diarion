@@ -46,6 +46,28 @@ public class LegacyAccessDetectorTests
     }
 
     [Fact]
+    public void The_local_rule_resolves_synchronously_before_the_first_frame()
+    {
+        _evidence.IsFirstLaunchOfPaidEra = true;
+        _evidence.OnboardingCompletedBeforeThisLaunch = true;
+        var detector = Create();
+
+        detector.ResolveLocally().Should().BeTrue();
+
+        detector.IsKnownLegacy.Should().BeTrue();
+        _client.AppTransactionCalls.Should().Be(0);
+    }
+
+    [Fact]
+    public void Resolving_locally_never_asks_the_store_even_when_it_cannot_decide()
+    {
+        _client.AppTransaction = Transaction("2", StoreEnvironment.Production);
+
+        Create().ResolveLocally().Should().BeFalse();
+        _client.AppTransactionCalls.Should().Be(0);
+    }
+
+    [Fact]
     public async Task A_new_users_own_onboarding_does_not_count_on_their_second_launch()
     {
         _evidence.IsFirstLaunchOfPaidEra = false;

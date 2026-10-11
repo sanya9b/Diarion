@@ -12,6 +12,7 @@ using Diarion.Models;
 using Diarion.Services;
 using Diarion.Core.Services;
 using Diarion.Helpers;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -230,7 +231,7 @@ public partial class MainViewModel : BaseViewModel
         _autoSaveDebouncer.Debounce(async () =>
         {
             entry.SyncToModel();
-            await _diaryService.SaveEntryAsync(entry.Model);
+            if (!await WriteGate.TryAsync(() => _diaryService.SaveEntryAsync(entry.Model))) return;
             System.Diagnostics.Debug.WriteLine($"Auto-saved entry for {entry.Date:dd.MM.yyyy}");
         });
     }
@@ -327,7 +328,7 @@ public partial class MainViewModel : BaseViewModel
         try
         {
             CurrentEntry.SyncToModel();
-            await _diaryService.SaveEntryAsync(CurrentEntry.Model);
+            if (!await WriteGate.TryAsync(() => _diaryService.SaveEntryAsync(CurrentEntry.Model))) return;
             await UpdateStreakAsync();
         }
         catch (Exception ex)

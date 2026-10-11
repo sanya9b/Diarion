@@ -2505,6 +2505,165 @@ public static string ClearAllDataSuccessMsg {
         public static string DeleteNoteConfirmMessage {
             get { return ResourceManager.GetString("DeleteNoteConfirmMessage", resourceCulture) ?? string.Empty; }
         }
+
+        public static string PaywallTitle {
+            get { return ResourceManager.GetString("PaywallTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallSubtitle {
+            get { return ResourceManager.GetString("PaywallSubtitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallMonthlyTitle {
+            get { return ResourceManager.GetString("PaywallMonthlyTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallYearlyTitle {
+            get { return ResourceManager.GetString("PaywallYearlyTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallPricePerMonthFormat {
+            get { return ResourceManager.GetString("PaywallPricePerMonthFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallPricePerYearFormat {
+            get { return ResourceManager.GetString("PaywallPricePerYearFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallDiscountFormat {
+            get { return ResourceManager.GetString("PaywallDiscountFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialFormat {
+            get { return ResourceManager.GetString("PaywallTrialFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialDayOne {
+            get { return ResourceManager.GetString("PaywallTrialDayOne", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialDayFew {
+            get { return ResourceManager.GetString("PaywallTrialDayFew", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialDayMany {
+            get { return ResourceManager.GetString("PaywallTrialDayMany", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialMonthFormat {
+            get { return ResourceManager.GetString("PaywallTrialMonthFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialYearFormat {
+            get { return ResourceManager.GetString("PaywallTrialYearFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallStartTrialButton {
+            get { return ResourceManager.GetString("PaywallStartTrialButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallSubscribeButton {
+            get { return ResourceManager.GetString("PaywallSubscribeButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallRestoreButton {
+            get { return ResourceManager.GetString("PaywallRestoreButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallLaterButton {
+            get { return ResourceManager.GetString("PaywallLaterButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTermsLink {
+            get { return ResourceManager.GetString("PaywallTermsLink", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallPrivacyLink {
+            get { return ResourceManager.GetString("PaywallPrivacyLink", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallAutoRenewNotice {
+            get { return ResourceManager.GetString("PaywallAutoRenewNotice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallDataPromise {
+            get { return ResourceManager.GetString("PaywallDataPromise", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallPendingMessage {
+            get { return ResourceManager.GetString("PaywallPendingMessage", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallRestoreNothingFound {
+            get { return ResourceManager.GetString("PaywallRestoreNothingFound", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallStoreUnavailable {
+            get { return ResourceManager.GetString("PaywallStoreUnavailable", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallPurchaseFailedFormat {
+            get { return ResourceManager.GetString("PaywallPurchaseFailedFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionSectionTitle {
+            get { return ResourceManager.GetString("SubscriptionSectionTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusLegacy {
+            get { return ResourceManager.GetString("SubscriptionStatusLegacy", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusTrialFormat {
+            get { return ResourceManager.GetString("SubscriptionStatusTrialFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusRenewsFormat {
+            get { return ResourceManager.GetString("SubscriptionStatusRenewsFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusEndsFormat {
+            get { return ResourceManager.GetString("SubscriptionStatusEndsFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusGraceFormat {
+            get { return ResourceManager.GetString("SubscriptionStatusGraceFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusReadOnly {
+            get { return ResourceManager.GetString("SubscriptionStatusReadOnly", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusUnavailable {
+            get { return ResourceManager.GetString("SubscriptionStatusUnavailable", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionManageButton {
+            get { return ResourceManager.GetString("SubscriptionManageButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionSupportButton {
+            get { return ResourceManager.GetString("SubscriptionSupportButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReadOnlyBannerText {
+            get { return ResourceManager.GetString("ReadOnlyBannerText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReadOnlyBannerButton {
+            get { return ResourceManager.GetString("ReadOnlyBannerButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string LegacyWelcomeTitle {
+            get { return ResourceManager.GetString("LegacyWelcomeTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string LegacyWelcomeText {
+            get { return ResourceManager.GetString("LegacyWelcomeText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string LegacyWelcomeDismiss {
+            get { return ResourceManager.GetString("LegacyWelcomeDismiss", resourceCulture) ?? string.Empty; }
+        }
     }
 }
-

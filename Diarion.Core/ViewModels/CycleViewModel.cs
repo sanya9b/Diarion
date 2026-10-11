@@ -11,6 +11,7 @@ using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -139,8 +140,8 @@ public partial class CycleViewModel : BaseViewModel
         if (toggle == null) return;
 
         toggle.IsSelected = !toggle.IsSelected;
-        await _cycleLogService.SetSymptomsAsync(
-            SymptomDate, SymptomToggles.Where(t => t.IsSelected).Select(t => t.Key));
+        if (!await WriteGate.TryAsync(() => _cycleLogService.SetSymptomsAsync(
+            SymptomDate, SymptomToggles.Where(t => t.IsSelected).Select(t => t.Key)))) return;
     }
 
     private void BuildEpisodeList(CycleHistory history)
@@ -216,7 +217,7 @@ public partial class CycleViewModel : BaseViewModel
     [RelayCommand]
     private async Task AddEpisodeAsync()
     {
-        await _cycleLogService.AddEpisodeAsync(NewEpisodeStart, _profile.GetNormalizedPeriodLength());
+        if (!await WriteGate.TryAsync(() => _cycleLogService.AddEpisodeAsync(NewEpisodeStart, _profile.GetNormalizedPeriodLength()))) return;
         await ReloadAndBroadcastAsync();
     }
 
@@ -233,7 +234,7 @@ public partial class CycleViewModel : BaseViewModel
 
         if (!confirm) return;
 
-        await _cycleLogService.RemoveEpisodeAsync(item.Start);
+        if (!await WriteGate.TryAsync(() => _cycleLogService.RemoveEpisodeAsync(item.Start))) return;
         await ReloadAndBroadcastAsync();
     }
 

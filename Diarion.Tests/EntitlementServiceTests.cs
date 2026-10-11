@@ -71,6 +71,17 @@ public class EntitlementServiceTests
     }
 
     [Fact]
+    public void A_legacy_user_on_the_first_paid_launch_is_legacy_from_construction()
+    {
+        // The real detector, not the fake: this is the path from install evidence to the first frame.
+        var evidence = new FakeInstallEvidence { IsFirstLaunchOfPaidEra = true, OnboardingCompletedBeforeThisLaunch = true };
+        var service = new EntitlementService(_client, _store, new LegacyAccessDetector(_store, _client, evidence), _clock);
+
+        service.Current.Should().Be(AccessState.Legacy);
+        _client.AppTransactionCalls.Should().Be(0);
+    }
+
+    [Fact]
     public async Task Legacy_wins_over_a_live_subscription_and_the_store_is_not_consulted()
     {
         _legacy.EvaluateResult = true;

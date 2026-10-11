@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -105,12 +106,12 @@ public partial class ReadingTrackerViewModel : BaseViewModel
 
         ValidationMessage = string.Empty;
 
-        await _auxiliaryService.SaveReadingTrackerBookAsync(new ReadingTrackerBook
+        if (!await WriteGate.TryAsync(() => _auxiliaryService.SaveReadingTrackerBookAsync(new ReadingTrackerBook
         {
             SlotNumber = SelectedSlot.SlotNumber,
             BookTitle = normalizedTitle,
             CompletedOn = NewCompletionDate.Date
-        });
+        }))) return;
 
         SelectedSlot = null;
         NewBookTitle = string.Empty;
@@ -124,7 +125,7 @@ public partial class ReadingTrackerViewModel : BaseViewModel
         if (SelectedSlot == null || SelectedSlot.IsEmpty)
             return;
 
-        await _auxiliaryService.DeleteReadingTrackerBookAsync(SelectedSlot.SlotNumber);
+        if (!await WriteGate.TryAsync(() => _auxiliaryService.DeleteReadingTrackerBookAsync(SelectedSlot.SlotNumber))) return;
         
         SelectedSlot = null;
         await LoadAsync();

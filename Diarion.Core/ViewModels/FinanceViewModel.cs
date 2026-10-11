@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -688,7 +689,7 @@ public partial class FinanceViewModel : BaseViewModel
             LastPostedThrough = start < DateTime.Today ? start.AddDays(-1) : DateTime.Today
         };
 
-        await _financeService.SaveRecurringTransactionAsync(rule);
+        if (!await WriteGate.TryAsync(() => _financeService.SaveRecurringTransactionAsync(rule))) return;
 
         IsRecurringFormVisible = false;
         await LoadAsync();
@@ -707,7 +708,7 @@ public partial class FinanceViewModel : BaseViewModel
 
         if (!confirm) return;
 
-        await _financeService.DeleteRecurringTransactionAsync(item.RuleId, deletePostedTransactions: false);
+        if (!await WriteGate.TryAsync(() => _financeService.DeleteRecurringTransactionAsync(item.RuleId, deletePostedTransactions: false))) return;
         await LoadAsync();
     }
 
@@ -716,7 +717,7 @@ public partial class FinanceViewModel : BaseViewModel
     {
         if (item == null) return;
 
-        await _financeService.ConfirmOccurrenceAsync(item.RuleId, item.Date, DefaultAccountId);
+        if (!await WriteGate.TryAsync(() => _financeService.ConfirmOccurrenceAsync(item.RuleId, item.Date, DefaultAccountId))) return;
         await LoadAsync();
     }
 
@@ -725,7 +726,7 @@ public partial class FinanceViewModel : BaseViewModel
     {
         if (item == null) return;
 
-        await _financeService.SkipOccurrenceAsync(item.RuleId, item.Date);
+        if (!await WriteGate.TryAsync(() => _financeService.SkipOccurrenceAsync(item.RuleId, item.Date))) return;
         await LoadAsync();
     }
 
@@ -886,7 +887,7 @@ public partial class FinanceViewModel : BaseViewModel
         account.Icon = string.IsNullOrEmpty(NewAccountIcon) ? "💳" : NewAccountIcon;
         account.ColorHex = string.IsNullOrEmpty(NewAccountColorHex) ? "#8FA083" : NewAccountColorHex;
 
-        await _financeService.SaveAccountAsync(account);
+        if (!await WriteGate.TryAsync(() => _financeService.SaveAccountAsync(account))) return;
 
         IsAccountFormVisible = false;
         SetEditingAccount(null);
@@ -907,7 +908,7 @@ public partial class FinanceViewModel : BaseViewModel
         }
 
         _editingAccount.IsArchived = !_editingAccount.IsArchived;
-        await _financeService.SaveAccountAsync(_editingAccount);
+        if (!await WriteGate.TryAsync(() => _financeService.SaveAccountAsync(_editingAccount))) return;
 
         if (_editingAccount.IsArchived && SelectedAccountId == _editingAccount.Id)
         {
@@ -961,7 +962,7 @@ public partial class FinanceViewModel : BaseViewModel
             ? chosen
             : _accounts.First(a => a.Id != deletedId).Id;
 
-        await _financeService.DeleteAccountAsync(deletedId, reassignTo);
+        if (!await WriteGate.TryAsync(() => _financeService.DeleteAccountAsync(deletedId, reassignTo))) return;
 
         if (SelectedAccountId == deletedId) SelectedAccountId = null;
 
@@ -1063,14 +1064,14 @@ public partial class FinanceViewModel : BaseViewModel
             return;
         }
 
-        await _financeService.SaveTransferAsync(new Transfer
+        if (!await WriteGate.TryAsync(() => _financeService.SaveTransferAsync(new Transfer
         {
             FromAccountId = TransferFromAccountId.Value,
             ToAccountId = TransferToAccountId.Value,
             Amount = amount,
             Note = NewTransferNote?.Trim() ?? string.Empty,
             Date = NewTransferDate.Date
-        });
+        }))) return;
 
         IsTransferFormVisible = false;
         await LoadAsync();
@@ -1088,7 +1089,7 @@ public partial class FinanceViewModel : BaseViewModel
             Diarion.Resources.Localization.AppResources.DeleteConfirmNo);
         if (!confirm) return;
 
-        await _financeService.DeleteTransferAsync(item.Id);
+        if (!await WriteGate.TryAsync(() => _financeService.DeleteTransferAsync(item.Id))) return;
         await LoadAsync();
     }
 
@@ -1160,7 +1161,7 @@ public partial class FinanceViewModel : BaseViewModel
             };
         }
 
-        await _financeService.SaveFinanceTransactionAsync(transaction);
+        if (!await WriteGate.TryAsync(() => _financeService.SaveFinanceTransactionAsync(transaction))) return;
         
         ResetForm();
         IsAddTransactionVisible = false;
@@ -1181,7 +1182,7 @@ public partial class FinanceViewModel : BaseViewModel
 
         if (confirm)
         {
-            await _financeService.DeleteFinanceTransactionAsync(transaction.Id);
+            if (!await WriteGate.TryAsync(() => _financeService.DeleteFinanceTransactionAsync(transaction.Id))) return;
             await LoadAsync();
         }
     }
@@ -1240,7 +1241,7 @@ public partial class FinanceViewModel : BaseViewModel
         budget.Category = category;
         budget.MonthlyLimit = limit;
 
-        await _financeService.SaveBudgetAsync(budget);
+        if (!await WriteGate.TryAsync(() => _financeService.SaveBudgetAsync(budget))) return;
 
         HideBudgetForm();
         await LoadAsync();
@@ -1261,7 +1262,7 @@ public partial class FinanceViewModel : BaseViewModel
 
         if (!confirm) return;
 
-        await _financeService.DeleteBudgetAsync(item.Id);
+        if (!await WriteGate.TryAsync(() => _financeService.DeleteBudgetAsync(item.Id))) return;
         await LoadAsync();
     }
 }

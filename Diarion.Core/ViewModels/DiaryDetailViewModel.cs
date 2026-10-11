@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Services;
 using Microsoft.Maui.Controls;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -125,7 +126,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
 
         try
         {
-            await _todoService.SaveTodoAsync(todo);
+            if (!await WriteGate.TryAsync(() => _todoService.SaveTodoAsync(todo))) return;
             NewTodoDescription = string.Empty;
             await ReloadTodosAsync();
         }
@@ -143,7 +144,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
         try
         {
             todo.IsCompleted = !todo.IsCompleted;
-            await _todoService.SaveTodoAsync(todo);
+            if (!await WriteGate.TryAsync(() => _todoService.SaveTodoAsync(todo))) return;
             await ReloadTodosAsync();
         }
         catch (Exception ex)
@@ -159,7 +160,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
         
         try
         {
-            await _todoService.DeleteTodoAsync(todo.Id);
+            if (!await WriteGate.TryAsync(() => _todoService.DeleteTodoAsync(todo.Id))) return;
             await ReloadTodosAsync();
         }
         catch (Exception ex)
@@ -239,7 +240,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
             _currentEntry.Emotion = SelectedEmotion;
             // CreatedAt та Id вже ініціалізовані або збережені з існуючого
 
-            await _diaryService.SaveEntryAsync(_currentEntry);
+            if (!await WriteGate.TryAsync(() => _diaryService.SaveEntryAsync(_currentEntry))) return;
             
             // Якщо це був щойно створений запис, ми маємо повідомити UI, що тепер він "існуючий",
             // щоб користувач міг одразу додавати тудушки без перезаходу на сторінку.
@@ -281,7 +282,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
             try
             {
                 IsBusy = true;
-                await _diaryService.DeleteEntryAsync(_currentEntry.Id);
+                if (!await WriteGate.TryAsync(() => _diaryService.DeleteEntryAsync(_currentEntry.Id))) return;
                 await _navigationService.NavigateBackAsync();
             }
             catch (Exception ex)

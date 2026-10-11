@@ -2125,4 +2125,124 @@
   <data name="CycleAgeHint" xml:space="preserve">
     <value>The cycle calendar is available from age 14. Set your date of birth above to see it.</value>
   </data>
+  <data name="PaywallTitle" xml:space="preserve">
+    <value>Diarion, all of it</value>
+  </data>
+  <data name="PaywallSubtitle" xml:space="preserve">
+    <value>Diary, habits, planner, notes, finances, cycle and statistics. Your entries stay on your phone only.</value>
+  </data>
+  <data name="PaywallMonthlyTitle" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="PaywallYearlyTitle" xml:space="preserve">
+    <value>Yearly</value>
+  </data>
+  <data name="PaywallPricePerMonthFormat" xml:space="preserve">
+    <value>{0} / month</value>
+  </data>
+  <data name="PaywallPricePerYearFormat" xml:space="preserve">
+    <value>{0} / year</value>
+  </data>
+  <data name="PaywallDiscountFormat" xml:space="preserve">
+    <value>Save {0}%</value>
+  </data>
+  <data name="PaywallTrialFormat" xml:space="preserve">
+    <value>{0} free, then {1}</value>
+  </data>
+  <data name="PaywallTrialDayOne" xml:space="preserve">
+    <value>{0} day</value>
+  </data>
+  <data name="PaywallTrialDayFew" xml:space="preserve">
+    <value>{0} days</value>
+  </data>
+  <data name="PaywallTrialDayMany" xml:space="preserve">
+    <value>{0} days</value>
+  </data>
+  <data name="PaywallTrialMonthFormat" xml:space="preserve">
+    <value>{0} mo</value>
+  </data>
+  <data name="PaywallTrialYearFormat" xml:space="preserve">
+    <value>{0} yr</value>
+  </data>
+  <data name="PaywallStartTrialButton" xml:space="preserve">
+    <value>Start free trial</value>
+  </data>
+  <data name="PaywallSubscribeButton" xml:space="preserve">
+    <value>Subscribe</value>
+  </data>
+  <data name="PaywallRestoreButton" xml:space="preserve">
+    <value>Restore purchases</value>
+  </data>
+  <data name="PaywallLaterButton" xml:space="preserve">
+    <value>Not now</value>
+  </data>
+  <data name="PaywallTermsLink" xml:space="preserve">
+    <value>Terms of Use</value>
+  </data>
+  <data name="PaywallPrivacyLink" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="PaywallAutoRenewNotice" xml:space="preserve">
+    <value>The subscription renews automatically until you cancel it. Cancel any time in your Apple ID settings at least 24 hours before the end of the period. If a free trial is not cancelled, payment is taken when it ends.</value>
+  </data>
+  <data name="PaywallDataPromise" xml:space="preserve">
+    <value>If the subscription ends, everything you wrote stays available to read, back up and export.</value>
+  </data>
+  <data name="PaywallPendingMessage" xml:space="preserve">
+    <value>The purchase is waiting for approval. Access opens as soon as Apple confirms it.</value>
+  </data>
+  <data name="PaywallRestoreNothingFound" xml:space="preserve">
+    <value>No active subscription was found for this Apple ID.</value>
+  </data>
+  <data name="PaywallStoreUnavailable" xml:space="preserve">
+    <value>The App Store is not available right now. Please try again later.</value>
+  </data>
+  <data name="PaywallPurchaseFailedFormat" xml:space="preserve">
+    <value>The purchase did not go through: {0}</value>
+  </data>
+  <data name="SubscriptionSectionTitle" xml:space="preserve">
+    <value>Subscription</value>
+  </data>
+  <data name="SubscriptionStatusLegacy" xml:space="preserve">
+    <value>You have been with us since the first version: everything from it stays free for you, forever.</value>
+  </data>
+  <data name="SubscriptionStatusTrialFormat" xml:space="preserve">
+    <value>Free trial until {0}</value>
+  </data>
+  <data name="SubscriptionStatusRenewsFormat" xml:space="preserve">
+    <value>Active, renews on {0}</value>
+  </data>
+  <data name="SubscriptionStatusEndsFormat" xml:space="preserve">
+    <value>Active until {0}, will not renew</value>
+  </data>
+  <data name="SubscriptionStatusGraceFormat" xml:space="preserve">
+    <value>Apple could not take the payment. Access is kept until {0}.</value>
+  </data>
+  <data name="SubscriptionStatusReadOnly" xml:space="preserve">
+    <value>No subscription. Your entries are available to read, back up and export.</value>
+  </data>
+  <data name="SubscriptionStatusUnavailable" xml:space="preserve">
+    <value>No subscription is needed on this device: everything is available.</value>
+  </data>
+  <data name="SubscriptionManageButton" xml:space="preserve">
+    <value>Manage subscription</value>
+  </data>
+  <data name="SubscriptionSupportButton" xml:space="preserve">
+    <value>Support with a subscription</value>
+  </data>
+  <data name="ReadOnlyBannerText" xml:space="preserve">
+    <value>The subscription has ended: entries are read-only.</value>
+  </data>
+  <data name="ReadOnlyBannerButton" xml:space="preserve">
+    <value>Renew</value>
+  </data>
+  <data name="LegacyWelcomeTitle" xml:space="preserve">
+    <value>Thank you for being with us since the first version</value>
+  </data>
+  <data name="LegacyWelcomeText" xml:space="preserve">
+    <value>Diarion is now paid for new users. For you, everything that was in the first version stays free forever, along with every update to it.</value>
+  </data>
+  <data name="LegacyWelcomeDismiss" xml:space="preserve">
+    <value>Got it</value>
+  </data>
 </root>

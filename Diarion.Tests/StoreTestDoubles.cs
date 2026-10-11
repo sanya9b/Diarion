@@ -122,6 +122,8 @@ public sealed class FakeLegacyAccessDetector : ILegacyAccessDetector
     public bool EvaluateResult { get; set; }
     public int EvaluateCalls { get; private set; }
 
+    public bool ResolveLocally() => IsKnownLegacy;
+
     public Task<bool> EvaluateAsync(CancellationToken cancellationToken = default)
     {
         EvaluateCalls++;

@@ -2125,4 +2125,124 @@
   <data name="CycleAgeHint" xml:space="preserve">
     <value>Календар циклу доступний з 14 років. Вкажіть дату народження вище, щоб його побачити.</value>
   </data>
+  <data name="PaywallTitle" xml:space="preserve">
+    <value>Diarion повністю</value>
+  </data>
+  <data name="PaywallSubtitle" xml:space="preserve">
+    <value>Щоденник, звички, планер, нотатки, фінанси, цикл і статистика. Записи лишаються тільки на вашому телефоні.</value>
+  </data>
+  <data name="PaywallMonthlyTitle" xml:space="preserve">
+    <value>Місяць</value>
+  </data>
+  <data name="PaywallYearlyTitle" xml:space="preserve">
+    <value>Рік</value>
+  </data>
+  <data name="PaywallPricePerMonthFormat" xml:space="preserve">
+    <value>{0} / міс</value>
+  </data>
+  <data name="PaywallPricePerYearFormat" xml:space="preserve">
+    <value>{0} / рік</value>
+  </data>
+  <data name="PaywallDiscountFormat" xml:space="preserve">
+    <value>Вигідніше на {0}%</value>
+  </data>
+  <data name="PaywallTrialFormat" xml:space="preserve">
+    <value>{0} безкоштовно, далі {1}</value>
+  </data>
+  <data name="PaywallTrialDayOne" xml:space="preserve">
+    <value>{0} день</value>
+  </data>
+  <data name="PaywallTrialDayFew" xml:space="preserve">
+    <value>{0} дні</value>
+  </data>
+  <data name="PaywallTrialDayMany" xml:space="preserve">
+    <value>{0} днів</value>
+  </data>
+  <data name="PaywallTrialMonthFormat" xml:space="preserve">
+    <value>{0} міс.</value>
+  </data>
+  <data name="PaywallTrialYearFormat" xml:space="preserve">
+    <value>{0} р.</value>
+  </data>
+  <data name="PaywallStartTrialButton" xml:space="preserve">
+    <value>Почати безкоштовно</value>
+  </data>
+  <data name="PaywallSubscribeButton" xml:space="preserve">
+    <value>Оформити підписку</value>
+  </data>
+  <data name="PaywallRestoreButton" xml:space="preserve">
+    <value>Відновити покупки</value>
+  </data>
+  <data name="PaywallLaterButton" xml:space="preserve">
+    <value>Пізніше</value>
+  </data>
+  <data name="PaywallTermsLink" xml:space="preserve">
+    <value>Умови використання</value>
+  </data>
+  <data name="PaywallPrivacyLink" xml:space="preserve">
+    <value>Політика приватності</value>
+  </data>
+  <data name="PaywallAutoRenewNotice" xml:space="preserve">
+    <value>Підписка поновлюється автоматично, доки ви її не скасуєте. Скасувати можна будь-коли в налаштуваннях Apple ID не пізніше ніж за 24 години до кінця періоду. Якщо пробний період не скасовано, оплата спишеться після його завершення.</value>
+  </data>
+  <data name="PaywallDataPromise" xml:space="preserve">
+    <value>Якщо підписка закінчиться, усе написане лишиться доступним для читання, бекапу та експорту.</value>
+  </data>
+  <data name="PaywallPendingMessage" xml:space="preserve">
+    <value>Покупка очікує підтвердження. Доступ відкриється, щойно Apple її підтвердить.</value>
+  </data>
+  <data name="PaywallRestoreNothingFound" xml:space="preserve">
+    <value>Активної підписки на цьому Apple ID не знайдено.</value>
+  </data>
+  <data name="PaywallStoreUnavailable" xml:space="preserve">
+    <value>App Store зараз недоступний. Спробуйте пізніше.</value>
+  </data>
+  <data name="PaywallPurchaseFailedFormat" xml:space="preserve">
+    <value>Не вдалося оформити покупку: {0}</value>
+  </data>
+  <data name="SubscriptionSectionTitle" xml:space="preserve">
+    <value>Підписка</value>
+  </data>
+  <data name="SubscriptionStatusLegacy" xml:space="preserve">
+    <value>Ви з нами з першої версії: усе, що в ній було, для вас безкоштовне назавжди.</value>
+  </data>
+  <data name="SubscriptionStatusTrialFormat" xml:space="preserve">
+    <value>Пробний період до {0}</value>
+  </data>
+  <data name="SubscriptionStatusRenewsFormat" xml:space="preserve">
+    <value>Активна, поновиться {0}</value>
+  </data>
+  <data name="SubscriptionStatusEndsFormat" xml:space="preserve">
+    <value>Діє до {0}, не поновиться</value>
+  </data>
+  <data name="SubscriptionStatusGraceFormat" xml:space="preserve">
+    <value>Apple не вдалося списати оплату. Доступ збережено до {0}.</value>
+  </data>
+  <data name="SubscriptionStatusReadOnly" xml:space="preserve">
+    <value>Підписки немає. Записи доступні для читання, бекапу та експорту.</value>
+  </data>
+  <data name="SubscriptionStatusUnavailable" xml:space="preserve">
+    <value>На цьому пристрої підписка не потрібна: усе доступно.</value>
+  </data>
+  <data name="SubscriptionManageButton" xml:space="preserve">
+    <value>Керувати підпискою</value>
+  </data>
+  <data name="SubscriptionSupportButton" xml:space="preserve">
+    <value>Підтримати підпискою</value>
+  </data>
+  <data name="ReadOnlyBannerText" xml:space="preserve">
+    <value>Підписка закінчилась: записи доступні лише для читання.</value>
+  </data>
+  <data name="ReadOnlyBannerButton" xml:space="preserve">
+    <value>Поновити</value>
+  </data>
+  <data name="LegacyWelcomeTitle" xml:space="preserve">
+    <value>Дякуємо, що ви з нами з першої версії</value>
+  </data>
+  <data name="LegacyWelcomeText" xml:space="preserve">
+    <value>Diarion став платним для нових користувачів. Для вас усе, що було в першій версії, лишається безкоштовним назавжди, разом з усіма оновленнями цих функцій.</value>
+  </data>
+  <data name="LegacyWelcomeDismiss" xml:space="preserve">
+    <value>Зрозуміло</value>
+  </data>
 </root>

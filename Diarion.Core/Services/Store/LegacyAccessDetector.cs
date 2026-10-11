@@ -8,6 +8,14 @@ public interface ILegacyAccessDetector
     bool IsKnownLegacy { get; }
 
     /// <summary>
+    /// The offline rule alone, synchronously: a 1.0 user who had finished onboarding is recognised
+    /// before the first frame of the first paid launch, not a moment later when the store answers
+    /// (which would flash the read-only banner at exactly the people promised it never applies).
+    /// Persists a positive answer, like <see cref="EvaluateAsync"/>.
+    /// </summary>
+    bool ResolveLocally();
+
+    /// <summary>
     /// Runs both rules from spec 15, R2.1. Idempotent: a positive answer is persisted and never
     /// re-derived; a negative answer from the store is persisted too; a missing answer (no
     /// network, not signed in) is not, so the next call asks again.
@@ -38,17 +46,24 @@ public sealed class LegacyAccessDetector : ILegacyAccessDetector
 
     public bool IsKnownLegacy => _store.Get(LegacyFreeKey) == True;
 
-    public async Task<bool> EvaluateAsync(CancellationToken cancellationToken = default)
+    public bool ResolveLocally()
     {
         if (IsKnownLegacy) return true;
 
-        // Local rule: onboarding was finished by a build that had no paywall. Evaluated only on the
-        // first paid launch, otherwise a new user's own onboarding would count on their second launch.
+        // Onboarding was finished by a build that had no paywall. Evaluated only on the first paid
+        // launch, otherwise a new user's own onboarding would count on their second launch.
         if (_evidence.IsFirstLaunchOfPaidEra && _evidence.OnboardingCompletedBeforeThisLaunch)
         {
             _store.Set(LegacyFreeKey, True);
             return true;
         }
+
+        return false;
+    }
+
+    public async Task<bool> EvaluateAsync(CancellationToken cancellationToken = default)
+    {
+        if (ResolveLocally()) return true;
 
         if (_store.Get(StoreRuleResolvedKey) == True) return false;
         if (!_storeClient.IsAvailable) return false;
