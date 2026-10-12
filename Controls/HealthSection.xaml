@@ -4,6 +4,7 @@
              xmlns:vms="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Diarion.Controls.HealthSection"
              x:Name="Root"
              x:DataType="vms:DiaryEntryViewModel">
@@ -17,8 +18,17 @@
             <Label Text="{x:Static localization:AppResources.HealthLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Midnight_Snow}" Margin="0,0,0,4" />
             
             <!-- Read-only: the number is counted from the recorded periods, not typed here. The row is
-                 gone entirely when there is nothing to count, so a blank never reads as "day zero". -->
-            <Grid ColumnDefinitions="100, *" ColumnSpacing="12" IsVisible="{Binding HasCycleDay}">
+                 gone entirely when there is nothing to count, so a blank never reads as "day zero".
+                 Where the intimate-life row is shown the day sits under its label instead, read
+                 together with it; this row is for when that one is age-gated away. -->
+            <Grid ColumnDefinitions="100, *" ColumnSpacing="12">
+                <Grid.IsVisible>
+                    <MultiBinding Converter="{toolkit:VariableMultiValueConverter ConditionType=All}">
+                        <Binding Path="HasCycleDay" />
+                        <Binding Source="{x:Reference Root}" Path="IsIntimateLifeAvailable" x:DataType="controls:HealthSection"
+                                 Converter="{toolkit:InvertedBoolConverter}" />
+                    </MultiBinding>
+                </Grid.IsVisible>
                 <Label Grid.Column="0" Text="{x:Static localization:AppResources.CycleDayLabel}" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 <Label Grid.Column="1" Text="{Binding CycleDay}" VerticalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Berry}" />
             </Grid>
@@ -29,8 +39,8 @@
             </Grid>
 
             <!-- Text Field for Notes -->
-            <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0" Margin="0,2,0,0">
-                <Entry Text="{Binding HealthNotes}" Placeholder="{x:Static localization:AppResources.NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" />
+            <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" MinimumHeightRequest="36" Padding="12,4" Margin="0,2,0,0">
+                <Editor Text="{Binding HealthNotes}" Placeholder="{x:Static localization:AppResources.NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" AutoSize="TextChanges" MinimumHeightRequest="0" />
             </Border>
 
             <!-- 18+ (AgeGate.IntimateLifeMinimumAge). The two flags are bindable properties set by the page,
@@ -38,9 +48,20 @@
             <Grid ColumnDefinitions="Auto, 100, *" ColumnSpacing="12"
                   IsVisible="{Binding Source={x:Reference Root}, Path=IsIntimateLifeAvailable, x:DataType=controls:HealthSection}">
                 <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsIntimateLifeDone}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
-                <Label Grid.Column="1" Text="{x:Static localization:AppResources.IntimateLifeLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Border Grid.Column="2" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0">
-                    <Entry Text="{Binding IntimateLife}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" VerticalOptions="Center" />
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                    <Label Text="{x:Static localization:AppResources.IntimateLifeLabel}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    <Label IsVisible="{Binding HasCycleDay}" FontSize="11">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{x:Static localization:AppResources.CycleDayLabel}" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                <Span Text=" " />
+                                <Span Text="{Binding CycleDay}" FontAttributes="Bold" TextColor="{DynamicResource Theme_Berry}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+                <Border Grid.Column="2" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" MinimumHeightRequest="36" Padding="12,4">
+                    <Editor Text="{Binding IntimateLife}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" VerticalOptions="Center" AutoSize="TextChanges" MinimumHeightRequest="0" />
                 </Border>
             </Grid>
             <!-- Stands in for the row only while the birth date is unknown; nothing at all once it is
