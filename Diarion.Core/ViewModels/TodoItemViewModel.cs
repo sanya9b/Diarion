@@ -10,6 +10,7 @@ public partial class TodoItemViewModel : ObservableObject
     public TodoItem Model { get; }
 
     private readonly Action<TodoItemViewModel>? _onDelete;
+    private readonly Action<TodoItemViewModel, TodoPriority>? _onPriorityChosen;
 
     /// <param name="isRecurring">
     /// Whether the series this row came from is still running. Not <c>RecurringTaskId != null</c>: an
@@ -18,10 +19,15 @@ public partial class TodoItemViewModel : ObservableObject
     /// repeating after the user had switched the repeat off — which looks exactly like the switch not
     /// having worked.
     /// </param>
-    public TodoItemViewModel(TodoItem model, bool isRecurring = false, Action<TodoItemViewModel>? onDelete = null)
+    public TodoItemViewModel(
+        TodoItem model,
+        bool isRecurring = false,
+        Action<TodoItemViewModel>? onDelete = null,
+        Action<TodoItemViewModel, TodoPriority>? onPriorityChosen = null)
     {
         Model = model;
         _onDelete = onDelete;
+        _onPriorityChosen = onPriorityChosen;
         _id = model.Id;
         _targetDate = model.TargetDate;
         _hasTime = model.HasTime;
@@ -104,6 +110,17 @@ public partial class TodoItemViewModel : ObservableObject
 
     [ObservableProperty]
     private TodoPriority _priority;
+
+    /// <summary>
+    /// Whether the row is showing its three priority colours in place of the time and the dot. Opened by a
+    /// long press, closed by choosing, by pressing again, or by a tap on the row.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isPickingPriority;
+
+    /// <summary>A colour picked on the row. The section saves it — the row only says which one.</summary>
+    [RelayCommand]
+    private void ChoosePriority(TodoPriority priority) => _onPriorityChosen?.Invoke(this, priority);
 
     public void SyncToModel()
     {
