@@ -15,12 +15,15 @@
 > 4. Переписати повністю, коли відвантажиться спека 14 — з нею вперше з'являється передавання тексту
 >    записів третій стороні, і жоден абзац нижче тоді не чинний. Фаза A вже в коді, але мережі в ній
 >    немає, а екран «ось що піде» недосяжний з інтерфейсу, тож усе нижче поки правда.
+> 5. 2026-10-13, спека 15: додано розділ «Підписка й покупки» і рядок у «Мережі», дата чинності
+>    13.10.2026. Опублікувати разом із `site/terms.html` **до** подачі збірки з підпискою — і не
+>    раніше, ніж підписка справді буде в магазині, бо до того розділ описує те, чого ще немає.
 
 ---
 
 ## Українською
 
-**Чинна з:** 20 вересня 2026
+**Чинна з:** 13 жовтня 2026
 **Розробник:** Кугай Вікторія Юріївна (фізична особа)
 **Контакт:** support@diarion.org
 
@@ -67,6 +70,20 @@ Diarion не має акаунтів, серверів і синхронізац
 нічого. Час сну, самопочуття й симптоми — це те, що ви вписали руками, і воно лишається у вашій
 локальній базі (`Services/HealthDataService.cs` не компілюється у цій версії).
 
+### Підписка й покупки
+
+Підписку оформлюють і оплачують через App Store. Покупку проводить Apple за своєю політикою
+приватності; застосунок не бачить ні способу оплати, ні платіжних даних, ні імені чи адреси вашого
+Apple ID.
+
+Від системи застосунок дізнається лише те, що потрібно, щоб відкрити або закрити запис: чи є
+активна підписка, до якої дати і чи вона поновиться, а також — щоб дотримати обіцянку користувачам
+першої версії — яку версію застосунку ваш Apple ID завантажив першою
+(`Diarion.Core/Services/Store/LegacyAccessDetector.cs`). Ці відомості зберігаються в системному
+сховищі ключів на пристрої (`Services/SecureStorageEntitlementStore.cs`), не потрапляють у базу,
+резервні копії, експорт чи звіти про збої і нікуди не надсилаються. Умови самої підписки — на
+сторінці умов використання (`site/terms.html`).
+
 ### Мережа
 
 Застосунок звертається до мережі рівно в одному випадку: **завантаження файлів моделей ШІ** з
@@ -74,6 +91,9 @@ HuggingFace, і тільки коли ви самі почали таке зав
 (`Diarion.Core/Services/Ai/HttpModelFileTransfer.cs`). Це завантаження **вниз**: жоден ваш запис,
 жодне слово з щоденника і жоден ідентифікатор при цьому не передаються. Обробка тексту моделлю
 відбувається на пристрої.
+
+Перевірку й оформлення підписки виконує сама iOS через App Store; застосунок власних запитів для
+цього не робить (`native/ios-storekit/` викликає лише системний StoreKit).
 
 Інших мережевих звернень у застосунку немає: ні телеметрії, ні перевірки оновлень, ні реклами.
 
@@ -112,7 +132,7 @@ support@diarion.org
 
 ## English
 
-**Effective:** 20 September 2026
+**Effective:** 13 October 2026
 **Developer:** Victoria Kuhai (individual)
 **Contact:** support@diarion.org
 
@@ -155,11 +175,26 @@ The app connects to **neither** Apple Health nor Google Health Connect and reads
 either. Sleep times, how you felt and any symptoms are what you typed yourself, and they stay in
 your local database.
 
+### Subscription and purchases
+
+The subscription is bought and paid for through the App Store. Apple processes the purchase under
+its own privacy policy; the app sees neither your payment method nor your payment details, nor the
+name or address of your Apple ID.
+
+From the system the app learns only what it needs to open or close writing: whether there is an
+active subscription, until when, and whether it will renew — and, to keep the promise to
+first-version users, which version of the app your Apple ID downloaded first. This is kept in the
+system keychain on the device, never enters the database, backups, exports or crash reports, and is
+sent nowhere. The terms of the subscription itself are on the terms of use page.
+
 ### Network
 
 The app reaches the network in exactly one case: **downloading AI model files** from HuggingFace,
 and only when you start that download yourself in settings. It is a download: none of your entries,
 no diary text and no identifier are transmitted. Text is processed by the model on the device.
+
+Checking and buying the subscription is done by iOS itself through the App Store; the app makes
+no requests of its own for it.
 
 There are no other network calls: no telemetry, no update checks, no ads.
 

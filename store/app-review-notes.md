@@ -387,3 +387,41 @@ None. The app functions identically in all regions. The interface is available i
 6. REGULATED INDUSTRY / PROTECTED MATERIAL
 Not applicable. The app is not a medical device and makes no medical claims: the cycle calendar is a personal log and estimate based on dates the user enters, and the screen carries a notice that it is not medical advice and not a method of contraception. The app contains no protected third-party material; all content is created by the user, and the fonts and icons are licensed or our own.
 ```
+
+---
+
+## 10. Версія 1.1 — підписка (спека 15, R6.4)
+
+Чинні Notes (повна відповідь з §9 у `D:\WORK\apple-signing\asc-notes-full.txt`) двічі кажуть
+неправду про 1.1: «the app is free with no in-app purchases» (п. 1) і «no payment processor» (п. 4).
+Їх треба виправити, а блок про підписку поставити **першим**, бо головне питання рев'ю цієї версії —
+саме підписка, і найімовірніше заперечення — «де обіцяне безкоштовно для користувачів 1.0»: у
+пісочниці правило від Apple не спрацьовує (R2.2), і рев'юер бачить пейвол.
+
+**Блок на початок Notes** (≈1700 знаків; ліміт поля 4000, тож решту повного тексту доведеться
+скоротити — п. 3 найдовший):
+
+```
+WHAT IS NEW IN 1.1: AN AUTO-RENEWABLE SUBSCRIPTION
+Writing now requires the "Diarion Base" auto-renewable subscription: monthly (diarion.base.monthly) or yearly (diarion.base.yearly), each with a 2-week free introductory offer. Purchases use StoreKit 2 directly; there is no third-party billing SDK and no server.
+- The paywall appears once, right after onboarding. It shows the price per period, the free-trial terms, the auto-renewal notice, Restore Purchases, and links to the Terms of Use (https://diarion.org/en/terms) and the Privacy Policy. "Later" closes it.
+- Without a subscription the app is read-only, not locked: every entry can be read, and backup, export, import, the app lock, theme and language keep working. A banner at the top of the home screen, and any attempt to write, open the paywall again. Settings > Data > Subscription shows the state and offers Subscribe, Manage Subscription and Restore Purchases.
+- Users who installed version 1.0 keep everything 1.0 had, free, for ever. The app recognises them when the device already had a 1.0 diary at the first launch of 1.1, or when AppTransaction.originalAppVersion is 2 or lower (1.0 shipped as build 2) in the Production environment. In the sandbox originalAppVersion is always "1.0", so a reviewer on a fresh install sees the regular new-user path with the paywall. This is expected.
+```
+
+**Правки в повному тексті:**
+
+- п. 1, речення `There is no paid content: the app is free with no in-app purchases.` замінити на
+  `Paid content: the Diarion Base subscription described at the top of these notes; the purchase flow is shown at the end of the recording.`
+  — і перезаписати відео: після онбордингу пейвол, «Пізніше», банер, закритий запис, Налаштування →
+  Дані → Підписка. Купівлю показувати не обов'язково, але пейвол — так.
+- п. 4, `There is no authentication service, no payment processor, …` замінити на
+  `There is no authentication service and no payment processor other than Apple's own In-App Purchase (StoreKit), …`.
+- Наприкінці п. 3 додати рядок: `To see the read-only mode without waiting for a subscription to lapse, tap "Later" on the paywall.`
+
+**Відповідь на очікуване питання «where is the free access for existing users?»** — коротко, якщо
+спитають після подачі:
+
+```
+Existing-user access is decided on the device and cannot be shown in the sandbox: the app grants it when AppTransaction.originalAppVersion is 2 or lower in the Production environment, or when a 1.0 diary was already on the device at the first launch of 1.1. In the sandbox and TestFlight originalAppVersion is always "1.0", so every review install is treated as a new user. The rule is covered by unit tests (LegacyAccessDetectorTests) for production, sandbox and malformed values.
+```
