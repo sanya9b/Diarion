@@ -25,6 +25,13 @@ public sealed class EntitlementService : IEntitlementService, IDisposable
 {
     internal const string CachedEntitlementKey = "access.entitlement";
 
+    /// <summary>
+    /// Set once StoreKit has reported any subscription in the group — live, lapsed or refunded — and
+    /// never cleared. It is what lets the read-only banner tell "your subscription ended" from "you
+    /// have not subscribed yet" (spec 15, R4.3): a new user who chose "Later" never had one to end.
+    /// </summary>
+    public const string HadSubscriptionKey = "access.hadSubscription";
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         Converters = { new JsonStringEnumConverter() }
@@ -94,6 +101,11 @@ public sealed class EntitlementService : IEntitlementService, IDisposable
                 _store.Remove(CachedEntitlementKey);
             else
                 _store.Set(CachedEntitlementKey, JsonSerializer.Serialize(snapshot, JsonOptions));
+
+            // A lapsed subscription leaves no entitlement, only a status — which still says there was one.
+            if (entitlements.Any(e => StoreCatalog.TierOf(e.ProductId) != AccessTier.None)
+                || statuses.Any(s => StoreCatalog.TierOf(s.ProductId) != AccessTier.None))
+                _store.Set(HadSubscriptionKey, "1");
 
             Publish(Evaluate(snapshot, Now));
         }

@@ -39,6 +39,24 @@ public class EntitlementServiceTests
         new(productId, state, willAutoRenew, graceUntil);
 
     [Fact]
+    public async Task Any_subscription_the_store_reports_is_remembered_even_after_it_lapses()
+    {
+        var service = Create();
+        await service.RefreshAsync();
+        _store.Values.Should().NotContainKey(EntitlementService.HadSubscriptionKey, "nothing reported yet");
+
+        _client.Statuses.Add(Status(SubscriptionRenewalState.Expired, willAutoRenew: false));
+        await service.RefreshAsync();
+
+        service.Current.Should().Be(AccessState.ReadOnly);
+        _store.Values[EntitlementService.HadSubscriptionKey].Should().Be("1");
+
+        _client.Statuses.Clear();
+        await service.RefreshAsync();
+        _store.Values.Should().ContainKey(EntitlementService.HadSubscriptionKey, "never cleared");
+    }
+
+    [Fact]
     public void A_fresh_install_with_a_store_is_read_only_until_the_store_answers()
     {
         Create().Current.Should().Be(AccessState.ReadOnly);

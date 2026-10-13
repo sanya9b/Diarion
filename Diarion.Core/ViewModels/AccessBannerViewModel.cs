@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Messages;
+using Diarion.Resources.Localization;
 using Diarion.Services;
 using Diarion.Services.Store;
 
@@ -33,6 +34,17 @@ public partial class AccessBannerViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _isReadOnly;
 
+    /// <summary>
+    /// "Your subscription ended" only to someone who had one. A new user who chose "Later" after
+    /// onboarding is read-only too, and for them the banner is an invitation, not news of a loss
+    /// (spec 15, R4.3).
+    /// </summary>
+    [ObservableProperty]
+    private string _bannerText = AppResources.ReadOnlyBannerText;
+
+    [ObservableProperty]
+    private string _bannerButtonText = AppResources.ReadOnlyBannerButton;
+
     [ObservableProperty]
     private bool _showLegacyCard;
 
@@ -54,6 +66,9 @@ public partial class AccessBannerViewModel : ObservableObject, IDisposable
     private void Apply(AccessState state)
     {
         IsReadOnly = state.IsReadOnly;
+        var hadSubscription = _store.Get(EntitlementService.HadSubscriptionKey) == "1";
+        BannerText = hadSubscription ? AppResources.ReadOnlyBannerText : AppResources.ReadOnlyBannerNewText;
+        BannerButtonText = hadSubscription ? AppResources.ReadOnlyBannerButton : AppResources.ReadOnlyBannerNewButton;
         ShowLegacyCard = state.Source == AccessSource.Legacy && _store.Get(LegacyCardDismissedKey) != "1";
     }
 }

@@ -539,6 +539,18 @@
                                 BorderColor="{DynamicResource Theme_Ocean_Ocean}" BorderWidth="1"
                                 TextColor="{DynamicResource Theme_Midnight_Snow}"
                                 CornerRadius="12" HeightRequest="44" />
+
+                        <!-- Quiet on purpose: a text button under the main action, for the new phone or
+                             the reinstall, not a second call to pay. -->
+                        <Button Text="{x:Static localization:AppResources.PaywallRestoreButton}"
+                                Command="{Binding RestoreCommand}" IsVisible="{Binding CanRestore}"
+                                BackgroundColor="Transparent" BorderWidth="0"
+                                TextColor="{DynamicResource Theme_Ocean_Dust}"
+                                FontSize="13" HeightRequest="40" HorizontalOptions="Center" />
+
+                        <Label Text="{Binding RestoreMessage}" IsVisible="{Binding HasRestoreMessage}"
+                               FontSize="12" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
                     </VerticalStackLayout>
                 </Border>
 

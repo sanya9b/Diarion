@@ -2236,6 +2236,12 @@
   <data name="ReadOnlyBannerButton" xml:space="preserve">
     <value>Renew</value>
   </data>
+  <data name="ReadOnlyBannerNewText" xml:space="preserve">
+    <value>Your entries are read-only for now. Subscribe to write.</value>
+  </data>
+  <data name="ReadOnlyBannerNewButton" xml:space="preserve">
+    <value>Subscribe</value>
+  </data>
   <data name="LegacyWelcomeTitle" xml:space="preserve">
     <value>Thank you for being with us since the first version</value>
   </data>

@@ -149,5 +149,12 @@ public sealed class FixedEntitlementService : IEntitlementService
         Changed?.Invoke(state);
     }
 
-    public Task RefreshAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+    /// <summary>What the next refresh brings back from the store, if anything changes.</summary>
+    public AccessState? AfterRefresh { get; set; }
+
+    public Task RefreshAsync(CancellationToken cancellationToken = default)
+    {
+        if (AfterRefresh is { } next) Set(next);
+        return Task.CompletedTask;
+    }
 }

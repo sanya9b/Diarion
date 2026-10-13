@@ -2654,6 +2654,14 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("ReadOnlyBannerButton", resourceCulture) ?? string.Empty; }
         }
 
+        public static string ReadOnlyBannerNewText {
+            get { return ResourceManager.GetString("ReadOnlyBannerNewText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReadOnlyBannerNewButton {
+            get { return ResourceManager.GetString("ReadOnlyBannerNewButton", resourceCulture) ?? string.Empty; }
+        }
+
         public static string LegacyWelcomeTitle {
             get { return ResourceManager.GetString("LegacyWelcomeTitle", resourceCulture) ?? string.Empty; }
         }

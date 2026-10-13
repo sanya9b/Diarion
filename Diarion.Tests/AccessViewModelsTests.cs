@@ -51,6 +51,45 @@ public class SubscriptionSectionViewModelTests
         vm.CanSupport.Should().BeTrue();
         vm.CanManage.Should().BeFalse();
         vm.CanSubscribe.Should().BeFalse();
+        vm.CanRestore.Should().BeFalse("there is nothing to restore");
+    }
+
+    [Fact]
+    public async Task Restore_that_finds_a_subscription_updates_the_card_and_says_nothing_more()
+    {
+        var vm = Create(AccessState.ReadOnly, out var entitlements);
+        vm.CanRestore.Should().BeTrue();
+        entitlements.AfterRefresh = new AccessState(true, AccessTier.Base, AccessSource.Subscription, Until, true);
+
+        await vm.RestoreCommand.ExecuteAsync(null);
+
+        _store.SyncCalls.Should().Be(1);
+        vm.CanSubscribe.Should().BeFalse();
+        vm.CanManage.Should().BeTrue();
+        vm.HasRestoreMessage.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Restore_that_finds_nothing_says_so()
+    {
+        var vm = Create(AccessState.ReadOnly, out _);
+
+        await vm.RestoreCommand.ExecuteAsync(null);
+
+        vm.RestoreMessage.Should().Be(AppResources.PaywallRestoreNothingFound);
+        vm.HasRestoreMessage.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Restore_without_the_store_says_the_store_is_unreachable()
+    {
+        _store.Failure = new StoreException("offline");
+        var vm = Create(AccessState.ReadOnly, out _);
+
+        await vm.RestoreCommand.ExecuteAsync(null);
+
+        vm.RestoreMessage.Should().Be(AppResources.PaywallStoreUnavailable);
+        vm.IsRestoring.Should().BeFalse();
     }
 
     [Fact]
@@ -177,6 +216,26 @@ public class AccessBannerViewModelTests
         entitlements.Set(AccessState.ReadOnly);
 
         vm.IsReadOnly.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Someone_who_never_subscribed_is_invited_not_told_it_ended()
+    {
+        var vm = Create(AccessState.ReadOnly, out _);
+
+        vm.BannerText.Should().Be(AppResources.ReadOnlyBannerNewText);
+        vm.BannerButtonText.Should().Be(AppResources.ReadOnlyBannerNewButton);
+    }
+
+    [Fact]
+    public void Someone_whose_subscription_lapsed_is_told_so_and_offered_renewal()
+    {
+        _keychain.Set(EntitlementService.HadSubscriptionKey, "1");
+
+        var vm = Create(AccessState.ReadOnly, out _);
+
+        vm.BannerText.Should().Be(AppResources.ReadOnlyBannerText);
+        vm.BannerButtonText.Should().Be(AppResources.ReadOnlyBannerButton);
     }
 
     [Fact]

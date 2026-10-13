@@ -2236,6 +2236,12 @@
   <data name="ReadOnlyBannerButton" xml:space="preserve">
     <value>Поновити</value>
   </data>
+  <data name="ReadOnlyBannerNewText" xml:space="preserve">
+    <value>Зараз записи доступні лише для читання. Щоб писати, оформіть підписку.</value>
+  </data>
+  <data name="ReadOnlyBannerNewButton" xml:space="preserve">
+    <value>Оформити</value>
+  </data>
   <data name="LegacyWelcomeTitle" xml:space="preserve">
     <value>Дякуємо, що ви з нами з першої версії</value>
   </data>

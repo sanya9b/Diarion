@@ -19,10 +19,10 @@
                 BackgroundColor="{DynamicResource Theme_Snow_Black}"
                 Padding="14,10" Margin="0,0,0,12">
             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
-                <Label Text="{x:Static localization:AppResources.ReadOnlyBannerText}"
+                <Label Text="{Binding BannerText}"
                        FontSize="13" VerticalOptions="Center"
                        TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                <Button Grid.Column="1" Text="{x:Static localization:AppResources.ReadOnlyBannerButton}"
+                <Button Grid.Column="1" Text="{Binding BannerButtonText}"
                         Command="{Binding RenewCommand}"
                         BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
                         TextColor="{DynamicResource Theme_Snow_Black}"

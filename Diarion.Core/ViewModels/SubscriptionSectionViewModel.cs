@@ -48,6 +48,24 @@ public partial class SubscriptionSectionViewModel : ObservableObject, IDisposabl
     [ObservableProperty]
     private bool _canSupport;
 
+    /// <summary>
+    /// Restore, for everyone the store could owe a subscription to (R4.4) — a new phone, a reinstall.
+    /// Not for a 1.0 user, who has nothing to restore and would only be told so.
+    /// </summary>
+    [ObservableProperty]
+    private bool _canRestore;
+
+    /// <summary>What the last Restore found when it found nothing; the status line says the rest.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasRestoreMessage))]
+    private string? _restoreMessage;
+
+    public bool HasRestoreMessage => !string.IsNullOrEmpty(RestoreMessage);
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RestoreCommand))]
+    private bool _isRestoring;
+
     private static CultureInfo Culture => AppResources.Culture ?? CultureInfo.CurrentUICulture;
 
     [RelayCommand]
@@ -60,6 +78,30 @@ public partial class SubscriptionSectionViewModel : ObservableObject, IDisposabl
         catch (StoreException)
         {
             // Apple's sheet failed to open; there is nothing more useful to say than the store would.
+        }
+    }
+
+    private bool CanRunRestore() => !IsRestoring;
+
+    [RelayCommand(CanExecute = nameof(CanRunRestore))]
+    private async Task RestoreAsync()
+    {
+        IsRestoring = true;
+        RestoreMessage = null;
+        try
+        {
+            await _store.SyncAsync();
+            await _entitlements.RefreshAsync();
+            if (!_entitlements.Current.CanWrite)
+                RestoreMessage = AppResources.PaywallRestoreNothingFound;
+        }
+        catch (StoreException)
+        {
+            RestoreMessage = AppResources.PaywallStoreUnavailable;
+        }
+        finally
+        {
+            IsRestoring = false;
         }
     }
 
@@ -77,6 +119,8 @@ public partial class SubscriptionSectionViewModel : ObservableObject, IDisposabl
         CanManage = state.Source is AccessSource.Subscription or AccessSource.Trial or AccessSource.GracePeriod;
         CanSubscribe = state.IsReadOnly;
         CanSupport = state.Source == AccessSource.Legacy && _store.IsAvailable;
+        CanRestore = state.Source != AccessSource.Legacy && _store.IsAvailable;
+        if (state.CanWrite) RestoreMessage = null;
     }
 
     public static string Describe(AccessState state) => state.Source switch
