@@ -42,9 +42,9 @@ public static class Illustrations
 
         // Three days in a row, the first one ticked.
         EmptyScene.Habits => new IllustrationScene(
-            new[] { Box(22, 38, 14), Box(41, 38, 14), Box(60, 38, 14), "M 25 45 L 28 48 L 33 41" },
+            new[] { Box(18, 40, 18), Box(39, 40, 18), Box(60, 40, 18), "M 22 49 L 26 53 L 33 43" },
             Array.Empty<PointF>(),
-            new PointF(68, 30)),
+            new PointF(70, 30)),
 
         // A speech bubble with a question mark — the diary asking, nobody's face.
         EmptyScene.Prompts => new IllustrationScene(
