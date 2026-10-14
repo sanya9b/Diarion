@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<LocalNotificationService>();
         services.AddSingleton<INotificationService>(sp => new AccessAwareNotificationService(
             sp.GetRequiredService<LocalNotificationService>(), sp.GetRequiredService<IAccessGuard>()));
+        services.AddSingleton<IMotionSettings, MotionSettings>();
         services.AddSingleton<ITodoService, TodoService>();
         services.AddSingleton<IHabitService, HabitService>();
         services.AddSingleton<IGuidedPromptService, GuidedPromptService>();
