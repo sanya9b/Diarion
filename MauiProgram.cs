@@ -115,6 +115,9 @@ public static class MauiProgram
 #endif
 		});
 
-		return builder.Build();
+		var app = builder.Build();
+		// Motion tokens read the reduce-motion preference through this one instance from here on.
+		Diarion.Resources.Styles.Motion.Configure(app.Services.GetRequiredService<Diarion.Services.IMotionSettings>());
+		return app;
 	}
 }

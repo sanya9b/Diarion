@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IBiometricService, BiometricService>();
         services.AddSingleton<IDatabaseContext, DatabaseContext>();
         services.AddSingleton<INotificationService, LocalNotificationService>();
+        services.AddSingleton<IMotionSettings, MotionSettings>();
         services.AddSingleton<ITodoService, TodoService>();
         services.AddSingleton<IHabitService, HabitService>();
         services.AddSingleton<IGuidedPromptService, GuidedPromptService>();
