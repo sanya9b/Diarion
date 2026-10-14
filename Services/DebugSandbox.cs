@@ -45,6 +45,25 @@ internal static class DebugSandbox
         }
     }
 
+    /// <summary>
+    /// <c>DIARION_SANDBOX_THEME=Light|Dark|Pink</c> forces the theme for a sandbox run, so both themes can
+    /// be looked at without the toggle writing the owner's real preference. Null when not sandboxed.
+    /// </summary>
+    public static string? ForcedTheme
+    {
+        get
+        {
+#if DEBUG
+            if (DataDirectory is null)
+                return null;
+            var theme = Environment.GetEnvironmentVariable("DIARION_SANDBOX_THEME");
+            return string.IsNullOrWhiteSpace(theme) ? null : theme;
+#else
+            return null;
+#endif
+        }
+    }
+
     public static bool ShowsOnboarding =>
 #if DEBUG
         DataDirectory is not null && Environment.GetEnvironmentVariable("DIARION_SANDBOX_ONBOARDING") == "1";

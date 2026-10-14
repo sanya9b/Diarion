@@ -51,8 +51,10 @@ will need to stop it (see below).
 Debug builds honour two environment variables (`Services/DebugSandbox.cs`). `DIARION_SANDBOX_DIR`
 points the database and cache at a throwaway folder: the real database is never opened, the debug
 mock diary is not seeded, and saving there is allowed. `DIARION_SANDBOX_ONBOARDING=1` on top shows
-onboarding again without touching the real preference. The encryption key still comes from the real
-SecureStorage, so nothing new is created there either.
+onboarding again without touching the real preference. `DIARION_SANDBOX_THEME=Dark` (or `Light`, `Pink`)
+forces the theme for the run, again without writing the real one. The encryption key still comes from
+the real SecureStorage, so nothing new is created there either. Other MAUI `Preferences` (language,
+reminder settings) are NOT sandboxed — do not change them in a sandbox run.
 
 ```bash
 DIARION_SANDBOX_DIR='D:\WORK\tmp\diarion-sandbox' DIARION_SANDBOX_ONBOARDING=1 ./Diarion.exe

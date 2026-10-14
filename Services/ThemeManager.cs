@@ -18,8 +18,9 @@ namespace Diarion.Services
             var app = Application.Current;
             if (app == null) return;
 
-            // Save preference
-            Preferences.Set(KeyTheme, themeName);
+            // Save preference — unless a debug sandbox run forced the theme; then the real one stays.
+            if (DebugSandbox.ForcedTheme is null)
+                Preferences.Set(KeyTheme, themeName);
 
             // Set system theme preference (mainly for status bar and native controls)
             if (themeName == ThemeDark)
@@ -66,7 +67,7 @@ namespace Diarion.Services
 
         public static string GetCurrentTheme()
         {
-            return Preferences.Get(KeyTheme, ThemeLight);
+            return DebugSandbox.ForcedTheme ?? Preferences.Get(KeyTheme, ThemeLight);
         }
     }
 }
