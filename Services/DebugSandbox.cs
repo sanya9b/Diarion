@@ -9,7 +9,7 @@ namespace Diarion.Services;
 /// database and cache there, so the real database is not opened at all, and the debug mock diary is
 /// not seeded. <c>DIARION_SANDBOX_ONBOARDING=1</c> on top shows onboarding again without touching the
 /// real preference. Debug builds only; in Release both read as "off". Same family as
-/// <see cref="DebugStoreOverrides"/>, and described in <c>.claude/skills/run-diarion/SKILL.md</c>.
+/// <c>DebugStoreOverrides</c> (compiled out of Release, hence no cref), and described in <c>.claude/skills/run-diarion/SKILL.md</c>.
 /// </summary>
 internal static class DebugSandbox
 {
