@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.OnboardingPage"
@@ -89,8 +90,12 @@
 
                 <!-- 1. Welcome -->
                 <VerticalStackLayout Spacing="24" VerticalOptions="Center" IsVisible="{Binding IsWelcomeStep}">
-                    <Label Text="D" FontSize="72" FontAttributes="Bold" HorizontalOptions="Center"
-                           TextColor="{DynamicResource Theme_Coral}" />
+                    <!-- The same mark as on the icon, drawn live so it follows the theme; the bookmark
+                         drops into the letter once, on first load (spec 16, R2.2). -->
+                    <controls:BrandMark WidthRequest="96" HeightRequest="96" HorizontalOptions="Center"
+                                        AnimatesEntrance="True"
+                                        MarkColor="{DynamicResource Theme_Midnight_Snow}"
+                                        AccentColor="{DynamicResource Theme_Coral}" />
 
                     <VerticalStackLayout Spacing="8">
                         <Label Text="{x:Static localization:AppResources.OnboardingTitle}"

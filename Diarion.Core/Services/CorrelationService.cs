@@ -88,9 +88,11 @@ public class CorrelationService : ICorrelationService
     /// <summary>
     /// Loads the mood series and every factor series for the window. Shared by the correlation pass
     /// and the readiness check so the two can never disagree about how much data there is.
+    /// <paramref name="includeThemes"/> is the one allowed difference, and only the readiness check
+    /// ever turns it off — see <see cref="ICorrelationService.GetReadinessAsync"/>.
     /// </summary>
     private async Task<(Dictionary<DateTime, double> Mood, List<(string Key, Dictionary<DateTime, double> Values)> Factors)>
-        BuildSeriesAsync(StatsRange range, int lagDays)
+        BuildSeriesAsync(StatsRange range, int lagDays, bool includeThemes)
     {
         // Fetch enough history to pair each factor day with a mood day `lagDays` later.
         var start = range.Start.AddDays(-lagDays);
@@ -111,7 +113,10 @@ public class CorrelationService : ICorrelationService
         factors.AddRange(await BuildCycleFactorsAsync(start, range.End));
         factors.AddRange(await BuildTaskFactorAsync(start, range.End));
         factors.AddRange(await BuildSpendFactorAsync(start, range.End));
-        factors.AddRange(await BuildThemeFactorsAsync(start, range.End));
+        if (includeThemes)
+        {
+            factors.AddRange(await BuildThemeFactorsAsync(start, range.End));
+        }
 
         return (moodByDate, factors);
     }
@@ -137,28 +142,33 @@ public class CorrelationService : ICorrelationService
         return (xs, ys);
     }
 
-    public async Task<CorrelationReadiness> GetReadinessAsync(StatsRange range, int lagDays = 0)
+    public async Task<CorrelationReadiness> GetReadinessAsync(StatsRange range, int lagDays = 0, bool includeThemes = true)
     {
         range = range.Normalized();
         lagDays = Math.Max(0, lagDays);
 
-        var (moodByDate, factors) = await BuildSeriesAsync(range, lagDays);
+        var (moodByDate, factors) = await BuildSeriesAsync(range, lagDays, includeThemes);
 
         // The best any single factor manages, because one factor clearing the bar is enough to show
         // a first insight. Factors that would be skipped for want of spread count for nothing here
         // either — promising an insight in two more days and then not showing one is worse than the
         // empty state this message exists to explain.
+        //
+        // The key travels with the count so a screen can name what to log. A tie keeps the earlier
+        // factor: the series are built sleep first, and sleep is the cheapest pair a hint can ask for.
         var best = 0;
+        string? bestKey = null;
         foreach (var (key, values) in factors)
         {
             var (xs, _) = Pair(values, moodByDate, lagDays);
-            if (HasUsableSpread(key, xs))
+            if (xs.Count > best && HasUsableSpread(key, xs))
             {
-                best = Math.Max(best, xs.Count);
+                best = xs.Count;
+                bestKey = key;
             }
         }
 
-        return new CorrelationReadiness(best, MinSampleSize);
+        return new CorrelationReadiness(best, MinSampleSize, bestKey);
     }
 
     public async Task<IReadOnlyList<MoodCorrelation>> GetMoodCorrelationsAsync(StatsRange range, int lagDays = 0)
@@ -166,7 +176,7 @@ public class CorrelationService : ICorrelationService
         range = range.Normalized();
         lagDays = Math.Max(0, lagDays);
 
-        var (moodByDate, factors) = await BuildSeriesAsync(range, lagDays);
+        var (moodByDate, factors) = await BuildSeriesAsync(range, lagDays, includeThemes: true);
 
         var candidates = new List<MoodCorrelation>();
         foreach (var (key, values) in factors)

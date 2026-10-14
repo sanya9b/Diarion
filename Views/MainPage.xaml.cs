@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Diarion.Diagnostics;
 using Diarion.Models;
 using Diarion.ViewModels;
+using Diarion.Resources.Styles;
 
 namespace Diarion.Views;
 
@@ -51,22 +52,22 @@ public partial class MainPage : ContentPage
                 }
 
                 // Анімація: зникає Diary, з'являється Planner
-                await DiaryContainer.FadeToAsync(0, 150, Easing.CubicOut);
+                await DiaryContainer.FadeToAsync(0, Motion.FastMs, Motion.EaseOut);
                 DiaryContainer.IsVisible = false;
 
                 PlannerContainer.Opacity = 0;
                 PlannerContainer.IsVisible = true;
-                await PlannerContainer.FadeToAsync(1, 150, Easing.CubicIn);
+                await PlannerContainer.FadeToAsync(1, Motion.FastMs, Motion.EaseOut);
             }
             else
             {
                 // Анімація: зникає Planner, з'являється Diary
-                await PlannerContainer.FadeToAsync(0, 150, Easing.CubicOut);
+                await PlannerContainer.FadeToAsync(0, Motion.FastMs, Motion.EaseOut);
                 PlannerContainer.IsVisible = false;
 
                 DiaryContainer.Opacity = 0;
                 DiaryContainer.IsVisible = true;
-                await DiaryContainer.FadeToAsync(1, 150, Easing.CubicIn);
+                await DiaryContainer.FadeToAsync(1, Motion.FastMs, Motion.EaseOut);
             }
         }
     }
@@ -96,6 +97,9 @@ public partial class MainPage : ContentPage
         // the model was deleted or AI switched off while we were away — and the tile order is written
         // by the onboarding module picker, which is dismissed onto this screen.
         await _viewModel.QuickMenuSection.RefreshAsync();
+
+        // A paired day may have been written on another screen while we were away.
+        InsightPath.Refresh();
 
         if (!_hasRenderedOnce)
         {

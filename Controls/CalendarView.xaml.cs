@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
+using Diarion.Resources.Styles;
 
 namespace Diarion.Controls;
 
@@ -45,15 +46,15 @@ public partial class CalendarView : ContentView
             CalendarSection.HeightRequest = -1; 
             
             await Task.WhenAll(
-                CalendarHeader.FadeToAsync(1, 200, Easing.CubicOut),
-                CalendarGrid.FadeToAsync(1, 200, Easing.CubicOut)
+                CalendarHeader.FadeToAsync(1, Motion.StandardMs, Motion.EaseOut),
+                CalendarGrid.FadeToAsync(1, Motion.StandardMs, Motion.EaseOut)
             );
         }
         else
         {
             await Task.WhenAll(
-                CalendarHeader.FadeToAsync(0, 150, Easing.CubicIn),
-                CalendarGrid.FadeToAsync(0, 150, Easing.CubicIn)
+                CalendarHeader.FadeToAsync(0, Motion.FastMs, Motion.EaseOut),
+                CalendarGrid.FadeToAsync(0, Motion.FastMs, Motion.EaseOut)
             );
             CalendarHeader.IsVisible = false;
             CalendarGrid.IsVisible = false;

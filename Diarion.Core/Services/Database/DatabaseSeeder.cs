@@ -39,7 +39,10 @@ public class DatabaseSeeder : IDatabaseSeeder
         SeedGuidedPrompts(database.GetCollection<GuidedPrompt>(DatabaseConstants.GuidedPromptsCollection));
 
 #if DEBUG
-        SeedMockDataIfEmpty(entriesCollection, todosCollection, habitsCollection);
+        // A sandbox run (Services/DebugSandbox.cs in the app) is for looking at the empty screens;
+        // the mock diary would fill them.
+        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DIARION_SANDBOX_DIR")))
+            SeedMockDataIfEmpty(entriesCollection, todosCollection, habitsCollection);
 #endif
     }
 

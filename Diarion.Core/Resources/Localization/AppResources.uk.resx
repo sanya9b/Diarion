@@ -365,13 +365,13 @@
     <value>Одиниць на день</value>
   </data>
   <data name="HabitTrackerSubtitle" xml:space="preserve">
-    <value>Створи окремий трекер для кожної звички та відмічай кожен чистий день.</value>
+    <value>Створіть окремий трекер для кожної звички та відмічайте кожен чистий день.</value>
   </data>
   <data name="HabitTrackerSetupTitle" xml:space="preserve">
     <value>Новий трекер</value>
   </data>
   <data name="HabitTrackerSetupSubtitle" xml:space="preserve">
-    <value>Додай назву звички, обери дату старту та веди щоденні відмітки в одному місці.</value>
+    <value>Додайте назву звички, оберіть дату старту та ведіть щоденні відмітки в одному місці.</value>
   </data>
   <data name="HabitTrackerNameLabel" xml:space="preserve">
     <value>Назва звички</value>
@@ -385,9 +385,6 @@
   <data name="HabitTrackerAddButton" xml:space="preserve">
     <value>Додати трекер</value>
   </data>
-  <data name="HabitTrackerEmptyState" xml:space="preserve">
-    <value>Поки що немає жодного трекера. Створи перший і почни відмічати дні.</value>
-  </data>
   <data name="HabitTrackerDaysSectionTitle" xml:space="preserve">
     <value>Дні для відмітки</value>
   </data>
@@ -395,7 +392,7 @@
     <value>Відмічено днів</value>
   </data>
   <data name="HabitTrackerNameRequiredMessage" xml:space="preserve">
-    <value>Вкажи назву звички.</value>
+    <value>Вкажіть назву звички.</value>
   </data>
   <data name="HabitTrackerDuplicateMessage" xml:space="preserve">
     <value>Трекер з такою назвою вже існує.</value>
@@ -404,7 +401,7 @@
     <value>Трекер читання</value>
   </data>
   <data name="ReadingTrackerSubtitle" xml:space="preserve">
-    <value>Натисни на порожній слот, додай назву книги й дату завершення читання.</value>
+    <value>Натисніть на порожній слот, додайте назву книги й дату завершення читання.</value>
   </data>
   <data name="ReadingTrackerSlotFormat" xml:space="preserve">
     <value>Слот {0}</value>
@@ -422,13 +419,13 @@
     <value>Зберегти книгу</value>
   </data>
   <data name="ReadingTrackerBookTitleRequiredMessage" xml:space="preserve">
-    <value>Вкажи назву книги.</value>
+    <value>Вкажіть назву книги.</value>
   </data>
   <data name="HappyMomentsTitle" xml:space="preserve">
     <value>Щасливі миті</value>
   </data>
   <data name="HappyMomentsSubtitle" xml:space="preserve">
-    <value>Натисни на порожню картку, запиши світлий спогад і збережи дату.</value>
+    <value>Натисніть на порожню картку, запишіть світлий спогад і збережіть дату.</value>
   </data>
   <data name="HappyMomentsSlotFormat" xml:space="preserve">
     <value>Місяць {0}</value>
@@ -449,13 +446,13 @@
     <value>Зберегти мить</value>
   </data>
   <data name="HappyMomentsTitleRequiredMessage" xml:space="preserve">
-    <value>Будь ласка, додай опис миті.</value>
+    <value>Додайте опис миті.</value>
   </data>
   <data name="GoodDeedsTitle" xml:space="preserve">
     <value>Скарбничка добрих справ</value>
   </data>
   <data name="GoodDeedsSubtitle" xml:space="preserve">
-    <value>Натисни на порожню картку, запиши добру справу і збережи дату.</value>
+    <value>Натисніть на порожню картку, запишіть добру справу і збережіть дату.</value>
   </data>
   <data name="GoodDeedsSlotFormat" xml:space="preserve">
     <value>Місяць {0}</value>
@@ -464,7 +461,7 @@
     <value>Нова добра справа</value>
   </data>
   <data name="GoodDeedsTitleLabel" xml:space="preserve">
-    <value>Що хорошого ти зробив(ла)?</value>
+    <value>Що хорошого ви зробили?</value>
   </data>
   <data name="GoodDeedsTitlePlaceholder" xml:space="preserve">
     <value>Наприклад: Допоміг сусіду</value>
@@ -476,7 +473,7 @@
     <value>Зберегти</value>
   </data>
   <data name="GoodDeedsTitleRequiredMessage" xml:space="preserve">
-    <value>Будь ласка, додай опис справи.</value>
+    <value>Додайте опис справи.</value>
   </data>
   <data name="TrackerPrototypeLabel" xml:space="preserve">
     <value>АДАПТИВНИЙ МАКЕТ</value>
@@ -796,9 +793,6 @@
   <data name="CycleHistoryTitle" xml:space="preserve">
     <value>Записані місячні</value>
   </data>
-  <data name="CycleHistoryEmpty" xml:space="preserve">
-    <value>Поки нічого не записано</value>
-  </data>
   <data name="CycleIntervalFormat" xml:space="preserve">
     <value>{0} дн. до наступних</value>
   </data>
@@ -942,9 +936,6 @@
   </data>
   <data name="PromptHistorySearch" xml:space="preserve">
     <value>Пошук у відповідях</value>
-  </data>
-  <data name="PromptHistoryEmpty" xml:space="preserve">
-    <value>Відповідей ще немає. Дайте відповідь на питання дня — і вона з'явиться тут.</value>
   </data>
   <data name="PromptHistoryNoMatches" xml:space="preserve">
     <value>За цим запитом нічого не знайдено.</value>
@@ -1437,9 +1428,6 @@
   </data>
   <data name="DeleteNoteConfirmMessage" xml:space="preserve">
     <value>Нотатку буде видалено назавжди — скасувати не вийде.</value>
-  </data>
-  <data name="EmptyNotes" xml:space="preserve">
-    <value>Нотаток ще немає. Створіть першу.</value>
   </data>
   <data name="NotesTags" xml:space="preserve">
     <value>Теги</value>
@@ -2026,9 +2014,6 @@
   <data name="SearchScopeNotes" xml:space="preserve">
     <value>Нотатки</value>
   </data>
-  <data name="SearchNoResults" xml:space="preserve">
-    <value>Нічого не знайдено</value>
-  </data>
   <data name="SearchLexicalOnlyNotice" xml:space="preserve">
     <value>Шукаю лише за словами. Увімкніть ШІ в налаштуваннях, щоб шукати за змістом.</value>
   </data>
@@ -2250,5 +2235,98 @@
   </data>
   <data name="LegacyWelcomeDismiss" xml:space="preserve">
     <value>Зрозуміло</value>
+  </data>
+  <data name="EmptyStateNotesTitle" xml:space="preserve">
+    <value>Нотаток ще немає</value>
+  </data>
+  <data name="EmptyStateNotesHint" xml:space="preserve">
+    <value>Створіть першу, і вона з'явиться тут.</value>
+  </data>
+  <data name="EmptyStateHabitsTitle" xml:space="preserve">
+    <value>Трекерів ще немає</value>
+  </data>
+  <data name="EmptyStateHabitsHint" xml:space="preserve">
+    <value>Створіть перший, і тут з'являться відмічені дні.</value>
+  </data>
+  <data name="EmptyStatePromptsTitle" xml:space="preserve">
+    <value>Відповідей ще немає</value>
+  </data>
+  <data name="EmptyStatePromptsHint" xml:space="preserve">
+    <value>Дайте відповідь на питання дня, і вона з'явиться тут.</value>
+  </data>
+  <data name="EmptyStateCycleTitle" xml:space="preserve">
+    <value>Поки нічого не записано</value>
+  </data>
+  <data name="EmptyStateCycleHint" xml:space="preserve">
+    <value>Позначте перший день місячних, і тут з'являться історія та прогноз.</value>
+  </data>
+  <data name="EmptyStateMoodTitle" xml:space="preserve">
+    <value>Настрою за цей період немає</value>
+  </data>
+  <data name="EmptyStateMoodHint" xml:space="preserve">
+    <value>Відмітьте настрій у записі дня, і тут з'являться емоції та години.</value>
+  </data>
+  <data name="EmptyStateSleepTitle" xml:space="preserve">
+    <value>Сну за цей період немає</value>
+  </data>
+  <data name="EmptyStateSleepHint" xml:space="preserve">
+    <value>Запишіть сон у записі дня, і тут з'являться тривалість і якість.</value>
+  </data>
+  <data name="EmptyStateProductivityTitle" xml:space="preserve">
+    <value>Задач за цей період немає</value>
+  </data>
+  <data name="EmptyStateProductivityHint" xml:space="preserve">
+    <value>Додайте задачі в планувальнику, і тут з'явиться виконання по днях.</value>
+  </data>
+  <data name="EmptyStateSearchTitle" xml:space="preserve">
+    <value>Нічого не знайдено</value>
+  </data>
+  <data name="EmptyStateSearchHint" xml:space="preserve">
+    <value>Спробуйте інше слово або коротший запит.</value>
+  </data>
+  <data name="InsightPathTitle" xml:space="preserve">
+    <value>До першої гіпотези</value>
+  </data>
+  <data name="InsightPathProgressFormat" xml:space="preserve">
+    <value>{0} з {1}</value>
+  </data>
+  <data name="InsightPathHintFormat" xml:space="preserve">
+    <value>найближче — {0}</value>
+  </data>
+  <data name="InsightPathHintNoFactor" xml:space="preserve">
+    <value>Відмітьте настрій і сон — так день зарахується</value>
+  </data>
+  <data name="InsightPathMilestone1Title" xml:space="preserve">
+    <value>Перший день зараховано</value>
+  </data>
+  <data name="InsightPathMilestone1Body" xml:space="preserve">
+    <value>Перший піксель року вже на дошці.</value>
+  </data>
+  <data name="InsightPathMilestone3Title" xml:space="preserve">
+    <value>Три дні</value>
+  </data>
+  <data name="InsightPathMilestone3Body" xml:space="preserve">
+    <value>Дошка вже показує розподіл емоцій.</value>
+  </data>
+  <data name="InsightPathMilestone7Title" xml:space="preserve">
+    <value>Тиждень</value>
+  </data>
+  <data name="InsightPathMilestone7Body" xml:space="preserve">
+    <value>На дошці є настрій за годинами й днями. Пів шляху до першої гіпотези.</value>
+  </data>
+  <data name="InsightPathMilestone14Title" xml:space="preserve">
+    <value>Перша гіпотеза тримається</value>
+  </data>
+  <data name="InsightPathMilestone14Body" xml:space="preserve">
+    <value>Перевірено на ваших-таки двох тижнях. Це збіг у записах, не причина.</value>
+  </data>
+  <data name="InsightPathOpen" xml:space="preserve">
+    <value>Переглянути</value>
+  </data>
+  <data name="InsightPathHide" xml:space="preserve">
+    <value>Сховати</value>
+  </data>
+  <data name="InsightPathAccessibleFormat" xml:space="preserve">
+    <value>{0} з {1} днів до першої гіпотези, {2}</value>
   </data>
 </root>

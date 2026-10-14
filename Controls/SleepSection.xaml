@@ -67,8 +67,8 @@
             </Grid>
 
             <!-- Text Field for Notes -->
-            <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0" Margin="0,2,0,0">
-                <Entry Text="{Binding SleepNotes}" Placeholder="{x:Static localization:AppResources.NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" />
+            <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" MinimumHeightRequest="36" Padding="12,4" Margin="0,2,0,0">
+                <Editor Text="{Binding SleepNotes}" Placeholder="{x:Static localization:AppResources.NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" AutoSize="TextChanges" MinimumHeightRequest="0" />
             </Border>
         </VerticalStackLayout>
     </Border>

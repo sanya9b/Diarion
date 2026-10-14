@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.SearchPage"
@@ -80,10 +81,9 @@
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
                                Color="{DynamicResource Theme_Ocean_Dust}" />
 
-            <Label Text="{x:Static localization:AppResources.SearchNoResults}"
-                   IsVisible="{Binding ShowEmptyState}"
-                   FontSize="14" HorizontalOptions="Center" Margin="0,20"
-                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            <controls:EmptyStateView IsVisible="{Binding ShowEmptyState}" Scene="Search"
+                                     Title="{x:Static localization:AppResources.EmptyStateSearchTitle}"
+                                     Hint="{x:Static localization:AppResources.EmptyStateSearchHint}" />
         </VerticalStackLayout>
 
         <CollectionView Grid.Row="1" ItemsSource="{Binding Results}">

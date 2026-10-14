@@ -1,4 +1,5 @@
 using System;
+using Diarion.Models;
 
 namespace Diarion.Messages;
 
@@ -94,5 +95,19 @@ public sealed class PaywallRequestedMessage
     public PaywallRequestedMessage(PaywallReason reason)
     {
         Reason = reason;
+    }
+}
+
+/// <summary>
+/// Asks the statistics screen to open on a given window. Sent by the home-screen insight path after it
+/// navigates there, so both screens count the same days (spec 17, R1.6).
+/// </summary>
+public sealed class StatisticsRangeRequestedMessage
+{
+    public StatsRange Range { get; }
+
+    public StatisticsRangeRequestedMessage(StatsRange range)
+    {
+        Range = range;
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
+using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 
@@ -193,6 +195,9 @@ public partial class StatisticsViewModel : BaseViewModel
         _financeService = financeService;
         _navigationService = navigationService;
         _dispatcher = dispatcher;
+        // The home-screen insight path opens this screen on the window it counted (spec 17, R1.6).
+        WeakReferenceMessenger.Default.Register<StatisticsRangeRequestedMessage>(
+            this, (r, m) => ((StatisticsViewModel)r).ApplyRange(m.Range));
         MoodStats = moodStats;
         _digestService = digestService;
         _themeService = themeService;

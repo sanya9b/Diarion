@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  The path to the first hypothesis, under the access banner on the home screen (spec 17, R2). Monochrome
+  like every panel: fourteen notches, the Coral bookmark over the last one that counted, «9 з 14» and the
+  nearest factor. On a milestone a second block names what the board can now show; at the last one it
+  carries the first hypothesis itself. Buttons exist only on a milestone — between them the card asks
+  for nothing.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Controls.InsightPathCard"
+             x:DataType="viewmodels:InsightPathViewModel">
+
+    <Border IsVisible="{Binding IsVisible}"
+            StrokeShape="RoundRectangle 16" StrokeThickness="1"
+            Stroke="{DynamicResource Theme_Dust_Ocean}"
+            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+            Padding="14,12" Margin="0,0,0,12"
+            SemanticProperties.Description="{Binding AccessibleSummary}">
+
+        <VerticalStackLayout Spacing="8">
+
+            <Label Text="{x:Static localization:AppResources.InsightPathTitle}"
+                   FontSize="11" FontAttributes="Bold" CharacterSpacing="1.5" TextTransform="Uppercase"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+            <controls:InsightPathStrip Filled="{Binding PairedDays}" Total="{Binding RequiredDays}"
+                                       TrackColor="{DynamicResource Theme_Dust_Ocean}"
+                                       InkColor="{DynamicResource Theme_Midnight_Snow}"
+                                       AccentColor="{DynamicResource Theme_Coral}" />
+
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                <Label Text="{Binding ProgressText}" FontSize="13" FontAttributes="Bold"
+                       VerticalOptions="Center"
+                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Grid.Column="1" Text="{Binding HintText}" FontSize="12"
+                       HorizontalTextAlignment="End" VerticalOptions="Center" LineBreakMode="TailTruncation"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            </Grid>
+
+            <!-- The milestone block. Code-behind animates it in when a milestone is reached live. -->
+            <VerticalStackLayout x:Name="MilestoneBlock" IsVisible="{Binding HasMilestone}" Spacing="4" Margin="0,4,0,0">
+                <Label Text="{Binding MilestoneTitle}" FontSize="14" FontAttributes="Bold"
+                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                <Label Text="{Binding MilestoneBody}" FontSize="12" LineBreakMode="WordWrap"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                <Label IsVisible="{Binding HasHypothesis}" Text="{Binding HypothesisText}"
+                       FontSize="13" FontAttributes="Bold" Margin="0,2,0,0"
+                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="4" Margin="0,6,0,0">
+                    <Button Grid.Column="1" Text="{x:Static localization:AppResources.InsightPathHide}"
+                            Command="{Binding HideCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="{DynamicResource Theme_Ocean_Dust}"
+                            HeightRequest="36" Padding="12,0" CornerRadius="12" />
+                    <Button Grid.Column="2" Text="{x:Static localization:AppResources.InsightPathOpen}"
+                            Command="{Binding OpenCommand}"
+                            BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
+                            TextColor="{DynamicResource Theme_Snow_Black}"
+                            FontAttributes="Bold" CornerRadius="12"
+                            HeightRequest="36" Padding="16,0" />
+                </Grid>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

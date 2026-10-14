@@ -4,6 +4,7 @@
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              x:Class="Diarion.Controls.MoodSection"
              x:DataType="viewmodels:DiaryEntryViewModel">
 
@@ -15,6 +16,7 @@
             <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Midnight}" />
             <Setter Property="HeightRequest" Value="50" />
             <Setter Property="HorizontalOptions" Value="Fill" />
+            <Setter Property="behaviors:PressFeedback.IsEnabled" Value="True" />
         </Style>
     </ContentView.Resources>
 

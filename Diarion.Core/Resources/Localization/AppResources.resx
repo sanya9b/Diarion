@@ -397,9 +397,6 @@
   <data name="HabitTrackerAddButton" xml:space="preserve">
     <value>Add tracker</value>
   </data>
-  <data name="HabitTrackerEmptyState" xml:space="preserve">
-    <value>You do not have any trackers yet. Create the first one to start marking days.</value>
-  </data>
   <data name="HabitTrackerDaysSectionTitle" xml:space="preserve">
     <value>Days to mark</value>
   </data>
@@ -461,7 +458,7 @@
     <value>Save moment</value>
   </data>
   <data name="HappyMomentsTitleRequiredMessage" xml:space="preserve">
-    <value>Please enter the moment description.</value>
+    <value>Enter the moment description.</value>
   </data>
   <data name="GoodDeedsTitle" xml:space="preserve">
     <value>Good Deeds</value>
@@ -488,7 +485,7 @@
     <value>Save deed</value>
   </data>
   <data name="GoodDeedsTitleRequiredMessage" xml:space="preserve">
-    <value>Please enter the deed description.</value>
+    <value>Enter the deed description.</value>
   </data>
   <data name="TrackerPrototypeLabel" xml:space="preserve">
     <value>ADAPTIVE PREVIEW</value>
@@ -808,9 +805,6 @@
   <data name="CycleHistoryTitle" xml:space="preserve">
     <value>Recorded periods</value>
   </data>
-  <data name="CycleHistoryEmpty" xml:space="preserve">
-    <value>Nothing recorded yet</value>
-  </data>
   <data name="CycleIntervalFormat" xml:space="preserve">
     <value>{0} days to the next</value>
   </data>
@@ -954,9 +948,6 @@
   </data>
   <data name="PromptHistorySearch" xml:space="preserve">
     <value>Search answers</value>
-  </data>
-  <data name="PromptHistoryEmpty" xml:space="preserve">
-    <value>No answers yet. Answer the question of the day and it will appear here.</value>
   </data>
   <data name="PromptHistoryNoMatches" xml:space="preserve">
     <value>Nothing matches that search.</value>
@@ -1437,9 +1428,6 @@
   </data>
   <data name="DeleteNoteConfirmMessage" xml:space="preserve">
     <value>The note will be gone for good — this cannot be undone.</value>
-  </data>
-  <data name="EmptyNotes" xml:space="preserve">
-    <value>No notes found.</value>
   </data>
   <data name="NotesTags" xml:space="preserve">
     <value>Tags</value>
@@ -2026,9 +2014,6 @@
   <data name="SearchScopeNotes" xml:space="preserve">
     <value>Notes</value>
   </data>
-  <data name="SearchNoResults" xml:space="preserve">
-    <value>Nothing found</value>
-  </data>
   <data name="SearchLexicalOnlyNotice" xml:space="preserve">
     <value>Searching words only. Turn on AI in settings to search by meaning.</value>
   </data>
@@ -2250,5 +2235,98 @@
   </data>
   <data name="LegacyWelcomeDismiss" xml:space="preserve">
     <value>Got it</value>
+  </data>
+  <data name="EmptyStateNotesTitle" xml:space="preserve">
+    <value>No notes yet</value>
+  </data>
+  <data name="EmptyStateNotesHint" xml:space="preserve">
+    <value>Create the first one, and it will appear here.</value>
+  </data>
+  <data name="EmptyStateHabitsTitle" xml:space="preserve">
+    <value>No trackers yet</value>
+  </data>
+  <data name="EmptyStateHabitsHint" xml:space="preserve">
+    <value>Create the first one, and the days you mark will show up here.</value>
+  </data>
+  <data name="EmptyStatePromptsTitle" xml:space="preserve">
+    <value>No answers yet</value>
+  </data>
+  <data name="EmptyStatePromptsHint" xml:space="preserve">
+    <value>Answer the question of the day, and it will appear here.</value>
+  </data>
+  <data name="EmptyStateCycleTitle" xml:space="preserve">
+    <value>Nothing recorded yet</value>
+  </data>
+  <data name="EmptyStateCycleHint" xml:space="preserve">
+    <value>Mark the first day of your period, and the history and forecast will appear here.</value>
+  </data>
+  <data name="EmptyStateMoodTitle" xml:space="preserve">
+    <value>No mood for this period</value>
+  </data>
+  <data name="EmptyStateMoodHint" xml:space="preserve">
+    <value>Mark your mood in the day's entry, and the emotions and hours will appear here.</value>
+  </data>
+  <data name="EmptyStateSleepTitle" xml:space="preserve">
+    <value>No sleep for this period</value>
+  </data>
+  <data name="EmptyStateSleepHint" xml:space="preserve">
+    <value>Log your sleep in the day's entry, and the duration and quality will appear here.</value>
+  </data>
+  <data name="EmptyStateProductivityTitle" xml:space="preserve">
+    <value>No tasks for this period</value>
+  </data>
+  <data name="EmptyStateProductivityHint" xml:space="preserve">
+    <value>Add tasks in the planner, and the days you complete them will appear here.</value>
+  </data>
+  <data name="EmptyStateSearchTitle" xml:space="preserve">
+    <value>Nothing found</value>
+  </data>
+  <data name="EmptyStateSearchHint" xml:space="preserve">
+    <value>Try another word or a shorter query.</value>
+  </data>
+  <data name="InsightPathTitle" xml:space="preserve">
+    <value>To the first hypothesis</value>
+  </data>
+  <data name="InsightPathProgressFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="InsightPathHintFormat" xml:space="preserve">
+    <value>closest: {0}</value>
+  </data>
+  <data name="InsightPathHintNoFactor" xml:space="preserve">
+    <value>Mark your mood and sleep, and the day counts</value>
+  </data>
+  <data name="InsightPathMilestone1Title" xml:space="preserve">
+    <value>First day counted</value>
+  </data>
+  <data name="InsightPathMilestone1Body" xml:space="preserve">
+    <value>Your first pixel of the year is on the board.</value>
+  </data>
+  <data name="InsightPathMilestone3Title" xml:space="preserve">
+    <value>Three days</value>
+  </data>
+  <data name="InsightPathMilestone3Body" xml:space="preserve">
+    <value>The board can now show how your emotions split.</value>
+  </data>
+  <data name="InsightPathMilestone7Title" xml:space="preserve">
+    <value>A week</value>
+  </data>
+  <data name="InsightPathMilestone7Body" xml:space="preserve">
+    <value>Mood by hour and by day is on the board. Halfway to the first hypothesis.</value>
+  </data>
+  <data name="InsightPathMilestone14Title" xml:space="preserve">
+    <value>The first hypothesis holds</value>
+  </data>
+  <data name="InsightPathMilestone14Body" xml:space="preserve">
+    <value>Checked on your own fortnight. A coincidence in your records, not a cause.</value>
+  </data>
+  <data name="InsightPathOpen" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="InsightPathHide" xml:space="preserve">
+    <value>Hide</value>
+  </data>
+  <data name="InsightPathAccessibleFormat" xml:space="preserve">
+    <value>{0} of {1} days to the first hypothesis, {2}</value>
   </data>
 </root>
