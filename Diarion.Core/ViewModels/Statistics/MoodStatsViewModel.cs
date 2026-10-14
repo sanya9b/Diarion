@@ -130,7 +130,7 @@ public partial class MoodStatsViewModel : ObservableObject
         var items = new System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem>();
 
         // Only surface associations that survive the check (p < 0.05 after adjustment, i.e. >= 3 dots).
-        foreach (var c in correlations.Where(c => c.Confidence >= 3))
+        foreach (var c in correlations.Where(c => c.Holds))
         {
             var arrow = c.Coefficient >= 0 ? "↑" : "↓";
 
