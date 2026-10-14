@@ -22,7 +22,8 @@ public interface ITourService
     /// <summary>
     /// Forgets every guide, so each screen offers its own again on the next visit. Deliberately not
     /// per-tour: the settings entry that calls this reads as "show me the guides again", and somebody
-    /// who asks that has not gone looking for a per-screen switch.
+    /// who asks that has not gone looking for a per-screen switch. The dismissed first-insight
+    /// path on the home screen comes back with them, for the same reason.
     /// </summary>
     void ResetSeen(UserProfile profile);
 }
