@@ -154,7 +154,8 @@ public partial class App : Application
 
     private async Task CheckOnboardingAsync(Window window)
     {
-        if (Preferences.Get(OnboardingCompletedKey, false)) return;
+        // DebugSandbox.ShowsOnboarding is a debug-only switch for looking at the first run again.
+        if (!Diarion.Services.DebugSandbox.ShowsOnboarding && Preferences.Get(OnboardingCompletedKey, false)) return;
 
         var services = window.Handler?.MauiContext?.Services;
         var navigation = window.Page?.Navigation;
@@ -165,7 +166,8 @@ public partial class App : Application
 
         page.ViewModel.Completed = () =>
         {
-            Preferences.Set(OnboardingCompletedKey, true);
+            if (!Diarion.Services.DebugSandbox.ShowsOnboarding)
+                Preferences.Set(OnboardingCompletedKey, true);
             _ = CloseOnboardingAsync(navigation);
         };
 

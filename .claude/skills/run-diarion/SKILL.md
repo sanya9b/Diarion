@@ -46,6 +46,20 @@ cd bin/Debug/net10.0-windows10.0.19041.0/win-x64 && ./Diarion.exe
 Start it with `run_in_background: true` and keep the task id — you will need it to stop the app, and you
 will need to stop it (see below).
 
+## Sandbox: looking without the real diary
+
+Debug builds honour two environment variables (`Services/DebugSandbox.cs`). `DIARION_SANDBOX_DIR`
+points the database and cache at a throwaway folder: the real database is never opened, the debug
+mock diary is not seeded, and saving there is allowed. `DIARION_SANDBOX_ONBOARDING=1` on top shows
+onboarding again without touching the real preference. The encryption key still comes from the real
+SecureStorage, so nothing new is created there either.
+
+```bash
+DIARION_SANDBOX_DIR='D:\WORK\tmp\diarion-sandbox' DIARION_SANDBOX_ONBOARDING=1 ./Diarion.exe
+```
+
+Delete the folder when done. Every rule above still applies to a run without these variables.
+
 ## Drive it
 
 Three helpers in `scripts/`, run from the repo root. Plain `-File`, **no `-ExecutionPolicy Bypass`** —
