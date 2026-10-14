@@ -398,7 +398,7 @@
     <value>Add tracker</value>
   </data>
   <data name="HabitTrackerEmptyState" xml:space="preserve">
-    <value>You do not have any trackers yet. Create the first one to start marking days.</value>
+    <value>No trackers yet. Create the first one, and the days you mark will show up here.</value>
   </data>
   <data name="HabitTrackerDaysSectionTitle" xml:space="preserve">
     <value>Days to mark</value>
@@ -461,7 +461,7 @@
     <value>Save moment</value>
   </data>
   <data name="HappyMomentsTitleRequiredMessage" xml:space="preserve">
-    <value>Please enter the moment description.</value>
+    <value>Enter the moment description.</value>
   </data>
   <data name="GoodDeedsTitle" xml:space="preserve">
     <value>Good Deeds</value>
@@ -488,7 +488,7 @@
     <value>Save deed</value>
   </data>
   <data name="GoodDeedsTitleRequiredMessage" xml:space="preserve">
-    <value>Please enter the deed description.</value>
+    <value>Enter the deed description.</value>
   </data>
   <data name="TrackerPrototypeLabel" xml:space="preserve">
     <value>ADAPTIVE PREVIEW</value>

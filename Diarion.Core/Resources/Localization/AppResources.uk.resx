@@ -365,13 +365,13 @@
     <value>Одиниць на день</value>
   </data>
   <data name="HabitTrackerSubtitle" xml:space="preserve">
-    <value>Створи окремий трекер для кожної звички та відмічай кожен чистий день.</value>
+    <value>Створіть окремий трекер для кожної звички та відмічайте кожен чистий день.</value>
   </data>
   <data name="HabitTrackerSetupTitle" xml:space="preserve">
     <value>Новий трекер</value>
   </data>
   <data name="HabitTrackerSetupSubtitle" xml:space="preserve">
-    <value>Додай назву звички, обери дату старту та веди щоденні відмітки в одному місці.</value>
+    <value>Додайте назву звички, оберіть дату старту та ведіть щоденні відмітки в одному місці.</value>
   </data>
   <data name="HabitTrackerNameLabel" xml:space="preserve">
     <value>Назва звички</value>
@@ -386,7 +386,7 @@
     <value>Додати трекер</value>
   </data>
   <data name="HabitTrackerEmptyState" xml:space="preserve">
-    <value>Поки що немає жодного трекера. Створи перший і почни відмічати дні.</value>
+    <value>Трекерів ще немає. Створіть перший, і тут з'являться відмічені дні.</value>
   </data>
   <data name="HabitTrackerDaysSectionTitle" xml:space="preserve">
     <value>Дні для відмітки</value>
@@ -395,7 +395,7 @@
     <value>Відмічено днів</value>
   </data>
   <data name="HabitTrackerNameRequiredMessage" xml:space="preserve">
-    <value>Вкажи назву звички.</value>
+    <value>Вкажіть назву звички.</value>
   </data>
   <data name="HabitTrackerDuplicateMessage" xml:space="preserve">
     <value>Трекер з такою назвою вже існує.</value>
@@ -404,7 +404,7 @@
     <value>Трекер читання</value>
   </data>
   <data name="ReadingTrackerSubtitle" xml:space="preserve">
-    <value>Натисни на порожній слот, додай назву книги й дату завершення читання.</value>
+    <value>Натисніть на порожній слот, додайте назву книги й дату завершення читання.</value>
   </data>
   <data name="ReadingTrackerSlotFormat" xml:space="preserve">
     <value>Слот {0}</value>
@@ -422,13 +422,13 @@
     <value>Зберегти книгу</value>
   </data>
   <data name="ReadingTrackerBookTitleRequiredMessage" xml:space="preserve">
-    <value>Вкажи назву книги.</value>
+    <value>Вкажіть назву книги.</value>
   </data>
   <data name="HappyMomentsTitle" xml:space="preserve">
     <value>Щасливі миті</value>
   </data>
   <data name="HappyMomentsSubtitle" xml:space="preserve">
-    <value>Натисни на порожню картку, запиши світлий спогад і збережи дату.</value>
+    <value>Натисніть на порожню картку, запишіть світлий спогад і збережіть дату.</value>
   </data>
   <data name="HappyMomentsSlotFormat" xml:space="preserve">
     <value>Місяць {0}</value>
@@ -449,13 +449,13 @@
     <value>Зберегти мить</value>
   </data>
   <data name="HappyMomentsTitleRequiredMessage" xml:space="preserve">
-    <value>Будь ласка, додай опис миті.</value>
+    <value>Додайте опис миті.</value>
   </data>
   <data name="GoodDeedsTitle" xml:space="preserve">
     <value>Скарбничка добрих справ</value>
   </data>
   <data name="GoodDeedsSubtitle" xml:space="preserve">
-    <value>Натисни на порожню картку, запиши добру справу і збережи дату.</value>
+    <value>Натисніть на порожню картку, запишіть добру справу і збережіть дату.</value>
   </data>
   <data name="GoodDeedsSlotFormat" xml:space="preserve">
     <value>Місяць {0}</value>
@@ -464,7 +464,7 @@
     <value>Нова добра справа</value>
   </data>
   <data name="GoodDeedsTitleLabel" xml:space="preserve">
-    <value>Що хорошого ти зробив(ла)?</value>
+    <value>Що хорошого ви зробили?</value>
   </data>
   <data name="GoodDeedsTitlePlaceholder" xml:space="preserve">
     <value>Наприклад: Допоміг сусіду</value>
@@ -476,7 +476,7 @@
     <value>Зберегти</value>
   </data>
   <data name="GoodDeedsTitleRequiredMessage" xml:space="preserve">
-    <value>Будь ласка, додай опис справи.</value>
+    <value>Додайте опис справи.</value>
   </data>
   <data name="TrackerPrototypeLabel" xml:space="preserve">
     <value>АДАПТИВНИЙ МАКЕТ</value>
