@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              x:Class="Diarion.Views.PromptHistoryPage"
@@ -103,12 +104,10 @@
 
             <!-- A plain sibling rather than CollectionView.EmptyView: the EmptyView renders outside the
                  page's binding scope, so nothing inside it resolves and the message never appears. -->
-            <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" VerticalOptions="Start" Spacing="8" Margin="24,40,24,0">
-                <Label Text="{localization:Translate Key=PromptHistoryEmpty}"
-                       IsVisible="{Binding IsEmpty}"
-                       LineBreakMode="WordWrap"
-                       HorizontalTextAlignment="Center"
-                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" VerticalOptions="Start" Spacing="8" Margin="24,8,24,0">
+                <controls:EmptyStateView IsVisible="{Binding IsEmpty}" Scene="Prompts"
+                                         Title="{x:Static localization:AppResources.EmptyStatePromptsTitle}"
+                                         Hint="{x:Static localization:AppResources.EmptyStatePromptsHint}" />
                 <Label Text="{localization:Translate Key=PromptHistoryNoMatches}"
                        IsVisible="{Binding HasNoMatches}"
                        HorizontalTextAlignment="Center"

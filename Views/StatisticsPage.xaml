@@ -217,10 +217,9 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <VerticalStackLayout IsVisible="{Binding MoodStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
-                    <Label Text="😶" FontSize="48" HorizontalOptions="Center" />
-                    <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
-                </VerticalStackLayout>
+                <controls:EmptyStateView IsVisible="{Binding MoodStats.IsEmpty}" Scene="Mood"
+                                         Title="{x:Static localization:AppResources.EmptyStateMoodTitle}"
+                                         Hint="{x:Static localization:AppResources.EmptyStateMoodHint}" />
 
                 <!-- KPI row -->
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding MoodStats.IsNotEmpty}">
@@ -398,10 +397,9 @@
             <!-- ================= SLEEP TAB ================= -->
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsSleepTabVisible}">
 
-                <VerticalStackLayout IsVisible="{Binding SleepStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
-                    <Label Text="😴" FontSize="48" HorizontalOptions="Center" />
-                    <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
-                </VerticalStackLayout>
+                <controls:EmptyStateView IsVisible="{Binding SleepStats.IsEmpty}" Scene="Sleep"
+                                         Title="{x:Static localization:AppResources.EmptyStateSleepTitle}"
+                                         Hint="{x:Static localization:AppResources.EmptyStateSleepHint}" />
 
                 <!-- KPI row -->
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding SleepStats.IsNotEmpty}">
@@ -437,10 +435,9 @@
             <!-- ================= PRODUCTIVITY TAB ================= -->
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsProductivityTabVisible}">
 
-                <VerticalStackLayout IsVisible="{Binding ProductivityStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
-                    <Label Text="✅" FontSize="48" HorizontalOptions="Center" />
-                    <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
-                </VerticalStackLayout>
+                <controls:EmptyStateView IsVisible="{Binding ProductivityStats.IsEmpty}" Scene="Productivity"
+                                         Title="{x:Static localization:AppResources.EmptyStateProductivityTitle}"
+                                         Hint="{x:Static localization:AppResources.EmptyStateProductivityHint}" />
 
                 <!-- KPI row -->
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding ProductivityStats.IsNotEmpty}">

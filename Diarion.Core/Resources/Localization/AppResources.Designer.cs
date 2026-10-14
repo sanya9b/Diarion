@@ -143,7 +143,6 @@ namespace Diarion.Resources.Localization {
         public static string CycleAddButton => ResourceManager.GetString("CycleAddButton", resourceCulture);
         public static string CycleAddHint => ResourceManager.GetString("CycleAddHint", resourceCulture);
         public static string CycleHistoryTitle => ResourceManager.GetString("CycleHistoryTitle", resourceCulture);
-        public static string CycleHistoryEmpty => ResourceManager.GetString("CycleHistoryEmpty", resourceCulture);
         public static string CycleIntervalFormat => ResourceManager.GetString("CycleIntervalFormat", resourceCulture);
         public static string CycleDeleteConfirmTitle => ResourceManager.GetString("CycleDeleteConfirmTitle", resourceCulture);
         public static string CycleDeleteConfirmMessage => ResourceManager.GetString("CycleDeleteConfirmMessage", resourceCulture);
@@ -340,12 +339,6 @@ namespace Diarion.Resources.Localization {
         public static string HabitTrackerAddButton {
             get {
                 return ResourceManager.GetString("HabitTrackerAddButton", resourceCulture);
-            }
-        }
-
-        public static string HabitTrackerEmptyState {
-            get {
-                return ResourceManager.GetString("HabitTrackerEmptyState", resourceCulture);
             }
         }
 
@@ -1123,12 +1116,6 @@ namespace Diarion.Resources.Localization {
         public static string PromptHistorySearch {
             get {
                 return ResourceManager.GetString("PromptHistorySearch", resourceCulture);
-            }
-        }
-
-        public static string PromptHistoryEmpty {
-            get {
-                return ResourceManager.GetString("PromptHistoryEmpty", resourceCulture);
             }
         }
 
@@ -2390,10 +2377,6 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("SearchScopeNotes", resourceCulture) ?? string.Empty; }
         }
 
-        public static string SearchNoResults {
-            get { return ResourceManager.GetString("SearchNoResults", resourceCulture) ?? string.Empty; }
-        }
-
         public static string SearchLexicalOnlyNotice {
             get { return ResourceManager.GetString("SearchLexicalOnlyNotice", resourceCulture) ?? string.Empty; }
         }
@@ -2664,6 +2647,70 @@ public static string ClearAllDataSuccessMsg {
 
         public static string LegacyWelcomeDismiss {
             get { return ResourceManager.GetString("LegacyWelcomeDismiss", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateNotesTitle {
+            get { return ResourceManager.GetString("EmptyStateNotesTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateNotesHint {
+            get { return ResourceManager.GetString("EmptyStateNotesHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateHabitsTitle {
+            get { return ResourceManager.GetString("EmptyStateHabitsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateHabitsHint {
+            get { return ResourceManager.GetString("EmptyStateHabitsHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStatePromptsTitle {
+            get { return ResourceManager.GetString("EmptyStatePromptsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStatePromptsHint {
+            get { return ResourceManager.GetString("EmptyStatePromptsHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateCycleTitle {
+            get { return ResourceManager.GetString("EmptyStateCycleTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateCycleHint {
+            get { return ResourceManager.GetString("EmptyStateCycleHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateMoodTitle {
+            get { return ResourceManager.GetString("EmptyStateMoodTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateMoodHint {
+            get { return ResourceManager.GetString("EmptyStateMoodHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateSleepTitle {
+            get { return ResourceManager.GetString("EmptyStateSleepTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateSleepHint {
+            get { return ResourceManager.GetString("EmptyStateSleepHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateProductivityTitle {
+            get { return ResourceManager.GetString("EmptyStateProductivityTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateProductivityHint {
+            get { return ResourceManager.GetString("EmptyStateProductivityHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateSearchTitle {
+            get { return ResourceManager.GetString("EmptyStateSearchTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateSearchHint {
+            get { return ResourceManager.GetString("EmptyStateSearchHint", resourceCulture) ?? string.Empty; }
         }
     }
 }

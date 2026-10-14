@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              x:Class="Diarion.Views.CyclePage"
@@ -101,9 +102,9 @@
                     <VerticalStackLayout Spacing="8">
                         <Label Text="{x:Static localization:AppResources.CycleHistoryTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Coral}" />
 
-                        <Label Text="{x:Static localization:AppResources.CycleHistoryEmpty}"
-                               IsVisible="{Binding HasNoData}"
-                               FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <controls:EmptyStateView IsVisible="{Binding HasNoData}" Scene="Cycle" Compact="True"
+                                                 Title="{x:Static localization:AppResources.EmptyStateCycleTitle}"
+                                                 Hint="{x:Static localization:AppResources.EmptyStateCycleHint}" />
 
                         <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Episodes}">
                             <BindableLayout.ItemTemplate>
