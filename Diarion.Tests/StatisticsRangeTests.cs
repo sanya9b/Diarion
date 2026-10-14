@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -351,5 +352,18 @@ public class StatisticsRangeTests
         await vm.LoadStatisticsAsync();
 
         stats.Verify(s => s.GetSleepStatisticsAsync(LastMarch), Times.Once);
+    }
+
+    [Fact]
+    public void RangeRequestedMessage_AppliesBothDatesAsOneWindow()
+    {
+        // Spec 17, R1.6: the home-screen path opens this screen on the window it counted.
+        var vm = BuildViewModel(out _);
+        var window = StatsRange.LastDays(30);
+
+        WeakReferenceMessenger.Default.Send(new Diarion.Messages.StatisticsRangeRequestedMessage(window));
+
+        vm.RangeStart.Should().Be(window.Start);
+        vm.RangeEnd.Should().Be(window.End);
     }
 }

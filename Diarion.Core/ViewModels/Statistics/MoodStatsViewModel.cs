@@ -179,28 +179,7 @@ public partial class MoodStatsViewModel : ObservableObject
     /// The user-facing name of a factor. Structured factors are looked up; a theme cannot be,
     /// because the key carries the user's own sentence and the list is different every window.
     /// </summary>
-    private static string FactorName(string key)
-    {
-        if (key.StartsWith(CorrelationService.Factors.ThemePrefix, StringComparison.Ordinal))
-        {
-            return string.Format(
-                AppResources.FactorThemeFormat,
-                key[CorrelationService.Factors.ThemePrefix.Length..]);
-        }
-
-        return key switch
-        {
-            CorrelationService.Factors.SleepDuration => AppResources.FactorSleepDuration,
-            CorrelationService.Factors.SleepQuality => AppResources.FactorSleepQuality,
-            CorrelationService.Factors.CyclePeriodDay => AppResources.FactorCyclePeriodDay,
-            CorrelationService.Factors.CycleSymptomLoad => AppResources.FactorCycleSymptoms,
-            CorrelationService.Factors.HabitCompletion => AppResources.FactorHabitCompletion,
-            CorrelationService.Factors.MealsLogged => AppResources.FactorMealsLogged,
-            CorrelationService.Factors.TaskCompletion => AppResources.FactorTaskCompletion,
-            CorrelationService.Factors.DailySpend => AppResources.FactorDailySpend,
-            _ => key
-        };
-    }
+    private static string FactorName(string key) => FactorNames.Display(key);
 
     public async Task LoadDataAsync(StatsRange range)
     {

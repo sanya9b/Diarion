@@ -2278,4 +2278,49 @@
   <data name="EmptyStateSearchHint" xml:space="preserve">
     <value>Try another word or a shorter query.</value>
   </data>
+  <data name="InsightPathTitle" xml:space="preserve">
+    <value>To the first hypothesis</value>
+  </data>
+  <data name="InsightPathProgressFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="InsightPathHintFormat" xml:space="preserve">
+    <value>closest: {0}</value>
+  </data>
+  <data name="InsightPathHintNoFactor" xml:space="preserve">
+    <value>Mark your mood and sleep, and the day counts</value>
+  </data>
+  <data name="InsightPathMilestone1Title" xml:space="preserve">
+    <value>First day counted</value>
+  </data>
+  <data name="InsightPathMilestone1Body" xml:space="preserve">
+    <value>Your first pixel of the year is on the board.</value>
+  </data>
+  <data name="InsightPathMilestone3Title" xml:space="preserve">
+    <value>Three days</value>
+  </data>
+  <data name="InsightPathMilestone3Body" xml:space="preserve">
+    <value>The board can now show how your emotions split.</value>
+  </data>
+  <data name="InsightPathMilestone7Title" xml:space="preserve">
+    <value>A week</value>
+  </data>
+  <data name="InsightPathMilestone7Body" xml:space="preserve">
+    <value>Mood by hour and by day is on the board. Halfway to the first hypothesis.</value>
+  </data>
+  <data name="InsightPathMilestone14Title" xml:space="preserve">
+    <value>The first hypothesis holds</value>
+  </data>
+  <data name="InsightPathMilestone14Body" xml:space="preserve">
+    <value>Checked on your own fortnight. A coincidence in your records, not a cause.</value>
+  </data>
+  <data name="InsightPathOpen" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="InsightPathHide" xml:space="preserve">
+    <value>Hide</value>
+  </data>
+  <data name="InsightPathAccessibleFormat" xml:space="preserve">
+    <value>{0} of {1} days to the first hypothesis, {2}</value>
+  </data>
 </root>

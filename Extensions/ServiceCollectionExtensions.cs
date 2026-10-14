@@ -62,6 +62,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ICalendarService, CalendarService>();
         services.AddSingleton<IStatisticsService, StatisticsService>();
         services.AddSingleton<ICorrelationService, CorrelationService>();
+        services.AddSingleton<Diarion.Services.InsightPath.IInsightPathService, Diarion.Services.InsightPath.InsightPathService>();
         services.AddSingleton<IMenuConfigurationService, MenuConfigurationService>();
         services.AddSingleton<IOnboardingModuleService, OnboardingModuleService>();
         services.AddSingleton<ITourService, TourService>();
@@ -196,6 +197,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<PaywallViewModel>();
         services.AddTransient<SubscriptionSectionViewModel>();
         services.AddTransient<AccessBannerViewModel>();
+        services.AddTransient<InsightPathViewModel>();
         services.AddTransient<HabitTrackerViewModel>();
         services.AddTransient<GoodDeedsViewModel>();
         services.AddTransient<ReadingTrackerViewModel>();
