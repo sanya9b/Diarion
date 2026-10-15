@@ -148,6 +148,93 @@
   <data name="EmotionAngry" xml:space="preserve">
     <value>Angry</value>
   </data>
+  <data name="EmotionNeutral" xml:space="preserve">
+    <value>Neutral</value>
+  </data>
+  <data name="EmotionInspired" xml:space="preserve">
+    <value>Inspired</value>
+  </data>
+  <data name="EmotionExcited" xml:space="preserve">
+    <value>Excited</value>
+  </data>
+  <data name="EmotionProud" xml:space="preserve">
+    <value>Proud</value>
+  </data>
+  <data name="EmotionEnergetic" xml:space="preserve">
+    <value>Energetic</value>
+  </data>
+  <data name="EmotionPlayful" xml:space="preserve">
+    <value>Playful</value>
+  </data>
+  <data name="EmotionOptimistic" xml:space="preserve">
+    <value>Optimistic</value>
+  </data>
+  <data name="EmotionContent" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="EmotionGrateful" xml:space="preserve">
+    <value>Grateful</value>
+  </data>
+  <data name="EmotionRelaxed" xml:space="preserve">
+    <value>Relaxed</value>
+  </data>
+  <data name="EmotionLoving" xml:space="preserve">
+    <value>Loving</value>
+  </data>
+  <data name="EmotionSecure" xml:space="preserve">
+    <value>Secure</value>
+  </data>
+  <data name="EmotionPeaceful" xml:space="preserve">
+    <value>Peaceful</value>
+  </data>
+  <data name="EmotionStressed" xml:space="preserve">
+    <value>Stressed</value>
+  </data>
+  <data name="EmotionIrritated" xml:space="preserve">
+    <value>Irritated</value>
+  </data>
+  <data name="EmotionOverwhelmed" xml:space="preserve">
+    <value>Overwhelmed</value>
+  </data>
+  <data name="EmotionScared" xml:space="preserve">
+    <value>Scared</value>
+  </data>
+  <data name="EmotionFrustrated" xml:space="preserve">
+    <value>Frustrated</value>
+  </data>
+  <data name="EmotionTired" xml:space="preserve">
+    <value>Tired</value>
+  </data>
+  <data name="EmotionBored" xml:space="preserve">
+    <value>Bored</value>
+  </data>
+  <data name="EmotionLonely" xml:space="preserve">
+    <value>Lonely</value>
+  </data>
+  <data name="EmotionDisappointed" xml:space="preserve">
+    <value>Disappointed</value>
+  </data>
+  <data name="EmotionExhausted" xml:space="preserve">
+    <value>Exhausted</value>
+  </data>
+  <data name="EmotionHopeless" xml:space="preserve">
+    <value>Hopeless</value>
+  </data>
+  <data name="QuadrantPleasantEnergetic" xml:space="preserve">
+    <value>Pleasant, energetic</value>
+  </data>
+  <data name="QuadrantPleasantCalm" xml:space="preserve">
+    <value>Pleasant, calm</value>
+  </data>
+  <data name="QuadrantUnpleasantEnergetic" xml:space="preserve">
+    <value>Unpleasant, energetic</value>
+  </data>
+  <data name="QuadrantUnpleasantCalm" xml:space="preserve">
+    <value>Unpleasant, calm</value>
+  </data>
+  <data name="MoodRefineHint" xml:space="preserve">
+    <value>More precisely, if you like</value>
+  </data>
   <data name="TodoListLabel" xml:space="preserve">
     <value>Tasks</value>
   </data>

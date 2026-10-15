@@ -1,0 +1,82 @@
+using System;
+using System.Linq;
+using Diarion.Models;
+using FluentAssertions;
+using Xunit;
+
+namespace Diarion.Tests;
+
+public class EmotionCatalogTests
+{
+    [Fact]
+    public void Every_emotion_except_None_is_filed_exactly_once()
+    {
+        var recordable = Enum.GetValues<Emotion>().Where(e => e != Emotion.None).ToList();
+
+        EmotionCatalog.All.Should().OnlyHaveUniqueItems();
+        EmotionCatalog.All.Should().BeEquivalentTo(recordable,
+            "an emotion the picker cannot reach, or lists twice, is a defect in the catalogue");
+    }
+
+    [Theory]
+    [InlineData(EmotionQuadrant.PleasantEnergetic, Emotion.Happy)]
+    [InlineData(EmotionQuadrant.PleasantCalm, Emotion.Calm)]
+    [InlineData(EmotionQuadrant.UnpleasantEnergetic, Emotion.Anxious)]
+    [InlineData(EmotionQuadrant.UnpleasantCalm, Emotion.Sad)]
+    [InlineData(EmotionQuadrant.Neutral, Emotion.Neutral)]
+    [InlineData(EmotionQuadrant.None, Emotion.None)]
+    public void Representative_is_the_first_emotion_of_the_quadrant(EmotionQuadrant quadrant, Emotion expected)
+    {
+        // A bare quadrant tap records one of the original five (or Neutral), so a day logged in the
+        // new picker without refinement is indistinguishable from one logged before it existed.
+        quadrant.Representative().Should().Be(expected);
+
+        if (quadrant != EmotionQuadrant.None)
+        {
+            quadrant.Emotions()[0].Should().Be(expected);
+        }
+    }
+
+    [Fact]
+    public void QuadrantOf_round_trips_membership()
+    {
+        foreach (var quadrant in EmotionCatalog.Quadrants)
+        {
+            foreach (var emotion in quadrant.Emotions())
+            {
+                emotion.ToQuadrant().Should().Be(quadrant);
+            }
+        }
+
+        EmotionQuadrant.None.Emotions().Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Each_quadrant_offers_seven_emotions_and_Neutral_only_itself()
+    {
+        foreach (var quadrant in EmotionCatalog.Quadrants.Where(q => q != EmotionQuadrant.Neutral))
+        {
+            quadrant.Emotions().Should().HaveCount(7, $"{quadrant} should fit in two rows of chips");
+        }
+
+        EmotionQuadrant.Neutral.Emotions().Should().Equal(Emotion.Neutral);
+    }
+
+    [Fact]
+    public void Quadrant_colours_are_distinct_and_leave_Berry_to_the_cycle()
+    {
+        var colours = EmotionCatalog.Quadrants.Select(q => q.ToColorHex()).ToList();
+
+        colours.Should().OnlyHaveUniqueItems();
+        colours.Should().NotContain("#A87C8E", "Berry is the cycle's colour");
+        colours.Should().NotContain(EmotionQuadrant.None.ToColorHex(), "nothing recorded must not look like a quadrant");
+    }
+
+    [Fact]
+    public void Recordable_quadrants_have_a_glyph()
+    {
+        EmotionCatalog.Quadrants.Select(q => q.ToEmoji()).Should().OnlyContain(e => !string.IsNullOrEmpty(e));
+        EmotionCatalog.Quadrants.Select(q => q.ToEmoji()).Should().OnlyHaveUniqueItems();
+        EmotionQuadrant.None.ToEmoji().Should().BeEmpty();
+    }
+}

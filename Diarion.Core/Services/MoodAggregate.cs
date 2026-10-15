@@ -60,6 +60,16 @@ public static class MoodAggregate
     }
 
     /// <summary>
+    /// Mean arousal (energy) across the day's observations; 0 when nothing was recorded. The second
+    /// axis of the circumplex, read the same way as <see cref="Valence"/>.
+    /// </summary>
+    public static double Energy(Emotion scalar, IReadOnlyList<HourMood>? hourly)
+    {
+        var observations = Observations(scalar, hourly);
+        return observations.Count == 0 ? 0 : observations.Average(e => e.ToArousal());
+    }
+
+    /// <summary>
     /// The day's most frequent emotion, ties broken by enum order so the result is stable across runs.
     /// <see cref="Emotion.None"/> when nothing was recorded.
     /// </summary>
@@ -70,6 +80,24 @@ public static class MoodAggregate
 
         return observations
             .GroupBy(e => e)
+            .OrderByDescending(g => g.Count())
+            .ThenBy(g => (int)g.Key)
+            .First().Key;
+    }
+
+    /// <summary>
+    /// The quadrant most of the day's observations fall in, ties broken by enum order. Coarser than
+    /// <see cref="Dominant"/> and the right grain for colour: four anxious-or-stressed hours and three
+    /// happy ones are an unpleasant, energetic day, not a happy one because "happy" happened to be the
+    /// single most repeated word. <see cref="EmotionQuadrant.None"/> when nothing was recorded.
+    /// </summary>
+    public static EmotionQuadrant DominantQuadrant(Emotion scalar, IReadOnlyList<HourMood>? hourly)
+    {
+        var observations = Observations(scalar, hourly);
+        if (observations.Count == 0) return EmotionQuadrant.None;
+
+        return observations
+            .GroupBy(e => e.ToQuadrant())
             .OrderByDescending(g => g.Count())
             .ThenBy(g => (int)g.Key)
             .First().Key;

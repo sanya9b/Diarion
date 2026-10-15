@@ -25,8 +25,11 @@ public class MoodTrendPoint
     public double Valence { get; set; }
     public bool HasData { get; set; }
 
-    /// <summary>The day's representative emotion (mode of that day's entries), used to color the heatmap.</summary>
+    /// <summary>The day's representative emotion (mode of that day's entries), named in AI snapshots.</summary>
     public Emotion DominantEmotion { get; set; } = Emotion.None;
+
+    /// <summary>The day's representative quadrant (mode at quadrant grain), what the heatmap colours by.</summary>
+    public EmotionQuadrant DominantQuadrant { get; set; } = EmotionQuadrant.None;
 }
 
 /// <summary>One hour slot of the day on the hour-of-day mood profile. <see cref="HasData"/> is false for
