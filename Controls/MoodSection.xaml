@@ -37,6 +37,17 @@
             <Setter Property="StrokeThickness" Value="0" />
             <Setter Property="InputTransparent" Value="True" />
         </Style>
+
+        <!-- The hours chip and its ✕: outlined, press feedback on the outer element, fill inside. -->
+        <Style x:Key="HourChip" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Black}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="behaviors:PressFeedback.IsEnabled" Value="True" />
+        </Style>
     </ContentView.Resources>
 
     <Border Padding="16"
@@ -49,9 +60,44 @@
         </Border.Shadow>
 
         <VerticalStackLayout Spacing="12">
-            <Label Text="{x:Static localization:AppResources.EmotionLabel}"
-                   FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5"
-                   TextColor="{DynamicResource Theme_Coral}" />
+            <!-- Header: the caption and, at the right, the hours chip. The row below speaks for the
+                 day until an hour is chosen in the chip's bubble; then the chip reads the hour and the
+                 ✕ beside it returns the row to the day, so the switch is never silent. -->
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.EmotionLabel}"
+                       FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5"
+                       TextColor="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+
+                <Border x:Name="HourChip" Grid.Column="1" Style="{StaticResource HourChip}"
+                        SemanticProperties.Description="{Binding HourChipText}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenHourPickerCommand}" />
+                    </Border.GestureRecognizers>
+                    <Border Style="{StaticResource MoodFill}" StrokeShape="RoundRectangle 13" Padding="10,4"
+                            behaviors:ThemeColor.BackgroundKey="{Binding HourChipFillColorKey}">
+                        <HorizontalStackLayout Spacing="5">
+                            <Label Text="🕒" FontSize="11" VerticalOptions="Center" />
+                            <Label Text="{Binding HourChipText}" FontSize="11" FontAttributes="Bold" VerticalOptions="Center"
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsHourChipFilled}" Value="True">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_OnAccent}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </HorizontalStackLayout>
+                    </Border>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource HourChip}" IsVisible="{Binding IsHourSelected}"
+                        SemanticProperties.Description="{x:Static localization:AppResources.MoodHourExit}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ExitHourModeCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="✕" FontSize="11" Padding="9,4" VerticalOptions="Center" InputTransparent="True"
+                           TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                </Border>
+            </Grid>
 
             <!-- The row: five faces from unpleasant to pleasant, no words until one is chosen. A tap
                  records the face's representative emotion and opens the bubble of precise states over
@@ -67,7 +113,7 @@
                                                           CommandParameter="{Binding Quadrant}" />
                                 </Border.GestureRecognizers>
                                 <Border Style="{StaticResource MoodFaceDisc}" behaviors:SelectionEmphasis.IsActive="{Binding IsSelected}">
-                                    <Border Style="{StaticResource MoodFill}" StrokeShape="Ellipse" BackgroundColor="{Binding FillColor}">
+                                    <Border Style="{StaticResource MoodFill}" StrokeShape="Ellipse" behaviors:ThemeColor.BackgroundKey="{Binding FillColorKey}">
                                         <Label Text="{Binding Emoji}" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
                                     </Border>
                                 </Border>
@@ -82,7 +128,7 @@
                 <Grid Grid.Row="1" HeightRequest="18">
                     <Label x:Name="Caption"
                            Text="{Binding CurrentMoodName}" IsVisible="{Binding HasCurrentMood}"
-                           TextColor="{Binding CurrentColor}" FontSize="11" FontAttributes="Bold"
+                           behaviors:ThemeColor.TextKey="{Binding CurrentColorKey}" FontSize="11" FontAttributes="Bold"
                            HorizontalOptions="Center" VerticalOptions="Center" LineBreakMode="NoWrap" />
                 </Grid>
             </Grid>
@@ -90,74 +136,8 @@
             <!-- The bubble of precise states is a page-level layer (MoodRefinePopover), placed under
                  the chosen face from the anchor this control publishes; see MoodSection.xaml.cs. -->
 
-            <!-- Настрій по годинах (згорнуто за замовчуванням) -->
-            <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
-                <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ToggleHourlyCommand}" />
-                </Grid.GestureRecognizers>
-                <Label Grid.Column="0"
-                       Text="{localization:Translate Key=MoodHourlyLabel}"
-                       FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextTransform="Uppercase"
-                       TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                <Label Grid.Column="1" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center">
-                    <Label.Triggers>
-                        <DataTrigger TargetType="Label" Binding="{Binding IsHourlyExpanded}" Value="True">
-                            <Setter Property="Text" Value="⌃" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Label" Binding="{Binding IsHourlyExpanded}" Value="False">
-                            <Setter Property="Text" Value="⌄" />
-                        </DataTrigger>
-                    </Label.Triggers>
-                </Label>
-            </Grid>
-
-            <VerticalStackLayout Spacing="8" IsVisible="{Binding IsHourlyExpanded}">
-                <Label FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}">
-                    <Label.Triggers>
-                        <DataTrigger TargetType="Label" Binding="{Binding IsHourSelected}" Value="True">
-                            <Setter Property="Text" Value="{localization:Translate Key=MoodHourlyHint}" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Label" Binding="{Binding IsHourSelected}" Value="False">
-                            <Setter Property="Text" Value="{localization:Translate Key=MoodHourlyDayHint}" />
-                        </DataTrigger>
-                    </Label.Triggers>
-                </Label>
-
-                <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Center"
-                            BindableLayout.ItemsSource="{Binding HourlyMood}">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="viewmodels:HourMoodViewModel">
-                            <Border WidthRequest="42" HeightRequest="34" Margin="0,0,6,6"
-                                    StrokeShape="RoundRectangle 10" StrokeThickness="1"
-                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                    BackgroundColor="{Binding ColorHex}"
-                                    SemanticProperties.Description="{Binding AccessibilityText}">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryEntryViewModel}}, Path=SelectHourCommand}" CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                                <Border.Triggers>
-                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Setter Property="StrokeThickness" Value="3" />
-                                    </DataTrigger>
-                                </Border.Triggers>
-                                <Label Text="{Binding HourLabel}" FontSize="12" InputTransparent="True"
-                                       HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding HasMood}" Value="True">
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
-                                            <Setter Property="FontAttributes" Value="Bold" />
-                                        </DataTrigger>
-                                        <DataTrigger TargetType="Label" Binding="{Binding HasMood}" Value="False">
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                        </DataTrigger>
-                                    </Label.Triggers>
-                                </Label>
-                            </Border>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </FlexLayout>
-            </VerticalStackLayout>
+            <!-- The hours live in a bubble off the chip above (HourPickerContent in an AnchoredPopover
+                 on the page); with an hour chosen, this same row writes that hour. -->
         </VerticalStackLayout>
     </Border>
 </ContentView>

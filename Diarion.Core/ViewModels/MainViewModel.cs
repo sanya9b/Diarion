@@ -206,9 +206,25 @@ public partial class MainViewModel : BaseViewModel
         nameof(IsBusy),
         nameof(DiaryEntryViewModel.SelectedHour),
         nameof(DiaryEntryViewModel.IsHourSelected),
-        nameof(DiaryEntryViewModel.IsHourlyExpanded),
         nameof(DiaryEntryViewModel.CurrentMood),
         nameof(HourMoodViewModel.IsSelected),
+
+        // The mood row's own state (spec 18): which face is lit, what the caption says, whether a
+        // bubble is out and where it points. Raised on hour changes and taps that write nothing.
+        nameof(DiaryEntryViewModel.CurrentQuadrant),
+        nameof(DiaryEntryViewModel.HasRefinements),
+        nameof(DiaryEntryViewModel.IsRefinementOpen),
+        nameof(DiaryEntryViewModel.RefineAnchor),
+        nameof(DiaryEntryViewModel.SelectedColumn),
+        nameof(DiaryEntryViewModel.HasCurrentMood),
+        nameof(DiaryEntryViewModel.CurrentMoodName),
+        nameof(DiaryEntryViewModel.CurrentColorKey),
+        nameof(DiaryEntryViewModel.IsHourPickerOpen),
+        nameof(DiaryEntryViewModel.HourAnchor),
+        nameof(DiaryEntryViewModel.LoggedHourCount),
+        nameof(DiaryEntryViewModel.HourChipText),
+        nameof(DiaryEntryViewModel.IsHourChipFilled),
+        nameof(DiaryEntryViewModel.HourChipFillColorKey),
     };
 
     private void OnEntryPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

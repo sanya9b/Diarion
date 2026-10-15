@@ -230,27 +230,27 @@ public class MoodPickerViewModelTests
     }
 
     [Fact]
-    public void FillColours_FollowSelection_SoTheViewNeedsNoTriggers()
+    public void FillKeys_FollowSelection_SoTheViewNeedsNoTriggers()
     {
+        // Keys, not colours: each theme decides what a highlight looks like (the pink theme uses pinks).
         var viewModel = new DiaryEntryViewModel(new DiaryEntry());
 
         viewModel.SelectQuadrantCommand.Execute(EmotionQuadrant.PleasantCalm);
         viewModel.SelectEmotionCommand.Execute(Emotion.Grateful);
 
         var chosen = viewModel.Quadrants.Single(q => q.Quadrant == EmotionQuadrant.PleasantCalm);
-        chosen.FillColor.Should().Be(chosen.Color);
-        viewModel.Quadrants.Where(q => q != chosen).Should().OnlyContain(q =>
-            q.FillColor == Microsoft.Maui.Graphics.Colors.Transparent);
-        viewModel.CurrentColor.Should().Be(chosen.Color);
+        chosen.FillColorKey.Should().Be(chosen.ColorKey);
+        chosen.ColorKey.Should().Be(EmotionQuadrant.PleasantCalm.ToThemeKey());
+        viewModel.Quadrants.Where(q => q != chosen).Should().OnlyContain(q => q.FillColorKey == null);
+        viewModel.CurrentColorKey.Should().Be(chosen.ColorKey);
 
-        viewModel.Refinements.Single(c => c.Emotion == Emotion.Grateful).FillColor.Should().Be(chosen.Color);
-        viewModel.Refinements.Where(c => c.Emotion != Emotion.Grateful).Should().OnlyContain(c =>
-            c.FillColor == Microsoft.Maui.Graphics.Colors.Transparent);
+        viewModel.Refinements.Single(c => c.Emotion == Emotion.Grateful).FillColorKey.Should().Be(chosen.ColorKey);
+        viewModel.Refinements.Where(c => c.Emotion != Emotion.Grateful).Should().OnlyContain(c => c.FillColorKey == null);
 
         viewModel.ClearMoodCommand.Execute(null);
 
-        chosen.FillColor.Should().Be(Microsoft.Maui.Graphics.Colors.Transparent);
-        viewModel.CurrentColor.Should().Be(Microsoft.Maui.Graphics.Colors.Transparent);
+        chosen.FillColorKey.Should().BeNull();
+        viewModel.CurrentColorKey.Should().BeNull();
     }
 
     [Fact]
@@ -269,24 +269,99 @@ public class MoodPickerViewModelTests
     }
 
     [Fact]
-    public void RefineAnchor_IsPlainState_TheRowWritesAndThePopoverReads()
+    public void Anchors_ArePlainState_TheRowWritesAndThePopoversRead()
     {
         var viewModel = new DiaryEntryViewModel(new DiaryEntry());
         var raised = new List<string?>();
         viewModel.PropertyChanged += (_, e) => raised.Add(e.PropertyName);
 
         var faceBounds = new Microsoft.Maui.Graphics.Rect(120, 300, 64, 60);
+        var chipBounds = new Microsoft.Maui.Graphics.Rect(280, 240, 90, 26);
         viewModel.RefineAnchor = faceBounds;
+        viewModel.HourAnchor = chipBounds;
 
         viewModel.RefineAnchor.Should().Be(faceBounds);
+        viewModel.HourAnchor.Should().Be(chipBounds);
         raised.Should().Contain(nameof(DiaryEntryViewModel.RefineAnchor));
+        raised.Should().Contain(nameof(DiaryEntryViewModel.HourAnchor));
+    }
+
+    [Fact]
+    public void OpenHourPicker_TogglesTheGrid_AndPutsTheRefinementAway()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry());
+        viewModel.SelectQuadrantCommand.Execute(EmotionQuadrant.PleasantEnergetic);
+        viewModel.IsRefinementOpen.Should().BeTrue();
+
+        viewModel.OpenHourPickerCommand.Execute(null);
+
+        viewModel.IsHourPickerOpen.Should().BeTrue();
+        viewModel.IsRefinementOpen.Should().BeFalse("one bubble at a time");
+
+        viewModel.OpenHourPickerCommand.Execute(null);
+        viewModel.IsHourPickerOpen.Should().BeFalse();
+
+        viewModel.OpenHourPickerCommand.Execute(null);
+        viewModel.CloseHourPickerCommand.Execute(null);
+        viewModel.IsHourPickerOpen.Should().BeFalse();
+    }
+
+    [Fact]
+    public void SelectHour_FromThePicker_ClosesIt_AndTheChipReadsTheHour()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Emotion = Emotion.Happy });
+        viewModel.OpenHourPickerCommand.Execute(null);
+
+        viewModel.SelectHourCommand.Execute(viewModel.HourlyMood.Single(h => h.Hour == 14));
+
+        viewModel.IsHourPickerOpen.Should().BeFalse("the row must be reachable to pick the hour's mood");
+        viewModel.IsHourSelected.Should().BeTrue();
+        viewModel.HourChipText.Should().Be("14:00");
+        viewModel.IsHourChipFilled.Should().BeFalse("the hour has no mood yet");
+        viewModel.HourChipFillColorKey.Should().BeNull();
+        viewModel.HasCurrentMood.Should().BeFalse("the row now speaks for an empty hour, not for the day");
+
+        viewModel.SelectQuadrantCommand.Execute(EmotionQuadrant.UnpleasantEnergetic);
+
+        viewModel.IsHourChipFilled.Should().BeTrue();
+        viewModel.HourChipFillColorKey.Should().Be(EmotionQuadrant.UnpleasantEnergetic.ToThemeKey());
+        viewModel.Emotion.Should().Be(Emotion.Happy, "the day stays what it was");
+    }
+
+    [Fact]
+    public void ExitHourMode_ReturnsTheRowToTheDay_AndTheChipCountsLoggedHours()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Emotion = Emotion.Happy });
+        viewModel.SelectHourCommand.Execute(viewModel.HourlyMood.Single(h => h.Hour == 14));
+        viewModel.SelectQuadrantCommand.Execute(EmotionQuadrant.UnpleasantCalm);
+        viewModel.IsRefinementOpen.Should().BeTrue();
+
+        viewModel.ExitHourModeCommand.Execute(null);
+
+        viewModel.IsHourSelected.Should().BeFalse();
+        viewModel.HourlyMood.Should().OnlyContain(h => !h.IsSelected);
+        viewModel.CurrentMood.Should().Be(Emotion.Happy);
+        viewModel.IsRefinementOpen.Should().BeFalse("the bubble belonged to the hour");
+        viewModel.LoggedHourCount.Should().Be(1);
+        viewModel.HourChipText.Should().Be($"{Diarion.Resources.Localization.AppResources.MoodHourlyLabel} · 1");
+        viewModel.IsHourChipFilled.Should().BeFalse();
+        viewModel.Model.HourlyMood.Should().ContainSingle(h => h.Hour == 14 && h.Mood == Emotion.Sad, "leaving hour mode keeps the hour");
+    }
+
+    [Fact]
+    public void HourChipText_IsTheBareLabel_WhileNoHourIsLogged()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry());
+
+        viewModel.LoggedHourCount.Should().Be(0);
+        viewModel.HourChipText.Should().Be(Diarion.Resources.Localization.AppResources.MoodHourlyLabel);
     }
 
     [Fact]
     public void HourSlot_TakesTheColourOfItsQuadrant()
     {
-        new HourMoodViewModel(9, Emotion.Stressed).ColorHex.Should().Be(EmotionQuadrant.UnpleasantEnergetic.ToColorHex());
-        new HourMoodViewModel(9, Emotion.Neutral).ColorHex.Should().Be(EmotionQuadrant.Neutral.ToColorHex());
-        new HourMoodViewModel(9, Emotion.None).ColorHex.Should().Be("#00000000");
+        new HourMoodViewModel(9, Emotion.Stressed).ColorKey.Should().Be(EmotionQuadrant.UnpleasantEnergetic.ToThemeKey());
+        new HourMoodViewModel(9, Emotion.Neutral).ColorKey.Should().Be(EmotionQuadrant.Neutral.ToThemeKey());
+        new HourMoodViewModel(9, Emotion.None).ColorKey.Should().BeNull();
     }
 }

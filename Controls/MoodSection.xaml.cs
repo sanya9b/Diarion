@@ -6,12 +6,13 @@ using Diarion.ViewModels;
 namespace Diarion.Controls;
 
 /// <summary>
-/// The mood row. The bubble of precise states is not here: it lives in <see cref="MoodRefinePopover"/>,
-/// a page-level layer, so it can float over the cards below and be dismissed by a tap anywhere else.
-/// This side's job is to keep <see cref="DiaryEntryViewModel.RefineAnchor"/> pointing at the chosen
-/// face — after selection changes, layout, and scrolling — to slide the one-word caption under that
-/// face, and to put the bubble away when the page scrolls, because an anchored bubble that stays while
-/// its face moves is wrong twice over.
+/// The mood row. Its two bubbles — the precise states under the chosen face and the hour grid off the
+/// hours chip — are not here: each is an <see cref="AnchoredPopover"/> on the page, so they float over
+/// the cards below and a tap anywhere else puts them away. This side keeps the two anchors
+/// (<see cref="DiaryEntryViewModel.RefineAnchor"/>, <see cref="DiaryEntryViewModel.HourAnchor"/>)
+/// pointing at the chosen face and the chip after selection changes, layout and scrolling, slides the
+/// one-word caption under the face, and puts both bubbles away when the page scrolls, because an
+/// anchored bubble that stays while its anchor moves is wrong twice over.
 /// </summary>
 public partial class MoodSection : ContentView
 {
@@ -27,9 +28,10 @@ public partial class MoodSection : ContentView
         Unloaded += OnUnloaded;
         FacesRow.SizeChanged += (_, _) =>
         {
-            PublishAnchor();
+            PublishAnchors();
             PlaceCaption(animated: false);
         };
+        HourChip.SizeChanged += (_, _) => PublishAnchors();
     }
 
     protected override void OnBindingContextChanged()
@@ -40,7 +42,7 @@ public partial class MoodSection : ContentView
         _viewModel = BindingContext as DiaryEntryViewModel;
         if (_viewModel != null) _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
-        PublishAnchor();
+        PublishAnchors();
         PlaceCaption(animated: false);
     }
 
@@ -48,7 +50,7 @@ public partial class MoodSection : ContentView
     {
         _scrollView = VisualTreeGeometry.FindScrollView(this);
         if (_scrollView != null) _scrollView.Scrolled += OnScrolled;
-        PublishAnchor();
+        PublishAnchors();
         PlaceCaption(animated: false);
     }
 
@@ -63,7 +65,8 @@ public partial class MoodSection : ContentView
         if (_viewModel == null) return;
 
         if (_viewModel.IsRefinementOpen) _viewModel.CloseRefinementCommand.Execute(null);
-        PublishAnchor();
+        if (_viewModel.IsHourPickerOpen) _viewModel.CloseHourPickerCommand.Execute(null);
+        PublishAnchors();
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -73,21 +76,37 @@ public partial class MoodSection : ContentView
         // knows whether it was on screen before this change.
         if (e.PropertyName == nameof(DiaryEntryViewModel.SelectedColumn))
         {
-            PublishAnchor();
+            PublishAnchors();
             PlaceCaption(animated: true);
+        }
+        else if (e.PropertyName == nameof(DiaryEntryViewModel.HourChipText))
+        {
+            // The chip's text changed its width; its bubble's tail follows once layout settles.
+            Dispatcher.Dispatch(PublishAnchors);
         }
     }
 
-    /// <summary>The chosen face's bounds on the page, into the shared view model.</summary>
-    private void PublishAnchor()
+    /// <summary>The chosen face's and the hours chip's bounds on the page, into the shared view model.</summary>
+    private void PublishAnchors()
     {
         if (_viewModel == null) return;
 
         var column = _viewModel.SelectedColumn;
-        if (column < 0 || column >= FacesRow.Children.Count) return;
-        if (FacesRow.Children[column] is not VisualElement face || face.Width <= 0) return;
+        if (column >= 0 && column < FacesRow.Children.Count
+            && FacesRow.Children[column] is VisualElement face && face.Width > 0)
+        {
+            // The bubble hangs below the one-word caption, not over it: the anchor is the face plus
+            // the caption row beneath.
+            var bounds = VisualTreeGeometry.BoundsOnPage(face);
+            var captionRow = Caption.Parent as VisualElement;
+            var captionHeight = captionRow?.Height > 0 ? captionRow.Height + 2 : 0;
+            _viewModel.RefineAnchor = new Rect(bounds.X, bounds.Y, bounds.Width, bounds.Height + captionHeight);
+        }
 
-        _viewModel.RefineAnchor = VisualTreeGeometry.BoundsOnPage(face);
+        if (HourChip.Width > 0)
+        {
+            _viewModel.HourAnchor = VisualTreeGeometry.BoundsOnPage(HourChip);
+        }
     }
 
     /// <summary>
@@ -104,7 +123,7 @@ public partial class MoodSection : ContentView
         Caption.CancelAnimations();
         if (animated && Caption.IsLoaded && Caption.IsVisible)
         {
-            _ = Caption.TranslateToAsync(Motion.ReduceMotion ? target : target, 0, Motion.FastMs, Motion.EaseOut);
+            _ = Caption.TranslateToAsync(target, 0, Motion.FastMs, Motion.EaseOut);
         }
         else
         {

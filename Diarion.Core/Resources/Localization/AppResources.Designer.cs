@@ -2876,5 +2876,17 @@ public static string ClearAllDataSuccessMsg {
         public static string InsightPathSettingsHint {
             get { return ResourceManager.GetString("InsightPathSettingsHint", resourceCulture) ?? string.Empty; }
         }
+
+        public static string MoodHourPickerTitle {
+            get { return ResourceManager.GetString("MoodHourPickerTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string MoodHourExit {
+            get { return ResourceManager.GetString("MoodHourExit", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string MoodHourlyLabel {
+            get { return ResourceManager.GetString("MoodHourlyLabel", resourceCulture) ?? string.Empty; }
+        }
     }
 }
