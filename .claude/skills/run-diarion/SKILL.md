@@ -122,6 +122,15 @@ to a synthetic mouse drag — `drag.ps1` moves the pointer across a row and noth
 tool failing, not the feature: the planner's swipe-to-delete works on Android and iOS and cannot be
 exercised here at all. Say so rather than reporting it as verified.
 
+## Two instances at once
+
+If the owner has Diarion open while you run a sandbox copy, pin yours: `shot.ps1` and `resize.ps1`
+take `-ProcessId <pid>` (find it with `tasklist`), `shot.ps1` prints `pid=` in its OK line, and
+`click.ps1 -ExpectPid <pid>` refuses with `WINDOW_MISMATCH` unless that process owns the window
+painted under the point. Never click without `-ExpectPid` while two instances exist: the other one is the
+real diary. The owner's instance also holds `Diarion.Core.dll`, so build in a detached worktree
+(`git worktree add --detach D:\WORK\SOURCE_CODE\Diarion-check HEAD`) rather than in their checkout.
+
 ## When the fallback is wrong
 
 These helpers drive the desktop, so they assume Diarion is the foreground window and nothing else is
