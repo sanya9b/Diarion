@@ -175,6 +175,7 @@ public sealed class SnapshotBuilder : ISnapshotBuilder
             {
                 Date = Day(p.Date),
                 Valence = p.HasData ? Math.Round(p.Valence, 2) : null,
+                Energy = p.HasData ? Math.Round(p.Energy, 2) : null,
                 DominantEmotion = p.HasData && p.DominantEmotion != Emotion.None
                     ? p.DominantEmotion.ToString()
                     : null
@@ -188,6 +189,7 @@ public sealed class SnapshotBuilder : ISnapshotBuilder
             {
                 Hour = h.Hour,
                 Valence = Math.Round(h.Valence, 2),
+                Energy = Math.Round(h.Energy, 2),
                 Observations = h.Count,
                 Days = h.DayCount
             })

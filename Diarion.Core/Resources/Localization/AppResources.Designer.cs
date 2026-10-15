@@ -2896,5 +2896,25 @@ public static string ClearAllDataSuccessMsg {
         public static string MoodRefineHint {
             get { return ResourceManager.GetString("MoodRefineHint", resourceCulture) ?? string.Empty; }
         }
+
+        public static string StatsEnergyByHour {
+            get { return ResourceManager.GetString("StatsEnergyByHour", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsEnergyByHourSubtitle {
+            get { return ResourceManager.GetString("StatsEnergyByHourSubtitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsEnergyByHourHigh {
+            get { return ResourceManager.GetString("StatsEnergyByHourHigh", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsEnergyByHourLow {
+            get { return ResourceManager.GetString("StatsEnergyByHourLow", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsEnergyByHourBalanced {
+            get { return ResourceManager.GetString("StatsEnergyByHourBalanced", resourceCulture) ?? string.Empty; }
+        }
     }
 }

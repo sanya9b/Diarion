@@ -293,6 +293,47 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Energy by hour of day: the second axis of the circumplex (spec 18), the same control
+                     reading the same hours. Warm for energetic, cool for calm; neither side is "good". -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasHourlyMood}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.StatsEnergyByHour}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
+                        <Label Text="{x:Static localization:AppResources.StatsEnergyByHourSubtitle}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Grid HeightRequest="170">
+                            <controls:MoodHourBarChart Items="{Binding MoodStats.HourlyMoodProfile}"
+                                                       Axis="Energy"
+                                                       PositiveColor="{DynamicResource Theme_Amber}"
+                                                       NegativeColor="{DynamicResource Theme_Ocean_Ocean}"
+                                                       SurfaceColor="{DynamicResource Theme_Snow_Black}"
+                                                       TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                                       MutedColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </Grid>
+
+                        <FlexLayout Wrap="Wrap" Direction="Row" AlignItems="Center">
+                            <HorizontalStackLayout Spacing="6" Margin="0,0,16,4">
+                                <Border BackgroundColor="{DynamicResource Theme_Amber}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                                <Label Text="{x:Static localization:AppResources.StatsEnergyByHourHigh}" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="6" Margin="0,0,16,4">
+                                <Border BackgroundColor="{DynamicResource Theme_Ocean_Ocean}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                                <Label Text="{x:Static localization:AppResources.StatsEnergyByHourLow}" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="6" Margin="0,0,16,4">
+                                <Border BackgroundColor="{DynamicResource Theme_Ocean_Dust}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                                <Label Text="{x:Static localization:AppResources.StatsEnergyByHourBalanced}" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="6" Margin="0,0,16,4">
+                                <Border BackgroundColor="{DynamicResource Theme_Amber}" Opacity="0.35" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                                <Label Text="{x:Static localization:AppResources.StatsMoodByHourSparse}" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Mood logged, but only ever day-level: point at the hourly grid instead of an empty chart. -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.ShowHourlyMoodHint}">
                     <Border.Shadow>
