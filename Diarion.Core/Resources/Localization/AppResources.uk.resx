@@ -134,19 +134,106 @@
     <value>Немає</value>
   </data>
   <data name="EmotionHappy" xml:space="preserve">
-    <value>Веселий</value>
+    <value>Радість</value>
   </data>
   <data name="EmotionCalm" xml:space="preserve">
-    <value>Спокійний</value>
+    <value>Спокій</value>
   </data>
   <data name="EmotionAnxious" xml:space="preserve">
-    <value>Тривожний</value>
+    <value>Тривога</value>
   </data>
   <data name="EmotionSad" xml:space="preserve">
-    <value>Сумний</value>
+    <value>Сум</value>
   </data>
   <data name="EmotionAngry" xml:space="preserve">
-    <value>Злий</value>
+    <value>Злість</value>
+  </data>
+  <data name="EmotionNeutral" xml:space="preserve">
+    <value>Нейтрально</value>
+  </data>
+  <data name="EmotionInspired" xml:space="preserve">
+    <value>Натхнення</value>
+  </data>
+  <data name="EmotionExcited" xml:space="preserve">
+    <value>Захват</value>
+  </data>
+  <data name="EmotionProud" xml:space="preserve">
+    <value>Гордість</value>
+  </data>
+  <data name="EmotionEnergetic" xml:space="preserve">
+    <value>Бадьорість</value>
+  </data>
+  <data name="EmotionPlayful" xml:space="preserve">
+    <value>Грайливість</value>
+  </data>
+  <data name="EmotionOptimistic" xml:space="preserve">
+    <value>Оптимізм</value>
+  </data>
+  <data name="EmotionContent" xml:space="preserve">
+    <value>Задоволення</value>
+  </data>
+  <data name="EmotionGrateful" xml:space="preserve">
+    <value>Вдячність</value>
+  </data>
+  <data name="EmotionRelaxed" xml:space="preserve">
+    <value>Розслабленість</value>
+  </data>
+  <data name="EmotionLoving" xml:space="preserve">
+    <value>Любов</value>
+  </data>
+  <data name="EmotionSecure" xml:space="preserve">
+    <value>Захищеність</value>
+  </data>
+  <data name="EmotionPeaceful" xml:space="preserve">
+    <value>Умиротворення</value>
+  </data>
+  <data name="EmotionStressed" xml:space="preserve">
+    <value>Стрес</value>
+  </data>
+  <data name="EmotionIrritated" xml:space="preserve">
+    <value>Роздратування</value>
+  </data>
+  <data name="EmotionOverwhelmed" xml:space="preserve">
+    <value>Перевантаження</value>
+  </data>
+  <data name="EmotionScared" xml:space="preserve">
+    <value>Страх</value>
+  </data>
+  <data name="EmotionFrustrated" xml:space="preserve">
+    <value>Фрустрація</value>
+  </data>
+  <data name="EmotionTired" xml:space="preserve">
+    <value>Втома</value>
+  </data>
+  <data name="EmotionBored" xml:space="preserve">
+    <value>Нудьга</value>
+  </data>
+  <data name="EmotionLonely" xml:space="preserve">
+    <value>Самотність</value>
+  </data>
+  <data name="EmotionDisappointed" xml:space="preserve">
+    <value>Розчарування</value>
+  </data>
+  <data name="EmotionExhausted" xml:space="preserve">
+    <value>Виснаження</value>
+  </data>
+  <data name="EmotionHopeless" xml:space="preserve">
+    <value>Безнадія</value>
+  </data>
+  <data name="QuadrantPleasantEnergetic" xml:space="preserve">
+    <value>Приємно, енергійно</value>
+  </data>
+  <data name="QuadrantPleasantCalm" xml:space="preserve">
+    <value>Приємно, спокійно</value>
+  </data>
+  <data name="QuadrantUnpleasantEnergetic" xml:space="preserve">
+    <value>Неприємно, енергійно</value>
+  </data>
+  <data name="QuadrantUnpleasantCalm" xml:space="preserve">
+    <value>Неприємно, спокійно</value>
+  </data>
+  <data name="MoodRefineHint" xml:space="preserve">
+    <value>Точніше, якщо хочете</value>
   </data>
   <data name="TodoListLabel" xml:space="preserve">
     <value>Список справ</value>

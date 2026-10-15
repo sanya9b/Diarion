@@ -66,6 +66,7 @@ public partial class DiaryEntryViewModel : ObservableObject
         Habits.CollectionChanged += (s, e) => UpdateModelHabits();
 
         BuildHourlyMood(model);
+        RefreshMoodSelection();
         RefreshPrompt();
         RefreshPromptText();
     }
@@ -98,6 +99,8 @@ public partial class DiaryEntryViewModel : ObservableObject
     private int? _selectedHour;
 
     public bool IsHourSelected => SelectedHour != null;
+
+    partial void OnSelectedHourChanged(int? value) => RefreshMoodSelection();
 
     /// <summary>
     /// What the emotion row should show as selected: the chosen hour's mood while an hour is picked,
@@ -143,11 +146,66 @@ public partial class DiaryEntryViewModel : ObservableObject
         foreach (var h in HourlyMood) h.IsSelected = h.Hour == SelectedHour;
     }
 
-    // Mood selection is 2-tap. With no hour selected it sets the day-level scalar, exactly as before;
-    // with an hour selected it writes that hour instead. Either way PropertyChanged reaches the main
-    // ViewModel, which triggers the debounced auto-save.
+    // --- Circumplex picker ---
+
+    /// <summary>
+    /// The four quadrant tiles in the order the plane is read: energetic above calm, unpleasant left
+    /// of pleasant. Neutral is the origin and has its own control.
+    /// </summary>
+    public IReadOnlyList<MoodQuadrantViewModel> Quadrants { get; } = new[]
+    {
+        new MoodQuadrantViewModel(EmotionQuadrant.UnpleasantEnergetic, row: 0, column: 0),
+        new MoodQuadrantViewModel(EmotionQuadrant.PleasantEnergetic, row: 0, column: 1),
+        new MoodQuadrantViewModel(EmotionQuadrant.UnpleasantCalm, row: 1, column: 0),
+        new MoodQuadrantViewModel(EmotionQuadrant.PleasantCalm, row: 1, column: 1)
+    };
+
+    /// <summary>
+    /// The emotions of the quadrant <see cref="CurrentMood"/> sits in, representative first. Rebuilt
+    /// only when the quadrant changes, so choosing chips within one quadrant never re-creates the row.
+    /// Empty with nothing or Neutral chosen: there is nothing to refine.
+    /// </summary>
+    public ObservableCollection<MoodChipViewModel> Refinements { get; } = new();
+
+    private EmotionQuadrant _refinementQuadrant = EmotionQuadrant.None;
+
+    public EmotionQuadrant CurrentQuadrant => CurrentMood.ToQuadrant();
+
+    public bool IsNeutralSelected => CurrentMood == Emotion.Neutral;
+
+    public bool HasRefinements => Refinements.Count > 0;
+
+    private static readonly Microsoft.Maui.Graphics.Color NeutralColor =
+        Microsoft.Maui.Graphics.Color.FromArgb(EmotionQuadrant.Neutral.ToColorHex());
+
+    /// <summary>
+    /// The neutral control's fill layer: the charts' grey while Neutral is chosen, see-through otherwise.
+    /// A plain value for the same reason as <see cref="MoodQuadrantViewModel.FillColor"/>.
+    /// </summary>
+    public Microsoft.Maui.Graphics.Color NeutralFillColor =>
+        IsNeutralSelected ? NeutralColor : Microsoft.Maui.Graphics.Colors.Transparent;
+
+    /// <summary>
+    /// First tap. A quadrant tile records its representative emotion (Happy, Calm, Anxious, Sad or
+    /// Neutral), so the two-tap promise of spec 05 holds and refinement stays optional. Tapping the
+    /// quadrant that is already chosen clears the mood — also the only way to un-log a day.
+    /// </summary>
     [RelayCommand]
-    private void SelectEmotion(Emotion emotion)
+    private void SelectQuadrant(EmotionQuadrant quadrant)
+    {
+        if (quadrant == EmotionQuadrant.None) return;
+
+        WriteMood(CurrentQuadrant == quadrant ? Emotion.None : quadrant.Representative());
+    }
+
+    /// <summary>Second tap. A chip replaces the representative with the precise emotion.</summary>
+    [RelayCommand]
+    private void SelectEmotion(Emotion emotion) => WriteMood(emotion);
+
+    // With no hour selected the picker writes the day-level scalar, exactly as before; with an hour
+    // selected it writes that hour instead. Either way PropertyChanged reaches the main ViewModel,
+    // which triggers the debounced auto-save.
+    private void WriteMood(Emotion emotion)
     {
         if (SelectedHour is not int hour)
         {
@@ -158,11 +216,40 @@ public partial class DiaryEntryViewModel : ObservableObject
         var slot = HourlyMood.FirstOrDefault(h => h.Hour == hour);
         if (slot == null) return;
 
-        // Re-picking the same emotion clears the hour — otherwise there would be no way to undo it.
-        slot.Mood = slot.Mood == emotion ? Emotion.None : emotion;
+        slot.Mood = emotion;
         OnPropertyChanged(nameof(CurrentMood));
         UpdateModelHourlyMood();
         RefreshPrompt();
+        RefreshMoodSelection();
+    }
+
+    /// <summary>Brings the tiles, the chips and the neutral control in line with <see cref="CurrentMood"/>.</summary>
+    private void RefreshMoodSelection()
+    {
+        var mood = CurrentMood;
+        var quadrant = mood.ToQuadrant();
+
+        foreach (var tile in Quadrants) tile.IsSelected = tile.Quadrant == quadrant;
+
+        if (quadrant != _refinementQuadrant)
+        {
+            _refinementQuadrant = quadrant;
+            Refinements.Clear();
+            if (quadrant != EmotionQuadrant.None && quadrant != EmotionQuadrant.Neutral)
+            {
+                foreach (var emotion in quadrant.Emotions())
+                {
+                    Refinements.Add(new MoodChipViewModel(emotion));
+                }
+            }
+            OnPropertyChanged(nameof(HasRefinements));
+        }
+
+        foreach (var chip in Refinements) chip.IsSelected = chip.Emotion == mood;
+
+        OnPropertyChanged(nameof(IsNeutralSelected));
+        OnPropertyChanged(nameof(NeutralFillColor));
+        OnPropertyChanged(nameof(CurrentQuadrant));
     }
 
     [ObservableProperty]
@@ -418,6 +505,7 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.Emotion = value;
         OnPropertyChanged(nameof(CurrentMood));
         RefreshPrompt();
+        RefreshMoodSelection();
     }
 
     [ObservableProperty]

@@ -139,13 +139,24 @@ public class StatisticsService : IStatisticsService
                     Valence: g.Average(e => MoodAggregate.Valence(e.Emotion, e.HourlyMood)),
                     Dominant: MoodAggregate.Dominant(
                         g.First().Emotion,
+                        g.SelectMany(e => e.HourlyMood).ToList()),
+                    // Coarser than Dominant and what the heatmap colours by: see MoodAggregate.DominantQuadrant.
+                    Quadrant: MoodAggregate.DominantQuadrant(
+                        g.First().Emotion,
                         g.SelectMany(e => e.HourlyMood).ToList())));
 
         var dailyTrend = new List<MoodTrendPoint>();
         for (var d = range.Start; d <= range.End; d = d.AddDays(1))
         {
             dailyTrend.Add(moodByDate.TryGetValue(d, out var info)
-                ? new MoodTrendPoint { Date = d, Valence = info.Valence, HasData = true, DominantEmotion = info.Dominant }
+                ? new MoodTrendPoint
+                {
+                    Date = d,
+                    Valence = info.Valence,
+                    HasData = true,
+                    DominantEmotion = info.Dominant,
+                    DominantQuadrant = info.Quadrant
+                }
                 : new MoodTrendPoint { Date = d, Valence = 0, HasData = false });
         }
 

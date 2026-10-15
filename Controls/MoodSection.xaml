@@ -9,14 +9,36 @@
              x:DataType="viewmodels:DiaryEntryViewModel">
 
     <ContentView.Resources>
-        <Style x:Key="MoodDot" TargetType="Border">
+        <!-- A quadrant of the plane: monochrome until chosen, then filled with its brand hue. The hue
+             sits on an inner fill layer bound straight to the item (see MoodFill): the outer Border
+             carries press feedback, which animates it, and a DataTrigger on it did not give the
+             colour back on un-apply. The stroke stays the theme's, as it does on the hour grid. -->
+        <Style x:Key="MoodTile" TargetType="Border">
             <Setter Property="StrokeShape" Value="RoundRectangle 16" />
             <Setter Property="StrokeThickness" Value="1" />
             <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
             <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Midnight}" />
-            <Setter Property="HeightRequest" Value="50" />
-            <Setter Property="HorizontalOptions" Value="Fill" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinimumHeightRequest" Value="56" />
             <Setter Property="behaviors:PressFeedback.IsEnabled" Value="True" />
+        </Style>
+
+        <!-- A precise emotion inside the chosen quadrant: the tile's grammar, chip-sized. -->
+        <Style x:Key="MoodChip" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,8,8" />
+            <Setter Property="behaviors:PressFeedback.IsEnabled" Value="True" />
+        </Style>
+
+        <!-- The fill layer inside a tile, chip or pill: transparent until its item is chosen. -->
+        <Style x:Key="MoodFill" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 15" />
+            <Setter Property="StrokeThickness" Value="0" />
+            <Setter Property="InputTransparent" Value="True" />
         </Style>
     </ContentView.Resources>
 
@@ -34,93 +56,102 @@
                    FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5"
                    TextColor="{DynamicResource Theme_Coral}" />
 
-            <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="8">
+            <!-- The plane. Energetic above calm, unpleasant left of pleasant; one tap records the
+                 quadrant's representative emotion, tapping it again clears. Row and column come from
+                 the item so the four tiles land on the 2×2 grid without four copies of the template. -->
+            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" RowSpacing="8" ColumnSpacing="8"
+                  BindableLayout.ItemsSource="{Binding Quadrants}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:MoodQuadrantViewModel">
+                        <Border Style="{StaticResource MoodTile}"
+                                Grid.Row="{Binding Row}" Grid.Column="{Binding Column}"
+                                SemanticProperties.Description="{Binding Name}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryEntryViewModel}}, Path=SelectQuadrantCommand}"
+                                                      CommandParameter="{Binding Quadrant}" />
+                            </Border.GestureRecognizers>
 
-                <!-- Happy -->
-                <VerticalStackLayout Grid.Column="0" Spacing="4">
-                    <Border Style="{StaticResource MoodDot}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Happy}" />
-                        </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Happy}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Label Text="😊" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionHappy}" />
-                    </Border>
-                    <Label Text="{x:Static localization:AppResources.EmotionHappy}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                </VerticalStackLayout>
-
-                <!-- Calm -->
-                <VerticalStackLayout Grid.Column="1" Spacing="4">
-                    <Border Style="{StaticResource MoodDot}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Calm}" />
-                        </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Calm}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Label Text="😌" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionCalm}" />
-                    </Border>
-                    <Label Text="{x:Static localization:AppResources.EmotionCalm}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                </VerticalStackLayout>
-
-                <!-- Anxious -->
-                <VerticalStackLayout Grid.Column="2" Spacing="4">
-                    <Border Style="{StaticResource MoodDot}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Anxious}" />
-                        </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Anxious}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Label Text="😰" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionAnxious}" />
-                    </Border>
-                    <Label Text="{x:Static localization:AppResources.EmotionAnxious}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                </VerticalStackLayout>
-
-                <!-- Sad -->
-                <VerticalStackLayout Grid.Column="3" Spacing="4">
-                    <Border Style="{StaticResource MoodDot}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Sad}" />
-                        </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Sad}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Label Text="😢" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionSad}" />
-                    </Border>
-                    <Label Text="{x:Static localization:AppResources.EmotionSad}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                </VerticalStackLayout>
-
-                <!-- Angry -->
-                <VerticalStackLayout Grid.Column="4" Spacing="4">
-                    <Border Style="{StaticResource MoodDot}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Angry}" />
-                        </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Angry}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Label Text="😠" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionAngry}" />
-                    </Border>
-                    <Label Text="{x:Static localization:AppResources.EmotionAngry}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                </VerticalStackLayout>
+                            <Border Style="{StaticResource MoodFill}" Padding="12,10" BackgroundColor="{Binding FillColor}">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0" Text="{Binding Emoji}" FontSize="22" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="{Binding Name}" FontSize="12" LineBreakMode="WordWrap" MaxLines="2"
+                                           VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                                <Setter Property="FontAttributes" Value="Bold" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                    <!-- The quadrant's hue as a legend dot while unselected; the fill says it once chosen. -->
+                                    <Border Grid.Column="2" WidthRequest="8" HeightRequest="8" StrokeThickness="0"
+                                            StrokeShape="Ellipse" BackgroundColor="{Binding Color}" VerticalOptions="Center"
+                                            Opacity="{Binding DotOpacity}" />
+                                </Grid>
+                            </Border>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
             </Grid>
+
+            <!-- The origin of the plane: a recorded "nothing in particular". -->
+            <Border StrokeShape="RoundRectangle 18" StrokeThickness="1" Padding="0"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    HorizontalOptions="Center"
+                    behaviors:PressFeedback.IsEnabled="True"
+                    SemanticProperties.Description="{x:Static localization:AppResources.EmotionNeutral}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectQuadrantCommand}"
+                                          CommandParameter="{x:Static models:EmotionQuadrant.Neutral}" />
+                </Border.GestureRecognizers>
+                <Border Style="{StaticResource MoodFill}" StrokeShape="RoundRectangle 17" Padding="14,7"
+                        BackgroundColor="{Binding NeutralFillColor}">
+                    <HorizontalStackLayout Spacing="8">
+                        <Label Text="😐" FontSize="16" VerticalOptions="Center" />
+                        <Label Text="{x:Static localization:AppResources.EmotionNeutral}" FontSize="12"
+                               VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsNeutralSelected}" Value="True">
+                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                    <Setter Property="FontAttributes" Value="Bold" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </HorizontalStackLayout>
+                </Border>
+            </Border>
+
+            <!-- Refinement: the chosen quadrant's emotions, representative first. Shown and hidden
+                 from code-behind so the row can enter with motion (see MoodSection.xaml.cs). -->
+            <VerticalStackLayout x:Name="RefinePanel" Spacing="8" IsVisible="False" Opacity="0">
+                <Label Text="{localization:Translate Key=MoodRefineHint}" FontSize="11"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Center"
+                            BindableLayout.ItemsSource="{Binding Refinements}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:MoodChipViewModel">
+                            <Border Style="{StaticResource MoodChip}" SemanticProperties.Description="{Binding Name}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryEntryViewModel}}, Path=SelectEmotionCommand}"
+                                                          CommandParameter="{Binding Emotion}" />
+                                </Border.GestureRecognizers>
+                                <Border Style="{StaticResource MoodFill}" Padding="12,7" BackgroundColor="{Binding FillColor}">
+                                    <Label Text="{Binding Name}" FontSize="13"
+                                           TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                                <Setter Property="FontAttributes" Value="Bold" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </VerticalStackLayout>
 
             <!-- Настрій по годинах (згорнуто за замовчуванням) -->
             <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">

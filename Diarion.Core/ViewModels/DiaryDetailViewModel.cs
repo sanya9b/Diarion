@@ -53,15 +53,19 @@ public partial class DiaryDetailViewModel : BaseViewModel
     [ObservableProperty]
     public partial Emotion SelectedEmotion { get; set; } = Emotion.None;
 
-    public List<EmotionItem> EmotionsList { get; } = new()
+    /// <summary>None first, then every emotion the catalogue knows, quadrant by quadrant.</summary>
+    public List<EmotionItem> EmotionsList { get; } = BuildEmotionsList();
+
+    private static List<EmotionItem> BuildEmotionsList()
     {
-        new(Emotion.None, Diarion.Resources.Localization.AppResources.EmotionNone),
-        new(Emotion.Happy, Diarion.Resources.Localization.AppResources.EmotionHappy),
-        new(Emotion.Calm, Diarion.Resources.Localization.AppResources.EmotionCalm),
-        new(Emotion.Anxious, Diarion.Resources.Localization.AppResources.EmotionAnxious),
-        new(Emotion.Sad, Diarion.Resources.Localization.AppResources.EmotionSad),
-        new(Emotion.Angry, Diarion.Resources.Localization.AppResources.EmotionAngry)
-    };
+        var list = new List<EmotionItem> { new(Emotion.None, Diarion.Resources.Localization.AppResources.EmotionNone) };
+        foreach (var emotion in EmotionCatalog.All)
+        {
+            list.Add(new EmotionItem(emotion, emotion.ToLocalizedName()));
+        }
+
+        return list;
+    }
 
     [ObservableProperty]
     public partial EmotionItem? SelectedEmotionItem { get; set; }

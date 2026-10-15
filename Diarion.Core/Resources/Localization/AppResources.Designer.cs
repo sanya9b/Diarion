@@ -2780,5 +2780,121 @@ public static string ClearAllDataSuccessMsg {
         public static string InsightPathAccessibleFormat {
             get { return ResourceManager.GetString("InsightPathAccessibleFormat", resourceCulture) ?? string.Empty; }
         }
+
+        public static string EmotionNeutral {
+            get { return ResourceManager.GetString("EmotionNeutral", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionInspired {
+            get { return ResourceManager.GetString("EmotionInspired", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionExcited {
+            get { return ResourceManager.GetString("EmotionExcited", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionProud {
+            get { return ResourceManager.GetString("EmotionProud", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionEnergetic {
+            get { return ResourceManager.GetString("EmotionEnergetic", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionPlayful {
+            get { return ResourceManager.GetString("EmotionPlayful", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionOptimistic {
+            get { return ResourceManager.GetString("EmotionOptimistic", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionContent {
+            get { return ResourceManager.GetString("EmotionContent", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionGrateful {
+            get { return ResourceManager.GetString("EmotionGrateful", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionRelaxed {
+            get { return ResourceManager.GetString("EmotionRelaxed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionLoving {
+            get { return ResourceManager.GetString("EmotionLoving", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionSecure {
+            get { return ResourceManager.GetString("EmotionSecure", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionPeaceful {
+            get { return ResourceManager.GetString("EmotionPeaceful", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionStressed {
+            get { return ResourceManager.GetString("EmotionStressed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionIrritated {
+            get { return ResourceManager.GetString("EmotionIrritated", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionOverwhelmed {
+            get { return ResourceManager.GetString("EmotionOverwhelmed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionScared {
+            get { return ResourceManager.GetString("EmotionScared", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionFrustrated {
+            get { return ResourceManager.GetString("EmotionFrustrated", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionTired {
+            get { return ResourceManager.GetString("EmotionTired", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionBored {
+            get { return ResourceManager.GetString("EmotionBored", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionLonely {
+            get { return ResourceManager.GetString("EmotionLonely", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionDisappointed {
+            get { return ResourceManager.GetString("EmotionDisappointed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionExhausted {
+            get { return ResourceManager.GetString("EmotionExhausted", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionHopeless {
+            get { return ResourceManager.GetString("EmotionHopeless", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuadrantPleasantEnergetic {
+            get { return ResourceManager.GetString("QuadrantPleasantEnergetic", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuadrantPleasantCalm {
+            get { return ResourceManager.GetString("QuadrantPleasantCalm", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuadrantUnpleasantEnergetic {
+            get { return ResourceManager.GetString("QuadrantUnpleasantEnergetic", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuadrantUnpleasantCalm {
+            get { return ResourceManager.GetString("QuadrantUnpleasantCalm", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string MoodRefineHint {
+            get { return ResourceManager.GetString("MoodRefineHint", resourceCulture) ?? string.Empty; }
+        }
     }
 }
