@@ -718,11 +718,11 @@
   <data name="MoodHourlyLabel" xml:space="preserve">
     <value>By the hour</value>
   </data>
-  <data name="MoodHourlyHint" xml:space="preserve">
-    <value>Pick an hour, then tap a mood above</value>
+  <data name="MoodHourPickerTitle" xml:space="preserve">
+    <value>Choose an hour</value>
   </data>
-  <data name="MoodHourlyDayHint" xml:space="preserve">
-    <value>Tap a mood above to set the whole day</value>
+  <data name="MoodHourExit" xml:space="preserve">
+    <value>Back to the whole day</value>
   </data>
   <data name="MoodHourAccessibility" xml:space="preserve">
     <value>{0}:00 — {1}</value>

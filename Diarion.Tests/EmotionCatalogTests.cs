@@ -73,6 +73,18 @@ public class EmotionCatalogTests
     }
 
     [Fact]
+    public void Recordable_quadrants_have_distinct_theme_keys()
+    {
+        // The mood row highlights through these keys so each theme can restyle them; every theme
+        // dictionary must define all five (see Resources/Themes).
+        var keys = EmotionCatalog.Quadrants.Select(q => q.ToThemeKey()).ToList();
+
+        keys.Should().OnlyHaveUniqueItems();
+        keys.Should().OnlyContain(k => k.StartsWith("Theme_Mood"));
+        EmotionQuadrant.None.ToThemeKey().Should().NotStartWith("Theme_Mood", "nothing recorded is not a highlight");
+    }
+
+    [Fact]
     public void Recordable_quadrants_have_a_glyph()
     {
         EmotionCatalog.Quadrants.Select(q => q.ToEmoji()).Should().OnlyContain(e => !string.IsNullOrEmpty(e));

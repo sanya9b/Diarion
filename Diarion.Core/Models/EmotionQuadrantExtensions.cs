@@ -27,6 +27,21 @@ public static class EmotionQuadrantExtensions
         _ => "#D0D3D4"                                     // Dust (nothing recorded)
     };
 
+    /// <summary>
+    /// The resource key of the quadrant's highlight colour in the current theme. The brand themes map
+    /// these to the same accents as <see cref="ToColorHex"/>; the pink theme maps them to pinks, so the
+    /// mood row's highlights follow the theme while charts keep the fixed brand hues.
+    /// </summary>
+    public static string ToThemeKey(this EmotionQuadrant quadrant) => quadrant switch
+    {
+        EmotionQuadrant.PleasantEnergetic => "Theme_MoodPleasantEnergetic",
+        EmotionQuadrant.PleasantCalm => "Theme_MoodPleasantCalm",
+        EmotionQuadrant.UnpleasantEnergetic => "Theme_MoodUnpleasantEnergetic",
+        EmotionQuadrant.UnpleasantCalm => "Theme_MoodUnpleasantCalm",
+        EmotionQuadrant.Neutral => "Theme_MoodNeutral",
+        _ => "Theme_Dust_Ocean"
+    };
+
     /// <summary>Display name in the current UI language: the picker tile text and the donut legend.</summary>
     public static string ToLocalizedName(this EmotionQuadrant quadrant) => quadrant switch
     {

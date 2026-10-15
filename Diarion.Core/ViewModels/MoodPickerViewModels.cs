@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Diarion.Models;
-using Microsoft.Maui.Graphics;
 
 namespace Diarion.ViewModels;
 
@@ -9,9 +8,11 @@ namespace Diarion.ViewModels;
 /// the face shows an emoji and no words — the quadrant's name is for screen readers and legends only.
 /// </summary>
 /// <remarks>
-/// The chosen state is exposed as a plain value (<see cref="FillColor"/>) rather than left to XAML
+/// The chosen state is exposed as a plain value (<see cref="FillColorKey"/>) rather than left to XAML
 /// triggers: a DataTrigger on a Border that also carries press feedback does not reliably give the
-/// colour back when it un-applies, and a binding has nothing to un-apply.
+/// colour back when it un-applies, and a binding has nothing to un-apply. It is a theme key rather than
+/// a colour so each theme decides what a highlight looks like — the pink theme paints highlights in
+/// pinks, the brand themes use the quadrant's accent. Charts keep the fixed brand hues.
 /// </remarks>
 public partial class MoodQuadrantViewModel : ObservableObject
 {
@@ -19,7 +20,7 @@ public partial class MoodQuadrantViewModel : ObservableObject
     {
         Quadrant = quadrant;
         Column = column;
-        Color = Color.FromArgb(quadrant.ToColorHex());
+        ColorKey = quadrant.ToThemeKey();
     }
 
     public EmotionQuadrant Quadrant { get; }
@@ -31,15 +32,15 @@ public partial class MoodQuadrantViewModel : ObservableObject
 
     public string Emoji => Quadrant.ToEmoji();
 
-    /// <summary>The quadrant's brand hue: the disc behind the emoji once chosen.</summary>
-    public Color Color { get; }
+    /// <summary>The theme key of the quadrant's highlight hue.</summary>
+    public string ColorKey { get; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(FillColor))]
+    [NotifyPropertyChangedFor(nameof(FillColorKey))]
     private bool _isSelected;
 
-    /// <summary>The disc's fill layer: the quadrant's hue while chosen, see-through otherwise.</summary>
-    public Color FillColor => IsSelected ? Color : Colors.Transparent;
+    /// <summary>The disc's fill layer: the quadrant's hue while chosen, null (see-through) otherwise.</summary>
+    public string? FillColorKey => IsSelected ? ColorKey : null;
 }
 
 /// <summary>One chip in the refinement bubble: a precise emotion inside the chosen quadrant.</summary>
@@ -48,7 +49,7 @@ public partial class MoodChipViewModel : ObservableObject
     public MoodChipViewModel(Emotion emotion)
     {
         Emotion = emotion;
-        Color = Color.FromArgb(emotion.ToColorHex());
+        ColorKey = emotion.ToQuadrant().ToThemeKey();
     }
 
     public Emotion Emotion { get; }
@@ -56,12 +57,12 @@ public partial class MoodChipViewModel : ObservableObject
     public string Name => Emotion.ToLocalizedName();
 
     /// <summary>Inherited from the quadrant, so every chip in a bubble fills with the same hue.</summary>
-    public Color Color { get; }
+    public string ColorKey { get; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(FillColor))]
+    [NotifyPropertyChangedFor(nameof(FillColorKey))]
     private bool _isSelected;
 
-    /// <summary>The chip's fill layer: the hue while chosen, see-through otherwise.</summary>
-    public Color FillColor => IsSelected ? Color : Colors.Transparent;
+    /// <summary>The chip's fill layer: the hue while chosen, null (see-through) otherwise.</summary>
+    public string? FillColorKey => IsSelected ? ColorKey : null;
 }
