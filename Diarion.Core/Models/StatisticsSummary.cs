@@ -25,6 +25,9 @@ public class MoodTrendPoint
     public double Valence { get; set; }
     public bool HasData { get; set; }
 
+    /// <summary>Daily average energy (-2 calm .. +2 energetic), the circumplex's second axis; 0 when nothing logged.</summary>
+    public double Energy { get; set; }
+
     /// <summary>The day's representative emotion (mode of that day's entries), named in AI snapshots.</summary>
     public Emotion DominantEmotion { get; set; } = Emotion.None;
 
@@ -41,6 +44,9 @@ public class MoodHourPoint
 
     /// <summary>Mean valence (-2..+2) of every observation logged at this hour; 0 when there are none.</summary>
     public double Valence { get; set; }
+
+    /// <summary>Mean energy (-2 calm .. +2 energetic) of the same observations; 0 when there are none.</summary>
+    public double Energy { get; set; }
 
     /// <summary>Observations at this hour across the whole window, not days.</summary>
     public int Count { get; set; }

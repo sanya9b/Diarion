@@ -109,6 +109,9 @@ public sealed class SnapshotMoodDay
 
     public double? Valence { get; init; }
 
+    /// <summary>Daily average energy on a -2 (calm) .. +2 (energetic) scale; null with nothing logged.</summary>
+    public double? Energy { get; init; }
+
     public string? DominantEmotion { get; init; }
 }
 
@@ -117,6 +120,9 @@ public sealed class SnapshotMoodHour
     public int Hour { get; init; }
 
     public double Valence { get; init; }
+
+    /// <summary>Mean energy at this hour on the same -2 (calm) .. +2 (energetic) scale.</summary>
+    public double Energy { get; init; }
 
     /// <summary>Observations at this hour across the whole period.</summary>
     public int Observations { get; init; }
