@@ -100,7 +100,12 @@ public partial class DiaryEntryViewModel : ObservableObject
 
     public bool IsHourSelected => SelectedHour != null;
 
-    partial void OnSelectedHourChanged(int? value) => RefreshMoodSelection();
+    partial void OnSelectedHourChanged(int? value)
+    {
+        // Moving between hours closes the bubble: it belonged to the hour that was being edited.
+        IsRefinementOpen = false;
+        RefreshMoodSelection();
+    }
 
     /// <summary>
     /// What the emotion row should show as selected: the chosen hour's mood while an hour is picked,
@@ -146,63 +151,103 @@ public partial class DiaryEntryViewModel : ObservableObject
         foreach (var h in HourlyMood) h.IsSelected = h.Hour == SelectedHour;
     }
 
-    // --- Circumplex picker ---
+    // --- Mood row: five faces, a bubble of precise states ---
 
     /// <summary>
-    /// The four quadrant tiles in the order the plane is read: energetic above calm, unpleasant left
-    /// of pleasant. Neutral is the origin and has its own control.
+    /// The five faces, left to right from unpleasant to pleasant: Sad, Anxious, Neutral, Calm, Happy.
+    /// Each face is a quadrant of the circumplex (Neutral the origin); the quadrant's other emotions
+    /// live in the bubble that opens from the face. Quadrant names never appear on the row — people
+    /// think "tired", not "unpleasant, calm".
     /// </summary>
     public IReadOnlyList<MoodQuadrantViewModel> Quadrants { get; } = new[]
     {
-        new MoodQuadrantViewModel(EmotionQuadrant.UnpleasantEnergetic, row: 0, column: 0),
-        new MoodQuadrantViewModel(EmotionQuadrant.PleasantEnergetic, row: 0, column: 1),
-        new MoodQuadrantViewModel(EmotionQuadrant.UnpleasantCalm, row: 1, column: 0),
-        new MoodQuadrantViewModel(EmotionQuadrant.PleasantCalm, row: 1, column: 1)
+        new MoodQuadrantViewModel(EmotionQuadrant.UnpleasantCalm, column: 0),
+        new MoodQuadrantViewModel(EmotionQuadrant.UnpleasantEnergetic, column: 1),
+        new MoodQuadrantViewModel(EmotionQuadrant.Neutral, column: 2),
+        new MoodQuadrantViewModel(EmotionQuadrant.PleasantCalm, column: 3),
+        new MoodQuadrantViewModel(EmotionQuadrant.PleasantEnergetic, column: 4)
     };
 
     /// <summary>
     /// The emotions of the quadrant <see cref="CurrentMood"/> sits in, representative first. Rebuilt
-    /// only when the quadrant changes, so choosing chips within one quadrant never re-creates the row.
+    /// only when the quadrant changes, so choosing chips within one quadrant never re-creates them.
     /// Empty with nothing or Neutral chosen: there is nothing to refine.
     /// </summary>
     public ObservableCollection<MoodChipViewModel> Refinements { get; } = new();
 
     private EmotionQuadrant _refinementQuadrant = EmotionQuadrant.None;
 
-    public EmotionQuadrant CurrentQuadrant => CurrentMood.ToQuadrant();
+    /// <summary>Whether the bubble under the chosen face is out. View state, kept here so it is testable.</summary>
+    [ObservableProperty]
+    private bool _isRefinementOpen;
 
-    public bool IsNeutralSelected => CurrentMood == Emotion.Neutral;
+    /// <summary>
+    /// Where the bubble grows from: the chosen face's bounds in page coordinates, published by the
+    /// row's view whenever the chosen face moves or the page scrolls. The bubble lives in a page-level
+    /// layer so it can float over the cards below and be dismissed by a tap anywhere else; the two
+    /// views meet here rather than knowing each other.
+    /// </summary>
+    [ObservableProperty]
+    private Microsoft.Maui.Graphics.Rect _refineAnchor;
+
+    /// <summary>A tap anywhere outside the bubble, or a scroll, puts it away. The mood stays.</summary>
+    [RelayCommand]
+    private void CloseRefinement() => IsRefinementOpen = false;
+
+    public EmotionQuadrant CurrentQuadrant => CurrentMood.ToQuadrant();
 
     public bool HasRefinements => Refinements.Count > 0;
 
-    private static readonly Microsoft.Maui.Graphics.Color NeutralColor =
-        Microsoft.Maui.Graphics.Color.FromArgb(EmotionQuadrant.Neutral.ToColorHex());
+    /// <summary>Which face the caption and the bubble's tail sit under; the middle when nothing is chosen.</summary>
+    public int SelectedColumn => Quadrants.FirstOrDefault(q => q.IsSelected)?.Column ?? 2;
+
+    public bool HasCurrentMood => CurrentMood != Emotion.None;
+
+    /// <summary>The one word on the row: the precise state chosen, shown under its face.</summary>
+    public string CurrentMoodName => HasCurrentMood ? CurrentMood.ToLocalizedName() : string.Empty;
+
+    /// <summary>The chosen quadrant's hue for that word; transparent when nothing is chosen.</summary>
+    public Microsoft.Maui.Graphics.Color CurrentColor => HasCurrentMood
+        ? Microsoft.Maui.Graphics.Color.FromArgb(CurrentQuadrant.ToColorHex())
+        : Microsoft.Maui.Graphics.Colors.Transparent;
 
     /// <summary>
-    /// The neutral control's fill layer: the charts' grey while Neutral is chosen, see-through otherwise.
-    /// A plain value for the same reason as <see cref="MoodQuadrantViewModel.FillColor"/>.
-    /// </summary>
-    public Microsoft.Maui.Graphics.Color NeutralFillColor =>
-        IsNeutralSelected ? NeutralColor : Microsoft.Maui.Graphics.Colors.Transparent;
-
-    /// <summary>
-    /// First tap. A quadrant tile records its representative emotion (Happy, Calm, Anxious, Sad or
-    /// Neutral), so the two-tap promise of spec 05 holds and refinement stays optional. Tapping the
-    /// quadrant that is already chosen clears the mood — also the only way to un-log a day.
+    /// A face. The first tap records the quadrant's representative emotion (Sad, Anxious, Neutral, Calm
+    /// or Happy — the two-tap promise of spec 05 holds) and opens the bubble with the precise states.
+    /// Tapping the chosen face again only toggles the bubble; the mood stays until <see cref="ClearMood"/>.
     /// </summary>
     [RelayCommand]
     private void SelectQuadrant(EmotionQuadrant quadrant)
     {
         if (quadrant == EmotionQuadrant.None) return;
 
-        WriteMood(CurrentQuadrant == quadrant ? Emotion.None : quadrant.Representative());
+        if (CurrentQuadrant == quadrant)
+        {
+            IsRefinementOpen = HasRefinements && !IsRefinementOpen;
+            return;
+        }
+
+        WriteMood(quadrant.Representative());
+        IsRefinementOpen = HasRefinements;
     }
 
-    /// <summary>Second tap. A chip replaces the representative with the precise emotion.</summary>
+    /// <summary>A chip in the bubble: the precise state. Choosing one closes the bubble.</summary>
     [RelayCommand]
-    private void SelectEmotion(Emotion emotion) => WriteMood(emotion);
+    private void SelectEmotion(Emotion emotion)
+    {
+        WriteMood(emotion);
+        IsRefinementOpen = false;
+    }
 
-    // With no hour selected the picker writes the day-level scalar, exactly as before; with an hour
+    /// <summary>Un-logs the day, or the selected hour. Lives in the bubble, so a stray double tap cannot do it.</summary>
+    [RelayCommand]
+    private void ClearMood()
+    {
+        WriteMood(Emotion.None);
+        IsRefinementOpen = false;
+    }
+
+    // With no hour selected the row writes the day-level scalar, exactly as before; with an hour
     // selected it writes that hour instead. Either way PropertyChanged reaches the main ViewModel,
     // which triggers the debounced auto-save.
     private void WriteMood(Emotion emotion)
@@ -223,13 +268,13 @@ public partial class DiaryEntryViewModel : ObservableObject
         RefreshMoodSelection();
     }
 
-    /// <summary>Brings the tiles, the chips and the neutral control in line with <see cref="CurrentMood"/>.</summary>
+    /// <summary>Brings the faces, the caption and the chips in line with <see cref="CurrentMood"/>.</summary>
     private void RefreshMoodSelection()
     {
         var mood = CurrentMood;
         var quadrant = mood.ToQuadrant();
 
-        foreach (var tile in Quadrants) tile.IsSelected = tile.Quadrant == quadrant;
+        foreach (var face in Quadrants) face.IsSelected = face.Quadrant == quadrant;
 
         if (quadrant != _refinementQuadrant)
         {
@@ -247,9 +292,13 @@ public partial class DiaryEntryViewModel : ObservableObject
 
         foreach (var chip in Refinements) chip.IsSelected = chip.Emotion == mood;
 
-        OnPropertyChanged(nameof(IsNeutralSelected));
-        OnPropertyChanged(nameof(NeutralFillColor));
+        if (!HasRefinements) IsRefinementOpen = false;
+
         OnPropertyChanged(nameof(CurrentQuadrant));
+        OnPropertyChanged(nameof(SelectedColumn));
+        OnPropertyChanged(nameof(HasCurrentMood));
+        OnPropertyChanged(nameof(CurrentMoodName));
+        OnPropertyChanged(nameof(CurrentColor));
     }
 
     [ObservableProperty]

@@ -221,19 +221,19 @@
     <value>Безнадія</value>
   </data>
   <data name="QuadrantPleasantEnergetic" xml:space="preserve">
-    <value>Приємно, енергійно</value>
+    <value>Піднесення</value>
   </data>
   <data name="QuadrantPleasantCalm" xml:space="preserve">
-    <value>Приємно, спокійно</value>
+    <value>Рівновага</value>
   </data>
   <data name="QuadrantUnpleasantEnergetic" xml:space="preserve">
-    <value>Неприємно, енергійно</value>
+    <value>Напруга</value>
   </data>
   <data name="QuadrantUnpleasantCalm" xml:space="preserve">
-    <value>Неприємно, спокійно</value>
+    <value>Пригніченість</value>
   </data>
-  <data name="MoodRefineHint" xml:space="preserve">
-    <value>Точніше, якщо хочете</value>
+  <data name="MoodClear" xml:space="preserve">
+    <value>Прибрати</value>
   </data>
   <data name="TodoListLabel" xml:space="preserve">
     <value>Список справ</value>

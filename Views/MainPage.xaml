@@ -153,6 +153,11 @@
         <!-- Гід по головному екрану (онбординг, етап 2). Last child and RowSpan over both rows, so
              it covers the page. Everything it does lives in the control; this page only tells it
              which element each step means (MainPage.xaml.cs). -->
+        <!-- The mood row's bubble of precise states (spec 18). A page-level layer so it floats over the
+             cards below the row and a tap anywhere else puts it away; it binds to the same day as the
+             row and is placed from the anchor the row publishes. Under the tour, which must stay on top. -->
+        <controls:MoodRefinePopover BindingContext="{Binding CurrentEntry}" Grid.Row="0" Grid.RowSpan="2" />
+
         <controls:TourOverlayView x:Name="TourOverlay" Grid.Row="0" Grid.RowSpan="2" />
     </Grid>
 

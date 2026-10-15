@@ -2893,10 +2893,6 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("QuadrantUnpleasantCalm", resourceCulture) ?? string.Empty; }
         }
 
-        public static string MoodRefineHint {
-            get { return ResourceManager.GetString("MoodRefineHint", resourceCulture) ?? string.Empty; }
-        }
-
         public static string StatsEnergyByHour {
             get { return ResourceManager.GetString("StatsEnergyByHour", resourceCulture) ?? string.Empty; }
         }
@@ -2915,6 +2911,10 @@ public static string ClearAllDataSuccessMsg {
 
         public static string StatsEnergyByHourBalanced {
             get { return ResourceManager.GetString("StatsEnergyByHourBalanced", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string MoodClear {
+            get { return ResourceManager.GetString("MoodClear", resourceCulture) ?? string.Empty; }
         }
     }
 }
