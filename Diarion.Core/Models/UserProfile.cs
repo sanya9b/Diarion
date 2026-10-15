@@ -130,6 +130,13 @@ public partial class UserProfile : ObservableObject
     /// </summary>
     [ObservableProperty] private int _insightPathHiddenBelowMilestone;
 
+    /// <summary>
+    /// The strip under the date on the home screen (spec 17). Off is the user's choice in settings;
+    /// the path finishing on its own is <see cref="InsightPathHiddenBelowMilestone"/>, not this.
+    /// LiteDB field without a migration: a profile saved before it keeps the initialiser, true.
+    /// </summary>
+    [ObservableProperty] private bool _isInsightPathEnabled = true;
+
     public bool IsBirthDateKnown => BirthDate.HasValue;
 
     /// <summary>The intimate-life row of the health block: 18 and over, and only once the date is told.</summary>

@@ -29,9 +29,6 @@
 
                 <!-- Read-only banner or the one-time card for 1.0 users (spec 15). Its own view model. -->
                 <controls:AccessBanner />
-
-                <!-- The path to the first hypothesis (spec 17). Its own view model, like the banner. -->
-                <controls:InsightPathCard x:Name="InsightPath" />
                 
                 <controls:CalendarView IsExpanded="{Binding BindingContext.CalendarSection.IsCalendarExpanded, Source={x:Reference PageRoot}}" BindingContext="{Binding CalendarSection}" x:DataType="viewmodels:CalendarSectionViewModel" />
 
@@ -56,6 +53,10 @@
                          costs more than two points of display type. -->
                     <Label Text="{Binding CalendarSection.SelectedDateLabel}" FontFamily="MarckScript" FontSize="24" MaxLines="1" HorizontalTextAlignment="Center" HorizontalOptions="Center" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </VerticalStackLayout>
+
+                <!-- The path to the first hypothesis (spec 17): one quiet row under the date, its own
+                     view model like the banner. Pulled up a little into the date block's bottom margin. -->
+                <controls:InsightPathCard x:Name="InsightPath" Margin="0,-6,0,0" />
 
                 <!-- Tabs: Typography-Driven Design -->
                 <Grid x:Name="TabsAnchor" Margin="0,0,0,16" ColumnDefinitions="*,*">

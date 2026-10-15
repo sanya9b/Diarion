@@ -2386,49 +2386,19 @@
   <data name="EmptyStateSearchHint" xml:space="preserve">
     <value>Спробуйте інше слово або коротший запит.</value>
   </data>
-  <data name="InsightPathTitle" xml:space="preserve">
-    <value>До першої гіпотези</value>
-  </data>
   <data name="InsightPathProgressFormat" xml:space="preserve">
     <value>{0} з {1}</value>
   </data>
-  <data name="InsightPathHintFormat" xml:space="preserve">
-    <value>найближче — {0}</value>
-  </data>
-  <data name="InsightPathHintNoFactor" xml:space="preserve">
-    <value>Відмітьте настрій і сон — так день зарахується</value>
-  </data>
-  <data name="InsightPathMilestone1Title" xml:space="preserve">
-    <value>Перший день зараховано</value>
-  </data>
-  <data name="InsightPathMilestone1Body" xml:space="preserve">
-    <value>Перший піксель року вже на дошці.</value>
-  </data>
-  <data name="InsightPathMilestone3Title" xml:space="preserve">
-    <value>Три дні</value>
-  </data>
-  <data name="InsightPathMilestone3Body" xml:space="preserve">
-    <value>Дошка вже показує розподіл емоцій.</value>
-  </data>
-  <data name="InsightPathMilestone7Title" xml:space="preserve">
-    <value>Тиждень</value>
-  </data>
-  <data name="InsightPathMilestone7Body" xml:space="preserve">
-    <value>На дошці є настрій за годинами й днями. Пів шляху до першої гіпотези.</value>
-  </data>
-  <data name="InsightPathMilestone14Title" xml:space="preserve">
-    <value>Перша гіпотеза тримається</value>
-  </data>
-  <data name="InsightPathMilestone14Body" xml:space="preserve">
-    <value>Перевірено на ваших-таки двох тижнях. Це збіг у записах, не причина.</value>
-  </data>
-  <data name="InsightPathOpen" xml:space="preserve">
-    <value>Переглянути</value>
-  </data>
-  <data name="InsightPathHide" xml:space="preserve">
-    <value>Сховати</value>
-  </data>
   <data name="InsightPathAccessibleFormat" xml:space="preserve">
-    <value>{0} з {1} днів до першої гіпотези, {2}</value>
+    <value>{0} з {1} днів до першої гіпотези</value>
+  </data>
+  <data name="InsightPathSettingsTitle" xml:space="preserve">
+    <value>Шлях до першої гіпотези</value>
+  </data>
+  <data name="InsightPathSettingsLabel" xml:space="preserve">
+    <value>Стрічка під датою на головному</value>
+  </data>
+  <data name="InsightPathSettingsHint" xml:space="preserve">
+    <value>Чотирнадцять поділок до першого перевіреного зв'язку між настроєм і рештою щоденника. Зникає сама, щойно він з'явиться.</value>
   </data>
 </root>

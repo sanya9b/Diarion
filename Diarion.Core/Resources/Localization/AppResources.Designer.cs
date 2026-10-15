@@ -2721,60 +2721,8 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("EmptyStateSearchHint", resourceCulture) ?? string.Empty; }
         }
 
-        public static string InsightPathTitle {
-            get { return ResourceManager.GetString("InsightPathTitle", resourceCulture) ?? string.Empty; }
-        }
-
         public static string InsightPathProgressFormat {
             get { return ResourceManager.GetString("InsightPathProgressFormat", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathHintFormat {
-            get { return ResourceManager.GetString("InsightPathHintFormat", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathHintNoFactor {
-            get { return ResourceManager.GetString("InsightPathHintNoFactor", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathMilestone1Title {
-            get { return ResourceManager.GetString("InsightPathMilestone1Title", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathMilestone1Body {
-            get { return ResourceManager.GetString("InsightPathMilestone1Body", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathMilestone3Title {
-            get { return ResourceManager.GetString("InsightPathMilestone3Title", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathMilestone3Body {
-            get { return ResourceManager.GetString("InsightPathMilestone3Body", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathMilestone7Title {
-            get { return ResourceManager.GetString("InsightPathMilestone7Title", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathMilestone7Body {
-            get { return ResourceManager.GetString("InsightPathMilestone7Body", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathMilestone14Title {
-            get { return ResourceManager.GetString("InsightPathMilestone14Title", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathMilestone14Body {
-            get { return ResourceManager.GetString("InsightPathMilestone14Body", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathOpen {
-            get { return ResourceManager.GetString("InsightPathOpen", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string InsightPathHide {
-            get { return ResourceManager.GetString("InsightPathHide", resourceCulture) ?? string.Empty; }
         }
 
         public static string InsightPathAccessibleFormat {
@@ -2915,6 +2863,18 @@ public static string ClearAllDataSuccessMsg {
 
         public static string MoodClear {
             get { return ResourceManager.GetString("MoodClear", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string InsightPathSettingsTitle {
+            get { return ResourceManager.GetString("InsightPathSettingsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string InsightPathSettingsLabel {
+            get { return ResourceManager.GetString("InsightPathSettingsLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string InsightPathSettingsHint {
+            get { return ResourceManager.GetString("InsightPathSettingsHint", resourceCulture) ?? string.Empty; }
         }
     }
 }

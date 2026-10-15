@@ -405,4 +405,13 @@ public class InsightPathServiceTests
         reloaded.InsightPathHiddenBelowMilestone.Should().Be(7, "five paired days stand at the third milestone");
         (await service.GetAsync()).IsVisible.Should().BeFalse();
     }
+
+    [Fact]
+    public async Task SwitchedOffInSettings_HidesTheStrip_WhateverTheDataSays()
+    {
+        var h = new Harness(new CorrelationReadiness(5, Required, Factors.SleepDuration));
+        h.Profile.IsInsightPathEnabled = false;
+
+        (await h.Service.GetAsync()).IsVisible.Should().BeFalse("the switch in settings is the user's call");
+    }
 }

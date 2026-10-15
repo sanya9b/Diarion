@@ -72,6 +72,7 @@ public sealed class InsightPathService : IInsightPathService
         var walking = !hasHypothesis && !atLast;
         var arrived = hasHypothesis && atLast && access.Source != AccessSource.Legacy;
         var isVisible = access.CanWrite
+            && profile.IsInsightPathEnabled
             && reached >= profile.InsightPathHiddenBelowMilestone
             && (walking || arrived);
 

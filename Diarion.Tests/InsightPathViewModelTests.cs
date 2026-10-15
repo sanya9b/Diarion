@@ -17,14 +17,19 @@ using Xunit;
 
 namespace Diarion.Tests;
 
-/// <summary>Spec 17, R1.5–R1.6: the card's view model maps the service state to text, refreshes on the
-/// messages a paired day can arrive through, and opens statistics on the window it counted.</summary>
+/// <summary>Spec 17, R1.5–R1.6: the strip's view model maps the service state to a count, refreshes on
+/// the messages a paired day can arrive through, shows the first hypothesis once, and opens statistics
+/// on the window it counted.</summary>
 public class InsightPathViewModelTests
 {
     private const string Sleep = CorrelationService.Factors.SleepDuration;
 
     private static InsightPathState Walking(int paired, string? factor = Sleep) =>
         new(true, paired, 14, factor, InsightPathMilestones.Reached(paired), InsightPathMilestones.Next(paired), null);
+
+    private static InsightPathState Arrived(bool visible = true) =>
+        new(visible, 14, 14, Sleep, 14, null,
+            new MoodCorrelation { FactorKey = Sleep, Coefficient = 0.42, Confidence = 4, SampleSize = 14 });
 
     private static (InsightPathViewModel Vm, Mock<IInsightPathService> Path, Mock<INavigationService> Nav) Build(InsightPathState state)
     {
@@ -46,9 +51,9 @@ public class InsightPathViewModelTests
     }
 
     [Fact]
-    public async Task Refresh_MapsTheStateToText()
+    public async Task Refresh_MapsTheStateToTheCount()
     {
-        var (vm, _, _) = Build(Walking(9));
+        var (vm, path, _) = Build(Walking(9));
         using var _ = vm;
 
         await vm.RefreshAsync();
@@ -57,41 +62,9 @@ public class InsightPathViewModelTests
         vm.PairedDays.Should().Be(9);
         vm.RequiredDays.Should().Be(14);
         vm.ProgressText.Should().Be(string.Format(AppResources.InsightPathProgressFormat, 9, 14));
-        vm.HintText.Should().Be(string.Format(AppResources.InsightPathHintFormat, FactorNames.DisplayLower(Sleep)));
-        vm.HasMilestone.Should().BeTrue();
-        vm.ReachedMilestone.Should().Be(7);
-        vm.MilestoneTitle.Should().Be(AppResources.InsightPathMilestone7Title);
+        vm.AccessibleSummary.Should().Be(string.Format(AppResources.InsightPathAccessibleFormat, 9, 14));
         vm.HasHypothesis.Should().BeFalse();
-        vm.AccessibleSummary.Should().Contain(vm.HintText);
-    }
-
-    [Fact]
-    public async Task Refresh_BeforeAnythingPaired_NamesTheCheapestPair()
-    {
-        var (vm, _, _) = Build(Walking(0, factor: null));
-        using var _ = vm;
-
-        await vm.RefreshAsync();
-
-        vm.HintText.Should().Be(AppResources.InsightPathHintNoFactor);
-        vm.HasMilestone.Should().BeFalse();
-        vm.MilestoneTitle.Should().BeEmpty();
-    }
-
-    [Fact]
-    public async Task Refresh_AtTheLastMilestone_CarriesTheHypothesisInTheStatisticsWords()
-    {
-        var hypothesis = new MoodCorrelation { FactorKey = Sleep, Coefficient = 0.42, Confidence = 4, SampleSize = 14 };
-        var (vm, _, _) = Build(new InsightPathState(true, 14, 14, Sleep, 14, null, hypothesis));
-        using var _ = vm;
-
-        await vm.RefreshAsync();
-
-        vm.HasHypothesis.Should().BeTrue();
-        vm.MilestoneTitle.Should().Be(AppResources.InsightPathMilestone14Title);
-        vm.HypothesisText.Should().Contain(FactorNames.Display(Sleep))
-            .And.Contain("↑")
-            .And.Contain(string.Format(AppResources.StatsCorrelationEvidenceFormat, 14));
+        path.Verify(p => p.HideUntilNextMilestoneAsync(), Times.Never, "walking the path hides nothing");
     }
 
     [Fact]
@@ -106,15 +79,48 @@ public class InsightPathViewModelTests
     }
 
     [Fact]
-    public async Task Hide_AsksTheServiceAndReloads()
+    public async Task Arrived_ShowsTheHypothesisInTheStatisticsWords_AndRetiresThePathForNextLaunch()
     {
-        var (vm, path, _) = Build(Walking(3));
+        var (vm, path, _) = Build(Arrived());
         using var _ = vm;
 
-        await vm.HideCommand.ExecuteAsync(null);
+        await vm.RefreshAsync();
 
-        path.Verify(p => p.HideUntilNextMilestoneAsync(), Times.Once);
-        path.Verify(p => p.GetAsync(), Times.Once, "hiding reloads so the card can disappear at once");
+        vm.IsVisible.Should().BeTrue();
+        vm.HasHypothesis.Should().BeTrue();
+        vm.HypothesisText.Should().Contain(FactorNames.Display(Sleep))
+            .And.Contain("↑")
+            .And.Contain(string.Format(AppResources.StatsCorrelationEvidenceFormat, 14));
+        path.Verify(p => p.HideUntilNextMilestoneAsync(), Times.Once, "the last milestone is shown once");
+    }
+
+    [Fact]
+    public async Task Arrived_StaysOnScreenForTheSessionAfterTheServiceHasHiddenIt()
+    {
+        var (vm, path, _) = Build(Arrived());
+        using var _ = vm;
+        await vm.RefreshAsync();
+
+        // The service now reports the path as finished; this instance keeps the row.
+        path.Setup(p => p.GetAsync()).ReturnsAsync(Arrived(visible: false));
+        await vm.RefreshAsync();
+
+        vm.IsVisible.Should().BeTrue();
+        vm.HasHypothesis.Should().BeTrue();
+        path.Verify(p => p.HideUntilNextMilestoneAsync(), Times.Once, "hidden once, not on every refresh");
+    }
+
+    [Fact]
+    public async Task Arrived_AlreadyHiddenBeforeThisInstance_StaysHidden()
+    {
+        // The next launch: the service says hidden, nothing was shown by this instance.
+        var (vm, path, _) = Build(Arrived(visible: false));
+        using var _ = vm;
+
+        await vm.RefreshAsync();
+
+        vm.IsVisible.Should().BeFalse();
+        path.Verify(p => p.HideUntilNextMilestoneAsync(), Times.Never);
     }
 
     [Fact]
@@ -169,24 +175,5 @@ public class InsightPathViewModelTests
         await vm.FlushAsync();
 
         path.Verify(p => p.GetAsync(), Times.Exactly(2));
-    }
-
-    [Fact]
-    public async Task MilestoneReached_FiresOnlyForAChangeAfterTheFirstLoad()
-    {
-        var (vm, path, _) = Build(Walking(3));
-        using var _ = vm;
-        var fired = new List<int>();
-        vm.MilestoneReached += m => fired.Add(m);
-
-        await vm.RefreshAsync();
-        fired.Should().BeEmpty("the state the card loads with is not news");
-
-        path.Setup(p => p.GetAsync()).ReturnsAsync(Walking(7));
-        await vm.RefreshAsync();
-        fired.Should().Equal(7);
-
-        await vm.RefreshAsync();
-        fired.Should().Equal(new[] { 7 }, "the same milestone is celebrated once");
     }
 }
