@@ -221,19 +221,19 @@
     <value>Hopeless</value>
   </data>
   <data name="QuadrantPleasantEnergetic" xml:space="preserve">
-    <value>Pleasant, energetic</value>
+    <value>Upbeat</value>
   </data>
   <data name="QuadrantPleasantCalm" xml:space="preserve">
-    <value>Pleasant, calm</value>
+    <value>At ease</value>
   </data>
   <data name="QuadrantUnpleasantEnergetic" xml:space="preserve">
-    <value>Unpleasant, energetic</value>
+    <value>Tense</value>
   </data>
   <data name="QuadrantUnpleasantCalm" xml:space="preserve">
-    <value>Unpleasant, calm</value>
+    <value>Low</value>
   </data>
-  <data name="MoodRefineHint" xml:space="preserve">
-    <value>More precisely, if you like</value>
+  <data name="MoodClear" xml:space="preserve">
+    <value>Clear</value>
   </data>
   <data name="TodoListLabel" xml:space="preserve">
     <value>Tasks</value>
