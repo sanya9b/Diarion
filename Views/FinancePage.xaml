@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
@@ -53,13 +54,13 @@
                     </VerticalStackLayout>
 
                     <Grid Grid.Column="3" ColumnDefinitions="Auto, Auto" ColumnSpacing="12" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
-                        <Grid Grid.Column="0">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.EditTransactionCommand}" CommandParameter="{Binding Model}" />
                             </Grid.GestureRecognizers>
                             <Label Text="✏️" FontSize="14" InputTransparent="True" />
                         </Grid>
-                        <Grid Grid.Column="1">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteTransactionCommand}" CommandParameter="{Binding Model}" />
                             </Grid.GestureRecognizers>
@@ -98,7 +99,7 @@
                         <Label Text="{Binding DateText}" FontSize="10" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" />
                     </VerticalStackLayout>
 
-                    <Grid Grid.Column="3" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
+                    <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="3" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteTransferCommand}" CommandParameter="{Binding .}" />
                         </Grid.GestureRecognizers>
@@ -138,14 +139,14 @@
                     </VerticalStackLayout>
 
                     <Grid Grid.Column="3" ColumnDefinitions="Auto,Auto" ColumnSpacing="12" BackgroundColor="Transparent" Padding="8,4" VerticalOptions="Center">
-                        <Grid Grid.Column="0">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ConfirmPlannedCommand}" CommandParameter="{Binding .}" />
                             </Grid.GestureRecognizers>
                             <Label Text="✓" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}" InputTransparent="True"
                                    SemanticProperties.Description="{x:Static localization:AppResources.PlannedConfirmButton}" />
                         </Grid>
-                        <Grid Grid.Column="1">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SkipPlannedCommand}" CommandParameter="{Binding .}" />
                             </Grid.GestureRecognizers>
@@ -165,7 +166,7 @@
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCloseTapped" />
                 </Grid.GestureRecognizers>
@@ -256,7 +257,7 @@
                             </HorizontalStackLayout>
 
                             <!-- Редагувати обраний -->
-                            <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                            <Border behaviors:PressFeedback.IsEnabled="True" StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}"
                                     IsVisible="{Binding IsAllAccountsSelected, Converter={toolkit:InvertedBoolConverter}}">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding EditSelectedAccountCommand}" />
@@ -265,7 +266,7 @@
                             </Border>
 
                             <!-- Додати рахунок -->
-                            <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Sage}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                            <Border behaviors:PressFeedback.IsEnabled="True" StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Sage}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding ShowAccountFormCommand}" />
                                 </Border.GestureRecognizers>
@@ -340,7 +341,7 @@
                     <VerticalStackLayout Spacing="10" IsVisible="{Binding ShowBudgets}">
                         <Grid ColumnDefinitions="*,Auto">
                             <Label Grid.Column="0" Text="{localization:Translate Key=BudgetsLabel}" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{localization:Translate Key=AddBudgetButton}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}">
+                            <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" Text="{localization:Translate Key=AddBudgetButton}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}">
                                 <Label.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding ShowBudgetFormCommand}" />
                                 </Label.GestureRecognizers>
@@ -351,7 +352,7 @@
                             <HorizontalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Budgets}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="viewModels:BudgetItemViewModel">
-                                        <Border WidthRequest="140" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" StrokeShape="RoundRectangle 16" Padding="12,10">
+                                        <Border behaviors:PressFeedback.IsEnabled="True" WidthRequest="140" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" StrokeShape="RoundRectangle 16" Padding="12,10">
                                             <Border.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ShowCategoryDetailCommand}" CommandParameter="{Binding .}" />
                                             </Border.GestureRecognizers>
@@ -390,12 +391,12 @@
 
                     <!-- Перекази і плани: тільки кнопки додавання. Самі рядки живуть у спільній стрічці. -->
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
-                        <Label Grid.Column="0" Text="{localization:Translate Key=AddTransferButton}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}">
+                        <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Text="{localization:Translate Key=AddTransferButton}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ShowTransferFormCommand}" />
                             </Label.GestureRecognizers>
                         </Label>
-                        <Label Grid.Column="2" Text="{localization:Translate Key=AddPlannedButton}" FontSize="12" FontAttributes="Bold" IsVisible="{Binding ShowPlanned}" TextColor="{DynamicResource Theme_Sage}">
+                        <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="2" Text="{localization:Translate Key=AddPlannedButton}" FontSize="12" FontAttributes="Bold" IsVisible="{Binding ShowPlanned}" TextColor="{DynamicResource Theme_Sage}">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ShowRecurringFormCommand}" />
                             </Label.GestureRecognizers>
@@ -448,7 +449,7 @@
                                 </DataTrigger>
                             </Label.Triggers>
                         </Label>
-                        <Grid Grid.Column="1" Padding="8,0,0,8">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" Padding="8,0,0,8">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ToggleAddTransactionCommand}" />
                             </Grid.GestureRecognizers>
@@ -526,7 +527,7 @@
                         <HorizontalStackLayout BindableLayout.ItemsSource="{Binding SuggestedCategories}" Spacing="8">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="x:String">
-                                    <Border Padding="10,4" 
+                                    <Border behaviors:PressFeedback.IsEnabled="True" Padding="10,4" 
                                             StrokeShape="RoundRectangle 8" 
                                             StrokeThickness="1" 
                                             Stroke="{DynamicResource Theme_Ocean_Dust}" 
@@ -625,7 +626,7 @@
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label Text="{localization:Translate Key=BudgetFormTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
-                        <Grid Grid.Column="1" Padding="8,0,0,8">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" Padding="8,0,0,8">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding HideBudgetFormCommand}" />
                             </Grid.GestureRecognizers>
@@ -678,7 +679,7 @@
                             <Label Text="{Binding CategoryDetailTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
                             <Label Text="{Binding CategoryDetailSummary}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                         </VerticalStackLayout>
-                        <Grid Grid.Column="1" Padding="8,0,0,8">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" Padding="8,0,0,8">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding HideCategoryDetailCommand}" />
                             </Grid.GestureRecognizers>
@@ -746,7 +747,7 @@
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label Text="{localization:Translate Key=AccountFormTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
-                        <Grid Grid.Column="1" Padding="8,0,0,8">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" Padding="8,0,0,8">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding HideAccountFormCommand}" />
                             </Grid.GestureRecognizers>
@@ -896,7 +897,7 @@
                 <VerticalStackLayout Spacing="10">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label Text="{localization:Translate Key=TransferFormTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
-                        <Grid Grid.Column="1" Padding="8,0,0,8">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" Padding="8,0,0,8">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding HideTransferFormCommand}" />
                             </Grid.GestureRecognizers>

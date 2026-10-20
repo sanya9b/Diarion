@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
@@ -12,7 +13,15 @@
                 HorizontalScrollBarVisibility="Never"
                 VerticalScrollBarVisibility="Never">
         <HorizontalStackLayout Spacing="8" Padding="6,0,0,0">
-            <Grid Margin="0,0,2,0" WidthRequest="50" HeightRequest="50">
+            <!-- The tile itself takes the tap and the press, not a transparent box laid over it: press
+                 feedback scales the element it sits on, and a scaled invisible box shows nothing.
+                 Transparent, not unset, so the grid is hit-testable once its children are not. -->
+            <Grid Margin="0,0,2,0" WidthRequest="50" HeightRequest="50" BackgroundColor="Transparent"
+                  behaviors:PressFeedback.IsEnabled="True"
+                  SemanticProperties.Description="{x:Static localization:AppResources.ToggleCalendarAccessibility}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CalendarSection.ToggleCalendarCommand}" />
+                </Grid.GestureRecognizers>
                 <Border StrokeShape="RoundRectangle 16"
                         StrokeThickness="1"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
@@ -49,11 +58,6 @@
                                FontAttributes="Bold"
                                TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
-                        <BoxView Grid.RowSpan="2" BackgroundColor="Transparent">
-                            <BoxView.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding CalendarSection.ToggleCalendarCommand}" />
-                            </BoxView.GestureRecognizers>
-                        </BoxView>
                     </Grid>
                 </Border>
                 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:sys="clr-namespace:System;assembly=netstandard"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
@@ -269,7 +270,7 @@
                                  reachable from here alone, so the row is a row and not dim small print. -->
                             <!-- Padded to a full touch target rather than to the text: at two pixels the row
                                  was a 24dp strip, and a tap that lands a hair above or below it does nothing. -->
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,12" BackgroundColor="Transparent">
+                            <Grid behaviors:PressFeedback.IsEnabled="True" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,12" BackgroundColor="Transparent">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenCycleCommand}" />
                                 </Grid.GestureRecognizers>
@@ -329,7 +330,7 @@
                         <!-- The guides, replayable. They belong to this card because they are about
                              the layout it configures, and this is the one way back to an explanation
                              that otherwise happens once and never again. -->
-                        <Label Text="{x:Static localization:AppResources.TourReplayLabel}"
+                        <Label behaviors:PressFeedback.IsEnabled="True" Text="{x:Static localization:AppResources.TourReplayLabel}"
                                FontSize="13" TextColor="{DynamicResource Theme_Sage}">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ReplayTourCommand}" />
@@ -364,7 +365,7 @@
                         <!-- Full rows with a chevron, like the cycle link above. As indented grey
                              captions these two were read as help text and never tapped, which is the
                              whole reason this card exists. -->
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
+                        <Grid behaviors:PressFeedback.IsEnabled="True" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
                               IsVisible="{Binding Profile.IsGuidedPromptBlockVisible}">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding OpenPromptLibraryCommand}" />
@@ -373,7 +374,7 @@
                             <Label Grid.Column="1" Text="›" InputTransparent="True" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
+                        <Grid behaviors:PressFeedback.IsEnabled="True" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
                               IsVisible="{Binding Profile.IsGuidedPromptBlockVisible}">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding OpenPromptHistoryCommand}" />

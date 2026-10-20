@@ -7,6 +7,7 @@
 -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.PaywallPage"
@@ -118,19 +119,19 @@
                    TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="18">
-                <Label Text="{x:Static localization:AppResources.PaywallRestoreButton}" FontSize="12"
+                <Label behaviors:PressFeedback.IsEnabled="True" Text="{x:Static localization:AppResources.PaywallRestoreButton}" FontSize="12"
                        TextDecorations="Underline" TextColor="{DynamicResource Theme_Midnight_Snow}" Padding="0,8">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding RestoreCommand}" />
                     </Label.GestureRecognizers>
                 </Label>
-                <Label Text="{x:Static localization:AppResources.PaywallTermsLink}" FontSize="12"
+                <Label behaviors:PressFeedback.IsEnabled="True" Text="{x:Static localization:AppResources.PaywallTermsLink}" FontSize="12"
                        TextDecorations="Underline" TextColor="{DynamicResource Theme_Midnight_Snow}" Padding="0,8">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenTermsCommand}" />
                     </Label.GestureRecognizers>
                 </Label>
-                <Label Text="{x:Static localization:AppResources.PaywallPrivacyLink}" FontSize="12"
+                <Label behaviors:PressFeedback.IsEnabled="True" Text="{x:Static localization:AppResources.PaywallPrivacyLink}" FontSize="12"
                        TextDecorations="Underline" TextColor="{DynamicResource Theme_Midnight_Snow}" Padding="0,8">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenPrivacyCommand}" />

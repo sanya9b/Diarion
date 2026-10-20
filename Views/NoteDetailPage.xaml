@@ -140,7 +140,7 @@
     <Grid RowDefinitions="Auto,*,Auto">
         <!-- Top Custom Bar -->
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding SaveNoteCommand}" />
                 </Grid.GestureRecognizers>
@@ -232,7 +232,7 @@
                     <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Backlinks}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:Note">
-                                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                <Border behaviors:PressFeedback.IsEnabled="True" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
                                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                                         StrokeShape="RoundRectangle 12" Padding="12">
                                     <Border.GestureRecognizers>

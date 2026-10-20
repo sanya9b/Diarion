@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
@@ -47,7 +48,7 @@
                          smallest target on the screen. The row's own left padding is spent on this
                          instead, so the text beside it barely moves. Vertical reach is free — the row is
                          28px and nothing else is competing for it. -->
-                    <Grid Grid.Column="0" BackgroundColor="Transparent" Padding="6,0" VerticalOptions="Fill">
+                    <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" BackgroundColor="Transparent" Padding="6,0" VerticalOptions="Fill">
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.ToggleTodoCompletionCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
                         </Grid.GestureRecognizers>
@@ -161,7 +162,7 @@
                          saves at once, as ticking the box does — there is nothing to confirm. -->
                     <HorizontalStackLayout Grid.Column="2" Spacing="0" VerticalOptions="Fill"
                                            IsVisible="{Binding IsPickingPriority}">
-                        <Grid WidthRequest="34" BackgroundColor="Transparent"
+                        <Grid behaviors:PressFeedback.IsEnabled="True" WidthRequest="34" BackgroundColor="Transparent"
                               SemanticProperties.Description="{x:Static localization:AppResources.PriorityLow}">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ChoosePriorityCommand}" CommandParameter="{x:Static models:TodoPriority.Low}" />
@@ -177,7 +178,7 @@
                                 </Border.Triggers>
                             </Border>
                         </Grid>
-                        <Grid WidthRequest="34" BackgroundColor="Transparent"
+                        <Grid behaviors:PressFeedback.IsEnabled="True" WidthRequest="34" BackgroundColor="Transparent"
                               SemanticProperties.Description="{x:Static localization:AppResources.PriorityMedium}">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ChoosePriorityCommand}" CommandParameter="{x:Static models:TodoPriority.Medium}" />
@@ -193,7 +194,7 @@
                                 </Border.Triggers>
                             </Border>
                         </Grid>
-                        <Grid WidthRequest="34" BackgroundColor="Transparent"
+                        <Grid behaviors:PressFeedback.IsEnabled="True" WidthRequest="34" BackgroundColor="Transparent"
                               SemanticProperties.Description="{x:Static localization:AppResources.PriorityHigh}">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ChoosePriorityCommand}" CommandParameter="{x:Static models:TodoPriority.High}" />
@@ -227,7 +228,7 @@
              through. A tap still opens it, because wanting to look at what is occupying an hour is the
              one thing you would want from this strip. -->
         <DataTemplate x:Key="TodoSpanRow" x:DataType="viewmodels:TodoItemViewModel">
-            <Border Margin="0,1" MinimumHeightRequest="0" Padding="0"
+            <Border behaviors:PressFeedback.IsEnabled="True" Margin="0,1" MinimumHeightRequest="0" Padding="0"
                     StrokeShape="RoundRectangle 10" StrokeThickness="1" StrokeDashArray="4,3"
                     Stroke="{DynamicResource Theme_GridLine}" BackgroundColor="Transparent"
                     SemanticProperties.Description="{Binding SpanAccessibility}">
@@ -286,9 +287,15 @@
                 <Label Text="{x:Static localization:AppResources.TodoListLabel}" FontAttributes="Bold" FontSize="18" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </HorizontalStackLayout>
             
-            <!-- Padding on the container, not on the pill: the hitbox below fills the grid, so the target
-                 becomes 52 by 44 while the button you can see stays 36 by 28. -->
-            <Grid Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Padding="8" BackgroundColor="Transparent">
+            <!-- Padding on the container, not on the pill: the grid takes the tap, so the target is 52 by 44
+                 while the button you can see stays 36 by 28. The press scales the grid and with it the pill;
+                 it used to be a transparent box over both, which had nothing visible to scale. -->
+            <Grid Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Padding="8" BackgroundColor="Transparent"
+                  behaviors:PressFeedback.IsEnabled="True"
+                  SemanticProperties.Description="{x:Static localization:AppResources.NewTaskTitle}">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding BindingContext.GoToNewTodoCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />
+                </Grid.GestureRecognizers>
                 <Border StrokeShape="RoundRectangle 8"
                         WidthRequest="36" HeightRequest="28"
                         BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
@@ -301,12 +308,6 @@
                            VerticalOptions="Center"
                            TranslationY="-1" />
                 </Border>
-                <!-- ABSOLUTE HITBOX -->
-                <BoxView BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill">
-                    <BoxView.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding BindingContext.GoToNewTodoCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />
-                    </BoxView.GestureRecognizers>
-                </BoxView>
             </Grid>
         </Grid>
 
@@ -360,7 +361,7 @@
                                 <!-- Empty row: a tap starts a task already scheduled at this hour. Its
                                      height matches a filled row, so the grid keeps one rhythm and the
                                      target is not the smallest thing on a screen made of targets. -->
-                                <Border Grid.Column="1" IsVisible="{Binding IsEmpty}" HeightRequest="28"
+                                <Border behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" IsVisible="{Binding IsEmpty}" HeightRequest="28"
                                         StrokeShape="RoundRectangle 8" StrokeThickness="1" StrokeDashArray="3,3"
                                         Stroke="{DynamicResource Theme_GridLine}" BackgroundColor="Transparent">
                                     <Border.GestureRecognizers>

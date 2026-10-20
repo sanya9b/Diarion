@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
@@ -13,7 +14,7 @@
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding CloseCommand}" />
                 </Grid.GestureRecognizers>
@@ -83,7 +84,7 @@
                             <DatePicker Date="{Binding NewEpisodeStart}" MaximumDate="{Binding MaximumDate}" Format="dd.MM.yyyy" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="14" Margin="12,2" VerticalOptions="Center" HorizontalOptions="Fill" />
                         </Grid>
 
-                        <Border StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Coral}" Padding="18,12" HorizontalOptions="Fill">
+                        <Border behaviors:PressFeedback.IsEnabled="True" StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Coral}" Padding="18,12" HorizontalOptions="Fill">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding AddEpisodeCommand}" />
                             </Border.GestureRecognizers>
@@ -115,7 +116,7 @@
                                         <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="12">
                                             <Label Grid.Column="0" Text="{Binding RangeText}" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                                             <Label Grid.Column="1" Text="{Binding IntervalText}" FontSize="11" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                            <Label Grid.Column="2" Text="✕" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}">
+                                            <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="2" Text="✕" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}">
                                                 <Label.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteEpisodeCommand}" CommandParameter="{Binding .}" />
                                                 </Label.GestureRecognizers>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              x:Class="Diarion.Views.HabitEditorPage"
@@ -13,7 +14,7 @@
     <Grid RowDefinitions="Auto,*">
         <!-- Top bar -->
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding CancelCommand}" />
                 </Grid.GestureRecognizers>
@@ -22,7 +23,7 @@
 
             <Label Grid.Column="1" Text="{Binding Title}" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
-            <Grid Grid.Column="2" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="2" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding SaveCommand}" />
                 </Grid.GestureRecognizers>
@@ -153,13 +154,13 @@
                     <!-- Times-per-week count -->
                     <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" IsVisible="{Binding IsTimesPerWeek}">
                         <Label Grid.Column="0" Text="{Binding TimesPerWeekText}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        <Border Grid.Column="1" WidthRequest="40" HeightRequest="40" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent">
+                        <Border behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" WidthRequest="40" HeightRequest="40" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding DecrementTimesCommand}" />
                             </Border.GestureRecognizers>
                             <Label Text="−" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Border>
-                        <Border Grid.Column="2" WidthRequest="40" HeightRequest="40" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent">
+                        <Border behaviors:PressFeedback.IsEnabled="True" Grid.Column="2" WidthRequest="40" HeightRequest="40" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding IncrementTimesCommand}" />
                             </Border.GestureRecognizers>
