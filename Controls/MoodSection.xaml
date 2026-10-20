@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
@@ -68,7 +69,13 @@
                     <Border Style="{StaticResource MoodFill}" StrokeShape="RoundRectangle 13" Padding="10,4"
                             behaviors:ThemeColor.BackgroundKey="{Binding HourChipFillColorKey}">
                         <HorizontalStackLayout Spacing="5">
-                            <Label Text="🕒" FontSize="11" VerticalOptions="Center" />
+                            <Path Data="{x:Static icons:AppIcons.Clock}" WidthRequest="12" HeightRequest="12" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" VerticalOptions="Center">
+                                <Path.Triggers>
+                                    <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
+                                    </DataTrigger>
+                                </Path.Triggers>
+                            </Path>
                             <Label Text="{Binding HourChipText}" FontSize="11" FontAttributes="Bold" VerticalOptions="Center"
                                    TextColor="{DynamicResource Theme_Midnight_Snow}">
                                 <Label.Triggers>

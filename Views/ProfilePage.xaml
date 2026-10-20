@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:sys="clr-namespace:System;assembly=netstandard"
@@ -143,8 +144,8 @@
                                 <Border StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" />
                                 <Border x:Name="LangThumb" StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" WidthRequest="50" HorizontalOptions="{Binding LangThumbAlignment, Source={RelativeSource AncestorType={x:Type ContentPage}}}" Margin="4" />
                                 <Grid ColumnDefinitions="*,*">
-                                    <Label Grid.Column="0" Text="🇬🇧 EN" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                    <Label Grid.Column="1" Text="🇺🇦 UA" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Label Grid.Column="0" Text="EN" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Label Grid.Column="1" Text="UA" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                                 </Grid>
                                 <Button BackgroundColor="Transparent" BorderWidth="0" Clicked="OnToggleLanguageClicked" HorizontalOptions="Fill" VerticalOptions="Fill" ZIndex="10" />
                             </Grid>
@@ -154,9 +155,9 @@
                                 <Border StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" />
                                 <Border x:Name="ThemeThumb" StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" WidthRequest="40" HorizontalOptions="{Binding ThemeThumbAlignment, Source={RelativeSource AncestorType={x:Type ContentPage}}}" Margin="4" />
                                 <Grid ColumnDefinitions="*,*,*">
-                                    <Label Grid.Column="0" Text="☀️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                    <Label Grid.Column="1" Text="🌙" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                    <Label Grid.Column="2" Text="🌸" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Path Grid.Column="0" Data="{x:Static icons:AppIcons.Sun}" WidthRequest="16" HeightRequest="16" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Path Grid.Column="1" Data="{x:Static icons:AppIcons.Moon}" WidthRequest="15" HeightRequest="15" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Path Grid.Column="2" Data="{x:Static icons:AppIcons.Blossom}" WidthRequest="16" HeightRequest="16" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.4" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Grid>
                                 <Button BackgroundColor="Transparent" BorderWidth="0" Clicked="OnToggleThemeClicked" HorizontalOptions="Fill" VerticalOptions="Fill" ZIndex="10" />
                             </Grid>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
@@ -59,7 +60,7 @@
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.EditTransactionCommand}" CommandParameter="{Binding Model}" />
                             </Grid.GestureRecognizers>
-                            <Label Text="✏️" FontSize="14" InputTransparent="True" />
+                            <Path Data="{x:Static icons:AppIcons.Pencil}" WidthRequest="15" HeightRequest="15" Stroke="{DynamicResource Theme_Ocean_Dust}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" />
                         </Grid>
                         <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1">
                             <Grid.GestureRecognizers>
@@ -512,7 +513,7 @@
                         <Entry Grid.Column="0" Text="{Binding NewCategory}" Placeholder="{localization:Translate Key=CategoryPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" VerticalOptions="Center" />
                         
                         <Grid Grid.Column="1" ColumnDefinitions="Auto, *" ColumnSpacing="6" VerticalOptions="Center">
-                            <Label Grid.Column="0" Text="📅" FontSize="12" VerticalOptions="Center" InputTransparent="True" />
+                            <Path Grid.Column="0" Data="{x:Static icons:AppIcons.Calendar}" WidthRequest="13" HeightRequest="13" Stroke="{DynamicResource Theme_Ocean_Dust}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" VerticalOptions="Center" />
                             <DatePicker Grid.Column="1" Date="{Binding NewDate}" TextColor="{DynamicResource Theme_Midnight_Snow}" BackgroundColor="Transparent" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" Format="dd.MM.yyyy" />
                         </Grid>
                     </Grid>

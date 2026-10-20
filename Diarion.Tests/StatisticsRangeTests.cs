@@ -182,7 +182,7 @@ public class StatisticsRangeTests
 
     // --- The screen ---
 
-    private static StatisticsViewModel BuildViewModel(out Mock<IStatisticsService> stats)
+    internal static StatisticsViewModel BuildViewModel(out Mock<IStatisticsService> stats)
         => BuildViewModel(out stats, out _);
 
     private static StatisticsViewModel BuildViewModel(
