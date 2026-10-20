@@ -102,7 +102,7 @@
                         </HorizontalStackLayout>
                     </ScrollView>
 
-                        <Border StrokeShape="RoundRectangle 24"
+                        <Border StrokeShape="RoundRectangle 20"
                             StrokeThickness="1"
                             Stroke="{DynamicResource Theme_Dust_Ocean}"
                             BackgroundColor="{DynamicResource Theme_Snow_Black}"
@@ -250,7 +250,7 @@
                 <TapGestureRecognizer Command="{Binding HideAddTrackerFormCommand}" />
             </Grid.GestureRecognizers>
 
-            <Border StrokeShape="RoundRectangle 24"
+            <Border StrokeShape="RoundRectangle 20"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Coral}"
                     BackgroundColor="{DynamicResource Theme_Snow_Black}"

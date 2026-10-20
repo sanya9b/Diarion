@@ -39,7 +39,7 @@
         <Grid Grid.Row="1" Padding="24,10,24,24" RowSpacing="14" RowDefinitions="*, Auto"
               MaximumWidthRequest="640">
             <ScrollView Grid.Row="0" VerticalScrollBarVisibility="Never">
-            <Border StrokeShape="RoundRectangle 24"
+            <Border StrokeShape="RoundRectangle 20"
                     StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"

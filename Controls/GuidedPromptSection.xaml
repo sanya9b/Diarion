@@ -9,19 +9,14 @@
 
     <!-- Hidden outright when the user has emptied the category this day would draw from: a card with a
          blank question reads as a bug, not as an empty state. -->
-    <Border StrokeShape="RoundRectangle 16"
-            StrokeThickness="1"
-            Stroke="{DynamicResource Theme_Dust_Ocean}"
-            BackgroundColor="{DynamicResource Theme_Snow_Black}"
-            IsVisible="{Binding HasPrompt}"
-            Padding="16">
+    <Border Style="{StaticResource Card}"
+            IsVisible="{Binding HasPrompt}">
         <VerticalStackLayout Spacing="10">
 
             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
                 <Label Grid.Column="0"
                        Text="{localization:Translate Key=GuidedPromptLabel}"
-                       FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase"
-                       TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                       Style="{StaticResource SectionHeader}" VerticalOptions="Center" />
                 <Label Grid.Column="1"
                        Text="{localization:Translate Key=GuidedPromptShuffle}"
                        FontAttributes="Bold" FontSize="12"
@@ -44,7 +39,7 @@
                    FontSize="15"
                    TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
-            <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" Padding="12,8">
+            <Border Style="{StaticResource Field}" Padding="12,8">
                 <Editor Text="{Binding PromptAnswer}"
                         Placeholder="{localization:Translate Key=GuidedPromptPlaceholder}"
                         PlaceholderColor="{DynamicResource Theme_Ocean_Dust}"

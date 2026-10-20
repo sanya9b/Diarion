@@ -8,14 +8,10 @@
              x:Class="Diarion.Controls.HabitTrackerSection"
              x:Name="HabitTrackerSectionRoot">
 
-    <Border StrokeShape="RoundRectangle 16"
-            StrokeThickness="1"
-            Stroke="{DynamicResource Theme_Dust_Ocean}"
-            BackgroundColor="{DynamicResource Theme_Snow_Black}"
-            Padding="16">
+    <Border Style="{StaticResource Card}">
         <VerticalStackLayout Spacing="8">
             <Grid ColumnDefinitions="*, Auto" Margin="0,0,0,4">
-                <Label Grid.Column="0" Text="{x:Static localization:AppResources.HabitsLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.HabitsLabel}" Style="{StaticResource SectionHeader}" VerticalOptions="Center" />
                 <Grid Grid.Column="1" Padding="8,4" BackgroundColor="Transparent">
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding BindingContext.HabitsSection.ToggleEditHabitsModeCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />

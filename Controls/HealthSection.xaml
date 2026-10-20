@@ -9,13 +9,9 @@
              x:Name="Root"
              x:DataType="vms:DiaryEntryViewModel">
     
-    <Border StrokeShape="RoundRectangle 16"
-            StrokeThickness="1"
-            Stroke="{DynamicResource Theme_Dust_Ocean}"
-            BackgroundColor="{DynamicResource Theme_Snow_Black}"
-            Padding="16">
+    <Border Style="{StaticResource Card}">
         <VerticalStackLayout Spacing="10">
-            <Label Text="{x:Static localization:AppResources.HealthLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Midnight_Snow}" Margin="0,0,0,4" />
+            <Label Text="{x:Static localization:AppResources.HealthLabel}" Style="{StaticResource SectionHeader}" Margin="0,0,0,4" />
             
             <!-- Read-only: the number is counted from the recorded periods, not typed here. The row is
                  gone entirely when there is nothing to count, so a blank never reads as "day zero".
@@ -39,7 +35,7 @@
             </Grid>
 
             <!-- Text Field for Notes -->
-            <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" MinimumHeightRequest="36" Padding="12,4" Margin="0,2,0,0">
+            <Border Style="{StaticResource Field}" MinimumHeightRequest="36" Padding="12,4" Margin="0,2,0,0">
                 <Editor Text="{Binding HealthNotes}" Placeholder="{x:Static localization:AppResources.NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" AutoSize="TextChanges" MinimumHeightRequest="0" />
             </Border>
 
@@ -60,7 +56,7 @@
                         </Label.FormattedText>
                     </Label>
                 </VerticalStackLayout>
-                <Border Grid.Column="2" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" MinimumHeightRequest="36" Padding="12,4">
+                <Border Grid.Column="2" Style="{StaticResource Field}" MinimumHeightRequest="36" Padding="12,4">
                     <Editor Text="{Binding IntimateLife}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" VerticalOptions="Center" AutoSize="TextChanges" MinimumHeightRequest="0" />
                 </Border>
             </Grid>

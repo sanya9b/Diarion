@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
@@ -418,15 +418,38 @@
         <Setter Property="IconColor" Value="{DynamicResource Theme_Gray200_White}" />
     </Style>
 
-    <!-- Reusable statistics card. Shadow is applied inline per card to avoid sharing a
-         single Shadow instance across elements (a known MAUI pitfall). -->
-    <Style TargetType="Border" x:Key="StatCard">
-        <Setter Property="StrokeShape" Value="RoundRectangle 24" />
+    <!-- Surface tokens. Three radii carry the whole app: 20 for a card, 12 for a field inside one, and a
+         full pill for chips. Sixteen different radii had grown up screen by screen, and a card with 16
+         next to one with 24 reads as two different products. A Shadow is never set here: one Shadow
+         instance shared by every card is a known MAUI pitfall, so cards that want one set it inline. -->
+    <Style TargetType="Border" x:Key="Card">
+        <Setter Property="StrokeShape" Value="RoundRectangle 20" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
         <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Black}" />
         <Setter Property="Padding" Value="16" />
     </Style>
+
+    <!-- A text or time field inside a card. Padding and height stay with each field. -->
+    <Style TargetType="Border" x:Key="Field">
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+    </Style>
+
+    <!-- The caption at the top of a card. One voice for every block on the day screen: there were three
+         (Coral, ink and grey), which made the order of the blocks look like an order of importance. -->
+    <Style TargetType="Label" x:Key="SectionHeader">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CharacterSpacing" Value="1.5" />
+        <Setter Property="TextTransform" Value="Uppercase" />
+        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+    </Style>
+
+    <!-- The statistics card is the card. -->
+    <Style TargetType="Border" x:Key="StatCard" BasedOn="{StaticResource Card}" />
 
     <!-- Circular PIN keypad button, shared by LockPage (unlock) and PinSetupPage (set/change).
          Padding=0 + Center options keep the frame a true 72x72 square so CornerRadius renders as a

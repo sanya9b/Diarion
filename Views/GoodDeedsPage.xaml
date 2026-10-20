@@ -137,7 +137,7 @@
                 <TapGestureRecognizer Command="{Binding SelectSlotCommand}" CommandParameter="{Binding SelectedSlot}" />
             </Grid.GestureRecognizers>
 
-            <Border StrokeShape="RoundRectangle 24"
+            <Border StrokeShape="RoundRectangle 20"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Amber}"
                     BackgroundColor="{DynamicResource Theme_Snow_Black}"

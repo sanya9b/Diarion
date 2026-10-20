@@ -50,14 +50,7 @@
         </Style>
     </ContentView.Resources>
 
-    <Border Padding="16"
-            StrokeThickness="1"
-            Stroke="{DynamicResource Theme_Dust_Ocean}"
-            BackgroundColor="{DynamicResource Theme_Snow_Black}"
-            StrokeShape="RoundRectangle 20">
-        <Border.Shadow>
-            <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
-        </Border.Shadow>
+    <Border Style="{StaticResource Card}">
 
         <VerticalStackLayout Spacing="12">
             <!-- Header: the caption and, at the right, the hours chip. The row below speaks for the
@@ -65,8 +58,7 @@
                  ✕ beside it returns the row to the day, so the switch is never silent. -->
             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
                 <Label Grid.Column="0" Text="{x:Static localization:AppResources.EmotionLabel}"
-                       FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5"
-                       TextColor="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                       Style="{StaticResource SectionHeader}" VerticalOptions="Center" />
 
                 <Border x:Name="HourChip" Grid.Column="1" Style="{StaticResource HourChip}"
                         SemanticProperties.Description="{Binding HourChipText}">

@@ -129,7 +129,7 @@
             <VerticalStackLayout Spacing="20" IsVisible="{Binding IsProfileTab}">
 
                 <!-- App Customization (Moved from Flyout) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -164,7 +164,7 @@
                 </Border>
 
                 <!-- Особиста інформація -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -218,7 +218,7 @@
 
                 <!-- Stands where the cycle card would be while the birth date is unknown (and the gender does
                      not rule the feature out). Once the date is known and under 14, neither card shows. -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         IsVisible="{Binding Profile.NeedsBirthDateForCycle}"
@@ -230,7 +230,7 @@
                 </Border>
 
                 <!-- Менструальний календар (Menstrual Tracker) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         IsVisible="{Binding Profile.IsCycleFeatureAvailable}"
@@ -288,7 +288,7 @@
                 <!-- x:Name on the three settings-guide anchors; ProfilePage.xaml.cs maps a TourStepId
                      onto each one and measures it. -->
                 <Border x:Name="BlocksCardAnchor"
-                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -344,7 +344,7 @@
                      and the library and the answer history hang off them. Buried among the toggles
                      they read as switches for something already understood, which they are not. -->
                 <Border x:Name="PromptsCardAnchor"
-                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -395,7 +395,7 @@
 
                 <!-- Фінанси (Finances). Out of the blocks card: none of these three decide what shows
                      on the home screen, which is what that card is about. -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -430,7 +430,7 @@
                 </Border>
 
                 <!-- Налаштування завдань -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -449,7 +449,7 @@
                 </Border>
 
                 <!-- Нагадування (Reminders) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -473,7 +473,7 @@
                 </Border>
 
                 <!-- Серії (Streaks) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -499,7 +499,7 @@
                 </Border>
 
                 <!-- Шлях до першої гіпотези (spec 17): the strip under the date on the home screen -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -528,7 +528,7 @@
                      is the one card here that can change what the rest of the app lets you do. -->
                 <Border x:Name="SubscriptionCard" x:DataType="viewmodels:SubscriptionSectionViewModel"
                         IsVisible="{Binding IsVisible}"
-                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -576,7 +576,7 @@
                 </Border>
 
                 <!-- Безпека (Security) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -628,7 +628,7 @@
                 </Border>
 
                 <!-- Backup & Restore -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -664,7 +664,7 @@
                 </Border>
 
                 <!-- Crash report. Hidden entirely until something has actually crashed. -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Coral}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16"
@@ -710,7 +710,7 @@
                 </Border>
 
                 <!-- Export data (open, portable formats) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -755,7 +755,7 @@
             <VerticalStackLayout Spacing="20" IsVisible="{Binding IsAiTab}">
 
                 <!-- Увімкнення та пояснення -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -783,7 +783,7 @@
                 </Border>
 
                 <!-- Пристрій -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -799,7 +799,7 @@
                 </Border>
 
                 <!-- Моделі -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -888,7 +888,7 @@
                 </Border>
 
                 <!-- Індекс -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
