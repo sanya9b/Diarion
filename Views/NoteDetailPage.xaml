@@ -199,28 +199,30 @@
                     <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding OutgoingLinks}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:NoteLinkItem">
-                                <Border Margin="0,0,8,8" Padding="12,5" StrokeThickness="1"
-                                        Stroke="{DynamicResource Theme_Coral}"
-                                        BackgroundColor="Transparent" StrokeShape="RoundRectangle 14">
-                                    <Border.Triggers>
-                                        <DataTrigger TargetType="Border" Binding="{Binding Exists}" Value="False">
-                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                        </DataTrigger>
-                                    </Border.Triggers>
-                                    <Border.GestureRecognizers>
+                                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                    <ContentView.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenLinkedNoteCommand}" CommandParameter="{Binding Title}" />
-                                    </Border.GestureRecognizers>
-                                    <Label Text="{Binding Title}" FontSize="13" FontAttributes="Bold">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding Exists}" Value="True">
-                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                    </ContentView.GestureRecognizers>
+                                    <Border Margin="0,0,8,8" Padding="12,5" StrokeThickness="1"
+                                            Stroke="{DynamicResource Theme_Coral}"
+                                            BackgroundColor="Transparent" StrokeShape="RoundRectangle 14">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding Exists}" Value="False">
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
                                             </DataTrigger>
-                                            <DataTrigger TargetType="Label" Binding="{Binding Exists}" Value="False">
-                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
-                                </Border>
+                                        </Border.Triggers>
+                                        <Label Text="{Binding Title}" FontSize="13" FontAttributes="Bold">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Exists}" Value="True">
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Exists}" Value="False">
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Border>
+                                </ContentView>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </FlexLayout>

@@ -196,59 +196,63 @@
                     <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" BackgroundColor="Transparent">
                         <HorizontalStackLayout Spacing="8">
                             <!-- Всі -->
-                            <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
-                                <Border.GestureRecognizers>
+                            <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                <ContentView.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding SelectAllAccountsCommand}" />
-                                </Border.GestureRecognizers>
-                                <Border.Triggers>
-                                    <DataTrigger TargetType="Border" Binding="{Binding IsAllAccountsSelected}" Value="True">
-                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                    </DataTrigger>
-                                </Border.Triggers>
-                                <Label Text="{localization:Translate Key=AllAccounts}" FontSize="13" FontAttributes="Bold">
-                                    <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding IsAllAccountsSelected}" Value="True">
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                </ContentView.GestureRecognizers>
+                                <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsAllAccountsSelected}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
                                         </DataTrigger>
-                                        <DataTrigger TargetType="Label" Binding="{Binding IsAllAccountsSelected}" Value="False">
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                        </DataTrigger>
-                                    </Label.Triggers>
-                                </Label>
-                            </Border>
+                                    </Border.Triggers>
+                                    <Label Text="{localization:Translate Key=AllAccounts}" FontSize="13" FontAttributes="Bold">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsAllAccountsSelected}" Value="True">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsAllAccountsSelected}" Value="False">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                            </ContentView>
 
                             <!-- Рахунки -->
                             <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Accounts}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="viewModels:AccountItemViewModel">
-                                        <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
-                                            <Border.GestureRecognizers>
+                                        <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                            <ContentView.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectAccountCommand}" CommandParameter="{Binding .}" />
-                                            </Border.GestureRecognizers>
-                                            <Border.Triggers>
-                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Border" Binding="{Binding IsArchived}" Value="True">
-                                                    <Setter Property="Opacity" Value="0.55" />
-                                                </DataTrigger>
-                                            </Border.Triggers>
-                                            <HorizontalStackLayout Spacing="6">
-                                                <Label Text="{Binding Icon}" FontSize="13" VerticalOptions="Center" />
-                                                <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" LineBreakMode="TailTruncation">
-                                                    <Label.Triggers>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
-                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
-                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                        </DataTrigger>
-                                                    </Label.Triggers>
-                                                </Label>
-                                            </HorizontalStackLayout>
-                                        </Border>
+                                            </ContentView.GestureRecognizers>
+                                            <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                                                <Border.Triggers>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsArchived}" Value="True">
+                                                        <Setter Property="Opacity" Value="0.55" />
+                                                    </DataTrigger>
+                                                </Border.Triggers>
+                                                <HorizontalStackLayout Spacing="6">
+                                                    <Label Text="{Binding Icon}" FontSize="13" VerticalOptions="Center" />
+                                                    <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" LineBreakMode="TailTruncation">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                </HorizontalStackLayout>
+                                            </Border>
+                                        </ContentView>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </HorizontalStackLayout>
@@ -272,27 +276,29 @@
                             </Border>
 
                             <!-- Показати архівні -->
-                            <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
-                                <Border.GestureRecognizers>
+                            <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                <ContentView.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding ToggleShowArchivedAccountsCommand}" />
-                                </Border.GestureRecognizers>
-                                <Border.Triggers>
-                                    <DataTrigger TargetType="Border" Binding="{Binding ShowArchivedAccounts}" Value="True">
-                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                    </DataTrigger>
-                                </Border.Triggers>
-                                <Label Text="{localization:Translate Key=ShowArchivedAccountsButton}" FontSize="13">
-                                    <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding ShowArchivedAccounts}" Value="True">
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                </ContentView.GestureRecognizers>
+                                <Border StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding ShowArchivedAccounts}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
                                         </DataTrigger>
-                                        <DataTrigger TargetType="Label" Binding="{Binding ShowArchivedAccounts}" Value="False">
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                        </DataTrigger>
-                                    </Label.Triggers>
-                                </Label>
-                            </Border>
+                                    </Border.Triggers>
+                                    <Label Text="{localization:Translate Key=ShowArchivedAccountsButton}" FontSize="13">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding ShowArchivedAccounts}" Value="True">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding ShowArchivedAccounts}" Value="False">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                            </ContentView>
                         </HorizontalStackLayout>
                     </ScrollView>
 
@@ -455,55 +461,59 @@
                     </Grid>
 
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
-                        <Border Grid.Column="0" StrokeThickness="1" Padding="6" StrokeShape="RoundRectangle 8" BackgroundColor="Transparent">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsIncomeTypeSelected}" Value="True">
-                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsIncomeTypeSelected}" Value="False">
-                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Border.GestureRecognizers>
+                        <ContentView Grid.Column="0" behaviors:PressFeedback.IsEnabled="True">
+                            <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetTransactionTypeCommand}" CommandParameter="Income" />
-                            </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=IncomeLabel}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="13">
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsIncomeTypeSelected}" Value="True">
-                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                            </ContentView.GestureRecognizers>
+                            <Border StrokeThickness="1" Padding="6" StrokeShape="RoundRectangle 8" BackgroundColor="Transparent">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsIncomeTypeSelected}" Value="True">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
                                     </DataTrigger>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsIncomeTypeSelected}" Value="False">
-                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsIncomeTypeSelected}" Value="False">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
                                     </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
-                        </Border>
+                                </Border.Triggers>
+                                <Label Text="{localization:Translate Key=IncomeLabel}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="13">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsIncomeTypeSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsIncomeTypeSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+                        </ContentView>
 
-                        <Border Grid.Column="1" StrokeThickness="1" Padding="6" StrokeShape="RoundRectangle 8" BackgroundColor="Transparent">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsExpenseTypeSelected}" Value="True">
-                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsExpenseTypeSelected}" Value="False">
-                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Border.GestureRecognizers>
+                        <ContentView Grid.Column="1" behaviors:PressFeedback.IsEnabled="True">
+                            <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetTransactionTypeCommand}" CommandParameter="Expense" />
-                            </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=ExpenseLabel}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="13">
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsExpenseTypeSelected}" Value="True">
-                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                            </ContentView.GestureRecognizers>
+                            <Border StrokeThickness="1" Padding="6" StrokeShape="RoundRectangle 8" BackgroundColor="Transparent">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsExpenseTypeSelected}" Value="True">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
                                     </DataTrigger>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsExpenseTypeSelected}" Value="False">
-                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsExpenseTypeSelected}" Value="False">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
                                     </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
-                        </Border>
+                                </Border.Triggers>
+                                <Label Text="{localization:Translate Key=ExpenseLabel}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="13">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsExpenseTypeSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsExpenseTypeSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+                        </ContentView>
                     </Grid>
 
                     <Entry Text="{Binding NewAmountText}" Keyboard="Numeric" Placeholder="{localization:Translate Key=AmountPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" Margin="0,4,0,0" />
@@ -547,30 +557,32 @@
                         <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Accounts}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="viewModels:AccountItemViewModel">
-                                    <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                                        <Border.GestureRecognizers>
+                                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                        <ContentView.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectNewAccountCommand}" CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                        <HorizontalStackLayout Spacing="6">
-                                            <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
-                                            <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
-                                                <Label.Triggers>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
-                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
-                                                    </DataTrigger>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
-                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                    </DataTrigger>
-                                                </Label.Triggers>
-                                            </Label>
-                                        </HorizontalStackLayout>
-                                    </Border>
+                                        </ContentView.GestureRecognizers>
+                                        <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
+                                                <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </ContentView>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </HorizontalStackLayout>
@@ -761,18 +773,20 @@
                         <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding AvailableIcons}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="viewModels:SelectableOptionViewModel">
-                                    <Border WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                                        <Border.GestureRecognizers>
+                                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                        <ContentView.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectAccountIconCommand}" CommandParameter="{Binding Value}" />
-                                        </Border.GestureRecognizers>
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                <Setter Property="StrokeThickness" Value="3" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                        <Label Text="{Binding Value}" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
-                                    </Border>
+                                        </ContentView.GestureRecognizers>
+                                        <Border WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    <Setter Property="StrokeThickness" Value="3" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="{Binding Value}" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" />
+                                        </Border>
+                                    </ContentView>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </HorizontalStackLayout>
@@ -783,17 +797,19 @@
                         <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding AvailableColors}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="viewModels:SelectableOptionViewModel">
-                                    <Border WidthRequest="32" HeightRequest="32" StrokeShape="RoundRectangle 16" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{Binding Value}">
-                                        <Border.GestureRecognizers>
+                                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                        <ContentView.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectAccountColorCommand}" CommandParameter="{Binding Value}" />
-                                        </Border.GestureRecognizers>
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                <Setter Property="StrokeThickness" Value="3" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                    </Border>
+                                        </ContentView.GestureRecognizers>
+                                        <Border WidthRequest="32" HeightRequest="32" StrokeShape="RoundRectangle 16" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{Binding Value}">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    <Setter Property="StrokeThickness" Value="3" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                        </Border>
+                                    </ContentView>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </HorizontalStackLayout>
@@ -806,30 +822,32 @@
                             <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding ReassignTargets}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="viewModels:AccountItemViewModel">
-                                        <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                                            <Border.GestureRecognizers>
+                                        <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                            <ContentView.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectReassignTargetCommand}" CommandParameter="{Binding .}" />
-                                            </Border.GestureRecognizers>
-                                            <Border.Triggers>
-                                                <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
-                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                </DataTrigger>
-                                            </Border.Triggers>
-                                            <HorizontalStackLayout Spacing="6">
-                                                <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
-                                                <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
-                                                    <Label.Triggers>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
-                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
-                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                        </DataTrigger>
-                                                    </Label.Triggers>
-                                                </Label>
-                                            </HorizontalStackLayout>
-                                        </Border>
+                                            </ContentView.GestureRecognizers>
+                                            <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                                <Border.Triggers>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    </DataTrigger>
+                                                </Border.Triggers>
+                                                <HorizontalStackLayout Spacing="6">
+                                                    <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
+                                                    <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
+                                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
+                                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                </HorizontalStackLayout>
+                                            </Border>
+                                        </ContentView>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </HorizontalStackLayout>
@@ -910,30 +928,32 @@
                         <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding TransferFromOptions}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="viewModels:AccountItemViewModel">
-                                    <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                                        <Border.GestureRecognizers>
+                                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                        <ContentView.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectTransferFromCommand}" CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                        <HorizontalStackLayout Spacing="6">
-                                            <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
-                                            <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
-                                                <Label.Triggers>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
-                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
-                                                    </DataTrigger>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
-                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                    </DataTrigger>
-                                                </Label.Triggers>
-                                            </Label>
-                                        </HorizontalStackLayout>
-                                    </Border>
+                                        </ContentView.GestureRecognizers>
+                                        <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
+                                                <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </ContentView>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </HorizontalStackLayout>
@@ -944,30 +964,32 @@
                         <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding TransferToOptions}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="viewModels:AccountItemViewModel">
-                                    <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                                        <Border.GestureRecognizers>
+                                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                        <ContentView.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectTransferToCommand}" CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                        <HorizontalStackLayout Spacing="6">
-                                            <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
-                                            <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
-                                                <Label.Triggers>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
-                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
-                                                    </DataTrigger>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
-                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                    </DataTrigger>
-                                                </Label.Triggers>
-                                            </Label>
-                                        </HorizontalStackLayout>
-                                    </Border>
+                                        </ContentView.GestureRecognizers>
+                                        <Border StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsPickerSelected}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="{Binding Icon}" FontSize="12" VerticalOptions="Center" />
+                                                <Label Text="{Binding Name}" FontSize="12" VerticalOptions="Center">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="True">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsPickerSelected}" Value="False">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </ContentView>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </HorizontalStackLayout>
@@ -1020,28 +1042,32 @@
 
                     <!-- Income / expense -->
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                        <Border Grid.Column="0" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="12,8">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsRecurringExpenseSelected}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Border.GestureRecognizers>
+                        <ContentView Grid.Column="0" behaviors:PressFeedback.IsEnabled="True">
+                            <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetRecurringTypeCommand}" CommandParameter="Expense" />
-                            </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=ExpenseLabel}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        </Border>
-                        <Border Grid.Column="1" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="12,8">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsRecurringIncomeSelected}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Border.GestureRecognizers>
+                            </ContentView.GestureRecognizers>
+                            <Border StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="12,8">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsRecurringExpenseSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label Text="{localization:Translate Key=ExpenseLabel}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </Border>
+                        </ContentView>
+                        <ContentView Grid.Column="1" behaviors:PressFeedback.IsEnabled="True">
+                            <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetRecurringTypeCommand}" CommandParameter="Income" />
-                            </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=IncomeLabel}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        </Border>
+                            </ContentView.GestureRecognizers>
+                            <Border StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="12,8">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsRecurringIncomeSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label Text="{localization:Translate Key=IncomeLabel}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </Border>
+                        </ContentView>
                     </Grid>
 
                     <Entry Text="{Binding NewRecurringAmountText}" Placeholder="{localization:Translate Key=AmountPlaceholder}" Keyboard="Numeric" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" />
@@ -1051,39 +1077,45 @@
                     <!-- Recurrence kind -->
                     <Label Text="{localization:Translate Key=PlannedRepeatLabel}" FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,4,0,0" />
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-                        <Border Grid.Column="0" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="10,8">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsRecurringMonthly}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Border.GestureRecognizers>
+                        <ContentView Grid.Column="0" behaviors:PressFeedback.IsEnabled="True">
+                            <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetRecurringKindCommand}" CommandParameter="MonthlyByDay" />
-                            </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=RecurrenceMonthlyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        </Border>
-                        <Border Grid.Column="1" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="10,8">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsRecurringWeekly}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Border.GestureRecognizers>
+                            </ContentView.GestureRecognizers>
+                            <Border StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="10,8">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsRecurringMonthly}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label Text="{localization:Translate Key=RecurrenceMonthlyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </Border>
+                        </ContentView>
+                        <ContentView Grid.Column="1" behaviors:PressFeedback.IsEnabled="True">
+                            <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetRecurringKindCommand}" CommandParameter="Weekly" />
-                            </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=RecurrenceWeeklyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        </Border>
-                        <Border Grid.Column="2" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="10,8">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsRecurringDaily}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Border.GestureRecognizers>
+                            </ContentView.GestureRecognizers>
+                            <Border StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="10,8">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsRecurringWeekly}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label Text="{localization:Translate Key=RecurrenceWeeklyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </Border>
+                        </ContentView>
+                        <ContentView Grid.Column="2" behaviors:PressFeedback.IsEnabled="True">
+                            <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SetRecurringKindCommand}" CommandParameter="Daily" />
-                            </Border.GestureRecognizers>
-                            <Label Text="{localization:Translate Key=RecurrenceDailyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        </Border>
+                            </ContentView.GestureRecognizers>
+                            <Border StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="10,8">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsRecurringDaily}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label Text="{localization:Translate Key=RecurrenceDailyLabel}" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </Border>
+                        </ContentView>
                     </Grid>
 
                     <!-- The start date also sets the day-of-month / weekday the rule lands on. -->

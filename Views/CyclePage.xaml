@@ -149,24 +149,26 @@
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="viewModels:SymptomToggleViewModel">
                                     <ContentView FlexLayout.Basis="50%" HeightRequest="46">
-                                        <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Margin="0,0,8,8"
-                                                Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="6,8">
-                                            <Border.Triggers>
-                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                                </DataTrigger>
-                                            </Border.Triggers>
-                                            <Border.GestureRecognizers>
+                                        <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                            <ContentView.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleSymptomCommand}" CommandParameter="{Binding .}" />
-                                            </Border.GestureRecognizers>
-                                            <!-- 12pt, not 13: the longest symptom is "Чутливість грудей", and half a
-                                                 narrow phone leaves it no room to spare. A chip cannot wrap its way
-                                                 out of it — FlexLayout measures the label against infinite width, so
-                                                 it reports one line and is then cut to the column. -->
-                                            <Label Text="{Binding Label}" FontSize="12" InputTransparent="True"
-                                                   HorizontalTextAlignment="Center" VerticalOptions="Center"
-                                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        </Border>
+                                            </ContentView.GestureRecognizers>
+                                            <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Margin="0,0,8,8"
+                                                    Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="6,8">
+                                                <Border.Triggers>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                                    </DataTrigger>
+                                                </Border.Triggers>
+                                                <!-- 12pt, not 13: the longest symptom is "Чутливість грудей", and half a
+                                                     narrow phone leaves it no room to spare. A chip cannot wrap its way
+                                                     out of it — FlexLayout measures the label against infinite width, so
+                                                     it reports one line and is then cut to the column. -->
+                                                <Label Text="{Binding Label}" FontSize="12" InputTransparent="True"
+                                                       HorizontalTextAlignment="Center" VerticalOptions="Center"
+                                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            </Border>
+                                        </ContentView>
                                     </ContentView>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>

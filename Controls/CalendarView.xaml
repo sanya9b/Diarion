@@ -57,16 +57,20 @@
                 IsVisible="False">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:CalendarDay">
-                    <ContentView FlexLayout.Basis="13.5%" HeightRequest="52" Margin="0,0,0,8">
+                    <!-- The whole cell takes the tap and the press, not the Border inside it: the Border carries the
+                         cycle and today fills as triggers, which never come back when TouchBehavior sits on the same
+                         element, and the selection and progress overlays beside it have to scale with it. -->
+                    <ContentView FlexLayout.Basis="13.5%" HeightRequest="52" Margin="0,0,0,8"
+                                 behaviors:PressFeedback.IsEnabled="True">
+                        <ContentView.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference CalendarViewRoot}}" CommandParameter="{Binding .}" />
+                        </ContentView.GestureRecognizers>
                         <Grid>
                             <Border StrokeShape="RoundRectangle 8"
                                     StrokeThickness="1"
                                     Stroke="{DynamicResource Theme_Dust_Ocean}"
                                     BackgroundColor="{DynamicResource Theme_Snow_Black}"
                                     Padding="6">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference CalendarViewRoot}}" CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
                             
                             <Border.Triggers>
                                 <!-- Predicted days are outlined, logged days filled: now that one is a
