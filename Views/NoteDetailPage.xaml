@@ -7,6 +7,7 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:selectors="clr-namespace:Diarion.Selectors"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              x:Class="Diarion.Views.NoteDetailPage"
              x:Name="RootPage"
              x:DataType="viewModels:NoteDetailViewModel"
@@ -167,6 +168,7 @@
                 <!-- Tapping the empty space below the text puts the caret at the end of the note. -->
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding Blocks}"
                                      BindableLayout.ItemTemplateSelector="{StaticResource NoteBlockSelector}"
+                                     behaviors:ReadOnlyAccess.DisableWhenReadOnly="True"
                                      Spacing="2"
                                      BackgroundColor="Transparent"
                                      MinimumHeightRequest="240">

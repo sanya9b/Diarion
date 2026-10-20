@@ -134,19 +134,106 @@
     <value>Немає</value>
   </data>
   <data name="EmotionHappy" xml:space="preserve">
-    <value>Веселий</value>
+    <value>Радість</value>
   </data>
   <data name="EmotionCalm" xml:space="preserve">
-    <value>Спокійний</value>
+    <value>Спокій</value>
   </data>
   <data name="EmotionAnxious" xml:space="preserve">
-    <value>Тривожний</value>
+    <value>Тривога</value>
   </data>
   <data name="EmotionSad" xml:space="preserve">
-    <value>Сумний</value>
+    <value>Сум</value>
   </data>
   <data name="EmotionAngry" xml:space="preserve">
-    <value>Злий</value>
+    <value>Злість</value>
+  </data>
+  <data name="EmotionNeutral" xml:space="preserve">
+    <value>Нейтрально</value>
+  </data>
+  <data name="EmotionInspired" xml:space="preserve">
+    <value>Натхнення</value>
+  </data>
+  <data name="EmotionExcited" xml:space="preserve">
+    <value>Захват</value>
+  </data>
+  <data name="EmotionProud" xml:space="preserve">
+    <value>Гордість</value>
+  </data>
+  <data name="EmotionEnergetic" xml:space="preserve">
+    <value>Бадьорість</value>
+  </data>
+  <data name="EmotionPlayful" xml:space="preserve">
+    <value>Грайливість</value>
+  </data>
+  <data name="EmotionOptimistic" xml:space="preserve">
+    <value>Оптимізм</value>
+  </data>
+  <data name="EmotionContent" xml:space="preserve">
+    <value>Задоволення</value>
+  </data>
+  <data name="EmotionGrateful" xml:space="preserve">
+    <value>Вдячність</value>
+  </data>
+  <data name="EmotionRelaxed" xml:space="preserve">
+    <value>Розслабленість</value>
+  </data>
+  <data name="EmotionLoving" xml:space="preserve">
+    <value>Любов</value>
+  </data>
+  <data name="EmotionSecure" xml:space="preserve">
+    <value>Захищеність</value>
+  </data>
+  <data name="EmotionPeaceful" xml:space="preserve">
+    <value>Умиротворення</value>
+  </data>
+  <data name="EmotionStressed" xml:space="preserve">
+    <value>Стрес</value>
+  </data>
+  <data name="EmotionIrritated" xml:space="preserve">
+    <value>Роздратування</value>
+  </data>
+  <data name="EmotionOverwhelmed" xml:space="preserve">
+    <value>Перевантаження</value>
+  </data>
+  <data name="EmotionScared" xml:space="preserve">
+    <value>Страх</value>
+  </data>
+  <data name="EmotionFrustrated" xml:space="preserve">
+    <value>Фрустрація</value>
+  </data>
+  <data name="EmotionTired" xml:space="preserve">
+    <value>Втома</value>
+  </data>
+  <data name="EmotionBored" xml:space="preserve">
+    <value>Нудьга</value>
+  </data>
+  <data name="EmotionLonely" xml:space="preserve">
+    <value>Самотність</value>
+  </data>
+  <data name="EmotionDisappointed" xml:space="preserve">
+    <value>Розчарування</value>
+  </data>
+  <data name="EmotionExhausted" xml:space="preserve">
+    <value>Виснаження</value>
+  </data>
+  <data name="EmotionHopeless" xml:space="preserve">
+    <value>Безнадія</value>
+  </data>
+  <data name="QuadrantPleasantEnergetic" xml:space="preserve">
+    <value>Піднесення</value>
+  </data>
+  <data name="QuadrantPleasantCalm" xml:space="preserve">
+    <value>Рівновага</value>
+  </data>
+  <data name="QuadrantUnpleasantEnergetic" xml:space="preserve">
+    <value>Напруга</value>
+  </data>
+  <data name="QuadrantUnpleasantCalm" xml:space="preserve">
+    <value>Пригніченість</value>
+  </data>
+  <data name="MoodClear" xml:space="preserve">
+    <value>Прибрати</value>
   </data>
   <data name="TodoListLabel" xml:space="preserve">
     <value>Список справ</value>
@@ -365,13 +452,13 @@
     <value>Одиниць на день</value>
   </data>
   <data name="HabitTrackerSubtitle" xml:space="preserve">
-    <value>Створи окремий трекер для кожної звички та відмічай кожен чистий день.</value>
+    <value>Створіть окремий трекер для кожної звички та відмічайте кожен чистий день.</value>
   </data>
   <data name="HabitTrackerSetupTitle" xml:space="preserve">
     <value>Новий трекер</value>
   </data>
   <data name="HabitTrackerSetupSubtitle" xml:space="preserve">
-    <value>Додай назву звички, обери дату старту та веди щоденні відмітки в одному місці.</value>
+    <value>Додайте назву звички, оберіть дату старту та ведіть щоденні відмітки в одному місці.</value>
   </data>
   <data name="HabitTrackerNameLabel" xml:space="preserve">
     <value>Назва звички</value>
@@ -385,9 +472,6 @@
   <data name="HabitTrackerAddButton" xml:space="preserve">
     <value>Додати трекер</value>
   </data>
-  <data name="HabitTrackerEmptyState" xml:space="preserve">
-    <value>Поки що немає жодного трекера. Створи перший і почни відмічати дні.</value>
-  </data>
   <data name="HabitTrackerDaysSectionTitle" xml:space="preserve">
     <value>Дні для відмітки</value>
   </data>
@@ -395,7 +479,7 @@
     <value>Відмічено днів</value>
   </data>
   <data name="HabitTrackerNameRequiredMessage" xml:space="preserve">
-    <value>Вкажи назву звички.</value>
+    <value>Вкажіть назву звички.</value>
   </data>
   <data name="HabitTrackerDuplicateMessage" xml:space="preserve">
     <value>Трекер з такою назвою вже існує.</value>
@@ -404,7 +488,7 @@
     <value>Трекер читання</value>
   </data>
   <data name="ReadingTrackerSubtitle" xml:space="preserve">
-    <value>Натисни на порожній слот, додай назву книги й дату завершення читання.</value>
+    <value>Натисніть на порожній слот, додайте назву книги й дату завершення читання.</value>
   </data>
   <data name="ReadingTrackerSlotFormat" xml:space="preserve">
     <value>Слот {0}</value>
@@ -422,13 +506,13 @@
     <value>Зберегти книгу</value>
   </data>
   <data name="ReadingTrackerBookTitleRequiredMessage" xml:space="preserve">
-    <value>Вкажи назву книги.</value>
+    <value>Вкажіть назву книги.</value>
   </data>
   <data name="HappyMomentsTitle" xml:space="preserve">
     <value>Щасливі миті</value>
   </data>
   <data name="HappyMomentsSubtitle" xml:space="preserve">
-    <value>Натисни на порожню картку, запиши світлий спогад і збережи дату.</value>
+    <value>Натисніть на порожню картку, запишіть світлий спогад і збережіть дату.</value>
   </data>
   <data name="HappyMomentsSlotFormat" xml:space="preserve">
     <value>Місяць {0}</value>
@@ -449,13 +533,13 @@
     <value>Зберегти мить</value>
   </data>
   <data name="HappyMomentsTitleRequiredMessage" xml:space="preserve">
-    <value>Будь ласка, додай опис миті.</value>
+    <value>Додайте опис миті.</value>
   </data>
   <data name="GoodDeedsTitle" xml:space="preserve">
     <value>Скарбничка добрих справ</value>
   </data>
   <data name="GoodDeedsSubtitle" xml:space="preserve">
-    <value>Натисни на порожню картку, запиши добру справу і збережи дату.</value>
+    <value>Натисніть на порожню картку, запишіть добру справу і збережіть дату.</value>
   </data>
   <data name="GoodDeedsSlotFormat" xml:space="preserve">
     <value>Місяць {0}</value>
@@ -464,7 +548,7 @@
     <value>Нова добра справа</value>
   </data>
   <data name="GoodDeedsTitleLabel" xml:space="preserve">
-    <value>Що хорошого ти зробив(ла)?</value>
+    <value>Що хорошого ви зробили?</value>
   </data>
   <data name="GoodDeedsTitlePlaceholder" xml:space="preserve">
     <value>Наприклад: Допоміг сусіду</value>
@@ -476,7 +560,7 @@
     <value>Зберегти</value>
   </data>
   <data name="GoodDeedsTitleRequiredMessage" xml:space="preserve">
-    <value>Будь ласка, додай опис справи.</value>
+    <value>Додайте опис справи.</value>
   </data>
   <data name="TrackerPrototypeLabel" xml:space="preserve">
     <value>АДАПТИВНИЙ МАКЕТ</value>
@@ -622,11 +706,11 @@
   <data name="MoodHourlyLabel" xml:space="preserve">
     <value>По годинах</value>
   </data>
-  <data name="MoodHourlyHint" xml:space="preserve">
-    <value>Оберіть годину, тоді натисніть настрій вище</value>
+  <data name="MoodHourPickerTitle" xml:space="preserve">
+    <value>Оберіть годину</value>
   </data>
-  <data name="MoodHourlyDayHint" xml:space="preserve">
-    <value>Натисніть настрій вище, щоб задати весь день</value>
+  <data name="MoodHourExit" xml:space="preserve">
+    <value>Назад до всього дня</value>
   </data>
   <data name="MoodHourAccessibility" xml:space="preserve">
     <value>{0}:00 — {1}</value>
@@ -796,9 +880,6 @@
   <data name="CycleHistoryTitle" xml:space="preserve">
     <value>Записані місячні</value>
   </data>
-  <data name="CycleHistoryEmpty" xml:space="preserve">
-    <value>Поки нічого не записано</value>
-  </data>
   <data name="CycleIntervalFormat" xml:space="preserve">
     <value>{0} дн. до наступних</value>
   </data>
@@ -922,6 +1003,21 @@
   <data name="StatsMoodByHourNoHourlyData" xml:space="preserve">
     <value>Ви позначали настрій лише для всього дня. Відмічайте настрій погодинно у щоденнику, щоб побачити цей графік.</value>
   </data>
+  <data name="StatsEnergyByHour" xml:space="preserve">
+    <value>Енергія за годинами</value>
+  </data>
+  <data name="StatsEnergyByHourSubtitle" xml:space="preserve">
+    <value>Скільки у вас енергії в різні години дня</value>
+  </data>
+  <data name="StatsEnergyByHourHigh" xml:space="preserve">
+    <value>Бадьоро</value>
+  </data>
+  <data name="StatsEnergyByHourLow" xml:space="preserve">
+    <value>Спокійно</value>
+  </data>
+  <data name="StatsEnergyByHourBalanced" xml:space="preserve">
+    <value>У середньому порівну</value>
+  </data>
   <data name="StreaksTitle" xml:space="preserve">
     <value>СЕРІЇ</value>
   </data>
@@ -942,9 +1038,6 @@
   </data>
   <data name="PromptHistorySearch" xml:space="preserve">
     <value>Пошук у відповідях</value>
-  </data>
-  <data name="PromptHistoryEmpty" xml:space="preserve">
-    <value>Відповідей ще немає. Дайте відповідь на питання дня — і вона з'явиться тут.</value>
   </data>
   <data name="PromptHistoryNoMatches" xml:space="preserve">
     <value>За цим запитом нічого не знайдено.</value>
@@ -1437,9 +1530,6 @@
   </data>
   <data name="DeleteNoteConfirmMessage" xml:space="preserve">
     <value>Нотатку буде видалено назавжди — скасувати не вийде.</value>
-  </data>
-  <data name="EmptyNotes" xml:space="preserve">
-    <value>Нотаток ще немає. Створіть першу.</value>
   </data>
   <data name="NotesTags" xml:space="preserve">
     <value>Теги</value>
@@ -2026,9 +2116,6 @@
   <data name="SearchScopeNotes" xml:space="preserve">
     <value>Нотатки</value>
   </data>
-  <data name="SearchNoResults" xml:space="preserve">
-    <value>Нічого не знайдено</value>
-  </data>
   <data name="SearchLexicalOnlyNotice" xml:space="preserve">
     <value>Шукаю лише за словами. Увімкніть ШІ в налаштуваннях, щоб шукати за змістом.</value>
   </data>
@@ -2124,5 +2211,194 @@
   </data>
   <data name="CycleAgeHint" xml:space="preserve">
     <value>Календар циклу доступний з 14 років. Вкажіть дату народження вище, щоб його побачити.</value>
+  </data>
+  <data name="PaywallTitle" xml:space="preserve">
+    <value>Diarion повністю</value>
+  </data>
+  <data name="PaywallSubtitle" xml:space="preserve">
+    <value>Щоденник, звички, планер, нотатки, фінанси, цикл і статистика. Записи лишаються тільки на вашому телефоні.</value>
+  </data>
+  <data name="PaywallMonthlyTitle" xml:space="preserve">
+    <value>Місяць</value>
+  </data>
+  <data name="PaywallYearlyTitle" xml:space="preserve">
+    <value>Рік</value>
+  </data>
+  <data name="PaywallPricePerMonthFormat" xml:space="preserve">
+    <value>{0} / міс</value>
+  </data>
+  <data name="PaywallPricePerYearFormat" xml:space="preserve">
+    <value>{0} / рік</value>
+  </data>
+  <data name="PaywallDiscountFormat" xml:space="preserve">
+    <value>Вигідніше на {0}%</value>
+  </data>
+  <data name="PaywallTrialFormat" xml:space="preserve">
+    <value>{0} безкоштовно, далі {1}</value>
+  </data>
+  <data name="PaywallTrialDayOne" xml:space="preserve">
+    <value>{0} день</value>
+  </data>
+  <data name="PaywallTrialDayFew" xml:space="preserve">
+    <value>{0} дні</value>
+  </data>
+  <data name="PaywallTrialDayMany" xml:space="preserve">
+    <value>{0} днів</value>
+  </data>
+  <data name="PaywallTrialMonthFormat" xml:space="preserve">
+    <value>{0} міс.</value>
+  </data>
+  <data name="PaywallTrialYearFormat" xml:space="preserve">
+    <value>{0} р.</value>
+  </data>
+  <data name="PaywallStartTrialButton" xml:space="preserve">
+    <value>Почати безкоштовно</value>
+  </data>
+  <data name="PaywallSubscribeButton" xml:space="preserve">
+    <value>Оформити підписку</value>
+  </data>
+  <data name="PaywallRestoreButton" xml:space="preserve">
+    <value>Відновити покупки</value>
+  </data>
+  <data name="PaywallLaterButton" xml:space="preserve">
+    <value>Пізніше</value>
+  </data>
+  <data name="PaywallTermsLink" xml:space="preserve">
+    <value>Умови використання</value>
+  </data>
+  <data name="PaywallPrivacyLink" xml:space="preserve">
+    <value>Політика приватності</value>
+  </data>
+  <data name="PaywallAutoRenewNotice" xml:space="preserve">
+    <value>Підписка поновлюється автоматично, доки ви її не скасуєте. Скасувати можна будь-коли в налаштуваннях Apple ID не пізніше ніж за 24 години до кінця періоду. Якщо пробний період не скасовано, оплата спишеться після його завершення.</value>
+  </data>
+  <data name="PaywallDataPromise" xml:space="preserve">
+    <value>Якщо підписка закінчиться, усе написане лишиться доступним для читання, бекапу та експорту.</value>
+  </data>
+  <data name="PaywallPendingMessage" xml:space="preserve">
+    <value>Покупка очікує підтвердження. Доступ відкриється, щойно Apple її підтвердить.</value>
+  </data>
+  <data name="PaywallRestoreNothingFound" xml:space="preserve">
+    <value>Активної підписки на цьому Apple ID не знайдено.</value>
+  </data>
+  <data name="PaywallStoreUnavailable" xml:space="preserve">
+    <value>App Store зараз недоступний. Спробуйте пізніше.</value>
+  </data>
+  <data name="PaywallPurchaseFailedFormat" xml:space="preserve">
+    <value>Не вдалося оформити покупку: {0}</value>
+  </data>
+  <data name="SubscriptionSectionTitle" xml:space="preserve">
+    <value>Підписка</value>
+  </data>
+  <data name="SubscriptionStatusLegacy" xml:space="preserve">
+    <value>Ви з нами з першої версії: усе, що в ній було, для вас безкоштовне назавжди.</value>
+  </data>
+  <data name="SubscriptionStatusTrialFormat" xml:space="preserve">
+    <value>Пробний період до {0}</value>
+  </data>
+  <data name="SubscriptionStatusRenewsFormat" xml:space="preserve">
+    <value>Активна, поновиться {0}</value>
+  </data>
+  <data name="SubscriptionStatusEndsFormat" xml:space="preserve">
+    <value>Діє до {0}, не поновиться</value>
+  </data>
+  <data name="SubscriptionStatusGraceFormat" xml:space="preserve">
+    <value>Apple не вдалося списати оплату. Доступ збережено до {0}.</value>
+  </data>
+  <data name="SubscriptionStatusReadOnly" xml:space="preserve">
+    <value>Підписки немає. Записи доступні для читання, бекапу та експорту.</value>
+  </data>
+  <data name="SubscriptionStatusUnavailable" xml:space="preserve">
+    <value>На цьому пристрої підписка не потрібна: усе доступно.</value>
+  </data>
+  <data name="SubscriptionManageButton" xml:space="preserve">
+    <value>Керувати підпискою</value>
+  </data>
+  <data name="SubscriptionSupportButton" xml:space="preserve">
+    <value>Підтримати підпискою</value>
+  </data>
+  <data name="ReadOnlyBannerText" xml:space="preserve">
+    <value>Підписка закінчилась: записи доступні лише для читання.</value>
+  </data>
+  <data name="ReadOnlyBannerButton" xml:space="preserve">
+    <value>Поновити</value>
+  </data>
+  <data name="ReadOnlyBannerNewText" xml:space="preserve">
+    <value>Зараз записи доступні лише для читання. Щоб писати, оформіть підписку.</value>
+  </data>
+  <data name="ReadOnlyBannerNewButton" xml:space="preserve">
+    <value>Оформити</value>
+  </data>
+  <data name="LegacyWelcomeTitle" xml:space="preserve">
+    <value>Дякуємо, що ви з нами з першої версії</value>
+  </data>
+  <data name="LegacyWelcomeText" xml:space="preserve">
+    <value>Diarion став платним для нових користувачів. Для вас усе, що було в першій версії, лишається безкоштовним назавжди, разом з усіма оновленнями цих функцій.</value>
+  </data>
+  <data name="LegacyWelcomeDismiss" xml:space="preserve">
+    <value>Зрозуміло</value>
+  </data>
+  <data name="EmptyStateNotesTitle" xml:space="preserve">
+    <value>Нотаток ще немає</value>
+  </data>
+  <data name="EmptyStateNotesHint" xml:space="preserve">
+    <value>Створіть першу, і вона з'явиться тут.</value>
+  </data>
+  <data name="EmptyStateHabitsTitle" xml:space="preserve">
+    <value>Трекерів ще немає</value>
+  </data>
+  <data name="EmptyStateHabitsHint" xml:space="preserve">
+    <value>Створіть перший, і тут з'являться відмічені дні.</value>
+  </data>
+  <data name="EmptyStatePromptsTitle" xml:space="preserve">
+    <value>Відповідей ще немає</value>
+  </data>
+  <data name="EmptyStatePromptsHint" xml:space="preserve">
+    <value>Дайте відповідь на питання дня, і вона з'явиться тут.</value>
+  </data>
+  <data name="EmptyStateCycleTitle" xml:space="preserve">
+    <value>Поки нічого не записано</value>
+  </data>
+  <data name="EmptyStateCycleHint" xml:space="preserve">
+    <value>Позначте перший день місячних, і тут з'являться історія та прогноз.</value>
+  </data>
+  <data name="EmptyStateMoodTitle" xml:space="preserve">
+    <value>Настрою за цей період немає</value>
+  </data>
+  <data name="EmptyStateMoodHint" xml:space="preserve">
+    <value>Відмітьте настрій у записі дня, і тут з'являться емоції та години.</value>
+  </data>
+  <data name="EmptyStateSleepTitle" xml:space="preserve">
+    <value>Сну за цей період немає</value>
+  </data>
+  <data name="EmptyStateSleepHint" xml:space="preserve">
+    <value>Запишіть сон у записі дня, і тут з'являться тривалість і якість.</value>
+  </data>
+  <data name="EmptyStateProductivityTitle" xml:space="preserve">
+    <value>Задач за цей період немає</value>
+  </data>
+  <data name="EmptyStateProductivityHint" xml:space="preserve">
+    <value>Додайте задачі в планувальнику, і тут з'явиться виконання по днях.</value>
+  </data>
+  <data name="EmptyStateSearchTitle" xml:space="preserve">
+    <value>Нічого не знайдено</value>
+  </data>
+  <data name="EmptyStateSearchHint" xml:space="preserve">
+    <value>Спробуйте інше слово або коротший запит.</value>
+  </data>
+  <data name="InsightPathProgressFormat" xml:space="preserve">
+    <value>{0} з {1}</value>
+  </data>
+  <data name="InsightPathAccessibleFormat" xml:space="preserve">
+    <value>{0} з {1} днів до першої гіпотези</value>
+  </data>
+  <data name="InsightPathSettingsTitle" xml:space="preserve">
+    <value>Шлях до першої гіпотези</value>
+  </data>
+  <data name="InsightPathSettingsLabel" xml:space="preserve">
+    <value>Стрічка під датою на головному</value>
+  </data>
+  <data name="InsightPathSettingsHint" xml:space="preserve">
+    <value>Чотирнадцять поділок до першого перевіреного зв'язку між настроєм і рештою щоденника. Зникає сама, щойно він з'явиться.</value>
   </data>
 </root>

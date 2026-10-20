@@ -9,6 +9,7 @@ using Diarion.Models.Markdown;
 using Diarion.Resources.Localization;
 using Diarion.Services;
 using LiteDB;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -231,7 +232,7 @@ public partial class NoteDetailViewModel : BaseViewModel
 
         try
         {
-            await _noteService.SaveNoteAsync(CurrentNote);
+            if (!await WriteGate.TryAsync(() => _noteService.SaveNoteAsync(CurrentNote))) return;
             _savedContent = CurrentNote.Content;
             await RefreshMetadataAsync();
         }
@@ -283,7 +284,7 @@ public partial class NoteDetailViewModel : BaseViewModel
         {
             // Obsidian-style: tapping a link to a missing note creates it.
             var newNote = new Note { Content = title };
-            await _noteService.SaveNoteAsync(newNote);
+            if (!await WriteGate.TryAsync(() => _noteService.SaveNoteAsync(newNote))) return;
             id = newNote.Id.ToString();
         }
         else
@@ -345,7 +346,7 @@ public partial class NoteDetailViewModel : BaseViewModel
                 IsBusy = true;
                 try
                 {
-                    await _noteService.DeleteNoteAsync(CurrentNote.Id.ToString());
+                    if (!await WriteGate.TryAsync(() => _noteService.DeleteNoteAsync(CurrentNote.Id.ToString()))) return;
                     await _navigationService.NavigateBackAsync();
                 }
                 finally

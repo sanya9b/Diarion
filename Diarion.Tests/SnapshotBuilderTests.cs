@@ -206,12 +206,12 @@ public class SnapshotBuilderTests
             EmotionCounts = { [Emotion.Calm] = 3, [Emotion.Sad] = 3, [Emotion.Happy] = 5, [Emotion.None] = 9 },
             DailyTrend =
             {
-                new MoodTrendPoint { Date = new DateTime(2026, 8, 3), Valence = 1.239, HasData = true, DominantEmotion = Emotion.Happy },
+                new MoodTrendPoint { Date = new DateTime(2026, 8, 3), Valence = 1.239, Energy = 0.667, HasData = true, DominantEmotion = Emotion.Happy },
                 new MoodTrendPoint { Date = new DateTime(2026, 8, 4), Valence = 0, HasData = false }
             },
             HourlyProfile =
             {
-                new MoodHourPoint { Hour = 9, Valence = 1.5, Count = 4, DayCount = 3, HasData = true },
+                new MoodHourPoint { Hour = 9, Valence = 1.5, Energy = -1.25, Count = 4, DayCount = 3, HasData = true },
                 new MoodHourPoint { Hour = 10, Valence = 0, Count = 0, DayCount = 0, HasData = false }
             }
         };
@@ -220,11 +220,14 @@ public class SnapshotBuilderTests
 
         snapshot.Mood.TopEmotion.Should().Be("Calm");
         snapshot.Mood.Daily[0].Valence.Should().Be(1.24);
+        snapshot.Mood.Daily[0].Energy.Should().Be(0.67);
         snapshot.Mood.Daily[1].Valence.Should().BeNull();
+        snapshot.Mood.Daily[1].Energy.Should().BeNull();
         snapshot.Mood.Daily[1].DominantEmotion.Should().BeNull();
 
         snapshot.Mood.ByHour.Should().ContainSingle();
         snapshot.Mood.ByHour[0].Hour.Should().Be(9);
+        snapshot.Mood.ByHour[0].Energy.Should().Be(-1.25);
         snapshot.Mood.ByHour[0].Observations.Should().Be(4);
         snapshot.Mood.ByHour[0].Days.Should().Be(3);
 

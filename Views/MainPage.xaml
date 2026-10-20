@@ -26,6 +26,9 @@
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
             <VerticalStackLayout Grid.Row="0" Padding="24,4,24,10" Spacing="0">
+
+                <!-- Read-only banner or the one-time card for 1.0 users (spec 15). Its own view model. -->
+                <controls:AccessBanner />
                 
                 <controls:CalendarView IsExpanded="{Binding BindingContext.CalendarSection.IsCalendarExpanded, Source={x:Reference PageRoot}}" BindingContext="{Binding CalendarSection}" x:DataType="viewmodels:CalendarSectionViewModel" />
 
@@ -50,6 +53,10 @@
                          costs more than two points of display type. -->
                     <Label Text="{Binding CalendarSection.SelectedDateLabel}" FontFamily="MarckScript" FontSize="24" MaxLines="1" HorizontalTextAlignment="Center" HorizontalOptions="Center" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </VerticalStackLayout>
+
+                <!-- The path to the first hypothesis (spec 17): one quiet row under the date, its own
+                     view model like the banner. Pulled up a little into the date block's bottom margin. -->
+                <controls:InsightPathCard x:Name="InsightPath" Margin="0,-6,0,0" />
 
                 <!-- Tabs: Typography-Driven Design -->
                 <Grid x:Name="TabsAnchor" Margin="0,0,0,16" ColumnDefinitions="*,*">
@@ -101,7 +108,7 @@
                          VerticalStackLayout collapses hidden blocks without leaving empty gaps.
                          The whole stack stays hidden (IsContentReady) until the real profile is
                          loaded, so the default all-blocks-visible layout never flashes on startup. -->
-                    <VerticalStackLayout x:Name="BlocksAnchor" Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+                    <VerticalStackLayout x:Name="BlocksAnchor" behaviors:ReadOnlyAccess.DisableWhenReadOnly="True" Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
                                          IsVisible="{Binding BindingContext.IsContentReady, Source={x:Reference PageRoot}}">
 
                         <controls:MoodSection BindingContext="{Binding}"
@@ -147,6 +154,27 @@
         <!-- Гід по головному екрану (онбординг, етап 2). Last child and RowSpan over both rows, so
              it covers the page. Everything it does lives in the control; this page only tells it
              which element each step means (MainPage.xaml.cs). -->
+        <!-- The mood row's two bubbles (spec 18): the precise states under the chosen face, and the hour
+             grid off the hours chip. Page-level layers, so they float over the cards below the row and a
+             tap anywhere else puts them away; each binds to the same day as the row and is placed from
+             the anchor the row publishes. Under the tour, which must stay on top. -->
+        <controls:AnchoredPopover BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+                                  Grid.Row="0" Grid.RowSpan="2"
+                                  IsOpen="{Binding IsRefinementOpen}" Anchor="{Binding RefineAnchor}"
+                                  CloseCommand="{Binding CloseRefinementCommand}">
+            <controls:AnchoredPopover.PopoverContent>
+                <controls:MoodRefineContent />
+            </controls:AnchoredPopover.PopoverContent>
+        </controls:AnchoredPopover>
+        <controls:AnchoredPopover BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+                                  Grid.Row="0" Grid.RowSpan="2"
+                                  IsOpen="{Binding IsHourPickerOpen}" Anchor="{Binding HourAnchor}"
+                                  CloseCommand="{Binding CloseHourPickerCommand}">
+            <controls:AnchoredPopover.PopoverContent>
+                <controls:HourPickerContent />
+            </controls:AnchoredPopover.PopoverContent>
+        </controls:AnchoredPopover>
+
         <controls:TourOverlayView x:Name="TourOverlay" Grid.Row="0" Grid.RowSpan="2" />
     </Grid>
 

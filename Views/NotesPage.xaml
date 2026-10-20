@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Diarion.Views.NotesPage"
              x:Name="RootPage"
              x:DataType="viewModels:NotesViewModel"
@@ -95,9 +95,9 @@
                             VerticalScrollBarVisibility="Never"
                             SelectionMode="None">
                 <CollectionView.EmptyView>
-                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8" Margin="0,40,0,0">
-                        <Label Text="{localization:Translate Key=EmptyNotes}" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="Center" />
-                    </VerticalStackLayout>
+                    <controls:EmptyStateView Scene="Notes"
+                                             Title="{x:Static localization:AppResources.EmptyStateNotesTitle}"
+                                             Hint="{x:Static localization:AppResources.EmptyStateNotesHint}" />
                 </CollectionView.EmptyView>
                 
                 <CollectionView.ItemsLayout>
@@ -114,7 +114,11 @@
                             <SwipeView>
                                 <SwipeView.RightItems>
                                     <SwipeItems>
-                                        <SwipeItemView Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteNoteCommand}" CommandParameter="{Binding .}">
+                                        <!-- Swipe left to delete; the command still asks first. An event rather than a
+                                             Command binding: a SwipeItemView is not in the row's visual tree, so
+                                             x:Reference RootPage resolved to nothing and the button did nothing — the
+                                             fault the planner's swipe had until 2026-08-01. -->
+                                        <SwipeItemView Invoked="OnDeleteSwipeInvoked">
                                             <Border StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Coral}" StrokeShape="RoundRectangle 16" Padding="20" Margin="12,0,0,0" WidthRequest="70">
                                                 <Path Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" Fill="White" HorizontalOptions="Center" VerticalOptions="Center" Aspect="Uniform" WidthRequest="24" HeightRequest="24"/>
                                             </Border>
@@ -126,11 +130,6 @@
                                         BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
                                         StrokeShape="RoundRectangle 14"
                                         Padding="14,10">
-                                    <Border.Behaviors>
-                                        <toolkit:TouchBehavior
-                                            LongPressCommand="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteNoteCommand}"
-                                            LongPressCommandParameter="{Binding .}" />
-                                    </Border.Behaviors>
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenNoteCommand}" CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>

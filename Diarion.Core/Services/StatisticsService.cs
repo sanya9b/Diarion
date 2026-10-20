@@ -137,7 +137,12 @@ public class StatisticsService : IStatisticsService
                     // Averaged across every logged hour, so the trend line reflects the whole day
                     // rather than whichever moment happened to be captured.
                     Valence: g.Average(e => MoodAggregate.Valence(e.Emotion, e.HourlyMood)),
+                    Energy: g.Average(e => MoodAggregate.Energy(e.Emotion, e.HourlyMood)),
                     Dominant: MoodAggregate.Dominant(
+                        g.First().Emotion,
+                        g.SelectMany(e => e.HourlyMood).ToList()),
+                    // Coarser than Dominant and what the heatmap colours by: see MoodAggregate.DominantQuadrant.
+                    Quadrant: MoodAggregate.DominantQuadrant(
                         g.First().Emotion,
                         g.SelectMany(e => e.HourlyMood).ToList())));
 
@@ -145,7 +150,15 @@ public class StatisticsService : IStatisticsService
         for (var d = range.Start; d <= range.End; d = d.AddDays(1))
         {
             dailyTrend.Add(moodByDate.TryGetValue(d, out var info)
-                ? new MoodTrendPoint { Date = d, Valence = info.Valence, HasData = true, DominantEmotion = info.Dominant }
+                ? new MoodTrendPoint
+                {
+                    Date = d,
+                    Valence = info.Valence,
+                    Energy = info.Energy,
+                    HasData = true,
+                    DominantEmotion = info.Dominant,
+                    DominantQuadrant = info.Quadrant
+                }
                 : new MoodTrendPoint { Date = d, Valence = 0, HasData = false });
         }
 
@@ -154,18 +167,24 @@ public class StatisticsService : IStatisticsService
         // hour and so contribute nothing.
         // Days are tracked as a set of dates, not a counter: several DTO rows can share one calendar day,
         // and the whole point of the figure is how many different days back an hour up.
-        var byHour = new Dictionary<int, (int Count, double Sum, HashSet<DateTime> Days)>();
+        // Valence and energy are summed side by side from the same observations, so the two hour
+        // charts always describe the same set of hours and the same day counts.
+        var byHour = new Dictionary<int, (int Count, double ValenceSum, double EnergySum, HashSet<DateTime> Days)>();
         foreach (var entry in entriesList)
         {
             foreach (var hourMood in MoodAggregate.HourlyObservations(entry.HourlyMood))
             {
                 if (!byHour.TryGetValue(hourMood.Hour, out var acc))
                 {
-                    acc = (0, 0d, new HashSet<DateTime>());
+                    acc = (0, 0d, 0d, new HashSet<DateTime>());
                 }
 
                 acc.Days.Add(entry.Date.Date);
-                byHour[hourMood.Hour] = (acc.Count + 1, acc.Sum + hourMood.Mood.ToValence(), acc.Days);
+                byHour[hourMood.Hour] = (
+                    acc.Count + 1,
+                    acc.ValenceSum + hourMood.Mood.ToValence(),
+                    acc.EnergySum + hourMood.Mood.ToArousal(),
+                    acc.Days);
             }
         }
 
@@ -173,8 +192,16 @@ public class StatisticsService : IStatisticsService
         for (int hour = MoodAggregate.FirstHour; hour <= MoodAggregate.LastHour; hour++)
         {
             hourlyProfile.Add(byHour.TryGetValue(hour, out var slot)
-                ? new MoodHourPoint { Hour = hour, Valence = slot.Sum / slot.Count, Count = slot.Count, DayCount = slot.Days.Count, HasData = true }
-                : new MoodHourPoint { Hour = hour, Valence = 0, Count = 0, DayCount = 0, HasData = false });
+                ? new MoodHourPoint
+                {
+                    Hour = hour,
+                    Valence = slot.ValenceSum / slot.Count,
+                    Energy = slot.EnergySum / slot.Count,
+                    Count = slot.Count,
+                    DayCount = slot.Days.Count,
+                    HasData = true
+                }
+                : new MoodHourPoint { Hour = hour, Valence = 0, Energy = 0, Count = 0, DayCount = 0, HasData = false });
         }
 
         return new MoodStatistics

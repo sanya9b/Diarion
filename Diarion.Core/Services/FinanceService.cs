@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services.Database;
+using Diarion.Services.Store;
 using LiteDB;
 
 namespace Diarion.Services;
@@ -11,9 +12,11 @@ namespace Diarion.Services;
 public class FinanceService : IFinanceService
 {
     private readonly IDatabaseContext _dbContext;
+    private readonly IAccessGuard _accessGuard;
 
-    public FinanceService(IDatabaseContext dbContext)
+    public FinanceService(IDatabaseContext dbContext, IAccessGuard? accessGuard = null)
     {
+        _accessGuard = accessGuard ?? AccessGuard.Unrestricted;
         _dbContext = dbContext;
     }
 
@@ -52,6 +55,7 @@ public class FinanceService : IFinanceService
 
     public Task SaveFinanceTransactionAsync(FinanceTransaction transaction)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             if (transaction.CreatedAt == default)
@@ -64,6 +68,7 @@ public class FinanceService : IFinanceService
 
     public Task DeleteFinanceTransactionAsync(Guid id)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             FinanceCollection.Delete(id);
@@ -77,6 +82,7 @@ public class FinanceService : IFinanceService
 
     public Task SaveBudgetAsync(Budget budget)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             if (budget.CreatedAt == default)
@@ -89,6 +95,7 @@ public class FinanceService : IFinanceService
 
     public Task DeleteBudgetAsync(Guid id)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() => BudgetsCollection.Delete(id));
     }
 
@@ -103,6 +110,7 @@ public class FinanceService : IFinanceService
 
     public Task SaveAccountAsync(Account account)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             if (account.CreatedAt == default)
@@ -115,6 +123,7 @@ public class FinanceService : IFinanceService
 
     public Task DeleteAccountAsync(Guid id, Guid reassignToId)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             // Move the account's transactions to the fallback account before removing it, so no
@@ -164,11 +173,13 @@ public class FinanceService : IFinanceService
 
     public Task SaveTransferAsync(Transfer transfer)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() => TransfersCollection.Upsert(transfer));
     }
 
     public Task DeleteTransferAsync(Guid id)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() => TransfersCollection.Delete(id));
     }
 
@@ -179,6 +190,7 @@ public class FinanceService : IFinanceService
 
     public Task SaveRecurringTransactionAsync(RecurringTransaction rule)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             if (rule.CreatedAt == default)
@@ -191,6 +203,7 @@ public class FinanceService : IFinanceService
 
     public Task DeleteRecurringTransactionAsync(Guid id, bool deletePostedTransactions)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             if (deletePostedTransactions)
@@ -213,6 +226,12 @@ public class FinanceService : IFinanceService
     {
         return Task.Run(() =>
         {
+            // Runs by itself when the Finance page opens; read-only means nothing is posted, not an error.
+            if (!_accessGuard.CanWrite)
+            {
+                return new PostingResult();
+            }
+
             var rules = RecurringCollection.Query().ToList();
             if (rules.Count == 0)
             {
@@ -241,6 +260,7 @@ public class FinanceService : IFinanceService
 
     public Task ConfirmOccurrenceAsync(Guid ruleId, DateTime occurrence, Guid? fallbackAccountId = null)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var rule = RecurringCollection.FindById(ruleId);
@@ -261,6 +281,7 @@ public class FinanceService : IFinanceService
 
     public Task SkipOccurrenceAsync(Guid ruleId, DateTime occurrence)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var rule = RecurringCollection.FindById(ruleId);

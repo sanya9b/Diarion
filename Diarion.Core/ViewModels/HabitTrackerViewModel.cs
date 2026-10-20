@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -179,7 +180,7 @@ public partial class HabitTrackerViewModel : BaseViewModel
         tracker.UnitsPerDay = units;
         tracker.ReminderTime = reminder;
 
-        await _habitService.SaveHarmfulHabitTrackerAsync(tracker);
+        if (!await WriteGate.TryAsync(() => _habitService.SaveHarmfulHabitTrackerAsync(tracker))) return;
         await ApplyReminderAsync(tracker.Id, normalizedName, reminder);
 
         var savedId = tracker.Id;
@@ -211,7 +212,7 @@ public partial class HabitTrackerViewModel : BaseViewModel
             
         if (!result) return;
 
-        await _habitService.DeleteHarmfulHabitTrackerAsync(tracker.Id);
+        if (!await WriteGate.TryAsync(() => _habitService.DeleteHarmfulHabitTrackerAsync(tracker.Id))) return;
         _notificationService.CancelHabitReminder(tracker.Id);
 
         Trackers.Remove(tracker);
@@ -242,7 +243,7 @@ public partial class HabitTrackerViewModel : BaseViewModel
         }
 
         var isMarked = !day.IsMarked;
-        await _habitService.SetHarmfulHabitDayMarkedAsync(SelectedTracker.Id, day.Date, isMarked);
+        if (!await WriteGate.TryAsync(() => _habitService.SetHarmfulHabitDayMarkedAsync(SelectedTracker.Id, day.Date, isMarked))) return;
 
         day.IsMarked = isMarked;
         if (isMarked)

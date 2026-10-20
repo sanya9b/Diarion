@@ -37,4 +37,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://diarion.org/en/support"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://diarion.org/support"/>
   </url>
+  <url>
+    <loc>https://diarion.org/terms</loc>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://diarion.org/terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://diarion.org/en/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://diarion.org/terms"/>
+  </url>
+  <url>
+    <loc>https://diarion.org/en/terms</loc>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://diarion.org/terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://diarion.org/en/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://diarion.org/terms"/>
+  </url>
 </urlset>

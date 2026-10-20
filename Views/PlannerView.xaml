@@ -4,6 +4,7 @@
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Diarion.Views.PlannerView"
              x:Name="PlannerViewRoot"
              x:DataType="viewmodels:PlannerSectionViewModel">
@@ -35,15 +36,12 @@
                     </SwipeItemView>
                 </SwipeItems>
             </SwipeView.RightItems>
-            <Border StrokeShape="RoundRectangle 10" StrokeThickness="0" MinimumHeightRequest="0"
+            <Border x:Name="RowCard" StrokeShape="RoundRectangle 10" StrokeThickness="0" MinimumHeightRequest="0"
                     BackgroundColor="{DynamicResource Theme_Snow_Black}">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding BindingContext.GoToTodoDetailsCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
-                </Border.GestureRecognizers>
                 <Border.Shadow>
                     <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,2" Radius="5" Opacity="{AppThemeBinding Light=0.04, Dark=0.15}" />
                 </Border.Shadow>
-                <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" Padding="5,3" ColumnSpacing="7" VerticalOptions="Center">
+                <Grid ColumnDefinitions="Auto, *, Auto" Padding="5,3" ColumnSpacing="7" VerticalOptions="Center">
                     <!-- The box stays 20px; what you can hit is 32 wide by the full height of the row.
                          Ticking a task off is the most frequent thing done here and it was the second
                          smallest target on the screen. The row's own left padding is spent on this
@@ -89,49 +87,129 @@
                     </Border>
                     </Grid>
 
-                    <Label Grid.Column="1" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="14.5" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}">
-                        <Label.Triggers>
-                            <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
-                                <Setter Property="TextDecorations" Value="Strikethrough" />
-                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                            </DataTrigger>
-                        </Label.Triggers>
-                    </Label>
+                    <!-- Tap opens the task, press and hold opens the priority colours. One TouchBehavior
+                         owns both, because it is what tells them apart: it drops the tap that ends a long
+                         press. A TapGestureRecognizer beside it fired on that release too and shut the
+                         colours the moment they opened.
+                         It wraps the text and the tail only. The checkbox and the colour dots are its
+                         siblings, never its children, so ticking a task or picking a dot cannot also count
+                         as a tap on the row. It wraps them rather than sitting empty behind them: an empty
+                         layer never saw a press on Windows. The parameters are read off the row by name — a
+                         behavior is not given its element's BindingContext, and {Binding .} arrived as null. -->
+                    <Border Grid.Column="1" Grid.ColumnSpan="2" StrokeThickness="0" Padding="0" BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                        <Border.Behaviors>
+                            <toolkit:TouchBehavior
+                                Command="{Binding BindingContext.GoToTodoDetailsCommand, Source={x:Reference PlannerViewRoot}}"
+                                CommandParameter="{Binding BindingContext, Source={x:Reference RowCard}, x:DataType=Border}"
+                                LongPressCommand="{Binding BindingContext.TogglePriorityPickerCommand, Source={x:Reference PlannerViewRoot}}"
+                                LongPressCommandParameter="{Binding BindingContext, Source={x:Reference RowCard}, x:DataType=Border}" />
+                        </Border.Behaviors>
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="7">
+                            <Label Grid.Column="0" Text="{Binding TaskDescription}" InputTransparent="True" FontSize="14.5" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
+                                        <Setter Property="TextDecorations" Value="Strikethrough" />
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
 
-                    <!-- Marks a row that belongs to a series. A glyph rather than a colour: the palette does
-                         not distinguish by hue alone, the same reason the grace-held streak carries an
-                         asterisk instead of a tint. -->
-                    <Label Grid.Column="2" Text="↻" IsVisible="{Binding IsRecurring}" InputTransparent="True"
-                           FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}"
-                           SemanticProperties.Description="{x:Static localization:AppResources.RecurringTaskAccessibility}" />
+                            <!-- The row's tail: series glyph, time, priority dot. A long press swaps it for the
+                                 picker below and back. -->
+                            <HorizontalStackLayout Grid.Column="1" Spacing="7" VerticalOptions="Center" InputTransparent="True"
+                                                   IsVisible="{Binding IsPickingPriority, Converter={toolkit:InvertedBoolConverter}}">
+                                <!-- Marks a row that belongs to a series. A glyph rather than a colour: the palette does
+                                     not distinguish by hue alone, the same reason the grace-held streak carries an
+                                     asterisk instead of a tint. -->
+                                <Label Text="↻" IsVisible="{Binding IsRecurring}" InputTransparent="True"
+                                       FontSize="13" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}"
+                                       SemanticProperties.Description="{x:Static localization:AppResources.RecurringTaskAccessibility}" />
 
-                    <!-- The real time, because an 08:30 task sits in the 08 row and would otherwise be
-                         indistinguishable from one at 08:00. A task holding a stretch of the day prints
-                         both ends — "13:00–16:00" — which is also the only place the block's length is
-                         written down: the strips below it say when it is still running, not how long for. -->
-                    <Label Grid.Column="3" Text="{Binding TimeDisplay}" IsVisible="{Binding HasTime}"
-                           InputTransparent="True" FontSize="11.5" FontAttributes="Bold" VerticalOptions="Center"
-                           TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                <!-- The real time, because an 08:30 task sits in the 08 row and would otherwise be
+                                     indistinguishable from one at 08:00. A task holding a stretch of the day prints
+                                     both ends — "13:00–16:00" — which is also the only place the block's length is
+                                     written down: the strips below it say when it is still running, not how long for. -->
+                                <Label Text="{Binding TimeDisplay}" IsVisible="{Binding HasTime}"
+                                       InputTransparent="True" FontSize="11.5" FontAttributes="Bold" VerticalOptions="Center"
+                                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                    <!-- Priority as a dot: one size, colour alone. The word still reaches a screen reader
-                         through the semantic description, which is the only place it survives. -->
-                    <Border Grid.Column="4" StrokeShape="Ellipse" Padding="0" StrokeThickness="0"
-                            WidthRequest="12" HeightRequest="12" VerticalOptions="Center" InputTransparent="True">
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Low">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                <Setter Property="SemanticProperties.Description" Value="{x:Static localization:AppResources.PriorityLow}" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Medium">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
-                                <Setter Property="SemanticProperties.Description" Value="{x:Static localization:AppResources.PriorityMedium}" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="High">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="SemanticProperties.Description" Value="{x:Static localization:AppResources.PriorityHigh}" />
-                            </DataTrigger>
-                        </Border.Triggers>
+                                <!-- Priority as a dot: one size, colour alone. The word still reaches a screen reader
+                                     through the semantic description, which is the only place it survives. -->
+                                <Border StrokeShape="Ellipse" Padding="0" StrokeThickness="0"
+                                        WidthRequest="12" HeightRequest="12" VerticalOptions="Center" InputTransparent="True">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Low">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                            <Setter Property="SemanticProperties.Description" Value="{x:Static localization:AppResources.PriorityLow}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Medium">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
+                                            <Setter Property="SemanticProperties.Description" Value="{x:Static localization:AppResources.PriorityMedium}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="High">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                            <Setter Property="SemanticProperties.Description" Value="{x:Static localization:AppResources.PriorityHigh}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                </Border>
+                            </HorizontalStackLayout>
+                        </Grid>
                     </Border>
+
+                    <!-- The three priority colours, low to high as the task form lists them, the current one
+                         ringed. Each target is 34 wide by the row's height; the dot you see is 18. Choosing
+                         saves at once, as ticking the box does — there is nothing to confirm. -->
+                    <HorizontalStackLayout Grid.Column="2" Spacing="0" VerticalOptions="Fill"
+                                           IsVisible="{Binding IsPickingPriority}">
+                        <Grid WidthRequest="34" BackgroundColor="Transparent"
+                              SemanticProperties.Description="{x:Static localization:AppResources.PriorityLow}">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ChoosePriorityCommand}" CommandParameter="{x:Static models:TodoPriority.Low}" />
+                            </Grid.GestureRecognizers>
+                            <Border StrokeShape="Ellipse" Padding="0" StrokeThickness="0" WidthRequest="18" HeightRequest="18"
+                                    BackgroundColor="{DynamicResource Theme_Sage}" InputTransparent="True"
+                                    HorizontalOptions="Center" VerticalOptions="Center">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Low">
+                                        <Setter Property="StrokeThickness" Value="2" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                            </Border>
+                        </Grid>
+                        <Grid WidthRequest="34" BackgroundColor="Transparent"
+                              SemanticProperties.Description="{x:Static localization:AppResources.PriorityMedium}">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ChoosePriorityCommand}" CommandParameter="{x:Static models:TodoPriority.Medium}" />
+                            </Grid.GestureRecognizers>
+                            <Border StrokeShape="Ellipse" Padding="0" StrokeThickness="0" WidthRequest="18" HeightRequest="18"
+                                    BackgroundColor="{DynamicResource Theme_Amber}" InputTransparent="True"
+                                    HorizontalOptions="Center" VerticalOptions="Center">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="Medium">
+                                        <Setter Property="StrokeThickness" Value="2" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                            </Border>
+                        </Grid>
+                        <Grid WidthRequest="34" BackgroundColor="Transparent"
+                              SemanticProperties.Description="{x:Static localization:AppResources.PriorityHigh}">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ChoosePriorityCommand}" CommandParameter="{x:Static models:TodoPriority.High}" />
+                            </Grid.GestureRecognizers>
+                            <Border StrokeShape="Ellipse" Padding="0" StrokeThickness="0" WidthRequest="18" HeightRequest="18"
+                                    BackgroundColor="{DynamicResource Theme_Coral}" InputTransparent="True"
+                                    HorizontalOptions="Center" VerticalOptions="Center">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding Priority}" Value="High">
+                                        <Setter Property="StrokeThickness" Value="2" />
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                            </Border>
+                        </Grid>
+                    </HorizontalStackLayout>
 
                 </Grid>
             </Border>

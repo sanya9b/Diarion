@@ -8,6 +8,7 @@ using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -105,17 +106,17 @@ public partial class PromptEditorViewModel : BaseViewModel
             _editing.Category = Category;
             // ResourceKey is deliberately preserved, unlike the habit editor: diary entries written
             // before prompts moved into the database reference built-ins by that key.
-            await _promptService.UpdateAsync(_editing);
+            if (!await WriteGate.TryAsync(() => _promptService.UpdateAsync(_editing))) return;
         }
         else
         {
-            await _promptService.AddAsync(new GuidedPrompt
+            if (!await WriteGate.TryAsync(() => _promptService.AddAsync(new GuidedPrompt
             {
                 TextUk = uk,
                 TextEn = en,
                 Category = Category,
                 CreatedAt = DateTime.Today
-            });
+            }))) return;
         }
 
         WeakReferenceMessenger.Default.Send(new PromptLibraryChangedMessage());
@@ -139,7 +140,7 @@ public partial class PromptEditorViewModel : BaseViewModel
 
         if (!confirm) return;
 
-        await _promptService.DeleteAsync(_editing.Id, DateTime.Today);
+        if (!await WriteGate.TryAsync(() => _promptService.DeleteAsync(_editing.Id, DateTime.Today))) return;
         WeakReferenceMessenger.Default.Send(new PromptLibraryChangedMessage());
         await _navigationService.NavigateBackAsync();
     }

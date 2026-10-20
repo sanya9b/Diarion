@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Services;
 using Microsoft.Maui.Controls;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -52,15 +53,19 @@ public partial class DiaryDetailViewModel : BaseViewModel
     [ObservableProperty]
     public partial Emotion SelectedEmotion { get; set; } = Emotion.None;
 
-    public List<EmotionItem> EmotionsList { get; } = new()
+    /// <summary>None first, then every emotion the catalogue knows, quadrant by quadrant.</summary>
+    public List<EmotionItem> EmotionsList { get; } = BuildEmotionsList();
+
+    private static List<EmotionItem> BuildEmotionsList()
     {
-        new(Emotion.None, Diarion.Resources.Localization.AppResources.EmotionNone),
-        new(Emotion.Happy, Diarion.Resources.Localization.AppResources.EmotionHappy),
-        new(Emotion.Calm, Diarion.Resources.Localization.AppResources.EmotionCalm),
-        new(Emotion.Anxious, Diarion.Resources.Localization.AppResources.EmotionAnxious),
-        new(Emotion.Sad, Diarion.Resources.Localization.AppResources.EmotionSad),
-        new(Emotion.Angry, Diarion.Resources.Localization.AppResources.EmotionAngry)
-    };
+        var list = new List<EmotionItem> { new(Emotion.None, Diarion.Resources.Localization.AppResources.EmotionNone) };
+        foreach (var emotion in EmotionCatalog.All)
+        {
+            list.Add(new EmotionItem(emotion, emotion.ToLocalizedName()));
+        }
+
+        return list;
+    }
 
     [ObservableProperty]
     public partial EmotionItem? SelectedEmotionItem { get; set; }
@@ -125,7 +130,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
 
         try
         {
-            await _todoService.SaveTodoAsync(todo);
+            if (!await WriteGate.TryAsync(() => _todoService.SaveTodoAsync(todo))) return;
             NewTodoDescription = string.Empty;
             await ReloadTodosAsync();
         }
@@ -143,7 +148,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
         try
         {
             todo.IsCompleted = !todo.IsCompleted;
-            await _todoService.SaveTodoAsync(todo);
+            if (!await WriteGate.TryAsync(() => _todoService.SaveTodoAsync(todo))) return;
             await ReloadTodosAsync();
         }
         catch (Exception ex)
@@ -159,7 +164,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
         
         try
         {
-            await _todoService.DeleteTodoAsync(todo.Id);
+            if (!await WriteGate.TryAsync(() => _todoService.DeleteTodoAsync(todo.Id))) return;
             await ReloadTodosAsync();
         }
         catch (Exception ex)
@@ -239,7 +244,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
             _currentEntry.Emotion = SelectedEmotion;
             // CreatedAt та Id вже ініціалізовані або збережені з існуючого
 
-            await _diaryService.SaveEntryAsync(_currentEntry);
+            if (!await WriteGate.TryAsync(() => _diaryService.SaveEntryAsync(_currentEntry))) return;
             
             // Якщо це був щойно створений запис, ми маємо повідомити UI, що тепер він "існуючий",
             // щоб користувач міг одразу додавати тудушки без перезаходу на сторінку.
@@ -281,7 +286,7 @@ public partial class DiaryDetailViewModel : BaseViewModel
             try
             {
                 IsBusy = true;
-                await _diaryService.DeleteEntryAsync(_currentEntry.Id);
+                if (!await WriteGate.TryAsync(() => _diaryService.DeleteEntryAsync(_currentEntry.Id))) return;
                 await _navigationService.NavigateBackAsync();
             }
             catch (Exception ex)

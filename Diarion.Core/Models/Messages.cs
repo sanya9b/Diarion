@@ -1,4 +1,5 @@
 using System;
+using Diarion.Models;
 
 namespace Diarion.Messages;
 
@@ -68,5 +69,45 @@ public class CycleLogChangedMessage
     public CycleLogChangedMessage(DateTime date)
     {
         Date = date;
+    }
+}
+
+public enum PaywallReason
+{
+    /// <summary>A write reached a service while the diary is read-only (spec 15, R5.2).</summary>
+    WriteBlocked,
+    /// <summary>The user asked: "Renew" on the read-only banner, "Subscribe" in settings.</summary>
+    UserRequested,
+    /// <summary>The first screen after onboarding for a new user (spec 15, R4.2).</summary>
+    AfterOnboarding
+}
+
+/// <summary>
+/// Asks the shell to show the paywall. The shell shows it at most once at a time — a blocked write
+/// and a tap on "Renew" in the same moment open one sheet, not two — and only asks first whether
+/// the user may already write for the automatic reasons: a 1.0 user who taps "Support with a
+/// subscription" in Settings still gets the sheet.
+/// </summary>
+public sealed class PaywallRequestedMessage
+{
+    public PaywallReason Reason { get; }
+
+    public PaywallRequestedMessage(PaywallReason reason)
+    {
+        Reason = reason;
+    }
+}
+
+/// <summary>
+/// Asks the statistics screen to open on a given window. Sent by the home-screen insight path after it
+/// navigates there, so both screens count the same days (spec 17, R1.6).
+/// </summary>
+public sealed class StatisticsRangeRequestedMessage
+{
+    public StatsRange Range { get; }
+
+    public StatisticsRangeRequestedMessage(StatsRange range)
+    {
+        Range = range;
     }
 }

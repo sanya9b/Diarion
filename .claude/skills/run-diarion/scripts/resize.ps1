@@ -1,4 +1,4 @@
-param([int]$Width = 390, [int]$Height = 844, [int]$Left = 60, [int]$Top = 60)
+param([int]$Width = 390, [int]$Height = 844, [int]$Left = 60, [int]$Top = 60, [int]$ProcessId = 0)
 
 # Diarion ships to Android and iOS. Judging layout at desktop width answers a question nobody asked, so
 # resize to a phone before looking. A proxy, not a device: DPI and text scaling still differ.
@@ -15,8 +15,11 @@ public class Move {
 $deadline = (Get-Date).AddSeconds(60)
 $proc = $null
 while ((Get-Date) -lt $deadline) {
-  $proc = Get-Process -Name Diarion -ErrorAction SilentlyContinue |
-          Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
+  # -ProcessId pins one instance when two are running (the owner's real diary next to a sandbox);
+  # without it the first Diarion window wins, which may be the wrong one.
+  $candidates = if ($ProcessId -gt 0) { Get-Process -Id $ProcessId -ErrorAction SilentlyContinue }
+                else { Get-Process -Name Diarion -ErrorAction SilentlyContinue }
+  $proc = $candidates | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
   if ($proc) { break }
   Start-Sleep -Milliseconds 400
 }

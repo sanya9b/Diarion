@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Diarion.Diagnostics;
 using Diarion.Services;
 using Diarion.Services.Ai;
+using Diarion.Services.Store;
+using CommunityToolkit.Mvvm.Messaging;
+using Diarion.Messages;
 using Microsoft.Maui;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
@@ -13,7 +16,7 @@ namespace Diarion;
 
 public partial class App : Application
 {
-    private const string OnboardingCompletedKey = "OnboardingCompleted";
+    internal const string OnboardingCompletedKey = "OnboardingCompleted";
     private static readonly TimeSpan RelockGrace = TimeSpan.FromSeconds(30);
     private DateTime? _backgroundedAtUtc;
     private bool _isLockShown;
@@ -57,6 +60,12 @@ public partial class App : Application
         // yet at CreateWindow time, so window.Handler?.MauiContext is null here.
         var services = IPlatformApplication.Current?.Services;
         var lockService = services?.GetService<IAppLockService>();
+        // Resolved first on purpose: the install evidence for the legacy rule must be captured
+        // before onboarding can complete in this launch, and the access state is restored from the
+        // keychain before the first frame (spec 15, R1.2, R2.1).
+        var entitlements = services?.GetService<IEntitlementService>();
+        services?.GetService<PaywallPresenter>()?.Start();
+        StartReminderCoordinator(services);
 
         var window = new Window();
 
@@ -84,6 +93,7 @@ public partial class App : Application
 
         window.Created += async (s, e) =>
         {
+            RefreshEntitlements(entitlements);
             await CheckOnboardingAsync(window);
             await CheckSecurityAsync(window, coldStart: true);
         };
@@ -103,9 +113,49 @@ public partial class App : Application
     private static void StartEmbeddingIndex(IServiceProvider? services) =>
         (services ?? IPlatformApplication.Current?.Services)?.GetService<IEmbeddingIndexService>()?.Start();
 
+    /// <summary>
+    /// Asks the store in the background. The service never downgrades the state for a missing
+    /// answer, so nothing here is on the critical path of the first screen.
+    /// </summary>
+    /// <summary>Pauses or restores reminders to match the access state (spec 15, R1.6). Off the
+    /// first frame's path: it reads the profile and habits from the database.</summary>
+    private static void StartReminderCoordinator(IServiceProvider? services)
+    {
+        var coordinator = services?.GetService<ReminderAccessCoordinator>();
+        if (coordinator is null) return;
+        _ = Task.Run(coordinator.StartAsync);
+    }
+
+    private static void RefreshEntitlements(IEntitlementService? entitlements)
+    {
+        if (entitlements is null) return;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await entitlements.RefreshAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Entitlement refresh failed: {ex}");
+            }
+        });
+    }
+
+    /// <summary>
+    /// The paywall follows onboarding for a new user (spec 15, R4.2) — after the sheet is gone, so
+    /// the two never stack. The presenter drops the request for anyone who may already write.
+    /// </summary>
+    private static async Task CloseOnboardingAsync(INavigation navigation)
+    {
+        await navigation.PopModalAsync();
+        WeakReferenceMessenger.Default.Send(new PaywallRequestedMessage(PaywallReason.AfterOnboarding));
+    }
+
     private async Task CheckOnboardingAsync(Window window)
     {
-        if (Preferences.Get(OnboardingCompletedKey, false)) return;
+        // DebugSandbox.ShowsOnboarding is a debug-only switch for looking at the first run again.
+        if (!Diarion.Services.DebugSandbox.ShowsOnboarding && Preferences.Get(OnboardingCompletedKey, false)) return;
 
         var services = window.Handler?.MauiContext?.Services;
         var navigation = window.Page?.Navigation;
@@ -116,8 +166,9 @@ public partial class App : Application
 
         page.ViewModel.Completed = () =>
         {
-            Preferences.Set(OnboardingCompletedKey, true);
-            _ = navigation.PopModalAsync();
+            if (!Diarion.Services.DebugSandbox.ShowsOnboarding)
+                Preferences.Set(OnboardingCompletedKey, true);
+            _ = CloseOnboardingAsync(navigation);
         };
 
         await navigation.PushModalAsync(page);

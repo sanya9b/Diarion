@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             x:Class="Diarion.Controls.HourPickerContent"
+             x:DataType="viewmodels:DiaryEntryViewModel">
+
+    <!-- The waking hours 07–23, each in the colour of its logged mood. Tapping one puts the picker
+         away and turns the mood row into that hour's row; tapping the chosen hour again returns the
+         row to the day. -->
+    <VerticalStackLayout Spacing="8" Margin="0,0,-6,-6">
+        <Label Text="{x:Static localization:AppResources.MoodHourPickerTitle}" FontSize="11"
+               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+        <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Center"
+                    BindableLayout.ItemsSource="{Binding HourlyMood}">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="viewmodels:HourMoodViewModel">
+                    <!-- Outer: stroke and press feedback. Inner: the mood's hue as a theme key on a fill
+                         layer, so the behaviour that animates the outer element never touches the fill. -->
+                    <Border WidthRequest="44" HeightRequest="36" Margin="0,0,6,6" Padding="0"
+                            StrokeShape="RoundRectangle 10" StrokeThickness="1"
+                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                            behaviors:PressFeedback.IsEnabled="True"
+                            SemanticProperties.Description="{Binding AccessibilityText}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryEntryViewModel}}, Path=SelectHourCommand}" CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                <Setter Property="StrokeThickness" Value="3" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border StrokeShape="RoundRectangle 9" StrokeThickness="0" InputTransparent="True"
+                                behaviors:ThemeColor.BackgroundKey="{Binding ColorKey}">
+                            <Label Text="{Binding HourLabel}" FontSize="12"
+                                   HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding HasMood}" Value="True">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_OnAccent}" />
+                                        <Setter Property="FontAttributes" Value="Bold" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding HasMood}" Value="False">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Border>
+                    </Border>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </FlexLayout>
+    </VerticalStackLayout>
+</ContentView>

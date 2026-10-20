@@ -497,10 +497,83 @@
                         <Label Text="{x:Static localization:AppResources.StreakForgivingHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding Profile.IsForgivingStreaksEnabled}" />
                     </VerticalStackLayout>
                 </Border>
+
+                <!-- Шлях до першої гіпотези (spec 17): the strip under the date on the home screen -->
+                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{x:Static localization:AppResources.InsightPathSettingsTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.InsightPathSettingsLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsInsightPathEnabled}" OnColor="{DynamicResource Theme_Ocean_Ocean}" VerticalOptions="Center" />
+                        </Grid>
+
+                        <Label Text="{x:Static localization:AppResources.InsightPathSettingsHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
 
             <!-- ============ DATA TAB ============ -->
             <VerticalStackLayout Spacing="20" IsVisible="{Binding IsDataTab}">
+
+                <!-- Підписка (spec 15, R4.4). Its BindingContext is SubscriptionSectionViewModel, set in
+                     ProfilePage.xaml.cs; hidden on platforms with no store. First in the tab because it
+                     is the one card here that can change what the rest of the app lets you do. -->
+                <Border x:Name="SubscriptionCard" x:DataType="viewmodels:SubscriptionSectionViewModel"
+                        IsVisible="{Binding IsVisible}"
+                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{x:Static localization:AppResources.SubscriptionSectionTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Label Text="{Binding StatusText}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                        <Button Text="{x:Static localization:AppResources.SubscriptionManageButton}"
+                                Command="{Binding ManageCommand}" IsVisible="{Binding CanManage}"
+                                BackgroundColor="Transparent"
+                                BorderColor="{DynamicResource Theme_Ocean_Ocean}" BorderWidth="1"
+                                TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                CornerRadius="12" HeightRequest="44" />
+
+                        <Button Text="{x:Static localization:AppResources.PaywallSubscribeButton}"
+                                Command="{Binding SubscribeCommand}" IsVisible="{Binding CanSubscribe}"
+                                BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
+                                TextColor="{DynamicResource Theme_Snow_Black}"
+                                FontAttributes="Bold" CornerRadius="12" HeightRequest="44" />
+
+                        <Button Text="{x:Static localization:AppResources.SubscriptionSupportButton}"
+                                Command="{Binding SubscribeCommand}" IsVisible="{Binding CanSupport}"
+                                BackgroundColor="Transparent"
+                                BorderColor="{DynamicResource Theme_Ocean_Ocean}" BorderWidth="1"
+                                TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                CornerRadius="12" HeightRequest="44" />
+
+                        <!-- Quiet on purpose: a text button under the main action, for the new phone or
+                             the reinstall, not a second call to pay. -->
+                        <Button Text="{x:Static localization:AppResources.PaywallRestoreButton}"
+                                Command="{Binding RestoreCommand}" IsVisible="{Binding CanRestore}"
+                                BackgroundColor="Transparent" BorderWidth="0"
+                                TextColor="{DynamicResource Theme_Ocean_Dust}"
+                                FontSize="13" HeightRequest="40" HorizontalOptions="Center" />
+
+                        <Label Text="{Binding RestoreMessage}" IsVisible="{Binding HasRestoreMessage}"
+                               FontSize="12" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
 
                 <!-- Безпека (Security) -->
                 <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"

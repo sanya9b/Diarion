@@ -12,6 +12,7 @@ using Diarion.Models;
 using Diarion.Services;
 using Diarion.Core.Services;
 using Diarion.Helpers;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -205,9 +206,25 @@ public partial class MainViewModel : BaseViewModel
         nameof(IsBusy),
         nameof(DiaryEntryViewModel.SelectedHour),
         nameof(DiaryEntryViewModel.IsHourSelected),
-        nameof(DiaryEntryViewModel.IsHourlyExpanded),
         nameof(DiaryEntryViewModel.CurrentMood),
         nameof(HourMoodViewModel.IsSelected),
+
+        // The mood row's own state (spec 18): which face is lit, what the caption says, whether a
+        // bubble is out and where it points. Raised on hour changes and taps that write nothing.
+        nameof(DiaryEntryViewModel.CurrentQuadrant),
+        nameof(DiaryEntryViewModel.HasRefinements),
+        nameof(DiaryEntryViewModel.IsRefinementOpen),
+        nameof(DiaryEntryViewModel.RefineAnchor),
+        nameof(DiaryEntryViewModel.SelectedColumn),
+        nameof(DiaryEntryViewModel.HasCurrentMood),
+        nameof(DiaryEntryViewModel.CurrentMoodName),
+        nameof(DiaryEntryViewModel.CurrentColorKey),
+        nameof(DiaryEntryViewModel.IsHourPickerOpen),
+        nameof(DiaryEntryViewModel.HourAnchor),
+        nameof(DiaryEntryViewModel.LoggedHourCount),
+        nameof(DiaryEntryViewModel.HourChipText),
+        nameof(DiaryEntryViewModel.IsHourChipFilled),
+        nameof(DiaryEntryViewModel.HourChipFillColorKey),
     };
 
     private void OnEntryPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -230,7 +247,7 @@ public partial class MainViewModel : BaseViewModel
         _autoSaveDebouncer.Debounce(async () =>
         {
             entry.SyncToModel();
-            await _diaryService.SaveEntryAsync(entry.Model);
+            if (!await WriteGate.TryAsync(() => _diaryService.SaveEntryAsync(entry.Model))) return;
             System.Diagnostics.Debug.WriteLine($"Auto-saved entry for {entry.Date:dd.MM.yyyy}");
         });
     }
@@ -327,7 +344,7 @@ public partial class MainViewModel : BaseViewModel
         try
         {
             CurrentEntry.SyncToModel();
-            await _diaryService.SaveEntryAsync(CurrentEntry.Model);
+            if (!await WriteGate.TryAsync(() => _diaryService.SaveEntryAsync(CurrentEntry.Model))) return;
             await UpdateStreakAsync();
         }
         catch (Exception ex)

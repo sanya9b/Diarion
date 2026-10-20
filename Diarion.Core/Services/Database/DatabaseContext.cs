@@ -38,7 +38,18 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         }
         else
         {
-            _dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DbFileName);
+            var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+#if DEBUG
+            // A sandbox run (Services/DebugSandbox.cs in the app) keeps the real diary closed: the database
+            // goes to the throwaway folder instead. Debug builds only, like the mock seeder below.
+            var sandbox = Environment.GetEnvironmentVariable("DIARION_SANDBOX_DIR");
+            if (!string.IsNullOrWhiteSpace(sandbox))
+            {
+                Directory.CreateDirectory(sandbox);
+                folder = sandbox;
+            }
+#endif
+            _dbPath = Path.Combine(folder, DbFileName);
             // Encrypt the database at rest using a device-keychain-backed key. On the first run
             // after upgrading, a pre-existing plaintext file is migrated transparently and safely.
             var password = _keyProvider?.GetOrCreateKey();

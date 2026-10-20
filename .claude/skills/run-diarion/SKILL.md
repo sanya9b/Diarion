@@ -46,6 +46,22 @@ cd bin/Debug/net10.0-windows10.0.19041.0/win-x64 && ./Diarion.exe
 Start it with `run_in_background: true` and keep the task id — you will need it to stop the app, and you
 will need to stop it (see below).
 
+## Sandbox: looking without the real diary
+
+Debug builds honour two environment variables (`Services/DebugSandbox.cs`). `DIARION_SANDBOX_DIR`
+points the database and cache at a throwaway folder: the real database is never opened, the debug
+mock diary is not seeded, and saving there is allowed. `DIARION_SANDBOX_ONBOARDING=1` on top shows
+onboarding again without touching the real preference. `DIARION_SANDBOX_THEME=Dark` (or `Light`, `Pink`)
+forces the theme for the run, again without writing the real one. The encryption key still comes from
+the real SecureStorage, so nothing new is created there either. Other MAUI `Preferences` (language,
+reminder settings) are NOT sandboxed — do not change them in a sandbox run.
+
+```bash
+DIARION_SANDBOX_DIR='D:\WORK\tmp\diarion-sandbox' DIARION_SANDBOX_ONBOARDING=1 ./Diarion.exe
+```
+
+Delete the folder when done. Every rule above still applies to a run without these variables.
+
 ## Drive it
 
 Three helpers in `scripts/`, run from the repo root. Plain `-File`, **no `-ExecutionPolicy Bypass`** —
@@ -105,6 +121,15 @@ Checking that the task form's Save button survives the recurrence picker being o
 to a synthetic mouse drag — `drag.ps1` moves the pointer across a row and nothing happens. That is the
 tool failing, not the feature: the planner's swipe-to-delete works on Android and iOS and cannot be
 exercised here at all. Say so rather than reporting it as verified.
+
+## Two instances at once
+
+If the owner has Diarion open while you run a sandbox copy, pin yours: `shot.ps1` and `resize.ps1`
+take `-ProcessId <pid>` (find it with `tasklist`), `shot.ps1` prints `pid=` in its OK line, and
+`click.ps1 -ExpectPid <pid>` refuses with `WINDOW_MISMATCH` unless that process owns the window
+painted under the point. Never click without `-ExpectPid` while two instances exist: the other one is the
+real diary. The owner's instance also holds `Diarion.Core.dll`, so build in a detached worktree
+(`git worktree add --detach D:\WORK\SOURCE_CODE\Diarion-check HEAD`) rather than in their checkout.
 
 ## When the fallback is wrong
 

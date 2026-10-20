@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -108,12 +109,12 @@ public partial class GoodDeedsViewModel : BaseViewModel
         }
 
         ValidationMessage = string.Empty;
-        await _auxiliaryService.SaveGoodDeedAsync(new GoodDeed
+        if (!await WriteGate.TryAsync(() => _auxiliaryService.SaveGoodDeedAsync(new GoodDeed
         {
             SlotNumber = SelectedSlot.SlotNumber,
             Title = normalizedTitle,
             Date = NewDeedDate.Date
-        });
+        }))) return;
 
         SelectedSlot = null;
         NewDeedTitle = string.Empty;
@@ -127,7 +128,7 @@ public partial class GoodDeedsViewModel : BaseViewModel
         if (SelectedSlot == null || SelectedSlot.IsEmpty)
             return;
 
-        await _auxiliaryService.DeleteGoodDeedAsync(SelectedSlot.SlotNumber);
+        if (!await WriteGate.TryAsync(() => _auxiliaryService.DeleteGoodDeedAsync(SelectedSlot.SlotNumber))) return;
         
         SelectedSlot = null;
         await LoadAsync();

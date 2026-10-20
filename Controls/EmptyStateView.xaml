@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  The one way a screen says "nothing here yet" (spec 16, R3): a scene, a title that names what is
+  missing, a hint that says what to do and what will appear, and — only when the caller gives a
+  command — one button. Monochrome but for the bookmark in the scene.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             x:Class="Diarion.Controls.EmptyStateView">
+
+    <VerticalStackLayout x:Name="Stack" Spacing="12" HorizontalOptions="Center" MaximumWidthRequest="320" Padding="24,32">
+
+        <controls:Illustration x:Name="Picture" WidthRequest="96" HeightRequest="96" HorizontalOptions="Center"
+                               StrokeColor="{DynamicResource Theme_Ocean_Dust}"
+                               AccentColor="{DynamicResource Theme_Coral}" />
+
+        <Label x:Name="TitleLabel" FontSize="16" FontAttributes="Bold"
+               HorizontalTextAlignment="Center" LineBreakMode="WordWrap"
+               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+        <Label x:Name="HintLabel" FontSize="13"
+               HorizontalTextAlignment="Center" LineBreakMode="WordWrap"
+               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+        <Button x:Name="ActionButton" IsVisible="False" Margin="0,4,0,0"
+                HorizontalOptions="Center" HeightRequest="40" Padding="20,0" CornerRadius="12"
+                FontAttributes="Bold"
+                BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
+                TextColor="{DynamicResource Theme_Snow_Black}" />
+    </VerticalStackLayout>
+</ContentView>

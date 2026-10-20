@@ -119,6 +119,24 @@ public partial class UserProfile : ObservableObject
     /// <summary>The same marker for the settings guide. See <see cref="TourVersionSeen"/>.</summary>
     [ObservableProperty] private int _settingsTourVersionSeen;
 
+    /// <summary>
+    /// The first-insight path on the home screen stays hidden while its highest reached milestone
+    /// (1, 3, 7 or 14 paired days) is below this number — "hide until the next milestone", never
+    /// "hide forever", so the card comes back when there is news; <see cref="int.MaxValue"/> once
+    /// the last milestone is dismissed. Like <see cref="TourVersionSeen"/> it is a LiteDB field
+    /// with no migration: profiles written before it existed read 0, which hides nothing. Written
+    /// only by <see cref="Services.InsightPath.InsightPathService"/>; "show the guides again"
+    /// resets it along with the tours.
+    /// </summary>
+    [ObservableProperty] private int _insightPathHiddenBelowMilestone;
+
+    /// <summary>
+    /// The strip under the date on the home screen (spec 17). Off is the user's choice in settings;
+    /// the path finishing on its own is <see cref="InsightPathHiddenBelowMilestone"/>, not this.
+    /// LiteDB field without a migration: a profile saved before it keeps the initialiser, true.
+    /// </summary>
+    [ObservableProperty] private bool _isInsightPathEnabled = true;
+
     public bool IsBirthDateKnown => BirthDate.HasValue;
 
     /// <summary>The intimate-life row of the health block: 18 and over, and only once the date is told.</summary>

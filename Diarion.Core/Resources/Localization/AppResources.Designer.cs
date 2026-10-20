@@ -143,7 +143,6 @@ namespace Diarion.Resources.Localization {
         public static string CycleAddButton => ResourceManager.GetString("CycleAddButton", resourceCulture);
         public static string CycleAddHint => ResourceManager.GetString("CycleAddHint", resourceCulture);
         public static string CycleHistoryTitle => ResourceManager.GetString("CycleHistoryTitle", resourceCulture);
-        public static string CycleHistoryEmpty => ResourceManager.GetString("CycleHistoryEmpty", resourceCulture);
         public static string CycleIntervalFormat => ResourceManager.GetString("CycleIntervalFormat", resourceCulture);
         public static string CycleDeleteConfirmTitle => ResourceManager.GetString("CycleDeleteConfirmTitle", resourceCulture);
         public static string CycleDeleteConfirmMessage => ResourceManager.GetString("CycleDeleteConfirmMessage", resourceCulture);
@@ -340,12 +339,6 @@ namespace Diarion.Resources.Localization {
         public static string HabitTrackerAddButton {
             get {
                 return ResourceManager.GetString("HabitTrackerAddButton", resourceCulture);
-            }
-        }
-
-        public static string HabitTrackerEmptyState {
-            get {
-                return ResourceManager.GetString("HabitTrackerEmptyState", resourceCulture);
             }
         }
 
@@ -1123,12 +1116,6 @@ namespace Diarion.Resources.Localization {
         public static string PromptHistorySearch {
             get {
                 return ResourceManager.GetString("PromptHistorySearch", resourceCulture);
-            }
-        }
-
-        public static string PromptHistoryEmpty {
-            get {
-                return ResourceManager.GetString("PromptHistoryEmpty", resourceCulture);
             }
         }
 
@@ -2390,10 +2377,6 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("SearchScopeNotes", resourceCulture) ?? string.Empty; }
         }
 
-        public static string SearchNoResults {
-            get { return ResourceManager.GetString("SearchNoResults", resourceCulture) ?? string.Empty; }
-        }
-
         public static string SearchLexicalOnlyNotice {
             get { return ResourceManager.GetString("SearchLexicalOnlyNotice", resourceCulture) ?? string.Empty; }
         }
@@ -2505,6 +2488,405 @@ public static string ClearAllDataSuccessMsg {
         public static string DeleteNoteConfirmMessage {
             get { return ResourceManager.GetString("DeleteNoteConfirmMessage", resourceCulture) ?? string.Empty; }
         }
+
+        public static string PaywallTitle {
+            get { return ResourceManager.GetString("PaywallTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallSubtitle {
+            get { return ResourceManager.GetString("PaywallSubtitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallMonthlyTitle {
+            get { return ResourceManager.GetString("PaywallMonthlyTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallYearlyTitle {
+            get { return ResourceManager.GetString("PaywallYearlyTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallPricePerMonthFormat {
+            get { return ResourceManager.GetString("PaywallPricePerMonthFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallPricePerYearFormat {
+            get { return ResourceManager.GetString("PaywallPricePerYearFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallDiscountFormat {
+            get { return ResourceManager.GetString("PaywallDiscountFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialFormat {
+            get { return ResourceManager.GetString("PaywallTrialFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialDayOne {
+            get { return ResourceManager.GetString("PaywallTrialDayOne", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialDayFew {
+            get { return ResourceManager.GetString("PaywallTrialDayFew", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialDayMany {
+            get { return ResourceManager.GetString("PaywallTrialDayMany", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialMonthFormat {
+            get { return ResourceManager.GetString("PaywallTrialMonthFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTrialYearFormat {
+            get { return ResourceManager.GetString("PaywallTrialYearFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallStartTrialButton {
+            get { return ResourceManager.GetString("PaywallStartTrialButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallSubscribeButton {
+            get { return ResourceManager.GetString("PaywallSubscribeButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallRestoreButton {
+            get { return ResourceManager.GetString("PaywallRestoreButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallLaterButton {
+            get { return ResourceManager.GetString("PaywallLaterButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallTermsLink {
+            get { return ResourceManager.GetString("PaywallTermsLink", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallPrivacyLink {
+            get { return ResourceManager.GetString("PaywallPrivacyLink", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallAutoRenewNotice {
+            get { return ResourceManager.GetString("PaywallAutoRenewNotice", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallDataPromise {
+            get { return ResourceManager.GetString("PaywallDataPromise", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallPendingMessage {
+            get { return ResourceManager.GetString("PaywallPendingMessage", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallRestoreNothingFound {
+            get { return ResourceManager.GetString("PaywallRestoreNothingFound", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallStoreUnavailable {
+            get { return ResourceManager.GetString("PaywallStoreUnavailable", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallPurchaseFailedFormat {
+            get { return ResourceManager.GetString("PaywallPurchaseFailedFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionSectionTitle {
+            get { return ResourceManager.GetString("SubscriptionSectionTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusLegacy {
+            get { return ResourceManager.GetString("SubscriptionStatusLegacy", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusTrialFormat {
+            get { return ResourceManager.GetString("SubscriptionStatusTrialFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusRenewsFormat {
+            get { return ResourceManager.GetString("SubscriptionStatusRenewsFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusEndsFormat {
+            get { return ResourceManager.GetString("SubscriptionStatusEndsFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusGraceFormat {
+            get { return ResourceManager.GetString("SubscriptionStatusGraceFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusReadOnly {
+            get { return ResourceManager.GetString("SubscriptionStatusReadOnly", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionStatusUnavailable {
+            get { return ResourceManager.GetString("SubscriptionStatusUnavailable", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionManageButton {
+            get { return ResourceManager.GetString("SubscriptionManageButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SubscriptionSupportButton {
+            get { return ResourceManager.GetString("SubscriptionSupportButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReadOnlyBannerText {
+            get { return ResourceManager.GetString("ReadOnlyBannerText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReadOnlyBannerButton {
+            get { return ResourceManager.GetString("ReadOnlyBannerButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReadOnlyBannerNewText {
+            get { return ResourceManager.GetString("ReadOnlyBannerNewText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReadOnlyBannerNewButton {
+            get { return ResourceManager.GetString("ReadOnlyBannerNewButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string LegacyWelcomeTitle {
+            get { return ResourceManager.GetString("LegacyWelcomeTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string LegacyWelcomeText {
+            get { return ResourceManager.GetString("LegacyWelcomeText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string LegacyWelcomeDismiss {
+            get { return ResourceManager.GetString("LegacyWelcomeDismiss", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateNotesTitle {
+            get { return ResourceManager.GetString("EmptyStateNotesTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateNotesHint {
+            get { return ResourceManager.GetString("EmptyStateNotesHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateHabitsTitle {
+            get { return ResourceManager.GetString("EmptyStateHabitsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateHabitsHint {
+            get { return ResourceManager.GetString("EmptyStateHabitsHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStatePromptsTitle {
+            get { return ResourceManager.GetString("EmptyStatePromptsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStatePromptsHint {
+            get { return ResourceManager.GetString("EmptyStatePromptsHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateCycleTitle {
+            get { return ResourceManager.GetString("EmptyStateCycleTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateCycleHint {
+            get { return ResourceManager.GetString("EmptyStateCycleHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateMoodTitle {
+            get { return ResourceManager.GetString("EmptyStateMoodTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateMoodHint {
+            get { return ResourceManager.GetString("EmptyStateMoodHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateSleepTitle {
+            get { return ResourceManager.GetString("EmptyStateSleepTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateSleepHint {
+            get { return ResourceManager.GetString("EmptyStateSleepHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateProductivityTitle {
+            get { return ResourceManager.GetString("EmptyStateProductivityTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateProductivityHint {
+            get { return ResourceManager.GetString("EmptyStateProductivityHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateSearchTitle {
+            get { return ResourceManager.GetString("EmptyStateSearchTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateSearchHint {
+            get { return ResourceManager.GetString("EmptyStateSearchHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string InsightPathProgressFormat {
+            get { return ResourceManager.GetString("InsightPathProgressFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string InsightPathAccessibleFormat {
+            get { return ResourceManager.GetString("InsightPathAccessibleFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionNeutral {
+            get { return ResourceManager.GetString("EmotionNeutral", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionInspired {
+            get { return ResourceManager.GetString("EmotionInspired", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionExcited {
+            get { return ResourceManager.GetString("EmotionExcited", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionProud {
+            get { return ResourceManager.GetString("EmotionProud", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionEnergetic {
+            get { return ResourceManager.GetString("EmotionEnergetic", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionPlayful {
+            get { return ResourceManager.GetString("EmotionPlayful", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionOptimistic {
+            get { return ResourceManager.GetString("EmotionOptimistic", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionContent {
+            get { return ResourceManager.GetString("EmotionContent", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionGrateful {
+            get { return ResourceManager.GetString("EmotionGrateful", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionRelaxed {
+            get { return ResourceManager.GetString("EmotionRelaxed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionLoving {
+            get { return ResourceManager.GetString("EmotionLoving", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionSecure {
+            get { return ResourceManager.GetString("EmotionSecure", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionPeaceful {
+            get { return ResourceManager.GetString("EmotionPeaceful", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionStressed {
+            get { return ResourceManager.GetString("EmotionStressed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionIrritated {
+            get { return ResourceManager.GetString("EmotionIrritated", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionOverwhelmed {
+            get { return ResourceManager.GetString("EmotionOverwhelmed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionScared {
+            get { return ResourceManager.GetString("EmotionScared", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionFrustrated {
+            get { return ResourceManager.GetString("EmotionFrustrated", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionTired {
+            get { return ResourceManager.GetString("EmotionTired", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionBored {
+            get { return ResourceManager.GetString("EmotionBored", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionLonely {
+            get { return ResourceManager.GetString("EmotionLonely", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionDisappointed {
+            get { return ResourceManager.GetString("EmotionDisappointed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionExhausted {
+            get { return ResourceManager.GetString("EmotionExhausted", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmotionHopeless {
+            get { return ResourceManager.GetString("EmotionHopeless", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuadrantPleasantEnergetic {
+            get { return ResourceManager.GetString("QuadrantPleasantEnergetic", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuadrantPleasantCalm {
+            get { return ResourceManager.GetString("QuadrantPleasantCalm", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuadrantUnpleasantEnergetic {
+            get { return ResourceManager.GetString("QuadrantUnpleasantEnergetic", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuadrantUnpleasantCalm {
+            get { return ResourceManager.GetString("QuadrantUnpleasantCalm", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsEnergyByHour {
+            get { return ResourceManager.GetString("StatsEnergyByHour", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsEnergyByHourSubtitle {
+            get { return ResourceManager.GetString("StatsEnergyByHourSubtitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsEnergyByHourHigh {
+            get { return ResourceManager.GetString("StatsEnergyByHourHigh", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsEnergyByHourLow {
+            get { return ResourceManager.GetString("StatsEnergyByHourLow", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsEnergyByHourBalanced {
+            get { return ResourceManager.GetString("StatsEnergyByHourBalanced", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string MoodClear {
+            get { return ResourceManager.GetString("MoodClear", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string InsightPathSettingsTitle {
+            get { return ResourceManager.GetString("InsightPathSettingsTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string InsightPathSettingsLabel {
+            get { return ResourceManager.GetString("InsightPathSettingsLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string InsightPathSettingsHint {
+            get { return ResourceManager.GetString("InsightPathSettingsHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string MoodHourPickerTitle {
+            get { return ResourceManager.GetString("MoodHourPickerTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string MoodHourExit {
+            get { return ResourceManager.GetString("MoodHourExit", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string MoodHourlyLabel {
+            get { return ResourceManager.GetString("MoodHourlyLabel", resourceCulture) ?? string.Empty; }
+        }
     }
 }
-

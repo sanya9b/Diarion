@@ -4,6 +4,7 @@ using Diarion.Services.Database;
 using Diarion.Core.Services;
 using Diarion.Services.Ai;
 using Diarion.Services.Ai.Reports;
+using Diarion.Services.Store;
 using Diarion.ViewModels;
 using Diarion.ViewModels.Statistics;
 using Diarion.Views;
@@ -18,8 +19,34 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IEncryptionKeyProvider, SecureStorageKeyProvider>();
         services.AddSingleton<IAppLockService, AppLockService>();
         services.AddSingleton<IBiometricService, BiometricService>();
+        // Subscription state (spec 15). iOS talks to StoreKit 2 through the Swift facade; wherever
+        // there is no store yet (Android before Play Billing, Windows, Mac Catalyst) the state
+        // grants writing.
+        services.AddSingleton(TimeProvider.System);
+        services.AddSingleton<IEntitlementStore, SecureStorageEntitlementStore>();
+        services.AddSingleton<IInstallEvidence, MauiInstallEvidence>();
+#if IOS
+        services.AddSingleton<IStoreClient, StoreKitClient>();
+#else
+        services.AddSingleton<IStoreClient, UnavailableStoreClient>();
+#endif
+#if DEBUG
+        // DIARION_FAKE_STORE=new|legacy: a pretend store for working on the paywall where no store
+        // exists (Windows). Debug builds only; Release cannot even see the type.
+        DebugStoreOverrides.Apply(services);
+#endif
+        services.AddSingleton<IExternalLinkService, MauiExternalLinkService>();
+        services.AddSingleton<PaywallPresenter>();
+        services.AddSingleton<ReminderAccessCoordinator>();
+        services.AddSingleton<ILegacyAccessDetector, LegacyAccessDetector>();
+        services.AddSingleton<IEntitlementService, EntitlementService>();
+        services.AddSingleton<IAccessGuard, AccessGuard>();
         services.AddSingleton<IDatabaseContext, DatabaseContext>();
-        services.AddSingleton<INotificationService, LocalNotificationService>();
+        // The platform service behind a read-only gate: no daily or habit reminder is scheduled
+        // while the diary is read-only; the coordinator puts them back when access returns.
+        services.AddSingleton<LocalNotificationService>();
+        services.AddSingleton<INotificationService>(sp => new AccessAwareNotificationService(
+            sp.GetRequiredService<LocalNotificationService>(), sp.GetRequiredService<IAccessGuard>()));
         services.AddSingleton<IMotionSettings, MotionSettings>();
         services.AddSingleton<ITodoService, TodoService>();
         services.AddSingleton<IHabitService, HabitService>();
@@ -35,6 +62,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ICalendarService, CalendarService>();
         services.AddSingleton<IStatisticsService, StatisticsService>();
         services.AddSingleton<ICorrelationService, CorrelationService>();
+        services.AddSingleton<Diarion.Services.InsightPath.IInsightPathService, Diarion.Services.InsightPath.InsightPathService>();
         services.AddSingleton<IMenuConfigurationService, MenuConfigurationService>();
         services.AddSingleton<IOnboardingModuleService, OnboardingModuleService>();
         services.AddSingleton<ITourService, TourService>();
@@ -166,6 +194,10 @@ public static class ServiceCollectionExtensions
         services.AddTransient<TodoDetailViewModel>();
         services.AddTransient<AiSettingsViewModel>();
         services.AddTransient<ProfileViewModel>();
+        services.AddTransient<PaywallViewModel>();
+        services.AddTransient<SubscriptionSectionViewModel>();
+        services.AddTransient<AccessBannerViewModel>();
+        services.AddTransient<InsightPathViewModel>();
         services.AddTransient<HabitTrackerViewModel>();
         services.AddTransient<GoodDeedsViewModel>();
         services.AddTransient<ReadingTrackerViewModel>();
@@ -221,6 +253,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<PromptHistoryPage>();
         services.AddTransient<CyclePage>();
         services.AddTransient<SnapshotPreviewPage>();
+        services.AddTransient<PaywallPage>();
 
         return services;
     }

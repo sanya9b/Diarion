@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -108,12 +109,12 @@ public partial class HappyMomentsViewModel : BaseViewModel
         }
 
         ValidationMessage = string.Empty;
-        await _auxiliaryService.SaveHappyMomentAsync(new HappyMoment
+        if (!await WriteGate.TryAsync(() => _auxiliaryService.SaveHappyMomentAsync(new HappyMoment
         {
             SlotNumber = SelectedEmptySlot.SlotNumber,
             Title = normalizedTitle,
             Date = NewMomentDate.Date
-        });
+        }))) return;
 
         SelectedEmptySlot = null;
         NewMomentTitle = string.Empty;
@@ -127,7 +128,7 @@ public partial class HappyMomentsViewModel : BaseViewModel
         if (SelectedEmptySlot == null || SelectedEmptySlot.IsEmpty)
             return;
 
-        await _auxiliaryService.DeleteHappyMomentAsync(SelectedEmptySlot.SlotNumber);
+        if (!await WriteGate.TryAsync(() => _auxiliaryService.DeleteHappyMomentAsync(SelectedEmptySlot.SlotNumber))) return;
         
         SelectedEmptySlot = null;
         await LoadAsync();

@@ -131,4 +131,16 @@ public class TourServiceTests
         _service.ShouldOffer(TourId.Statistics, profile).Should().BeTrue();
         _service.ShouldOffer(TourId.Settings, profile).Should().BeTrue();
     }
+
+    [Fact]
+    public void ResetSeen_BringsBackTheDismissedInsightPath()
+    {
+        // "Show the guides again" is one promise — everything from the start — and the path's
+        // "hide until the next milestone" is covered by it too (spec 17, D5).
+        var profile = new UserProfile { InsightPathHiddenBelowMilestone = int.MaxValue };
+
+        _service.ResetSeen(profile);
+
+        profile.InsightPathHiddenBelowMilestone.Should().Be(0);
+    }
 }

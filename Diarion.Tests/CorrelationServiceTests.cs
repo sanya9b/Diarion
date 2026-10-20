@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
@@ -41,7 +42,8 @@ public class CorrelationServiceTests
     private static CorrelationService Build(
         IEnumerable<DiaryEntryStatsDto> data,
         IEnumerable<CycleLog>? cycleLogs = null,
-        bool cycleTracking = false)
+        bool cycleTracking = false,
+        IThemeClusterService? themes = null)
     {
         var diary = new Mock<IDiaryService>();
         diary.Setup(s => s.GetDiaryEntriesForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
@@ -69,8 +71,20 @@ public class CorrelationServiceTests
 
         return new CorrelationService(
             diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object,
-            new NullThemeClusterService());
+            themes ?? new NullThemeClusterService());
     }
+
+    /// <summary>A single theme on the first <paramref name="presentOn"/> of <paramref name="writtenDays"/>, every one of which was written on.</summary>
+    private static Mock<IThemeClusterService> Themes(string label, IReadOnlyList<DateTime> writtenDays, int presentOn)
+    {
+        var themes = new Mock<IThemeClusterService>();
+        themes.Setup(t => t.SummariseAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+              .ReturnsAsync(new ThemeSummary([new DiaryTheme(label, writtenDays.Take(presentOn).ToList())], writtenDays));
+        return themes;
+    }
+
+    private static List<DateTime> DaysOf(IEnumerable<DiaryEntryStatsDto> data) =>
+        data.Select(e => e.Date).Order().ToList();
 
     [Fact]
     public async Task StrongPositive_SleepDurationVsMood_IsDetected()
@@ -155,5 +169,87 @@ public class CorrelationServiceTests
         lagged[0].FactorKey.Should().Be("SleepDuration");
         lagged[0].LagDays.Should().Be(1);
         Math.Abs(lagged[0].Coefficient).Should().BeGreaterThan(0.7);
+    }
+
+    // ---- which factor the readiness names (spec 17, R1.1) ----------------------------------
+
+    [Fact]
+    public async Task Readiness_WithOneFactor_NamesIt()
+    {
+        var data = Enumerable.Range(0, 9).Select(i => Entry(daysAgo: i, sleepHours: 4 + i * 0.2, emotion: Tier(i)));
+
+        var readiness = await Build(data).GetReadinessAsync(StatsRange.LastDays(30));
+
+        readiness.PairedDays.Should().Be(9);
+        readiness.BestFactorKey.Should().Be(CorrelationService.Factors.SleepDuration);
+    }
+
+    [Fact]
+    public async Task Readiness_WithTwoFactors_NamesTheOneWithMorePairedDays()
+    {
+        // Sleep quality on all twelve days, sleep duration on six. Duration comes first in the series,
+        // so the name has to follow the count and not the order.
+        var data = Enumerable.Range(0, 12)
+            .Select(i => Entry(daysAgo: i, sleepHours: i < 6 ? 4 + i * 0.2 : null, emotion: Tier(i), quality: 1 + i % 5));
+
+        var readiness = await Build(data).GetReadinessAsync(StatsRange.LastDays(30));
+
+        readiness.PairedDays.Should().Be(12);
+        readiness.BestFactorKey.Should().Be(CorrelationService.Factors.SleepQuality);
+    }
+
+    [Fact]
+    public async Task Readiness_WithMoodAlone_NamesNothing()
+    {
+        var data = Enumerable.Range(0, 9).Select(i => Entry(daysAgo: i, emotion: Tier(i)));
+
+        var readiness = await Build(data).GetReadinessAsync(StatsRange.LastDays(30));
+
+        readiness.PairedDays.Should().Be(0);
+        readiness.BestFactorKey.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Readiness_WhenTheOnlyFactorLacksSpread_NamesNothing()
+    {
+        // A theme on two of twenty written days pairs twenty times and is still not testable, so it
+        // must not be named either: a hint would be asking for something the engine then refuses.
+        var data = Enumerable.Range(0, 20).Select(i => Entry(daysAgo: i, emotion: Tier(i))).ToList();
+        var themes = Themes("Work", DaysOf(data), presentOn: 2);
+
+        var readiness = await Build(data, themes: themes.Object).GetReadinessAsync(StatsRange.LastDays(30));
+
+        readiness.PairedDays.Should().Be(0);
+        readiness.BestFactorKey.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Readiness_ByDefault_CountsThemesLikeTheCorrelationPass()
+    {
+        // The statistics screen leaves themes on, so its readiness agrees with its correlations.
+        var data = Enumerable.Range(0, 20).Select(i => Entry(daysAgo: i, emotion: Tier(i))).ToList();
+        var themes = Themes("Work", DaysOf(data), presentOn: 10);
+
+        var readiness = await Build(data, themes: themes.Object).GetReadinessAsync(StatsRange.LastDays(30));
+
+        readiness.PairedDays.Should().Be(20);
+        readiness.BestFactorKey.Should().Be(CorrelationService.Factors.ThemePrefix + "Work");
+    }
+
+    [Fact]
+    public async Task Readiness_WithoutThemes_NeverAsksTheClusterService()
+    {
+        // Whether today counted must not wait on the encoder (spec 17, R1.1).
+        var data = Enumerable.Range(0, 9).Select(i => Entry(daysAgo: i, sleepHours: 4 + i * 0.2, emotion: Tier(i)));
+        var themes = new Mock<IThemeClusterService>(MockBehavior.Strict);
+
+        var readiness = await Build(data, themes: themes.Object)
+            .GetReadinessAsync(StatsRange.LastDays(30), includeThemes: false);
+
+        readiness.PairedDays.Should().Be(9);
+        readiness.BestFactorKey.Should().Be(CorrelationService.Factors.SleepDuration);
+        themes.Verify(
+            t => t.SummariseAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 }

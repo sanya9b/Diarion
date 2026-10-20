@@ -9,6 +9,10 @@ public interface IHabitService
 {
     Task<List<HabitDefinition>> GetActiveHabitsForDateAsync(DateTime date);
 
+    /// <summary>Every habit not deleted, whatever weekday it is scheduled for, names localised.
+    /// What the reminders are rebuilt from when access returns (spec 15, R1.6).</summary>
+    Task<List<HabitDefinition>> GetLiveHabitDefinitionsAsync();
+
     /// <summary>
     /// Completion history for each good habit that was active within [<paramref name="start"/>,
     /// <paramref name="end"/>], read from the diary entries' habit lists. Used for strength/streak/heatmap.
