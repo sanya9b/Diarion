@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Recording a period, in the bubble that comes out of the cycle card in settings — the same gesture
+  as the hour picker on the mood card. The first and the last day, how many days that is, and the
+  period already on record, so a double entry is visible before it is made.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             x:Class="Diarion.Controls.CycleRecordContent"
+             x:DataType="viewmodels:CycleRecordViewModel">
+
+    <VerticalStackLayout Spacing="12">
+        <Label Text="{x:Static localization:AppResources.CycleAddTitle}" Style="{StaticResource SectionHeader}" />
+
+        <!-- Each field is a frame behind a picker, not a picker inside a frame: as a Border's content
+             the picker took roughly one tap in six (see CyclePage, where this was learned). -->
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                <Label Text="{x:Static localization:AppResources.CycleRecordStart}" FontSize="11"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                <Grid>
+                    <Border Style="{StaticResource Field}" InputTransparent="True" />
+                    <DatePicker Date="{Binding Start}" MaximumDate="{Binding MaximumDate}" Format="d MMM yyyy"
+                                FontSize="14" Margin="10,2" BackgroundColor="Transparent"
+                                TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                </Grid>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <Label Text="{x:Static localization:AppResources.CycleRecordEnd}" FontSize="11"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                <Grid>
+                    <Border Style="{StaticResource Field}" InputTransparent="True" />
+                    <DatePicker Date="{Binding End}" MinimumDate="{Binding Start}" MaximumDate="{Binding MaximumDate}"
+                                Format="d MMM yyyy" FontSize="14" Margin="10,2" BackgroundColor="Transparent"
+                                TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Grid>
+
+        <Label Text="{Binding DaysText}" FontSize="13" FontAttributes="Bold"
+               TextColor="{DynamicResource Theme_Berry}" />
+
+        <Label Text="{x:Static localization:AppResources.CycleAddHint}" FontSize="11" LineBreakMode="WordWrap"
+               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+        <Border behaviors:PressFeedback.IsEnabled="True" StrokeShape="RoundRectangle 14" StrokeThickness="0"
+                BackgroundColor="{DynamicResource Theme_Coral}" Padding="18,11" HorizontalOptions="Fill">
+            <Border.Triggers>
+                <DataTrigger TargetType="Border" Binding="{Binding CanSave}" Value="False">
+                    <Setter Property="Opacity" Value="0.45" />
+                </DataTrigger>
+            </Border.Triggers>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding SaveCommand}" />
+            </Border.GestureRecognizers>
+            <Label Text="{x:Static localization:AppResources.CycleAddButton}" InputTransparent="True"
+                   FontAttributes="Bold" FontSize="14" CharacterSpacing="1" HorizontalOptions="Center"
+                   TextColor="{DynamicResource Theme_Snow}" />
+        </Border>
+
+        <Label Text="{Binding LastRecordedText}" IsVisible="{Binding HasLastRecorded}" FontSize="11"
+               HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+    </VerticalStackLayout>
+</ContentView>

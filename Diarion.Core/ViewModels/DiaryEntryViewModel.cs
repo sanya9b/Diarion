@@ -164,10 +164,6 @@ public partial class DiaryEntryViewModel : ObservableObject
     [ObservableProperty]
     private bool _isHourPickerOpen;
 
-    /// <summary>The hours chip's bounds on the page, published by the row's view: where the hour grid grows from.</summary>
-    [ObservableProperty]
-    private Microsoft.Maui.Graphics.Rect _hourAnchor;
-
     /// <summary>The hours chip. One bubble at a time: opening this one puts the refinement away.</summary>
     [RelayCommand]
     private void OpenHourPicker()
@@ -250,15 +246,6 @@ public partial class DiaryEntryViewModel : ObservableObject
     /// <summary>Whether the bubble under the chosen face is out. View state, kept here so it is testable.</summary>
     [ObservableProperty]
     private bool _isRefinementOpen;
-
-    /// <summary>
-    /// Where the bubble grows from: the chosen face's bounds in page coordinates, published by the
-    /// row's view whenever the chosen face moves or the page scrolls. The bubble lives in a page-level
-    /// layer so it can float over the cards below and be dismissed by a tap anywhere else; the two
-    /// views meet here rather than knowing each other.
-    /// </summary>
-    [ObservableProperty]
-    private Microsoft.Maui.Graphics.Rect _refineAnchor;
 
     /// <summary>A tap anywhere outside the bubble, or a scroll, puts it away. The mood stays.</summary>
     [RelayCommand]

@@ -125,8 +125,8 @@
                 </Grid>
             </Grid>
 
-            <!-- The bubble of precise states is a page-level layer (MoodRefinePopover), placed under
-                 the chosen face from the anchor this control publishes; see MoodSection.xaml.cs. -->
+            <!-- The bubble of precise states is a page-level AnchoredPopover holding MoodRefineContent;
+                 it asks this control where the chosen face is when it opens (MoodSection.xaml.cs). -->
 
             <!-- The hours live in a bubble off the chip above (HourPickerContent in an AnchoredPopover
                  on the page); with an hour chosen, this same row writes that hour. -->

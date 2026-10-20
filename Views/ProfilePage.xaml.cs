@@ -9,6 +9,7 @@ namespace Diarion.Views;
 public partial class ProfilePage : ContentPage
 {
     private readonly ProfileViewModel _viewModel;
+    private readonly CycleRecordViewModel _cycleRecord;
 
     public static readonly BindableProperty LangThumbAlignmentProperty = BindableProperty.Create(
         nameof(LangThumbAlignment), typeof(LayoutOptions), typeof(ProfilePage), LayoutOptions.Start);
@@ -28,10 +29,23 @@ public partial class ProfilePage : ContentPage
         set => SetValue(ThemeThumbAlignmentProperty, value);
     }
 
-    public ProfilePage(ProfileViewModel viewModel, SubscriptionSectionViewModel subscription)
+    public ProfilePage(ProfileViewModel viewModel, SubscriptionSectionViewModel subscription, CycleRecordViewModel cycleRecord)
     {
         InitializeComponent();
         SubscriptionCard.BindingContext = subscription;
+
+        // The period-recording bubble has its own view model, like the subscription card, and asks
+        // for the row it comes out of each time it is placed. A scroll puts it away: an anchored
+        // bubble that stays while its row moves is wrong twice over.
+        _cycleRecord = cycleRecord;
+        CyclePopover.BindingContext = cycleRecord;
+        CyclePopover.AnchorResolver = () => CycleRecordRow.Width > 0
+            ? Diarion.Helpers.VisualTreeGeometry.BoundsOnPage(CycleRecordRow)
+            : null;
+        PageScroll.Scrolled += (_, _) =>
+        {
+            if (_cycleRecord.IsOpen) _cycleRecord.CloseCommand.Execute(null);
+        };
         _viewModel = viewModel;
         BindingContext = _viewModel;
         
@@ -50,6 +64,11 @@ public partial class ProfilePage : ContentPage
         TourOverlay.PrepareStepAsync = PrepareTourStepAsync;
         TourOverlay.ScrollHost = PageScroll;
         TourOverlay.Tour = _viewModel.Tour;
+    }
+
+    private void OnCycleRecordTapped(object? sender, TappedEventArgs e)
+    {
+        if (_cycleRecord.OpenCommand.CanExecute(null)) _cycleRecord.OpenCommand.Execute(null);
     }
 
     protected override async void OnAppearing()

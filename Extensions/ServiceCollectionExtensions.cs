@@ -222,6 +222,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<PromptEditorViewModel>();
         services.AddTransient<PromptHistoryViewModel>();
         services.AddTransient<CycleViewModel>();
+        services.AddTransient<CycleRecordViewModel>();
         services.AddTransient<SnapshotPreviewViewModel>();
 
         return services;
