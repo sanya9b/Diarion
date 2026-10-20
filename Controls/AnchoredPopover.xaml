@@ -7,7 +7,7 @@
     <ContentView.Resources>
         <!-- The tail: a filled triangle laid over the bubble's edge, stroked on its two free sides only. -->
         <Style x:Key="TailFill" TargetType="Path">
-            <Setter Property="Fill" Value="{DynamicResource Theme_Snow_Midnight}" />
+            <Setter Property="Fill" Value="{DynamicResource Theme_Snow_Black}" />
         </Style>
         <Style x:Key="TailEdge" TargetType="Path">
             <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
@@ -36,10 +36,10 @@
 
             <Border x:Name="Card" Grid.Row="1" StrokeShape="RoundRectangle 16" StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="12">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="14" Opacity="0.18" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="14" Opacity="0.18" />
                 </Border.Shadow>
             </Border>
 

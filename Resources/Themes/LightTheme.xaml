@@ -60,6 +60,9 @@
     <!-- Base Colors mapped for Semantic Use -->
     <Color x:Key="Theme_Snow">#FFFFFF</Color>
     <Color x:Key="Theme_Midnight">#22282C</Color>
+    <!-- Shadow tint. Midnight in the light themes; black in the dark one, where a Midnight shadow
+         under a Midnight page is not there at all. -->
+    <Color x:Key="Theme_Shadow">#22282C</Color>
     
     <!-- Reading Tracker Book Colors -->
     <Color x:Key="Theme_BookSpineLeft">#47553F</Color>

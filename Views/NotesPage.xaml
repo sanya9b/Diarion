@@ -127,7 +127,7 @@
                                 </SwipeView.RightItems>
                                 <Border StrokeThickness="1"
                                         Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                        BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
                                         StrokeShape="RoundRectangle 14"
                                         Padding="14,10">
                                     <Border.GestureRecognizers>

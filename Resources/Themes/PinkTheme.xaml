@@ -68,6 +68,7 @@
     <!-- Base Colors mapped for Semantic Use -->
     <Color x:Key="Theme_Snow">#FFF7F9</Color>
     <Color x:Key="Theme_Midnight">#5A2C3A</Color>
+    <Color x:Key="Theme_Shadow">#5A2C3A</Color>
     
     <!-- Reading Tracker Book Colors -->
     <Color x:Key="Theme_BookSpineLeft">#7A3249</Color>

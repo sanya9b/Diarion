@@ -425,12 +425,12 @@
             <Border StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="20,16"
                     Margin="24"
                     VerticalOptions="Center">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.2" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer />
@@ -611,12 +611,12 @@
             <Border StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="20,16"
                     Margin="24"
                     VerticalOptions="Center">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.2" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer />
@@ -661,12 +661,12 @@
             <Border StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="20,16"
                     Margin="24"
                     VerticalOptions="Center">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.2" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer />
@@ -732,12 +732,12 @@
             <Border StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="20,16"
                     Margin="24"
                     VerticalOptions="Center">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.2" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer />
@@ -882,12 +882,12 @@
             <Border StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="20,16"
                     Margin="24"
                     VerticalOptions="Center">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.2" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer />
@@ -1006,12 +1006,12 @@
             <Border StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="20,16"
                     Margin="24"
                     VerticalOptions="Center">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.2" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer />

@@ -39,7 +39,7 @@
             <Border x:Name="RowCard" StrokeShape="RoundRectangle 10" StrokeThickness="0" MinimumHeightRequest="0"
                     BackgroundColor="{DynamicResource Theme_Snow_Black}">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,2" Radius="5" Opacity="{AppThemeBinding Light=0.04, Dark=0.15}" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,2" Radius="5" Opacity="{AppThemeBinding Light=0.04, Dark=0.15}" />
                 </Border.Shadow>
                 <Grid ColumnDefinitions="Auto, *, Auto" Padding="5,3" ColumnSpacing="7" VerticalOptions="Center">
                     <!-- The box stays 20px; what you can hit is 32 wide by the full height of the row.

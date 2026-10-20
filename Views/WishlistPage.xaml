@@ -46,7 +46,7 @@
                         Margin="24,10,24,12"
                         StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Berry}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         StrokeShape="RoundRectangle 16"
                         HorizontalOptions="Fill">
                     <Border.GestureRecognizers>
@@ -69,7 +69,7 @@
                             Margin="24,0"
                             StrokeThickness="1"
                             Stroke="{DynamicResource Theme_Dust_Ocean}"
-                            BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
                             StrokeShape="RoundRectangle 14">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenAddFormCommand}" CommandParameter="{Binding .}" />
@@ -120,12 +120,12 @@
             <Border StrokeShape="RoundRectangle 24"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Berry}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="24"
                     Margin="24"
                     VerticalOptions="Center">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.2" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <!-- Перехоплюємо тап, щоб не закривати попап при кліку на нього -->

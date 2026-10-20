@@ -56,7 +56,7 @@
             BackgroundColor="{DynamicResource Theme_Snow_Black}"
             StrokeShape="RoundRectangle 20">
         <Border.Shadow>
-            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+            <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
         </Border.Shadow>
 
         <VerticalStackLayout Spacing="12">
