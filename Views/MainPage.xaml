@@ -14,18 +14,69 @@
              Title="{Binding Title}"
              BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
 
-    <Grid Padding="0" RowDefinitions="Auto, *">
+    <Grid Padding="0" RowDefinitions="Auto, *" IsClippedToBounds="True">
         
-        <!-- Custom Top Bar: Removed Hamburger Menu for Clean Minimalism -->
-        <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="*, Auto" ColumnSpacing="12">
-            
-            <!-- x:Name on the four tour targets. They are anchors for the spotlight and nothing
-                 else; MainPage.xaml.cs maps a TourStepId onto each one and measures it. -->
-            <controls:QuickMenuView x:Name="QuickMenuAnchor" Grid.Column="0" HorizontalOptions="Start" />
-        </Grid>
+        <!-- The diary scrolls under the header, not below it. It spans the whole page, its top padding is
+             the header's height (MainPage.xaml.cs keeps the two in step), and as it scrolls the header
+             slides up with it until only the tabs are left. Quick menu, banner, calendar, date and the
+             insight strip took a third of a phone screen before the first card; on a long day that
+             third is now writing room, and the way to the planner never scrolls away.
+             The slide follows the finger rather than a timer, so there is no animation to reduce. -->
+        <ScrollView x:Name="DiaryContainer" Grid.Row="0" Grid.RowSpan="2" IsVisible="{Binding IsDiaryMode}"
+            Padding="24,10,24,40" Scrolled="OnDiaryScrolled">
 
-        <Grid Grid.Row="1" RowDefinitions="Auto,*">
-            <VerticalStackLayout Grid.Row="0" Padding="24,4,24,10" Spacing="0">
+            <!-- Home-screen blocks. Each block's visibility is toggled from Settings; a
+                 VerticalStackLayout collapses hidden blocks without leaving empty gaps.
+                 The whole stack stays hidden (IsContentReady) until the real profile is
+                 loaded, so the default all-blocks-visible layout never flashes on startup. -->
+            <VerticalStackLayout x:Name="BlocksAnchor" behaviors:ReadOnlyAccess.DisableWhenReadOnly="True" Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+                                 IsVisible="{Binding BindingContext.IsContentReady, Source={x:Reference PageRoot}}">
+
+                <controls:MoodSection BindingContext="{Binding}"
+                                      IsVisible="{Binding BindingContext.Profile.IsMoodBlockVisible, Source={x:Reference PageRoot}}" />
+
+                <controls:SleepSection BindingContext="{Binding}"
+                                       IsVisible="{Binding BindingContext.Profile.IsSleepBlockVisible, Source={x:Reference PageRoot}}" />
+
+                <!-- The intimate-life row inside is age-gated (18+); the block itself is not. Both
+                     flags come off the profile the same way the block visibility does. -->
+                <controls:HealthSection BindingContext="{Binding}"
+                                        IsVisible="{Binding BindingContext.Profile.IsHealthBlockVisible, Source={x:Reference PageRoot}}"
+                                        IsIntimateLifeAvailable="{Binding BindingContext.Profile.IsIntimateLifeAvailable, Source={x:Reference PageRoot}}"
+                                        ShowsIntimateLifeAgeHint="{Binding BindingContext.Profile.ShowsIntimateLifeAgeHint, Source={x:Reference PageRoot}}" />
+
+                <controls:FoodTrackerSection BindingContext="{Binding}"
+                                             IsVisible="{Binding BindingContext.Profile.IsFoodBlockVisible, Source={x:Reference PageRoot}}" />
+
+                <controls:HabitTrackerSection BindingContext="{Binding}"
+                                              IsVisible="{Binding BindingContext.Profile.IsHabitsBlockVisible, Source={x:Reference PageRoot}}" />
+
+                <controls:GuidedPromptSection BindingContext="{Binding}"
+                                              ManageCommand="{Binding BindingContext.OpenPromptLibraryCommand, Source={x:Reference PageRoot}}"
+                                              IsVisible="{Binding BindingContext.Profile.IsGuidedPromptBlockVisible, Source={x:Reference PageRoot}}" />
+
+                <controls:ReflectionSection BindingContext="{Binding}"
+                                            IsVisible="{Binding BindingContext.Profile.IsReflectionBlockVisible, Source={x:Reference PageRoot}}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- The planner has its own scroll; in planner mode the header stays whole. -->
+        <views:PlannerView x:Name="PlannerContainer" Grid.Row="1" IsVisible="{Binding BindingContext.IsPlannerMode, Source={x:Reference PageRoot}}" BindingContext="{Binding PlannerSection}" />
+
+
+        <!-- Declared after the diary so it draws over it; opaque so the cards pass under it cleanly. -->
+        <VerticalStackLayout x:Name="DayHeader" Grid.Row="0" Spacing="0"
+                             BackgroundColor="{DynamicResource Theme_Earth_Midnight}"
+                             SizeChanged="OnDayHeaderSizeChanged">
+            <!-- Custom Top Bar: Removed Hamburger Menu for Clean Minimalism -->
+            <Grid Padding="24,18,24,6" ColumnDefinitions="*, Auto" ColumnSpacing="12">
+            
+                <!-- x:Name on the four tour targets. They are anchors for the spotlight and nothing
+                     else; MainPage.xaml.cs maps a TourStepId onto each one and measures it. -->
+                <controls:QuickMenuView x:Name="QuickMenuAnchor" Grid.Column="0" HorizontalOptions="Start" />
+            </Grid>
+
+            <VerticalStackLayout x:Name="HeaderStack" Padding="24,4,24,10" Spacing="0">
 
                 <!-- Read-only banner or the one-time card for 1.0 users (spec 15). Its own view model. -->
                 <controls:AccessBanner />
@@ -99,49 +150,7 @@
                     </Label>
                 </Grid>
             </VerticalStackLayout>
-
-            <!-- Bento Box Content Container -->
-            <Grid Grid.Row="1">
-                <ScrollView x:Name="DiaryContainer" IsVisible="{Binding IsDiaryMode}" Padding="24,10,24,40">
-
-                    <!-- Home-screen blocks. Each block's visibility is toggled from Settings; a
-                         VerticalStackLayout collapses hidden blocks without leaving empty gaps.
-                         The whole stack stays hidden (IsContentReady) until the real profile is
-                         loaded, so the default all-blocks-visible layout never flashes on startup. -->
-                    <VerticalStackLayout x:Name="BlocksAnchor" behaviors:ReadOnlyAccess.DisableWhenReadOnly="True" Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
-                                         IsVisible="{Binding BindingContext.IsContentReady, Source={x:Reference PageRoot}}">
-
-                        <controls:MoodSection BindingContext="{Binding}"
-                                              IsVisible="{Binding BindingContext.Profile.IsMoodBlockVisible, Source={x:Reference PageRoot}}" />
-
-                        <controls:SleepSection BindingContext="{Binding}"
-                                               IsVisible="{Binding BindingContext.Profile.IsSleepBlockVisible, Source={x:Reference PageRoot}}" />
-
-                        <!-- The intimate-life row inside is age-gated (18+); the block itself is not. Both
-                             flags come off the profile the same way the block visibility does. -->
-                        <controls:HealthSection BindingContext="{Binding}"
-                                                IsVisible="{Binding BindingContext.Profile.IsHealthBlockVisible, Source={x:Reference PageRoot}}"
-                                                IsIntimateLifeAvailable="{Binding BindingContext.Profile.IsIntimateLifeAvailable, Source={x:Reference PageRoot}}"
-                                                ShowsIntimateLifeAgeHint="{Binding BindingContext.Profile.ShowsIntimateLifeAgeHint, Source={x:Reference PageRoot}}" />
-
-                        <controls:FoodTrackerSection BindingContext="{Binding}"
-                                                     IsVisible="{Binding BindingContext.Profile.IsFoodBlockVisible, Source={x:Reference PageRoot}}" />
-
-                        <controls:HabitTrackerSection BindingContext="{Binding}"
-                                                      IsVisible="{Binding BindingContext.Profile.IsHabitsBlockVisible, Source={x:Reference PageRoot}}" />
-
-                        <controls:GuidedPromptSection BindingContext="{Binding}"
-                                                      ManageCommand="{Binding BindingContext.OpenPromptLibraryCommand, Source={x:Reference PageRoot}}"
-                                                      IsVisible="{Binding BindingContext.Profile.IsGuidedPromptBlockVisible, Source={x:Reference PageRoot}}" />
-
-                        <controls:ReflectionSection BindingContext="{Binding}"
-                                                    IsVisible="{Binding BindingContext.Profile.IsReflectionBlockVisible, Source={x:Reference PageRoot}}" />
-                    </VerticalStackLayout>
-                </ScrollView>
-
-                <views:PlannerView x:Name="PlannerContainer" IsVisible="{Binding BindingContext.IsPlannerMode, Source={x:Reference PageRoot}}" BindingContext="{Binding PlannerSection}" />
-            </Grid>
-        </Grid>
+        </VerticalStackLayout>
 
         <!-- Завантаження. Grid.Row/RowSpan center it over the whole page (default row 0 is the
              Auto top-bar row); IsLoading covers both the initial startup load and day switches. -->
