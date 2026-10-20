@@ -3,8 +3,13 @@
 > **Стан 2026-10-06: Diarion 1.0 (збірка 2) у App Store** — <https://apps.apple.com/ua/app/diarion/id6814251806>, Apple ID застосунку
 > `6814251806`. Подано 2026-09-21, один запит Guideline 2.1 (відповідь у
 > [`app-review-notes.md`](app-review-notes.md) §9), майже два тижні In Review, реліз автоматичний.
-> Рейтинг 13+. Наступний аплоуд — збірка 3 (`ApplicationVersion` уже піднято) під нову версію в ASC
-> (`ApplicationDisplayVersion` теж піднімається, див. крок 5) зі свіжими Notes про те, що змінилось.
+> Рейтинг 13+.
+>
+> **Стан 2026-10-20: Diarion 1.1 (збірка 3) залита в App Store Connect** з `develop` (`090fac4`), запуск
+> `build-ios.yml` 39474724154, Delivery UUID `64d1b032-0f9a-4aeb-9fd1-9eceef467662`. Далі — TestFlight на
+> iPhone (крок 7; текст «Що тестувати» — [`app-store-listing.md`](app-store-listing.md) §7) і кроки
+> [`subscription-setup.md`](subscription-setup.md) перед подачею. `ApplicationVersion` уже піднято до 4:
+> наступний аплоуд, якщо знадобиться виправлення перед подачею, — збірка 4 тієї ж версії 1.1.
 > Секрети, сертифікат і профіль дійсні до 2027-09-20.
 
 Складено 2026-08-31 з того, що вже є в репозиторії. Це не нове знання — воно було, але розкидане
