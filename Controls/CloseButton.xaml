@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  The ✕ at the top left of every modal page. It was a typed glyph in a padded Grid, written out on fifteen
+  pages: the target came to about 42 points, half the pages told a screen reader nothing, and a glyph is
+  drawn by whichever font the platform falls back to. This one is drawn, 44 by 44, always announced as
+  "Close", with press feedback.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Controls.CloseButton"
+             x:Name="Root"
+             VerticalOptions="Center">
+
+    <Grid WidthRequest="44" HeightRequest="44" BackgroundColor="Transparent"
+          behaviors:PressFeedback.IsEnabled="True"
+          SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}">
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnTapped" />
+        </Grid.GestureRecognizers>
+        <Path Data="M 6 6 L 18 18 M 18 6 L 6 18"
+              Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="2"
+              StrokeLineCap="Round" Aspect="Uniform"
+              WidthRequest="16" HeightRequest="16" InputTransparent="True"
+              HorizontalOptions="Center" VerticalOptions="Center" />
+    </Grid>
+</ContentView>
