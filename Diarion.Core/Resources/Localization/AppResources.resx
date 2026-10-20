@@ -697,6 +697,9 @@
   <data name="HomeBlocksTitle" xml:space="preserve">
     <value>HOME SCREEN BLOCKS</value>
   </data>
+  <data name="SettingsAppearanceTitle" xml:space="preserve">
+    <value>APPEARANCE &amp; LANGUAGE</value>
+  </data>
   <data name="BlockMoodLabel" xml:space="preserve">
     <value>Mood</value>
   </data>

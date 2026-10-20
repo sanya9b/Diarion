@@ -135,7 +135,7 @@
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <VerticalStackLayout Spacing="16">
-                        <Label Text="APPEARANCE &amp; LANGUAGE" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{x:Static localization:AppResources.SettingsAppearanceTitle}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
                         <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
                             <!-- Language Switch -->

@@ -685,6 +685,9 @@
   <data name="HomeBlocksTitle" xml:space="preserve">
     <value>БЛОКИ ГОЛОВНОГО ЕКРАНА</value>
   </data>
+  <data name="SettingsAppearanceTitle" xml:space="preserve">
+    <value>ВИГЛЯД І МОВА</value>
+  </data>
   <data name="BlockMoodLabel" xml:space="preserve">
     <value>Настрій</value>
   </data>
