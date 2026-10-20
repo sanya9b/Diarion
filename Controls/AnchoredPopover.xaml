@@ -4,19 +4,9 @@
              x:Class="Diarion.Controls.AnchoredPopover"
              IsVisible="False">
 
-    <ContentView.Resources>
-        <!-- The tail: a filled triangle laid over the bubble's edge, stroked on its two free sides only. -->
-        <Style x:Key="TailFill" TargetType="Path">
-            <Setter Property="Fill" Value="{DynamicResource Theme_Snow_Midnight}" />
-        </Style>
-        <Style x:Key="TailEdge" TargetType="Path">
-            <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
-            <Setter Property="StrokeThickness" Value="1" />
-        </Style>
-    </ContentView.Resources>
-
     <!-- This layer spans the page. The scrim is see-through and only exists to catch the tap that puts
-         the bubble away; the bubble itself is placed from code-behind under (or above) the anchor. -->
+         the bubble away; the bubble itself is placed and grown from code-behind. No tail: the bubble
+         comes out of the control it belongs to, so where it came from is shown by the motion itself. -->
     <Grid>
         <Grid x:Name="Scrim" BackgroundColor="Transparent">
             <Grid.GestureRecognizers>
@@ -24,32 +14,21 @@
             </Grid.GestureRecognizers>
         </Grid>
 
-        <Grid x:Name="Bubble" RowDefinitions="Auto,Auto,Auto" HorizontalOptions="Fill" VerticalOptions="Start"
-              Margin="24,0" AnchorY="0">
-            <!-- Tail above the bubble (bubble below the anchor). -->
-            <Grid x:Name="TailTopRow" Grid.Row="0" HeightRequest="10" ZIndex="1">
-                <Grid x:Name="TailTop" HorizontalOptions="Start" VerticalOptions="End" WidthRequest="18" HeightRequest="11" TranslationY="2">
-                    <Path Style="{StaticResource TailFill}" Data="M0,11 L9,1 L18,11 Z" />
-                    <Path Style="{StaticResource TailEdge}" Data="M0,11 L9,1 L18,11" />
-                </Grid>
-            </Grid>
+        <!-- Scales from its top-left corner (AnchorX/Y 0): the morph maps that corner and the size onto
+             the control's rectangle, so the card can start exactly where the control is. -->
+        <Border x:Name="Bubble" HorizontalOptions="Fill" VerticalOptions="Start" Margin="24,0"
+                AnchorX="0" AnchorY="0"
+                StrokeShape="RoundRectangle 18" StrokeThickness="1"
+                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                Padding="14">
+            <Border.Shadow>
+                <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="16" Opacity="0.2" />
+            </Border.Shadow>
 
-            <Border x:Name="Card" Grid.Row="1" StrokeShape="RoundRectangle 16" StrokeThickness="1"
-                    Stroke="{DynamicResource Theme_Dust_Ocean}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
-                    Padding="12">
-                <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="14" Opacity="0.18" />
-                </Border.Shadow>
-            </Border>
-
-            <!-- Tail below the bubble (bubble above the anchor, when there is no room below). -->
-            <Grid x:Name="TailBottomRow" Grid.Row="2" HeightRequest="10" ZIndex="1" IsVisible="False">
-                <Grid x:Name="TailBottom" HorizontalOptions="Start" VerticalOptions="Start" WidthRequest="18" HeightRequest="11" TranslationY="-2">
-                    <Path Style="{StaticResource TailFill}" Data="M0,0 L9,10 L18,0 Z" />
-                    <Path Style="{StaticResource TailEdge}" Data="M0,0 L9,10 L18,0" />
-                </Grid>
-            </Grid>
-        </Grid>
+            <!-- The content fades on its own clock: while the card is still the size of the control,
+                 squeezed text would read as a glitch, so it arrives once the card has room for it. -->
+            <ContentView x:Name="Body" />
+        </Border>
     </Grid>
 </ContentView>

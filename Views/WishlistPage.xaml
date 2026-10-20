@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
@@ -14,7 +15,7 @@
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCloseTapped" />
                 </Grid.GestureRecognizers>
@@ -42,11 +43,11 @@
 
             <CollectionView.Header>
                 <!-- Кнопка додавання -->
-                <Border Padding="16"
+                <Border behaviors:PressFeedback.IsEnabled="True" Padding="16"
                         Margin="24,10,24,12"
                         StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Berry}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         StrokeShape="RoundRectangle 16"
                         HorizontalOptions="Fill">
                     <Border.GestureRecognizers>
@@ -69,7 +70,7 @@
                             Margin="24,0"
                             StrokeThickness="1"
                             Stroke="{DynamicResource Theme_Dust_Ocean}"
-                            BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
                             StrokeShape="RoundRectangle 14">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenAddFormCommand}" CommandParameter="{Binding .}" />
@@ -117,15 +118,15 @@
                 <TapGestureRecognizer Command="{Binding CloseFormCommand}" />
             </Grid.GestureRecognizers>
 
-            <Border StrokeShape="RoundRectangle 24"
+            <Border StrokeShape="RoundRectangle 20"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Berry}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="24"
                     Margin="24"
                     VerticalOptions="Center">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.2" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <!-- Перехоплюємо тап, щоб не закривати попап при кліку на нього -->
@@ -136,7 +137,7 @@
                     <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
                         <Label Grid.Column="0" Text="{localization:Translate Key=WishlistTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center"/>
                         <!-- Close Button -->
-                        <Grid Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding CloseFormCommand}" />
                             </Grid.GestureRecognizers>

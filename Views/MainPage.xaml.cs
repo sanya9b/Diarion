@@ -29,6 +29,12 @@ public partial class MainPage : ContentPage
         TourOverlay.AnchorResolver = AnchorFor;
         TourOverlay.PrepareStepAsync = PrepareTourStepAsync;
         TourOverlay.Tour = _viewModel.Tour;
+
+        // The mood row's bubbles ask where their control is each time they are placed, so a card that
+        // moved since — the strip under the date appearing, a banner, the calendar — cannot leave them
+        // pointing at the wrong block.
+        RefinePopover.AnchorResolver = MoodBlock.GetRefineAnchor;
+        HourPopover.AnchorResolver = MoodBlock.GetHourChipAnchor;
     }
 
     private async void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)

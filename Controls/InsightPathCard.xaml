@@ -24,7 +24,7 @@
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
             <controls:InsightPathStrip Filled="{Binding PairedDays}" Total="{Binding RequiredDays}"
                                        VerticalOptions="Center"
-                                       TrackColor="{DynamicResource Theme_Dust_Ocean}"
+                                       TrackColor="{DynamicResource Theme_GridLine}"
                                        InkColor="{DynamicResource Theme_Midnight_Snow}"
                                        AccentColor="{DynamicResource Theme_Coral}" />
             <Label Grid.Column="1" Text="{Binding ProgressText}" FontSize="12" FontAttributes="Bold"

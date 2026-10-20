@@ -269,24 +269,6 @@ public class MoodPickerViewModelTests
     }
 
     [Fact]
-    public void Anchors_ArePlainState_TheRowWritesAndThePopoversRead()
-    {
-        var viewModel = new DiaryEntryViewModel(new DiaryEntry());
-        var raised = new List<string?>();
-        viewModel.PropertyChanged += (_, e) => raised.Add(e.PropertyName);
-
-        var faceBounds = new Microsoft.Maui.Graphics.Rect(120, 300, 64, 60);
-        var chipBounds = new Microsoft.Maui.Graphics.Rect(280, 240, 90, 26);
-        viewModel.RefineAnchor = faceBounds;
-        viewModel.HourAnchor = chipBounds;
-
-        viewModel.RefineAnchor.Should().Be(faceBounds);
-        viewModel.HourAnchor.Should().Be(chipBounds);
-        raised.Should().Contain(nameof(DiaryEntryViewModel.RefineAnchor));
-        raised.Should().Contain(nameof(DiaryEntryViewModel.HourAnchor));
-    }
-
-    [Fact]
     public void OpenHourPicker_TogglesTheGrid_AndPutsTheRefinementAway()
     {
         var viewModel = new DiaryEntryViewModel(new DiaryEntry());

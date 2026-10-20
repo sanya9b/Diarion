@@ -109,18 +109,6 @@ public class CycleViewModelTests
     }
 
     [Fact]
-    public async Task AddEpisode_RecordsUsingTheProfilePeriodLength()
-    {
-        var vm = CreateVm();
-        await vm.LoadAsync();
-        vm.NewEpisodeStart = DateTime.Today.AddDays(-2);
-
-        await vm.AddEpisodeCommand.ExecuteAsync(null);
-
-        _cycleLogService.Verify(s => s.AddEpisodeAsync(DateTime.Today.AddDays(-2), 5), Times.Once);
-    }
-
-    [Fact]
     public async Task DeleteEpisode_WithoutConfirmation_DoesNothing()
     {
         MarkedDates(Episodes(3, 4));

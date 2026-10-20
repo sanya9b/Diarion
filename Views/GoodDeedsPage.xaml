@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              x:Class="Diarion.Views.GoodDeedsPage"
@@ -12,7 +13,7 @@
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCloseTapped" />
                 </Grid.GestureRecognizers>
@@ -41,7 +42,7 @@
                             <Border Padding="12,10"
                                     StrokeThickness="1"
                                     Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                                     StrokeShape="RoundRectangle 14">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectSlotCommand}"
@@ -137,15 +138,15 @@
                 <TapGestureRecognizer Command="{Binding SelectSlotCommand}" CommandParameter="{Binding SelectedSlot}" />
             </Grid.GestureRecognizers>
 
-            <Border StrokeShape="RoundRectangle 24"
+            <Border StrokeShape="RoundRectangle 20"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Amber}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="24"
                     Margin="24"
                     VerticalOptions="Center">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.2" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer />
@@ -177,7 +178,7 @@
                         </VerticalStackLayout>
 
                         <!-- Close Button -->
-                        <Grid Grid.Column="2" VerticalOptions="Start" Padding="8,0,0,8">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="2" VerticalOptions="Start" Padding="8,0,0,8">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SelectSlotCommand}" CommandParameter="{Binding SelectedSlot}" />
                             </Grid.GestureRecognizers>

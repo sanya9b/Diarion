@@ -111,7 +111,7 @@
                     <VerticalStackLayout x:Name="BlocksAnchor" behaviors:ReadOnlyAccess.DisableWhenReadOnly="True" Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
                                          IsVisible="{Binding BindingContext.IsContentReady, Source={x:Reference PageRoot}}">
 
-                        <controls:MoodSection BindingContext="{Binding}"
+                        <controls:MoodSection x:Name="MoodBlock" BindingContext="{Binding}"
                                               IsVisible="{Binding BindingContext.Profile.IsMoodBlockVisible, Source={x:Reference PageRoot}}" />
 
                         <controls:SleepSection BindingContext="{Binding}"
@@ -156,19 +156,20 @@
              which element each step means (MainPage.xaml.cs). -->
         <!-- The mood row's two bubbles (spec 18): the precise states under the chosen face, and the hour
              grid off the hours chip. Page-level layers, so they float over the cards below the row and a
-             tap anywhere else puts them away; each binds to the same day as the row and is placed from
-             the anchor the row publishes. Under the tour, which must stay on top. -->
-        <controls:AnchoredPopover BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+             tap anywhere else puts them away; each binds to the same day as the row and asks the row where
+             its control is at the moment it opens (MainPage.xaml.cs). The refinement bubble follows the
+             chosen face when another one is tapped while it is out. Under the tour, which must stay on top. -->
+        <controls:AnchoredPopover x:Name="RefinePopover" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
                                   Grid.Row="0" Grid.RowSpan="2"
-                                  IsOpen="{Binding IsRefinementOpen}" Anchor="{Binding RefineAnchor}"
+                                  IsOpen="{Binding IsRefinementOpen}" AnchorKey="{Binding CurrentQuadrant}"
                                   CloseCommand="{Binding CloseRefinementCommand}">
             <controls:AnchoredPopover.PopoverContent>
                 <controls:MoodRefineContent />
             </controls:AnchoredPopover.PopoverContent>
         </controls:AnchoredPopover>
-        <controls:AnchoredPopover BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+        <controls:AnchoredPopover x:Name="HourPopover" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
                                   Grid.Row="0" Grid.RowSpan="2"
-                                  IsOpen="{Binding IsHourPickerOpen}" Anchor="{Binding HourAnchor}"
+                                  IsOpen="{Binding IsHourPickerOpen}"
                                   CloseCommand="{Binding CloseHourPickerCommand}">
             <controls:AnchoredPopover.PopoverContent>
                 <controls:HourPickerContent />

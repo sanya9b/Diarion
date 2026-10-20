@@ -11,7 +11,7 @@
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding CloseCommand}" />
                 </Grid.GestureRecognizers>
@@ -32,14 +32,14 @@
         </Grid>
 
         <Grid Grid.Row="1" Padding="24,10,24,24" RowSpacing="14" RowDefinitions="Auto, Auto, Auto">
-            <Border Grid.Row="0" StrokeShape="RoundRectangle 24"
+            <Border Grid.Row="0" StrokeShape="RoundRectangle 20"
                     behaviors:ReadOnlyAccess.DisableWhenReadOnly="True"
                     StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="18,18">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="14">
                         <VerticalStackLayout Spacing="8">
@@ -84,12 +84,12 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Grid.Row="1" StrokeShape="RoundRectangle 14"
+                <Border behaviors:PressFeedback.IsEnabled="True" Grid.Row="1" StrokeShape="RoundRectangle 14"
                         StrokeThickness="0"
                         HeightRequest="48"
                         BackgroundColor="{DynamicResource Theme_Ocean_Ocean}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="8" Opacity="0.2" />
                     </Border.Shadow>
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding SaveCommand}" />
@@ -102,13 +102,13 @@
                            TextColor="{DynamicResource Theme_Snow_Midnight}" />
                 </Border>
 
-                <Border Grid.Row="2" StrokeShape="RoundRectangle 14"
+                <Border behaviors:PressFeedback.IsEnabled="True" Grid.Row="2" StrokeShape="RoundRectangle 14"
                         StrokeThickness="0"
                         HeightRequest="48"
                         IsVisible="{Binding IsExistingEntry}"
                         BackgroundColor="{DynamicResource Theme_Midnight_Dust}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="8" Opacity="0.2" />
                     </Border.Shadow>
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding DeleteCommand}" />

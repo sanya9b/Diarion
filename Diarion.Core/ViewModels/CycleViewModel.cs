@@ -74,10 +74,6 @@ public partial class CycleViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isFertileWindowEstimate;
 
-    /// <summary>Start date for the "record a period" picker; today, never the future.</summary>
-    [ObservableProperty]
-    private DateTime _newEpisodeStart = DateTime.Today;
-
     public DateTime MaximumDate => DateTime.Today;
 
     public CycleViewModel(
@@ -158,15 +154,21 @@ public partial class CycleViewModel : BaseViewModel
             Episodes.Add(new CycleEpisodeItemViewModel
             {
                 Start = episode.Start,
-                RangeText = episode.Start == episode.End
-                    ? episode.Start.ToString("d MMM yyyy", CultureInfo.CurrentCulture)
-                    : $"{episode.Start.ToString("d MMM", CultureInfo.CurrentCulture)} – {episode.End.ToString("d MMM yyyy", CultureInfo.CurrentCulture)}",
+                RangeText = FormatRange(episode.Start, episode.End),
                 IntervalText = next == null
                     ? string.Empty
                     : string.Format(AppResources.CycleIntervalFormat, (next.Start - episode.Start).Days)
             });
         }
     }
+
+    /// <summary>
+    /// One period as the user reads it: "3 Oct 2026" for a single day, "3 Oct – 7 Oct 2026" otherwise.
+    /// Shared with the settings bubble that records periods, so both name a period the same way.
+    /// </summary>
+    public static string FormatRange(DateTime start, DateTime end) => start.Date == end.Date
+        ? start.ToString("d MMM yyyy", CultureInfo.CurrentCulture)
+        : $"{start.ToString("d MMM", CultureInfo.CurrentCulture)} – {end.ToString("d MMM yyyy", CultureInfo.CurrentCulture)}";
 
     private void ApplyForecast(CycleForecast forecast)
     {
@@ -212,13 +214,6 @@ public partial class CycleViewModel : BaseViewModel
         }
 
         return text;
-    }
-
-    [RelayCommand]
-    private async Task AddEpisodeAsync()
-    {
-        if (!await WriteGate.TryAsync(() => _cycleLogService.AddEpisodeAsync(NewEpisodeStart, _profile.GetNormalizedPeriodLength()))) return;
-        await ReloadAndBroadcastAsync();
     }
 
     [RelayCommand]

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.AiChatPage"
@@ -64,7 +65,7 @@
                                                 Wrap="Wrap" JustifyContent="Start">
                                         <BindableLayout.ItemTemplate>
                                             <DataTemplate x:DataType="viewmodels:CitationChip">
-                                                <Border StrokeShape="RoundRectangle 12" StrokeThickness="1"
+                                                <Border behaviors:PressFeedback.IsEnabled="True" StrokeShape="RoundRectangle 12" StrokeThickness="1"
                                                         Stroke="{DynamicResource Theme_Coral}"
                                                         BackgroundColor="Transparent"
                                                         Padding="10,5" Margin="0,0,6,6">

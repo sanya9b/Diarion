@@ -238,7 +238,7 @@
                 <!-- Mood trend over time -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasMoodTrend}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsMoodTrend}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -255,7 +255,7 @@
                 <!-- Mood by hour of day -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasHourlyMood}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsMoodByHour}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -297,7 +297,7 @@
                      reading the same hours. Warm for energetic, cool for calm; neither side is "good". -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasHourlyMood}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsEnergyByHour}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -337,7 +337,7 @@
                 <!-- Mood logged, but only ever day-level: point at the hourly grid instead of an empty chart. -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.ShowHourlyMoodHint}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsMoodByHour}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -348,7 +348,7 @@
                 <!-- Mood distribution card -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.IsNotEmpty}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="16">
                         <Label Text="{x:Static localization:AppResources.EmotionLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -383,7 +383,7 @@
                 <!-- Year in Pixels (mood heatmap) -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasMoodCalendar}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsYearInPixels}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -398,7 +398,7 @@
                      on. Not a list of what the diary "found". -->
                 <Border x:Name="InfluencesAnchor" Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasCorrelations}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsMoodInfluencesTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -459,7 +459,7 @@
                 <!-- Sleep chart card -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding SleepStats.IsNotEmpty}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.SleepLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Amber}" />
@@ -495,7 +495,7 @@
                 <!-- Productivity chart card -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding ProductivityStats.IsNotEmpty}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="16">
                         <Label Text="{x:Static localization:AppResources.StatsProductivity}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Sage}" />
@@ -577,7 +577,7 @@
                 <!-- Expenses breakdown card -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding FinanceStats.IsNotEmpty}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="16">
                         <Label Text="{x:Static localization:AppResources.ExpenseLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -618,7 +618,7 @@
                 <!-- Trend: income above the line, expense below -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding FinanceStats.HasTrend}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{Binding FinanceStats.TrendTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Amber}" />
@@ -651,7 +651,7 @@
                 <!-- Comparison with the preceding equal-length window -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding FinanceStats.IsNotEmpty}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsComparisonTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Amber}" />
@@ -710,7 +710,7 @@
                 <!-- Per-account flow. Hidden when a single account is already selected. -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding FinanceStats.HasAccountBreakdown}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="14">
                         <Label Text="{x:Static localization:AppResources.StatsAccountBreakdown}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Amber}" />
@@ -760,7 +760,7 @@
                         <DataTemplate x:DataType="stats:HabitCardViewModel">
                             <Border Style="{StaticResource StatCard}">
                                 <Border.Shadow>
-                                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                                 </Border.Shadow>
                                 <VerticalStackLayout Spacing="12">
                                     <Grid ColumnDefinitions="*,Auto">
@@ -837,7 +837,7 @@
                 <!-- Cycle length chart -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding CycleStats.HasCycles}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.CycleStatsLengthChart}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Berry}" />
@@ -853,7 +853,7 @@
                 <!-- Logged days heatmap -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding CycleStats.HasCalendar}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.CycleStatsCalendar}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Berry}" />
@@ -868,7 +868,7 @@
                 <!-- Most frequent symptoms -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding CycleStats.HasSymptoms}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.CycleStatsSymptoms}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Berry}" />

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:sys="clr-namespace:System;assembly=netstandard"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
@@ -129,12 +130,12 @@
             <VerticalStackLayout Spacing="20" IsVisible="{Binding IsProfileTab}">
 
                 <!-- App Customization (Moved from Flyout) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <VerticalStackLayout Spacing="16">
-                        <Label Text="APPEARANCE &amp; LANGUAGE" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{x:Static localization:AppResources.SettingsAppearanceTitle}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
                         <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
                             <!-- Language Switch -->
@@ -164,12 +165,12 @@
                 </Border>
 
                 <!-- Особиста інформація -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -218,7 +219,7 @@
 
                 <!-- Stands where the cycle card would be while the birth date is unknown (and the gender does
                      not rule the feature out). Once the date is known and under 14, neither card shows. -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         IsVisible="{Binding Profile.NeedsBirthDateForCycle}"
@@ -230,13 +231,13 @@
                 </Border>
 
                 <!-- Менструальний календар (Menstrual Tracker) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         IsVisible="{Binding Profile.IsCycleFeatureAvailable}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -264,12 +265,25 @@
 
                             <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
 
-                            <!-- Recording and correcting periods lives on its own page: it is a handful of
+                            <!-- Recording a period: a bubble out of this row (CycleRecordContent in the
+                                 AnchoredPopover at the bottom of the page), the same gesture as the hour
+                                 picker on the mood card. First and last day, no page to leave and come back. -->
+                            <Grid x:Name="CycleRecordRow" behaviors:PressFeedback.IsEnabled="True" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,12" BackgroundColor="Transparent">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCycleRecordTapped" />
+                                </Grid.GestureRecognizers>
+                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.CycleAddTitle}" InputTransparent="True" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
+                                <Label Grid.Column="1" Text="+" InputTransparent="True" FontSize="20" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
+                            </Grid>
+
+                            <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
+
+                            <!-- The history, forecast and symptoms live on their own page: it is a handful of
                                  days a month, so it has no business occupying the daily screen. That page is
                                  reachable from here alone, so the row is a row and not dim small print. -->
                             <!-- Padded to a full touch target rather than to the text: at two pixels the row
                                  was a 24dp strip, and a tap that lands a hair above or below it does nothing. -->
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,12" BackgroundColor="Transparent">
+                            <Grid behaviors:PressFeedback.IsEnabled="True" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,12" BackgroundColor="Transparent">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenCycleCommand}" />
                                 </Grid.GestureRecognizers>
@@ -288,12 +302,12 @@
                 <!-- x:Name on the three settings-guide anchors; ProfilePage.xaml.cs maps a TourStepId
                      onto each one and measures it. -->
                 <Border x:Name="BlocksCardAnchor"
-                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -329,7 +343,7 @@
                         <!-- The guides, replayable. They belong to this card because they are about
                              the layout it configures, and this is the one way back to an explanation
                              that otherwise happens once and never again. -->
-                        <Label Text="{x:Static localization:AppResources.TourReplayLabel}"
+                        <Label behaviors:PressFeedback.IsEnabled="True" Text="{x:Static localization:AppResources.TourReplayLabel}"
                                FontSize="13" TextColor="{DynamicResource Theme_Sage}">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ReplayTourCommand}" />
@@ -344,12 +358,12 @@
                      and the library and the answer history hang off them. Buried among the toggles
                      they read as switches for something already understood, which they are not. -->
                 <Border x:Name="PromptsCardAnchor"
-                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -364,7 +378,7 @@
                         <!-- Full rows with a chevron, like the cycle link above. As indented grey
                              captions these two were read as help text and never tapped, which is the
                              whole reason this card exists. -->
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
+                        <Grid behaviors:PressFeedback.IsEnabled="True" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
                               IsVisible="{Binding Profile.IsGuidedPromptBlockVisible}">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding OpenPromptLibraryCommand}" />
@@ -373,7 +387,7 @@
                             <Label Grid.Column="1" Text="›" InputTransparent="True" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
+                        <Grid behaviors:PressFeedback.IsEnabled="True" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
                               IsVisible="{Binding Profile.IsGuidedPromptBlockVisible}">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding OpenPromptHistoryCommand}" />
@@ -395,12 +409,12 @@
 
                 <!-- Фінанси (Finances). Out of the blocks card: none of these three decide what shows
                      on the home screen, which is what that card is about. -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -430,12 +444,12 @@
                 </Border>
 
                 <!-- Налаштування завдань -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -449,12 +463,12 @@
                 </Border>
 
                 <!-- Нагадування (Reminders) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -473,12 +487,12 @@
                 </Border>
 
                 <!-- Серії (Streaks) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -499,12 +513,12 @@
                 </Border>
 
                 <!-- Шлях до першої гіпотези (spec 17): the strip under the date on the home screen -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -528,12 +542,12 @@
                      is the one card here that can change what the rest of the app lets you do. -->
                 <Border x:Name="SubscriptionCard" x:DataType="viewmodels:SubscriptionSectionViewModel"
                         IsVisible="{Binding IsVisible}"
-                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -576,12 +590,12 @@
                 </Border>
 
                 <!-- Безпека (Security) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -628,12 +642,12 @@
                 </Border>
 
                 <!-- Backup & Restore -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -664,7 +678,7 @@
                 </Border>
 
                 <!-- Crash report. Hidden entirely until something has actually crashed. -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Coral}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16"
@@ -710,12 +724,12 @@
                 </Border>
 
                 <!-- Export data (open, portable formats) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -755,7 +769,7 @@
             <VerticalStackLayout Spacing="20" IsVisible="{Binding IsAiTab}">
 
                 <!-- Увімкнення та пояснення -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -783,7 +797,7 @@
                 </Border>
 
                 <!-- Пристрій -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -799,7 +813,7 @@
                 </Border>
 
                 <!-- Моделі -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -888,7 +902,7 @@
                 </Border>
 
                 <!-- Індекс -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
@@ -934,6 +948,15 @@
                     Margin="0,10,0,10" />
         </VerticalStackLayout>
     </ScrollView>
+
+        <!-- Recording a period (see the cycle card). Over the scroller so it floats above the cards,
+             under the guide, which must stay on top. Its BindingContext is set in code-behind. -->
+        <controls:AnchoredPopover x:Name="CyclePopover" x:DataType="viewmodels:CycleRecordViewModel"
+                                  IsOpen="{Binding IsOpen}" CloseCommand="{Binding CloseCommand}">
+            <controls:AnchoredPopover.PopoverContent>
+                <controls:CycleRecordContent />
+            </controls:AnchoredPopover.PopoverContent>
+        </controls:AnchoredPopover>
 
         <!-- Гід по налаштуваннях (онбординг, етап 3). Last child, so it covers the scroller. -->
         <controls:TourOverlayView x:Name="TourOverlay" />

@@ -685,6 +685,9 @@
   <data name="HomeBlocksTitle" xml:space="preserve">
     <value>БЛОКИ ГОЛОВНОГО ЕКРАНА</value>
   </data>
+  <data name="SettingsAppearanceTitle" xml:space="preserve">
+    <value>ВИГЛЯД І МОВА</value>
+  </data>
   <data name="BlockMoodLabel" xml:space="preserve">
     <value>Настрій</value>
   </data>
@@ -875,7 +878,19 @@
     <value>ДОДАТИ</value>
   </data>
   <data name="CycleAddHint" xml:space="preserve">
-    <value>Оберіть перший день. Кожні записані місячні роблять прогноз точнішим.</value>
+    <value>Оберіть перший і останній день. Кожні записані місячні роблять прогноз точнішим.</value>
+  </data>
+  <data name="CycleRecordStart" xml:space="preserve">
+    <value>Перший день</value>
+  </data>
+  <data name="CycleRecordEnd" xml:space="preserve">
+    <value>Останній день</value>
+  </data>
+  <data name="CycleRecordDaysFormat" xml:space="preserve">
+    <value>Днів: {0}</value>
+  </data>
+  <data name="CycleRecordLastFormat" xml:space="preserve">
+    <value>Останні записані: {0}</value>
   </data>
   <data name="CycleHistoryTitle" xml:space="preserve">
     <value>Записані місячні</value>
@@ -908,7 +923,7 @@
     <value>На основі {0} записаних циклів (у середньому {1} дн.)</value>
   </data>
   <data name="CycleNoDataHint" xml:space="preserve">
-    <value>Позначте перший день місячних, щоб почати прогноз</value>
+    <value>Запишіть місячні в налаштуваннях, щоб почати прогноз</value>
   </data>
   <data name="CycleLateFormat" xml:space="preserve">
     <value>Очікувались {0} дн. тому</value>
@@ -2360,7 +2375,7 @@
     <value>Поки нічого не записано</value>
   </data>
   <data name="EmptyStateCycleHint" xml:space="preserve">
-    <value>Позначте перший день місячних, і тут з'являться історія та прогноз.</value>
+    <value>Запишіть місячні в налаштуваннях, і тут з'являться історія та прогноз.</value>
   </data>
   <data name="EmptyStateMoodTitle" xml:space="preserve">
     <value>Настрою за цей період немає</value>

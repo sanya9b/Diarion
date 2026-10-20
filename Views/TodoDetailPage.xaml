@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.TodoDetailPage"
@@ -11,7 +12,7 @@
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding CloseCommand}" />
                 </Grid.GestureRecognizers>
@@ -39,13 +40,13 @@
         <Grid Grid.Row="1" Padding="24,10,24,24" RowSpacing="14" RowDefinitions="*, Auto"
               MaximumWidthRequest="640">
             <ScrollView Grid.Row="0" VerticalScrollBarVisibility="Never">
-            <Border StrokeShape="RoundRectangle 24"
+            <Border StrokeShape="RoundRectangle 20"
                     StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="18,18">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="14">
                         <VerticalStackLayout Spacing="8">
@@ -68,7 +69,7 @@
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasParseHint}">
                                 <Label Grid.Column="0" Text="{Binding ParseHint}" FontSize="12" VerticalOptions="Center"
                                        LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Sage}" />
-                                <Label Grid.Column="1" Text="{x:Static localization:AppResources.ParseUndoLabel}" FontSize="12"
+                                <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" Text="{x:Static localization:AppResources.ParseUndoLabel}" FontSize="12"
                                        FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding DismissParseCommand}" />
@@ -248,13 +249,13 @@
 
                             <!-- Every N days -->
                             <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10" IsVisible="{Binding IsRecurrenceInterval}">
-                                <Label Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding DecrementEveryNCommand}" />
                                     </Label.GestureRecognizers>
                                 </Label>
                                 <Label Grid.Column="1" Text="{Binding EveryNDays}" FontSize="15" WidthRequest="34" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                <Label Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding IncrementEveryNCommand}" />
                                     </Label.GestureRecognizers>
@@ -266,13 +267,13 @@
 
                             <!-- Day of month -->
                             <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10" IsVisible="{Binding IsRecurrenceMonthly}">
-                                <Label Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding DecrementDayOfMonthCommand}" />
                                     </Label.GestureRecognizers>
                                 </Label>
                                 <Label Grid.Column="1" Text="{Binding DayOfMonth}" FontSize="15" WidthRequest="34" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                <Label Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding IncrementDayOfMonthCommand}" />
                                     </Label.GestureRecognizers>
@@ -376,12 +377,12 @@
                 </Border>
             </ScrollView>
 
-                <Border Grid.Row="1" StrokeShape="RoundRectangle 14"
+                <Border behaviors:PressFeedback.IsEnabled="True" Grid.Row="1" StrokeShape="RoundRectangle 14"
                         StrokeThickness="0"
                         HeightRequest="48"
                         BackgroundColor="{DynamicResource Theme_Ocean_Ocean}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="8" Opacity="0.2" />
                     </Border.Shadow>
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding SaveCommand}" />

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
@@ -15,7 +16,7 @@
     <Grid RowDefinitions="Auto,*">
         <!-- Top Custom Bar -->
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCloseTapped" />
                 </Grid.GestureRecognizers>
@@ -125,9 +126,9 @@
                                         </SwipeItemView>
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-                                <Border StrokeThickness="1"
+                                <Border behaviors:PressFeedback.IsEnabled="True" StrokeThickness="1"
                                         Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                        BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
                                         StrokeShape="RoundRectangle 14"
                                         Padding="14,10">
                                     <Border.GestureRecognizers>
@@ -163,7 +164,7 @@
             </CollectionView>
             
             <!-- Floating Action Button (iOS Style Compose) -->
-            <Border Grid.Row="1"
+            <Border behaviors:PressFeedback.IsEnabled="True" Grid.Row="1"
                     WidthRequest="56"
                     HeightRequest="56"
                     StrokeShape="RoundRectangle 28"
@@ -201,7 +202,7 @@
                            ReturnCommand="{Binding QuickCaptureCommand}"
                            VerticalOptions="Center"
                            Margin="10,0,0,0" />
-                    <Border Grid.Column="1" WidthRequest="40" HeightRequest="40"
+                    <Border behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" WidthRequest="40" HeightRequest="40"
                             StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Amber}"
                             StrokeShape="RoundRectangle 20" VerticalOptions="Center">
                         <Border.GestureRecognizers>

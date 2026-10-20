@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
@@ -13,7 +14,7 @@
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCloseTapped" />
                 </Grid.GestureRecognizers>
@@ -102,7 +103,7 @@
                         </HorizontalStackLayout>
                     </ScrollView>
 
-                        <Border StrokeShape="RoundRectangle 24"
+                        <Border StrokeShape="RoundRectangle 20"
                             StrokeThickness="1"
                             Stroke="{DynamicResource Theme_Dust_Ocean}"
                             BackgroundColor="{DynamicResource Theme_Snow_Black}"
@@ -141,7 +142,7 @@
                                                    TextColor="{DynamicResource Theme_Midnight_Snow}" />
                                         </VerticalStackLayout>
                                         
-                                        <Grid Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8" Margin="0,-4,-4,0">
+                                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8" Margin="0,-4,-4,0">
                                             <Grid.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteTrackerCommand}"
                                                                       CommandParameter="{Binding SelectedTracker}" />
@@ -155,7 +156,7 @@
                             <!-- Quit-tracker stats -->
                             <VerticalStackLayout Spacing="12">
                                 <!-- Edit tracker (name / start / cost / units / reminder) -->
-                                <Label Text="✎" FontSize="16" HorizontalOptions="End" TextColor="{DynamicResource Theme_Ocean_Dust}"
+                                <Label behaviors:PressFeedback.IsEnabled="True" Text="✎" FontSize="16" HorizontalOptions="End" TextColor="{DynamicResource Theme_Ocean_Dust}"
                                        SemanticProperties.Description="{localization:Translate Key=HabitTrackerEditTitle}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding EditTrackerCommand}" CommandParameter="{Binding SelectedTracker}" />
@@ -250,15 +251,15 @@
                 <TapGestureRecognizer Command="{Binding HideAddTrackerFormCommand}" />
             </Grid.GestureRecognizers>
 
-            <Border StrokeShape="RoundRectangle 24"
+            <Border StrokeShape="RoundRectangle 20"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Coral}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="24"
                     Margin="24"
                     VerticalOptions="Center">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.2" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer />
@@ -278,7 +279,7 @@
                         </VerticalStackLayout>
 
                         <!-- Close Button -->
-                        <Grid Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" VerticalOptions="Start" Padding="8,0,0,8">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding HideAddTrackerFormCommand}" />
                             </Grid.GestureRecognizers>

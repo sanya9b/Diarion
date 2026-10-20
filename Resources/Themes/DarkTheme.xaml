@@ -8,7 +8,10 @@
     <Color x:Key="Theme_Dust_Ocean">#929FA7</Color>
     <!-- Lines on the page background; unchanged here, where Dust_Ocean already reads against #22282C. -->
     <Color x:Key="Theme_GridLine">#929FA7</Color>
-    <Color x:Key="Theme_Snow_Black">#22282C</Color>
+    <!-- Cards, panels and the tab bar: one step above the page. Equal to the page they were held
+         up only by a 1px outline, and no shadow lifts a surface off a background this dark.
+         Midnight mixed 8% toward Ocean, so the tone stays inside the palette. -->
+    <Color x:Key="Theme_Snow_Black">#2B3136</Color>
     <Color x:Key="Theme_Ocean_Ocean">#929FA7</Color>
     <Color x:Key="Theme_Snow_Midnight">#22282C</Color>
     <Color x:Key="Theme_Midnight_Dust">#E0E6EA</Color>
@@ -57,6 +60,7 @@
     <!-- Base Colors mapped for Semantic Use -->
     <Color x:Key="Theme_Snow">#FFFFFF</Color>
     <Color x:Key="Theme_Midnight">#22282C</Color>
+    <Color x:Key="Theme_Shadow">#000000</Color>
     
     <!-- Reading Tracker Book Colors -->
     <Color x:Key="Theme_BookSpineLeft">#47553F</Color>

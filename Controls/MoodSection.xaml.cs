@@ -8,11 +8,10 @@ namespace Diarion.Controls;
 /// <summary>
 /// The mood row. Its two bubbles — the precise states under the chosen face and the hour grid off the
 /// hours chip — are not here: each is an <see cref="AnchoredPopover"/> on the page, so they float over
-/// the cards below and a tap anywhere else puts them away. This side keeps the two anchors
-/// (<see cref="DiaryEntryViewModel.RefineAnchor"/>, <see cref="DiaryEntryViewModel.HourAnchor"/>)
-/// pointing at the chosen face and the chip after selection changes, layout and scrolling, slides the
-/// one-word caption under the face, and puts both bubbles away when the page scrolls, because an
-/// anchored bubble that stays while its anchor moves is wrong twice over.
+/// the cards below and a tap anywhere else puts them away. This side answers where they come from
+/// (<see cref="GetRefineAnchor"/>, <see cref="GetHourChipAnchor"/>), asked at the moment a bubble is
+/// placed, slides the one-word caption under the chosen face, and puts both bubbles away when the page
+/// scrolls, because an anchored bubble that stays while its anchor moves is wrong twice over.
 /// </summary>
 public partial class MoodSection : ContentView
 {
@@ -26,12 +25,14 @@ public partial class MoodSection : ContentView
         InitializeComponent();
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
-        FacesRow.SizeChanged += (_, _) =>
+        FacesRow.SizeChanged += (_, _) => PlaceCaption(animated: false);
+
+        // A new word changes the caption's width; keep it inside the card without disturbing a slide.
+        Caption.SizeChanged += (_, _) =>
         {
-            PublishAnchors();
-            PlaceCaption(animated: false);
+            var clamped = ClampCaption(Caption.TranslationX);
+            if (Math.Abs(clamped - Caption.TranslationX) > 0.5) Caption.TranslationX = clamped;
         };
-        HourChip.SizeChanged += (_, _) => PublishAnchors();
     }
 
     protected override void OnBindingContextChanged()
@@ -42,15 +43,41 @@ public partial class MoodSection : ContentView
         _viewModel = BindingContext as DiaryEntryViewModel;
         if (_viewModel != null) _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
-        PublishAnchors();
         PlaceCaption(animated: false);
     }
+
+    /// <summary>
+    /// Where the precise-states bubble comes from: the chosen face's disc, stretched down over the
+    /// word beneath it, so the bubble grows out of the face and comes to rest below the word rather
+    /// than over it. Page coordinates; null while the row is not laid out.
+    /// </summary>
+    public Rect? GetRefineAnchor()
+    {
+        if (_viewModel == null) return null;
+
+        var column = _viewModel.SelectedColumn;
+        if (column < 0 || column >= FacesRow.Children.Count) return null;
+        if (FacesRow.Children[column] is not Border cell || cell.Width <= 0) return null;
+
+        var disc = cell.Content as VisualElement ?? cell;
+        var face = VisualTreeGeometry.BoundsOnPage(disc);
+
+        var captionRow = Caption.Parent as VisualElement;
+        var bottom = captionRow is { Height: > 0 }
+            ? VisualTreeGeometry.BoundsOnPage(captionRow).Bottom
+            : face.Bottom;
+
+        return new Rect(face.X, face.Y, face.Width, Math.Max(face.Height, bottom - face.Y));
+    }
+
+    /// <summary>Where the hour grid comes from: the hours chip. Page coordinates; null while not laid out.</summary>
+    public Rect? GetHourChipAnchor() =>
+        HourChip.Width > 0 ? VisualTreeGeometry.BoundsOnPage(HourChip) : null;
 
     private void OnLoaded(object? sender, EventArgs e)
     {
         _scrollView = VisualTreeGeometry.FindScrollView(this);
         if (_scrollView != null) _scrollView.Scrolled += OnScrolled;
-        PublishAnchors();
         PlaceCaption(animated: false);
     }
 
@@ -66,59 +93,30 @@ public partial class MoodSection : ContentView
 
         if (_viewModel.IsRefinementOpen) _viewModel.CloseRefinementCommand.Execute(null);
         if (_viewModel.IsHourPickerOpen) _viewModel.CloseHourPickerCommand.Execute(null);
-        PublishAnchors();
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        // SelectedColumn is raised before IsRefinementOpen flips, so the popover always finds a fresh
-        // anchor by the time it opens. It is also raised before HasCurrentMood, so the caption still
-        // knows whether it was on screen before this change.
+        // SelectedColumn is raised before the caption's text changes, so the slide is placed once the
+        // new word is in: its width decides how far toward the card's edge it may go.
         if (e.PropertyName == nameof(DiaryEntryViewModel.SelectedColumn))
         {
-            PublishAnchors();
-            PlaceCaption(animated: true);
-        }
-        else if (e.PropertyName == nameof(DiaryEntryViewModel.HourChipText))
-        {
-            // The chip's text changed its width; its bubble's tail follows once layout settles.
-            Dispatcher.Dispatch(PublishAnchors);
-        }
-    }
-
-    /// <summary>The chosen face's and the hours chip's bounds on the page, into the shared view model.</summary>
-    private void PublishAnchors()
-    {
-        if (_viewModel == null) return;
-
-        var column = _viewModel.SelectedColumn;
-        if (column >= 0 && column < FacesRow.Children.Count
-            && FacesRow.Children[column] is VisualElement face && face.Width > 0)
-        {
-            // The bubble hangs below the one-word caption, not over it: the anchor is the face plus
-            // the caption row beneath.
-            var bounds = VisualTreeGeometry.BoundsOnPage(face);
-            var captionRow = Caption.Parent as VisualElement;
-            var captionHeight = captionRow?.Height > 0 ? captionRow.Height + 2 : 0;
-            _viewModel.RefineAnchor = new Rect(bounds.X, bounds.Y, bounds.Width, bounds.Height + captionHeight);
-        }
-
-        if (HourChip.Width > 0)
-        {
-            _viewModel.HourAnchor = VisualTreeGeometry.BoundsOnPage(HourChip);
+            Dispatcher.Dispatch(() => PlaceCaption(animated: true));
         }
     }
 
     /// <summary>
     /// Slides the one word under the chosen face. Purpose: spatial sequence — the word follows the tap.
-    /// A word that was not on screen simply appears in place; only a word that moves is animated.
+    /// A word that was not on screen simply appears in place; only a word that moves is animated. Under
+    /// the outer faces a long word is held inside the card instead of centred past its edge, where the
+    /// card would clip it.
     /// </summary>
     private void PlaceCaption(bool animated)
     {
         if (_viewModel == null || FacesRow.Width <= 0) return;
 
         var cell = FacesRow.Width / FaceCount;
-        var target = (_viewModel.SelectedColumn - (FaceCount - 1) / 2.0) * cell;
+        var target = ClampCaption((_viewModel.SelectedColumn - (FaceCount - 1) / 2.0) * cell);
 
         Caption.CancelAnimations();
         if (animated && Caption.IsLoaded && Caption.IsVisible)
@@ -129,5 +127,17 @@ public partial class MoodSection : ContentView
         {
             Caption.TranslationX = target;
         }
+    }
+
+    /// <summary>How far from the centre the caption can go and still be whole on the card.</summary>
+    private double ClampCaption(double offset)
+    {
+        var row = (Caption.Parent as VisualElement)?.Width ?? 0;
+        if (row <= 0) row = FacesRow.Width;
+        if (row <= 0) return offset;
+
+        var label = Caption.Measure(double.PositiveInfinity, double.PositiveInfinity).Width;
+        var room = Math.Max(0, (row - label) / 2);
+        return Math.Clamp(offset, -room, room);
     }
 }
