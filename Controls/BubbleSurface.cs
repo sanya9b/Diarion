@@ -107,10 +107,22 @@ public sealed class BubbleSurface : GraphicsView, IDrawable
 
         canvas.SaveState();
         canvas.Antialias = true;
-        canvas.SetShadow(new SizeF(0, 6), 16, ShadowColor.WithAlpha(0.22f));
+
+        // The lift: two copies of the shape a few points lower, faint, under the surface — not a blurred
+        // canvas shadow. On iPhone CoreGraphics blurs on the CPU, and this view covers the page and
+        // redraws every frame of the growth, so a 16-point blur made the opening stutter. It also drew
+        // differently there: the panel came out a warm peach in the pink theme instead of the card colour
+        // it is on Windows (owner's feedback on build 6, 2026-10-21). Plain fills look the same everywhere.
+        canvas.FillColor = ShadowColor.WithAlpha(0.05f);
+        canvas.Translate(0, 5);
+        canvas.FillPath(path);
+        canvas.FillColor = ShadowColor.WithAlpha(0.07f);
+        canvas.Translate(0, -3);
+        canvas.FillPath(path);
+        canvas.Translate(0, -2);
+
         canvas.FillColor = SurfaceColor;
         canvas.FillPath(path);
-        canvas.SetShadow(SizeF.Zero, 0, null);
         canvas.StrokeColor = StrokeColor;
         canvas.StrokeSize = 1;
         canvas.DrawPath(path);
