@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:Diarion.Controls"
              x:Class="Diarion.Controls.AnchoredPopover"
-             IsVisible="False"
              InputTransparent="True"
              CascadeInputTransparent="False">
 
@@ -27,8 +26,15 @@
          button (HeaderSlot) sits exactly over the real one, so the button never moves. Everything is
          placed from code-behind in this layer's coordinates. The layer itself takes no taps: a layout
          catches every tap inside its bounds unless it is input-transparent, and this one spans the
-         page — it would swallow the hole below. Only the pieces inside answer. -->
-    <Grid InputTransparent="True" CascadeInputTransparent="False">
+         page — it would swallow the hole below. Only the pieces inside answer.
+         The layer itself stays visible and laid out from the start; only this panel inside it is hidden
+         while the bubble is folded. The layer's own place on screen is the origin everything inside is
+         placed from, and a hidden layer has no place: collapsed, it is never laid out, so its first
+         opening after launch had to borrow an origin — its own tree position (build 11) or its parent's
+         platform position (build 12) — and each was off by the page's inset under the status bar on
+         iPhone (owner, TestFlight builds 11 and 12, 2026-10-21). A laid-out layer asks the platform
+         where it is, like the button does, and the two agree. -->
+    <Grid x:Name="Panel" IsVisible="False" InputTransparent="True" CascadeInputTransparent="False">
         <!-- The scrim in four pieces around an optional hole (PassThroughResolver): the mood row stays
              live under it, so another face can be chosen while the panel is out, in one tap. -->
         <Grid x:Name="ScrimTop" BackgroundColor="{StaticResource ScrimHit}" HorizontalOptions="Start" VerticalOptions="Start">

@@ -84,8 +84,8 @@ public partial class AnchoredPopover : Grid
     {
         InitializeComponent();
 
-        // The layer is collapsed until it opens, so the first placement may run before it has a size,
-        // and the content can change height while open. Either way, place again once layout settles.
+        // The first placement may run before the layer has a size, and the content can change height
+        // while open. Either way, place again once layout settles.
         SizeChanged += (_, _) => Replace();
         Body.SizeChanged += (_, _) => Replace();
     }
@@ -153,7 +153,7 @@ public partial class AnchoredPopover : Grid
 
     private static async void OnAnchorKeyChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        if (bindable is AnchoredPopover { IsOpen: true, IsVisible: true } popover) await popover.ReseatAsync();
+        if (bindable is AnchoredPopover { IsOpen: true } popover && popover.Panel.IsVisible) await popover.ReseatAsync();
     }
 
     private void OnScrimTapped(object? sender, TappedEventArgs e) => RequestClose();
@@ -167,16 +167,17 @@ public partial class AnchoredPopover : Grid
 
     /// <summary>
     /// Where this layer's top-left corner is, in the space <see cref="VisualTreeGeometry.BoundsOnPage"/>
-    /// measures in. Read off the parent — the page's root grid, which the layer fills on every row with
-    /// no margin, so the two share an origin. The layer itself is hidden and never laid out until it
-    /// first opens: measured then, it had no place on screen yet, its position came out in a different
-    /// space from the button's, and every bubble's first opening after launch sat off its button by
-    /// the page's offset in the window (owner, TestFlight build 11). The parent is on screen from the start.
+    /// measures in. Asked of the layer itself, which is visible and laid out from the start (only the
+    /// panel inside is hidden while folded), so the platform places it the same way it places the button.
+    /// Borrowing the origin from elsewhere went wrong twice: the layer's own tree position while it was
+    /// still collapsed (build 11: the first opening after launch sat off its button), then the parent
+    /// grid's platform position (build 12: every opening sat a status bar's height below its button on
+    /// iPhone — the root grid's platform view begins under the status bar while its children start
+    /// below the safe area, so the parent's corner is not the children's origin).
     /// </summary>
     private Point LayerOrigin()
     {
-        var reference = Parent as VisualElement ?? this;
-        var bounds = VisualTreeGeometry.BoundsOnPage(reference);
+        var bounds = VisualTreeGeometry.BoundsOnPage(this);
         return new Point(bounds.X, bounds.Y);
     }
 
@@ -196,8 +197,8 @@ public partial class AnchoredPopover : Grid
     /// </summary>
     private bool Place(Rect? anchor)
     {
-        // Collapsed until the first open, the layer may not have been measured yet; its parent (the
-        // page's root grid, which it spans) has the size it is about to get.
+        // Before its first layout pass the layer has no size yet; its parent (the page's root grid,
+        // which it spans) has the size it is about to get.
         var layerWidth = Width > 0 ? Width : (Parent as VisualElement)?.Width ?? 0;
         var layerHeight = Height > 0 ? Height : (Parent as VisualElement)?.Height ?? 0;
         if (layerWidth <= 0 || layerHeight <= 0) return false;
@@ -350,7 +351,7 @@ public partial class AnchoredPopover : Grid
     /// <summary>Re-places a panel that is out and at rest, after a layout change.</summary>
     private void Replace()
     {
-        if (_placing || !IsOpen || !IsVisible || Surface.AnimationIsRunning(GrowAnimation)) return;
+        if (_placing || !IsOpen || !Panel.IsVisible || Surface.AnimationIsRunning(GrowAnimation)) return;
 
         if (Place(ResolveAnchor())) Surface.Progress = 1;
     }
@@ -370,7 +371,7 @@ public partial class AnchoredPopover : Grid
 
         Dispatcher.StartTimer(TrackInterval, () =>
         {
-            if (!IsOpen || !IsVisible)
+            if (!IsOpen || !Panel.IsVisible)
             {
                 _tracking = false;
                 return false;
@@ -400,8 +401,8 @@ public partial class AnchoredPopover : Grid
     /// </summary>
     private async Task OpenAsync()
     {
-        var reopening = IsVisible;
-        IsVisible = true;
+        var reopening = Panel.IsVisible;
+        Panel.IsVisible = true;
         StartTracking();
 
         var anchor = ResolveAnchor();
@@ -452,7 +453,7 @@ public partial class AnchoredPopover : Grid
     /// </summary>
     private async Task CloseAsync()
     {
-        if (!IsVisible) return;
+        if (!Panel.IsVisible) return;
 
         Body.CancelAnimations();
         var anchor = ResolveAnchor();
@@ -480,7 +481,7 @@ public partial class AnchoredPopover : Grid
         // Re-opened while closing: the open animation owns the panel now.
         if (IsOpen) return;
 
-        IsVisible = false;
+        Panel.IsVisible = false;
         Surface.Progress = 1;
     }
 
