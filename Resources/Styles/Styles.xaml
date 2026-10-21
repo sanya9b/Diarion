@@ -18,9 +18,11 @@
         <Setter Property="StrokeThickness" Value="1"/>
     </Style>
 
-    <Style TargetType="BoxView">
-        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Gray950_Gray200}" />
-    </Style>
+    <!-- No implicit BoxView style. The MAUI template gave every BoxView a BackgroundColor (near-black in
+         light, light grey in dark, #ffa8a8 in pink). Windows paints only a BoxView's Color, so nothing
+         showed on the PC; iPhone paints the background too. The mood bubble's invisible hit area came out
+         as a grey, black or salmon slab over the panel in TestFlight builds 6 to 8, and rounded BoxViews
+         sat on square corners. Every BoxView here sets its own Color. -->
 
     <Style TargetType="Button">
         <Setter Property="TextColor" Value="{DynamicResource Theme_White_Black}" />
