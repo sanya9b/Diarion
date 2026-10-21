@@ -165,12 +165,27 @@ public partial class AnchoredPopover : Grid
         if (CloseCommand?.CanExecute(null) == true) CloseCommand.Execute(null);
     }
 
+    /// <summary>
+    /// Where this layer's top-left corner is, in the space <see cref="VisualTreeGeometry.BoundsOnPage"/>
+    /// measures in. Read off the parent — the page's root grid, which the layer fills on every row with
+    /// no margin, so the two share an origin. The layer itself is hidden and never laid out until it
+    /// first opens: measured then, it had no place on screen yet, its position came out in a different
+    /// space from the button's, and every bubble's first opening after launch sat off its button by
+    /// the page's offset in the window (owner, TestFlight build 11). The parent is on screen from the start.
+    /// </summary>
+    private Point LayerOrigin()
+    {
+        var reference = Parent as VisualElement ?? this;
+        var bounds = VisualTreeGeometry.BoundsOnPage(reference);
+        return new Point(bounds.X, bounds.Y);
+    }
+
     /// <summary>The button's rectangle in this layer's coordinates, asked for now; null if it is gone.</summary>
     private Rect? ResolveAnchor()
     {
         if (AnchorResolver?.Invoke() is not Rect anchor || anchor.Width <= 0 || anchor.Height <= 0) return null;
 
-        var layer = VisualTreeGeometry.BoundsOnPage(this);
+        var layer = LayerOrigin();
         return new Rect(anchor.X - layer.X, anchor.Y - layer.Y, anchor.Width, anchor.Height);
     }
 
@@ -291,7 +306,7 @@ public partial class AnchoredPopover : Grid
         Rect? hole = null;
         if (PassThroughResolver?.Invoke() is Rect page && page.Width > 0 && page.Height > 0)
         {
-            var layer = VisualTreeGeometry.BoundsOnPage(this);
+            var layer = LayerOrigin();
             var x = Math.Clamp(page.X - layer.X, 0, width);
             var y = Math.Clamp(page.Y - layer.Y, 0, height);
             hole = new Rect(x, y, Math.Clamp(page.Width, 0, width - x), Math.Clamp(page.Height, 0, height - y));
