@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
@@ -15,12 +16,7 @@
     <Grid RowDefinitions="Auto,*">
         <!-- Top bar -->
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
-                <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding CancelCommand}" />
-                </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-            </Grid>
+            <controls:CloseButton Grid.Column="0" Command="{Binding CancelCommand}" />
 
             <Label Grid.Column="1" Text="{Binding Title}" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
@@ -57,61 +53,69 @@
 
                 <Label Text="{x:Static localization:AppResources.PromptEditorCategoryLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Sage}" />
                 <VerticalStackLayout Spacing="8">
-                    <Border Padding="14,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
-                            Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding Category}" Value="{x:Static models:PromptCategory.CbtReframe}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Border.GestureRecognizers>
+                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                        <ContentView.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SetCategoryCommand}" CommandParameter="{x:Static models:PromptCategory.CbtReframe}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{x:Static localization:AppResources.PromptCategoryCbtReframe}" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                    </Border>
+                        </ContentView.GestureRecognizers>
+                        <Border Padding="14,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Category}" Value="{x:Static models:PromptCategory.CbtReframe}">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Label Text="{x:Static localization:AppResources.PromptCategoryCbtReframe}" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                    </ContentView>
 
-                    <Border Padding="14,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
-                            Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding Category}" Value="{x:Static models:PromptCategory.Savouring}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Border.GestureRecognizers>
+                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                        <ContentView.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SetCategoryCommand}" CommandParameter="{x:Static models:PromptCategory.Savouring}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{x:Static localization:AppResources.PromptCategorySavouring}" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                    </Border>
+                        </ContentView.GestureRecognizers>
+                        <Border Padding="14,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Category}" Value="{x:Static models:PromptCategory.Savouring}">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Label Text="{x:Static localization:AppResources.PromptCategorySavouring}" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                    </ContentView>
 
-                    <Border Padding="14,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
-                            Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding Category}" Value="{x:Static models:PromptCategory.OpenReflection}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Border.GestureRecognizers>
+                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                        <ContentView.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SetCategoryCommand}" CommandParameter="{x:Static models:PromptCategory.OpenReflection}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{x:Static localization:AppResources.PromptCategoryOpenReflection}" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                    </Border>
+                        </ContentView.GestureRecognizers>
+                        <Border Padding="14,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Category}" Value="{x:Static models:PromptCategory.OpenReflection}">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Label Text="{x:Static localization:AppResources.PromptCategoryOpenReflection}" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                    </ContentView>
 
-                    <Border Padding="14,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
-                            Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding Category}" Value="{x:Static models:PromptCategory.EveningGratitude}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Border.GestureRecognizers>
+                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                        <ContentView.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SetCategoryCommand}" CommandParameter="{x:Static models:PromptCategory.EveningGratitude}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{x:Static localization:AppResources.PromptCategoryEveningGratitude}" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                    </Border>
+                        </ContentView.GestureRecognizers>
+                        <Border Padding="14,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Category}" Value="{x:Static models:PromptCategory.EveningGratitude}">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Label Text="{x:Static localization:AppResources.PromptCategoryEveningGratitude}" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                    </ContentView>
                 </VerticalStackLayout>
 
                 <Label Text="{Binding ValidationMessage}"

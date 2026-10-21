@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:sys="clr-namespace:System;assembly=netstandard"
@@ -143,8 +144,8 @@
                                 <Border StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" />
                                 <Border x:Name="LangThumb" StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" WidthRequest="50" HorizontalOptions="{Binding LangThumbAlignment, Source={RelativeSource AncestorType={x:Type ContentPage}}}" Margin="4" />
                                 <Grid ColumnDefinitions="*,*">
-                                    <Label Grid.Column="0" Text="🇬🇧 EN" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                    <Label Grid.Column="1" Text="🇺🇦 UA" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Label Grid.Column="0" Text="EN" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Label Grid.Column="1" Text="UA" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                                 </Grid>
                                 <Button BackgroundColor="Transparent" BorderWidth="0" Clicked="OnToggleLanguageClicked" HorizontalOptions="Fill" VerticalOptions="Fill" ZIndex="10" />
                             </Grid>
@@ -154,9 +155,9 @@
                                 <Border StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" />
                                 <Border x:Name="ThemeThumb" StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" WidthRequest="40" HorizontalOptions="{Binding ThemeThumbAlignment, Source={RelativeSource AncestorType={x:Type ContentPage}}}" Margin="4" />
                                 <Grid ColumnDefinitions="*,*,*">
-                                    <Label Grid.Column="0" Text="☀️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                    <Label Grid.Column="1" Text="🌙" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                    <Label Grid.Column="2" Text="🌸" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Path Grid.Column="0" Data="{x:Static icons:AppIcons.Sun}" WidthRequest="16" HeightRequest="16" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Path Grid.Column="1" Data="{x:Static icons:AppIcons.Moon}" WidthRequest="15" HeightRequest="15" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Path Grid.Column="2" Data="{x:Static icons:AppIcons.Blossom}" WidthRequest="16" HeightRequest="16" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.4" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Grid>
                                 <Button BackgroundColor="Transparent" BorderWidth="0" Clicked="OnToggleThemeClicked" HorizontalOptions="Fill" VerticalOptions="Fill" ZIndex="10" />
                             </Grid>
@@ -243,9 +244,9 @@
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{x:Static localization:AppResources.MenstrualTrackingTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsMenstrualTrackingEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.EnableTrackingLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.EnableTrackingLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsMenstrualTrackingEnabled}" VerticalOptions="Center" />
                         </Grid>
 
                         <VerticalStackLayout Spacing="16" IsVisible="{Binding Profile.IsMenstrualTrackingEnabled}">
@@ -302,29 +303,29 @@
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{x:Static localization:AppResources.HomeBlocksTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsMoodBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockMoodLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockMoodLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsMoodBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsSleepBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockSleepLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockSleepLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsSleepBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsHealthBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockHealthLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockHealthLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsHealthBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsFoodBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockFoodLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockFoodLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsFoodBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsHabitsBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockHabitsLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockHabitsLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsHabitsBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
                         <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" Margin="0,2" />
@@ -359,9 +360,9 @@
                         <Label Text="{x:Static localization:AppResources.SettingsPromptsTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                         <Label Text="{x:Static localization:AppResources.SettingsPromptsHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsGuidedPromptBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockGuidedPromptLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockGuidedPromptLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsGuidedPromptBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
                         <!-- Full rows with a chevron, like the cycle link above. As indented grey
@@ -387,9 +388,9 @@
 
                         <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" Margin="0,2" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsReflectionBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockReflectionLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockReflectionLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsReflectionBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
                         <Label Text="{x:Static localization:AppResources.SettingsReflectionHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
@@ -409,14 +410,14 @@
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{x:Static localization:AppResources.SettingsFinanceTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsBudgetsEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.SettingsBudgetsToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.SettingsBudgetsToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsBudgetsEnabled}" VerticalOptions="Center" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsPlannedTransactionsEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.SettingsPlannedToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.SettingsPlannedToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsPlannedTransactionsEnabled}" VerticalOptions="Center" />
                         </Grid>
 
                         <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
@@ -444,9 +445,9 @@
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{x:Static localization:AppResources.TaskSettingsTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.AutoMigrateUncompletedTasksEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AutoMigrateTasksLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.AutoMigrateTasksLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.AutoMigrateUncompletedTasksEnabled}" VerticalOptions="Center" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
@@ -767,12 +768,11 @@
                                FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
                                TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsAiEnabled}"
-                                      Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AiEnableToggle}"
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.AiEnableToggle}"
                                    VerticalOptions="Center"
                                    TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsAiEnabled}" VerticalOptions="Center" />
                         </Grid>
 
                         <Label Text="{x:Static localization:AppResources.AiIntro}"
@@ -880,12 +880,11 @@
                             </BindableLayout.ItemTemplate>
                         </VerticalStackLayout>
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsWifiOnlyModelDownload}"
-                                      Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AiWifiOnlyToggle}"
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.AiWifiOnlyToggle}"
                                    VerticalOptions="Center"
                                    TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsWifiOnlyModelDownload}" VerticalOptions="Center" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>

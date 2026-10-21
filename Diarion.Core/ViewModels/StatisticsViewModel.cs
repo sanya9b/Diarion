@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Messages;
 using Diarion.Models;
+using Diarion.Resources.Icons;
 using Diarion.Resources.Localization;
 
 namespace Diarion.ViewModels;
@@ -44,8 +45,8 @@ public partial class StatisticsTabItem : ObservableObject
     public StatisticsTabOption Option { get; set; }
     public string DisplayName { get; set; } = string.Empty;
 
-    /// <summary>Emoji glyph shown before the tab label in the segmented selector.</summary>
-    public string Icon { get; set; } = string.Empty;
+    /// <summary>Line icon drawn before the tab label in the segmented selector (see <see cref="AppIcons"/>).</summary>
+    public Microsoft.Maui.Controls.Shapes.Geometry? IconGeometry { get; set; }
 
     [ObservableProperty]
     private bool _isSelected;
@@ -233,7 +234,7 @@ public partial class StatisticsViewModel : BaseViewModel
             {
                 Option = StatisticsTabOption.Cycle,
                 DisplayName = AppResources.TabCycle,
-                Icon = "🩸"
+                IconGeometry = AppIcons.Drop
             });
         }
         else if (!available && existing != null)
@@ -248,11 +249,11 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         Tabs = new System.Collections.ObjectModel.ObservableCollection<StatisticsTabItem>
         {
-            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, Icon = "😊", IsSelected = true },
-            new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = AppResources.TabSleep, Icon = "😴" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = AppResources.TabProductivity, Icon = "✅" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Finance, DisplayName = AppResources.FinanceTitle ?? "Finance", Icon = "💸" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Habits, DisplayName = AppResources.TabHabits, Icon = "🌱" }
+            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, IconGeometry = AppIcons.Smile, IsSelected = true },
+            new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = AppResources.TabSleep, IconGeometry = AppIcons.Moon },
+            new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = AppResources.TabProductivity, IconGeometry = AppIcons.CheckCircle },
+            new StatisticsTabItem { Option = StatisticsTabOption.Finance, DisplayName = AppResources.FinanceTitle ?? "Finance", IconGeometry = AppIcons.Banknote },
+            new StatisticsTabItem { Option = StatisticsTabOption.Habits, DisplayName = AppResources.TabHabits, IconGeometry = AppIcons.Sprout }
         };
         SelectTab(Tabs[0]);
     }

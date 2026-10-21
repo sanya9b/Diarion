@@ -14,12 +14,7 @@
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
-                <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnCloseTapped" />
-                </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-            </Grid>
+            <controls:CloseButton Grid.Column="0" Tapped="OnCloseTapped" />
 
             <VerticalStackLayout Grid.Column="1" Spacing="4">
                 <Label Text="{localization:Translate Key=HabitTrackerTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
@@ -56,48 +51,50 @@
                         <HorizontalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Trackers}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="viewModels:HarmfulHabitTrackerItemViewModel">
-                                    <Border Padding="14,10"
-                                            StrokeThickness="1"
-                                            Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                            BackgroundColor="Transparent"
-                                            StrokeShape="RoundRectangle 18">
-                                        <Border.GestureRecognizers>
+                                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                        <ContentView.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectTrackerCommand}"
                                                                   CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
+                                        </ContentView.GestureRecognizers>
+                                        <Border Padding="14,10"
+                                                StrokeThickness="1"
+                                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                                BackgroundColor="Transparent"
+                                                StrokeShape="RoundRectangle 18">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
 
-                                        <VerticalStackLayout Spacing="2">
-                                            <Label Text="{Binding HarmfulHabitName}"
-                                                   FontSize="14"
-                                                   FontAttributes="Bold"
-                                                   InputTransparent="True"
-                                                   VerticalOptions="Center"
-                                                   TextColor="{DynamicResource Theme_Midnight_Snow}">
-                                                <Label.Triggers>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
-                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
-                                                    </DataTrigger>
-                                                </Label.Triggers>
-                                            </Label>
+                                            <VerticalStackLayout Spacing="2">
+                                                <Label Text="{Binding HarmfulHabitName}"
+                                                       FontSize="14"
+                                                       FontAttributes="Bold"
+                                                       InputTransparent="True"
+                                                       VerticalOptions="Center"
+                                                       TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
 
-                                            <Label Text="{Binding StartDateText}"
-                                                   FontSize="12"
-                                                   InputTransparent="True"
-                                                   TextColor="{DynamicResource Theme_Ocean_Dust}">
-                                                <Label.Triggers>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
-                                                        <Setter Property="TextColor" Value="#FBE7E1" />
-                                                    </DataTrigger>
-                                                </Label.Triggers>
-                                            </Label>
-                                        </VerticalStackLayout>
-                                    </Border>
+                                                <Label Text="{Binding StartDateText}"
+                                                       FontSize="12"
+                                                       InputTransparent="True"
+                                                       TextColor="{DynamicResource Theme_Ocean_Dust}">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter Property="TextColor" Value="#FBE7E1" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </ContentView>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </HorizontalStackLayout>
@@ -182,57 +179,59 @@
                                         AlignItems="Start">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="viewModels:HarmfulHabitDayViewModel">
-                                        <Border Padding="0"
-                                            Margin="0,0,0,5"
-                                            WidthRequest="60"
-                                            HeightRequest="60"
-                                                StrokeThickness="1"
-                                                Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                                BackgroundColor="Transparent"
-                                            StrokeShape="RoundRectangle 30">
-                                            <Border.GestureRecognizers>
+                                        <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                            <ContentView.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleDayCommand}"
                                                                       CommandParameter="{Binding .}" />
-                                            </Border.GestureRecognizers>
-                                            <Border.Triggers>
-                                                <DataTrigger TargetType="Border" Binding="{Binding IsMarked}" Value="True">
-                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Border" Binding="{Binding IsFuture}" Value="True">
-                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Val_1A000000_33000000}" />
-                                                    <Setter Property="StrokeThickness" Value="0" />
-                                                    <Setter Property="Opacity" Value="0.4" />
-                                                    <Setter Property="InputTransparent" Value="True" />
-                                                </DataTrigger>
-                                            </Border.Triggers>
+                                            </ContentView.GestureRecognizers>
+                                            <Border Padding="0"
+                                                Margin="0,0,0,5"
+                                                WidthRequest="60"
+                                                HeightRequest="60"
+                                                    StrokeThickness="1"
+                                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                                    BackgroundColor="Transparent"
+                                                StrokeShape="RoundRectangle 30">
+                                                <Border.Triggers>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsMarked}" Value="True">
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsFuture}" Value="True">
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Val_1A000000_33000000}" />
+                                                        <Setter Property="StrokeThickness" Value="0" />
+                                                        <Setter Property="Opacity" Value="0.4" />
+                                                        <Setter Property="InputTransparent" Value="True" />
+                                                    </DataTrigger>
+                                                </Border.Triggers>
 
-                                            <VerticalStackLayout Spacing="0" HorizontalOptions="Center" VerticalOptions="Center">
-                                                <Label Text="{Binding DayNumberText}"
-                                                       FontSize="14"
-                                                       FontAttributes="Bold"
-                                                       HorizontalTextAlignment="Center"
-                                                       InputTransparent="True"
-                                                       TextColor="{DynamicResource Theme_Midnight_Snow}">
-                                                    <Label.Triggers>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding IsMarked}" Value="True">
-                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
-                                                        </DataTrigger>
-                                                    </Label.Triggers>
-                                                </Label>
-                                                <Label Text="{Binding DateText}"
-                                                          FontSize="10"
-                                                       HorizontalTextAlignment="Center"
-                                                       InputTransparent="True"
-                                                       TextColor="{DynamicResource Theme_Ocean_Dust}">
-                                                    <Label.Triggers>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding IsMarked}" Value="True">
-                                                            <Setter Property="TextColor" Value="#FBE7E1" />
-                                                        </DataTrigger>
-                                                    </Label.Triggers>
-                                                </Label>
-                                            </VerticalStackLayout>
-                                        </Border>
+                                                <VerticalStackLayout Spacing="0" HorizontalOptions="Center" VerticalOptions="Center">
+                                                    <Label Text="{Binding DayNumberText}"
+                                                           FontSize="14"
+                                                           FontAttributes="Bold"
+                                                           HorizontalTextAlignment="Center"
+                                                           InputTransparent="True"
+                                                           TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsMarked}" Value="True">
+                                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                    <Label Text="{Binding DateText}"
+                                                              FontSize="10"
+                                                           HorizontalTextAlignment="Center"
+                                                           InputTransparent="True"
+                                                           TextColor="{DynamicResource Theme_Ocean_Dust}">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsMarked}" Value="True">
+                                                                <Setter Property="TextColor" Value="#FBE7E1" />
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                </VerticalStackLayout>
+                                            </Border>
+                                        </ContentView>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </FlexLayout>
