@@ -22,7 +22,7 @@ namespace Diarion.Controls;
 /// rectangle goes stale the moment anything above the button changes height.
 /// </para>
 /// </summary>
-public partial class AnchoredPopover : ContentView
+public partial class AnchoredPopover : Grid
 {
     /// <summary>The page margin the cards keep; the body is exactly as wide as a card.</summary>
     private const double PageMargin = 24;
