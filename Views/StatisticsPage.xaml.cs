@@ -41,9 +41,9 @@ public partial class StatisticsPage : ContentPage
 
     private Task PrepareTourStepAsync(TourStep step)
     {
-        if (step.Id is TourStepId.StatsThemes or TourStepId.StatsInfluences)
+        if (step.Id is TourStepId.StatsInfluences)
         {
-            // Both cards live on the general tab. On a first visit that is already the open one, so
+            // The card lives on the general tab. On a first visit that is already the open one, so
             // this is normally a no-op — it matters only when the guide is replayed from settings.
             var general = _viewModel.Tabs.FirstOrDefault(tab => tab.Option == StatisticsTabOption.General);
             if (general is not null && !general.IsSelected)
@@ -56,7 +56,7 @@ public partial class StatisticsPage : ContentPage
     }
 
     /// <remarks>
-    /// A null here is expected rather than exceptional: the themes and influence cards appear only
+    /// A null here is expected rather than exceptional: the influence card appears only
     /// once enough has been written, and on the first visit that is never. The card still says what
     /// will show up there; the overlay simply draws no hole.
     /// </remarks>
@@ -64,7 +64,6 @@ public partial class StatisticsPage : ContentPage
     {
         TourStepId.StatsPeriod => PeriodAnchor,
         TourStepId.StatsTabs => TabsAnchor,
-        TourStepId.StatsThemes => Visible(ThemesAnchor),
         // Exactly one of these two is on screen: the progress card stands in for the influences card
         // until there are influences to show.
         TourStepId.StatsInfluences => Visible(InfluencesAnchor) ?? Visible(InsightProgressAnchor),

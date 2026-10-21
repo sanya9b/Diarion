@@ -6,8 +6,7 @@ namespace Diarion.Services;
 /// screen still names the fertile window in words.
 /// </summary>
 /// <remarks>
-/// Same arrangement as <c>OnDeviceAi.GenerationOffered</c> — nothing is deleted, a flag decides
-/// what is offered — and for the same reason: the feature is postponed, not abandoned.
+/// Nothing is deleted, a flag decides what is offered: the feature is postponed, not abandoned.
 /// </remarks>
 public static class CycleDisplay
 {

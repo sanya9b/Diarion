@@ -1,25 +1,15 @@
-using System;
 using Diarion.Resources.Localization;
 using Diarion.Services;
 
 namespace Diarion.ViewModels.Statistics;
 
 /// <summary>
-/// The user-facing name of a correlation factor, shared by the statistics screen and the home-screen
-/// insight path so the two never call the same factor two different things. Structured factors are
-/// looked up; a text theme cannot be, because its key carries the user's own words.
+/// The user-facing name of a correlation factor, so every screen calls a factor the same thing.
 /// </summary>
 public static class FactorNames
 {
     public static string Display(string key)
     {
-        if (key.StartsWith(CorrelationService.Factors.ThemePrefix, StringComparison.Ordinal))
-        {
-            return string.Format(
-                AppResources.FactorThemeFormat,
-                key[CorrelationService.Factors.ThemePrefix.Length..]);
-        }
-
         return key switch
         {
             CorrelationService.Factors.SleepDuration => AppResources.FactorSleepDuration,

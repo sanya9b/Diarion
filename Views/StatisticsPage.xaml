@@ -173,8 +173,8 @@
 
                 <!-- Days with entries: every day of the window, filled where something was written. The days
                      the streak tile on the home screen counts, drawn out, so a gap is visible here rather than
-                     only as a number that went back to zero. One colour for every written day: this card is
-                     about whether a day was kept, the pixel grid further down is about how it felt. -->
+                     only as a number that went back to zero. The same squares as the habit cards: a week
+                     per column, a day per square, filled where something was written (owner, 2026-10-21). -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding HasActivityDays}">
                     <Border.Shadow>
                         <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
@@ -186,74 +186,14 @@
                             <Label Grid.Column="1" Text="{Binding ActivityCountText}" FontSize="13" FontAttributes="Bold"
                                    TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
                         </Grid>
-                        <controls:ActivityGridView Items="{Binding ActivityDays}"
-                                                   ActiveColor="{DynamicResource Theme_Coral}"
-                                                   TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                                   MutedColor="{DynamicResource Theme_Ocean_Dust}"
+                        <controls:ContributionGrid HeightRequest="110"
+                                                   CompletedDates="{Binding ActivityDates}"
+                                                   StartDate="{Binding RangeStart}"
+                                                   EndDate="{Binding RangeEnd}"
+                                                   AccentColor="{DynamicResource Theme_Coral}"
                                                    SemanticProperties.Description="{Binding ActivityCountText}" />
                         <Label Text="{x:Static localization:AppResources.StatsActivityHint}" FontSize="11"
                                TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Recurring themes. Labels are the user's own leading sentences, so this needs
-                     only the encoder; day counts, not passage counts, because one long evening
-                     about a subject is one day of it. -->
-                <Border x:Name="ThemesAnchor"
-                        IsVisible="{Binding HasThemes}"
-                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        Padding="16">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="{x:Static localization:AppResources.StatsThemesHeader}"
-                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
-                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Themes}" Spacing="10">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="viewmodels:ThemeItem">
-                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
-                                        <Label Grid.Column="0" Text="{Binding Label}" FontSize="14"
-                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Label Grid.Column="1" Text="{Binding DaysLabel}" FontSize="12"
-                                               VerticalOptions="Center"
-                                               TextColor="{DynamicResource Theme_Sage}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Digest. Extractive by design: these are the user's own sentences, chosen by
-                     closeness to the period's centroid, so the card works with no generative model
-                     and cannot misrepresent what was written. -->
-                <Border IsVisible="{Binding HasDigest}"
-                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        Padding="16">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="{x:Static localization:AppResources.StatsDigestHeader}"
-                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
-                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding DigestExcerpts}" Spacing="12">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="viewmodels:DigestExcerptItem">
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Text="{Binding DateLabel}" FontSize="11"
-                                               TextColor="{DynamicResource Theme_Coral}" />
-                                        <Label Text="{Binding Text}" FontSize="14"
-                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                    </VerticalStackLayout>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
-
-                        <Label Text="{x:Static localization:AppResources.StatsDigestHint}"
-                               FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                     </VerticalStackLayout>
                 </Border>
 

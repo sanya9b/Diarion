@@ -26,7 +26,6 @@ public enum TourStepId
     // Statistics
     StatsPeriod,
     StatsTabs,
-    StatsThemes,
     StatsInfluences,
 
     // Settings

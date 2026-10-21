@@ -11,14 +11,12 @@ using Xunit;
 namespace Diarion.Tests;
 
 /// <summary>
-/// The quick menu is a fixed row of tiles except for one: chat appears only when a generative model
-/// is installed and AI is on. These tests cover that tile and its interaction with the saved order.
+/// The quick menu's tiles and the saved order they appear in.
 /// </summary>
 public class QuickMenuViewModelTests
 {
     private readonly Mock<IProfileService> _profiles = new();
     private readonly Mock<INavigationService> _navigation = new();
-    private readonly FakeAiAvailability _availability = new();
     private readonly UserProfile _profile = new();
 
     public QuickMenuViewModelTests()
@@ -34,8 +32,7 @@ public class QuickMenuViewModelTests
         var viewModel = new QuickMenuViewModel(
             new MenuConfigurationService(),
             _profiles.Object,
-            _navigation.Object,
-            _availability);
+            _navigation.Object);
 
         viewModel.Initialize();
         return viewModel;
@@ -43,60 +40,6 @@ public class QuickMenuViewModelTests
 
     private static IEnumerable<string> Ids(QuickMenuViewModel viewModel) =>
         viewModel.QuickMenuItems.Select(i => i.Id);
-
-    [Fact]
-    public async Task NoGenerativeModel_TheChatTileIsNotThere()
-    {
-        _availability.CanGenerate = false;
-        var viewModel = Build();
-
-        await viewModel.RefreshAsync();
-
-        Ids(viewModel).Should().NotContain(MenuConfigurationService.AiChatId);
-        Ids(viewModel).Should().Contain("Notes", "the rest of the menu is unaffected");
-    }
-
-    [Fact]
-    public async Task AiSwitchedOff_TheChatTileGoesAway()
-    {
-        var viewModel = Build();
-        await viewModel.RefreshAsync();
-        Ids(viewModel).Should().Contain(MenuConfigurationService.AiChatId, "otherwise the test proves nothing");
-
-        _availability.CanEmbed = false;
-        await viewModel.RefreshAsync();
-
-        Ids(viewModel).Should().NotContain(MenuConfigurationService.AiChatId);
-    }
-
-    [Fact]
-    public async Task ModelInstalledWhileAway_TheTileAppearsOnTheWayBack()
-    {
-        // The model is downloaded in settings. Nothing else brings the user past this code.
-        _availability.CanGenerate = false;
-        var viewModel = Build();
-        await viewModel.RefreshAsync();
-
-        _availability.CanGenerate = true;
-        await viewModel.RefreshAsync();
-
-        Ids(viewModel).Should().Contain(MenuConfigurationService.AiChatId);
-    }
-
-    [Fact]
-    public async Task TheChatTileHasACommand()
-    {
-        // A tile with no command is a button that does nothing when tapped — and the switch that
-        // assigns commands is keyed by id, so a renamed id would fail exactly this way.
-        var viewModel = Build();
-        await viewModel.RefreshAsync();
-
-        var chat = viewModel.QuickMenuItems.Single(i => i.Id == MenuConfigurationService.AiChatId);
-
-        chat.Command.Should().NotBeNull();
-        chat.Command!.Execute(null);
-        _navigation.Verify(n => n.NavigateToAsync("AiChat"), Times.Once);
-    }
 
     [Fact]
     public void EveryTileHasACommand()
@@ -119,22 +62,22 @@ public class QuickMenuViewModelTests
     [Fact]
     public async Task ANewTileLandsAtTheEndOfAnOrderThatPredatesIt()
     {
-        // Saved orders in the wild were written before chat existed. Skipping unknown ids and
-        // appending the leftovers is what keeps such an order usable across an update.
+        // Saved orders can predate tiles an update adds. Skipping unknown ids and appending the
+        // leftovers is what keeps such an order usable across an update.
         _profile.QuickMenuOrder = ["Finance", "Notes"];
         var viewModel = Build();
 
         await viewModel.RefreshAsync();
 
         Ids(viewModel).Take(2).Should().Equal("Finance", "Notes");
-        Ids(viewModel).Last().Should().Be(MenuConfigurationService.AiChatId);
+        Ids(viewModel).Should().HaveCountGreaterThan(2, "the tiles the old order never named follow it");
     }
 
     [Fact]
     public async Task AnOrderNamingATileThatIsHidden_DoesNotLeaveAGap()
     {
-        _profile.QuickMenuOrder = [MenuConfigurationService.AiChatId, "Notes"];
-        _availability.CanGenerate = false;
+        // Search is in the catalogue but not offered, so an order that names it names a hidden tile.
+        _profile.QuickMenuOrder = [MenuConfigurationService.SearchId, "Notes"];
         var viewModel = Build();
 
         await viewModel.RefreshAsync();
@@ -173,23 +116,4 @@ public class QuickMenuViewModelTests
         changes.Should().Be(0);
     }
 
-    [Fact]
-    public async Task ReorderingWhileChatIsHidden_DoesNotBanishItForever()
-    {
-        // Dragging saves the visible ids, so a hidden chat drops out of the stored order. It has to
-        // come back when the model does — as a new tile at the end, which is the honest place for it.
-        _profile.QuickMenuOrder = ["Notes", "Reading"];
-        _availability.CanGenerate = false;
-        var viewModel = Build();
-        await viewModel.RefreshAsync();
-
-        viewModel.DragMenuStartingCommand.Execute(viewModel.QuickMenuItems[0]);
-        await viewModel.ReorderMenuCommand.ExecuteAsync(viewModel.QuickMenuItems[1]);
-        _profile.QuickMenuOrder.Should().NotContain(MenuConfigurationService.AiChatId);
-
-        _availability.CanGenerate = true;
-        await viewModel.RefreshAsync();
-
-        Ids(viewModel).Should().Contain(MenuConfigurationService.AiChatId);
-    }
 }

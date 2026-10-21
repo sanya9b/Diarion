@@ -8,16 +8,16 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Helpers;
 using Diarion.Messages;
-using Diarion.Models.Ai;
+using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
-using Diarion.Services.Ai;
+using Diarion.Services.Search;
 
 namespace Diarion.ViewModels;
 
 public partial class SearchViewModel : BaseViewModel
 {
-    private readonly ISemanticSearchService _search;
+    private readonly ISearchService _search;
     private readonly INavigationService _navigation;
     private readonly AsyncDebouncer _debouncer = new(TimeSpan.FromMilliseconds(250));
 
@@ -37,30 +37,6 @@ public partial class SearchViewModel : BaseViewModel
     [ObservableProperty]
     private bool _showEmptyState;
 
-    /// <summary>
-    /// Shown when the results are lexical only — no encoder installed, or AI switched off. The
-    /// results are still real, and saying so beats letting the user conclude search is broken.
-    /// Refreshed per search rather than at construction: the toggle is two taps away in settings,
-    /// and this page does not get rebuilt when the user comes back from there.
-    /// </summary>
-    [ObservableProperty]
-    private bool _showLexicalOnlyNotice;
-
-    /// <summary>
-    /// Whether to talk about meaning-based search at all. The encoder is what reads a phrase, so this
-    /// asks about the encoder and not about the generative model, which is retired. When it is false
-    /// both notices go: one advises phrasing for a model that will not read it, the other points at a
-    /// settings tab that would not be there either. Search still works — it is keyword search, and
-    /// keyword search does not need an apology on every query.
-    ///
-    /// <remarks>
-    /// This governs what the page says, not whether the page is reachable: the screen itself is
-    /// retired at <see cref="MenuConfigurationService.SearchOffered"/>, since the quick-menu tile is
-    /// the only way in. Kept honest so the screen tells the truth on the day the tile comes back.
-    /// </remarks>
-    /// </summary>
-    public bool IsSemanticOffered => OnDeviceAi.EmbeddingsOffered;
-
     public ObservableCollection<SearchResultItem> Results { get; } = [];
 
     public bool HasResults => Results.Count > 0;
@@ -69,7 +45,7 @@ public partial class SearchViewModel : BaseViewModel
     public bool IsDiaryScope => Scope == SearchScope.Diary;
     public bool IsNotesScope => Scope == SearchScope.Notes;
 
-    public SearchViewModel(ISemanticSearchService search, INavigationService navigation)
+    public SearchViewModel(ISearchService search, INavigationService navigation)
     {
         _search = search;
         _navigation = navigation;
@@ -103,8 +79,6 @@ public partial class SearchViewModel : BaseViewModel
         IsBusy = true;
         try
         {
-            ShowLexicalOnlyNotice = IsSemanticOffered && !await _search.IsSemanticAvailableAsync();
-
             var hits = await _search.SearchAsync(Query, Scope);
 
             Results.Clear();
@@ -133,7 +107,7 @@ public partial class SearchViewModel : BaseViewModel
             return;
         }
 
-        if (item.Hit.SourceKind == EmbeddingSourceKind.Note)
+        if (item.Hit.SourceKind == DocumentKind.Note)
         {
             await _navigation.NavigateToAsync(
                 "NoteDetail",
@@ -162,7 +136,7 @@ public sealed class SearchResultItem
 
     public string Snippet => Hit.Snippet;
 
-    public string SourceLabel => Hit.SourceKind == EmbeddingSourceKind.Note
+    public string SourceLabel => Hit.SourceKind == DocumentKind.Note
         ? AppResources.SearchSourceNote
         : AppResources.SearchSourceDiary;
 

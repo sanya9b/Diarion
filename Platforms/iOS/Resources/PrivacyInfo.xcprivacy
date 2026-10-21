@@ -14,10 +14,10 @@ More information: https://aka.ms/maui-privacy-manifest
         Declared rather than omitted. An absent key is read as "unanswered" by some tooling and as
         "false" by other tooling, and the two facts below are the product's main claim about itself,
         so they are worth saying out loud: no tracking, no domains reached for tracking, and nothing
-        collected. The last one is literally true - the only network call in the app fetches model
-        files from HuggingFace (Diarion.Core/Services/Ai/HttpModelFileTransfer.cs), the crash log is
-        a local file the user shares by hand or not at all, and there is no account, no analytics
-        and no ad SDK to collect through.
+        collected. The last one is literally true - the app makes no network calls since the on-device
+        AI and its model downloads were removed (2026-10-21), the crash log is a local file the user
+        shares by hand or not at all, and there is no account, no analytics and no ad SDK to collect
+        through.
 
         NSPrivacyCollectedDataTypes stops being an empty array the moment spec 14 ships: periodic
         reports send diary text to a third-party API. Empty is a claim with an expiry date on it.

@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Services;
-using Diarion.Services.Ai;
 
 namespace Diarion.ViewModels;
 
@@ -15,7 +14,6 @@ public partial class QuickMenuViewModel : ObservableObject
     private readonly IMenuConfigurationService _menuConfigurationService;
     private readonly IProfileService _profileService;
     private readonly INavigationService _navigationService;
-    private readonly IAiAvailability _aiAvailability;
 
     public ObservableCollection<QuickMenuItem> QuickMenuItems { get; } = new();
 
@@ -24,24 +22,16 @@ public partial class QuickMenuViewModel : ObservableObject
 
     private List<string> _savedOrder = new();
 
-    /// <summary>
-    /// Starts hidden. The alternative — showing the tile and hiding it a moment later — puts a
-    /// button on the screen that vanishes as the user reaches for it.
-    /// </summary>
-    private bool _isChatAvailable;
-
     private QuickMenuItem? _draggedMenuItem;
 
     public QuickMenuViewModel(
         IMenuConfigurationService menuConfigurationService,
         IProfileService profileService,
-        INavigationService navigationService,
-        IAiAvailability aiAvailability)
+        INavigationService navigationService)
     {
         _menuConfigurationService = menuConfigurationService;
         _profileService = profileService;
         _navigationService = navigationService;
-        _aiAvailability = aiAvailability;
     }
 
     public void Initialize()
@@ -65,7 +55,6 @@ public partial class QuickMenuViewModel : ObservableObject
                 case "Habits": item.Command = OpenHabitTrackerCommand; break;
                 case "Wishlist": item.Command = OpenWishlistCommand; break;
                 case "Finance": item.Command = OpenFinanceCommand; break;
-                case MenuConfigurationService.AiChatId: item.Command = OpenAiChatCommand; break;
             }
 
             _catalogue.Add(item);
@@ -78,43 +67,36 @@ public partial class QuickMenuViewModel : ObservableObject
     {
         var profile = await _profileService.GetUserProfileAsync();
         _savedOrder = profile.QuickMenuOrder ?? new List<string>();
-        _isChatAvailable = await _aiAvailability.CanGenerateAsync();
 
         Rebuild();
     }
 
     /// <summary>
-    /// Called when the main page reappears — the only moment either of the two things this strip
-    /// depends on can have changed behind its back.
+    /// Called when the main page reappears — the only moment the saved order can have changed
+    /// behind this strip's back.
     /// </summary>
     /// <remarks>
-    /// The generative model is installed on another screen, so that is the only moment the chat tile
-    /// can honestly appear. The saved order is written by two screens the user leaves to reach: the
-    /// onboarding module picker, and a drag on the strip itself. Both comparisons guard the same
-    /// thing — <see cref="Rebuild"/> clears and refills the collection, which is a visible flicker if
+    /// The saved order is written by two screens the user leaves to reach: the
+    /// onboarding module picker, and a drag on the strip itself. The comparison guards against
+    /// a needless <see cref="Rebuild"/> clears and refills the collection, which is a visible flicker if
     /// it runs on every return to the home screen for no reason.
     /// </remarks>
     public async Task RefreshAsync()
     {
         var profile = await _profileService.GetUserProfileAsync();
         var order = profile.QuickMenuOrder ?? new List<string>();
-        var available = await _aiAvailability.CanGenerateAsync();
-
-        if (available == _isChatAvailable && order.SequenceEqual(_savedOrder))
+        if (order.SequenceEqual(_savedOrder))
         {
             return;
         }
 
-        _isChatAvailable = available;
         _savedOrder = order;
         Rebuild();
     }
 
     private void Rebuild()
     {
-        var pending = _catalogue
-            .Where(item => item.Id != MenuConfigurationService.AiChatId || _isChatAvailable)
-            .ToList();
+        var pending = _catalogue.ToList();
 
         var ordered = new List<QuickMenuItem>();
         foreach (var id in _savedOrder)
@@ -127,8 +109,7 @@ public partial class QuickMenuViewModel : ObservableObject
             }
         }
 
-        // Whatever the saved order never knew about goes last: a tile added by an update, or the
-        // chat tile the first time a model is installed.
+        // Whatever the saved order never knew about goes last: a tile added by an update.
         ordered.AddRange(pending);
 
         QuickMenuItems.Clear();
@@ -194,7 +175,4 @@ public partial class QuickMenuViewModel : ObservableObject
 
     [RelayCommand]
     private async Task OpenSearchAsync() => await _navigationService.NavigateToAsync("Search");
-
-    [RelayCommand]
-    private async Task OpenAiChatAsync() => await _navigationService.NavigateToAsync("AiChat");
 }
