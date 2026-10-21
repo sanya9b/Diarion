@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
              x:Class="Diarion.Controls.AnchoredPopover"
              IsVisible="False">
 
-    <!-- This layer spans the page. The scrim is see-through and only exists to catch the tap that puts
-         the bubble away; the bubble itself is placed and grown from code-behind. No tail: the bubble
-         comes out of the control it belongs to, so where it came from is shown by the motion itself. -->
+    <!-- This layer spans the page. The scrim is see-through and only exists to catch the tap that folds
+         the panel back. The panel is one shape with the button (BubbleSurface): a bump around the button
+         flowing into the body through smooth fillets, the body growing out of the bump. A copy of the
+         button (HeaderSlot) sits exactly over the real one, so the button never moves. Everything is
+         placed from code-behind in this layer's coordinates. -->
     <Grid>
         <Grid x:Name="Scrim" BackgroundColor="Transparent">
             <Grid.GestureRecognizers>
@@ -14,21 +17,27 @@
             </Grid.GestureRecognizers>
         </Grid>
 
-        <!-- Scales from its top-left corner (AnchorX/Y 0): the morph maps that corner and the size onto
-             the control's rectangle, so the card can start exactly where the control is. -->
-        <Border x:Name="Bubble" HorizontalOptions="Fill" VerticalOptions="Start" Margin="24,0"
-                AnchorX="0" AnchorY="0"
-                StrokeShape="RoundRectangle 18" StrokeThickness="1"
-                Stroke="{DynamicResource Theme_Dust_Ocean}"
-                BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                Padding="14">
-            <Border.Shadow>
-                <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="16" Opacity="0.2" />
-            </Border.Shadow>
+        <controls:BubbleSurface x:Name="Surface" Opacity="0"
+                                SurfaceColor="{DynamicResource Theme_Snow_Black}"
+                                StrokeColor="{DynamicResource Theme_Dust_Ocean}"
+                                ShadowColor="{DynamicResource Theme_Shadow}" />
 
-            <!-- The content fades on its own clock: while the card is still the size of the control,
-                 squeezed text would read as a glitch, so it arrives once the card has room for it. -->
-            <ContentView x:Name="Body" />
-        </Border>
+        <!-- Keeps a tap on the body's own padding from falling through to the scrim and folding it. -->
+        <BoxView x:Name="BodyHit" Color="Transparent" HorizontalOptions="Start" VerticalOptions="Start">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+
+        <!-- The copy of the button, over the button. Tapping it folds the panel back, like tapping the
+             button again. -->
+        <ContentView x:Name="HeaderSlot" HorizontalOptions="Start" VerticalOptions="Start">
+            <ContentView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnHeaderTapped" />
+            </ContentView.GestureRecognizers>
+        </ContentView>
+
+        <!-- At its final place from the first frame; fades in once the body has grown round it. -->
+        <ContentView x:Name="Body" HorizontalOptions="Start" VerticalOptions="Start" Opacity="0" />
     </Grid>
 </ContentView>

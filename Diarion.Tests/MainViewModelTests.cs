@@ -178,6 +178,28 @@ public class MainViewModelTests
     }
 
     [Fact]
+    public async Task RefreshCycleDay_AfterRecordingOnThisScreen_UpdatesTheDayWithoutSavingIt()
+    {
+        // Recording a period moved from its own page to a panel on this screen, so nothing reloads the
+        // day afterwards: the recount has to happen in place, and must not write an untouched day.
+        _profileServiceMock
+            .Setup(s => s.GetUserProfileAsync())
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
+        var viewModel = CreateViewModel();
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+        viewModel.CurrentEntry!.HasCycleDay.Should().BeFalse("nothing is recorded yet");
+
+        _cycleLogServiceMock
+            .Setup(s => s.GetMarkedDatesAsync())
+            .ReturnsAsync(new List<DateTime> { DateTime.Today });
+        await viewModel.RefreshCycleDayAsync();
+        await viewModel.FlushAutoSaveAsync();
+
+        viewModel.CurrentEntry.CycleDay.Should().Be("1");
+        _diaryServiceMock.Verify(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()), Times.Never);
+    }
+
+    [Fact]
     public async Task LoadEntries_WithCycleTrackingOff_LeavesNoCycleDayBehind()
     {
         // A number stored while tracking was on must not keep showing after it is switched off.

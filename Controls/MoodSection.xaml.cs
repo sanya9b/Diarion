@@ -47,9 +47,8 @@ public partial class MoodSection : ContentView
     }
 
     /// <summary>
-    /// Where the precise-states bubble comes from: the chosen face's disc, stretched down over the
-    /// word beneath it, so the bubble grows out of the face and comes to rest below the word rather
-    /// than over it. Page coordinates; null while the row is not laid out.
+    /// Where the precise-states panel grows from: the chosen face's disc, which the panel's copy of the
+    /// face covers exactly while it is out. Page coordinates; null while the row is not laid out.
     /// </summary>
     public Rect? GetRefineAnchor()
     {
@@ -60,17 +59,10 @@ public partial class MoodSection : ContentView
         if (FacesRow.Children[column] is not Border cell || cell.Width <= 0) return null;
 
         var disc = cell.Content as VisualElement ?? cell;
-        var face = VisualTreeGeometry.BoundsOnPage(disc);
-
-        var captionRow = Caption.Parent as VisualElement;
-        var bottom = captionRow is { Height: > 0 }
-            ? VisualTreeGeometry.BoundsOnPage(captionRow).Bottom
-            : face.Bottom;
-
-        return new Rect(face.X, face.Y, face.Width, Math.Max(face.Height, bottom - face.Y));
+        return disc.Width > 0 ? VisualTreeGeometry.BoundsOnPage(disc) : null;
     }
 
-    /// <summary>Where the hour grid comes from: the hours chip. Page coordinates; null while not laid out.</summary>
+    /// <summary>Where the hour panel grows from: the hours chip, which its copy covers. Page coordinates; null while not laid out.</summary>
     public Rect? GetHourChipAnchor() =>
         HourChip.Width > 0 ? VisualTreeGeometry.BoundsOnPage(HourChip) : null;
 
