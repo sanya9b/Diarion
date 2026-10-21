@@ -25,6 +25,10 @@ public static class VisualTreeGeometry
         if (PlatformCentre(view) is Point centre && view.Width > 0 && view.Height > 0)
             return new Rect(centre.X - view.Width / 2, centre.Y - view.Height / 2, view.Width, view.Height);
 
+        // Not on screen as itself yet (hidden, or not laid out): walk up to the nearest ancestor the
+        // platform can place and add the laid-out offsets from there. Never mix the platform's space
+        // with the tree's own: two results from different spaces differ by the page's offset in the
+        // window, and a bubble placed from that difference lands off its button.
         return TreeBounds(view);
     }
 
@@ -75,8 +79,8 @@ public static class VisualTreeGeometry
     }
 
     /// <summary>
-    /// The old way, kept for a view not yet on screen: walk up the tree summing each element's offset and
-    /// translation, taking a scroll view's offset off once per scroll view.
+    /// For a view not yet on screen: walk up the tree summing each element's offset and translation,
+    /// until an ancestor the platform can place takes over; a scroll view's offset comes off on the way.
     /// </summary>
     private static Rect TreeBounds(VisualElement view)
     {
@@ -86,6 +90,19 @@ public static class VisualTreeGeometry
 
         while (parent is VisualElement element && parent is not Page)
         {
+            // An ancestor the platform can place anchors the rest in the platform's space.
+            if (PlatformCentre(element) is Point c && element.Width > 0 && element.Height > 0)
+            {
+                var left = c.X - element.Width / 2;
+                var top = c.Y - element.Height / 2;
+                if (element is ScrollView sv)
+                {
+                    left -= sv.ScrollX;
+                    top -= sv.ScrollY;
+                }
+                return new Rect(left + x, top + y, view.Width, view.Height);
+            }
+
             x += element.X + element.TranslationX;
             y += element.Y + element.TranslationY;
 
