@@ -94,6 +94,11 @@ public static class MauiProgram
 			}
 #elif IOS || MACCATALYST
 			handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+			// The native rounded-rect outline, as Entry already loses above. Windows draws these pickers
+			// without a border, and the app wraps them in its own Field border where it wants one; on
+			// iPhone the native outline sat inside that one and showed as a double frame once the Field
+			// radius went to 12 (owner, TestFlight build 9, 2026-10-21).
+			handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
 #elif WINDOWS
 			handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
 #endif
@@ -110,6 +115,11 @@ public static class MauiProgram
 			}
 #elif IOS || MACCATALYST
 			handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+			// The native rounded-rect outline, as Entry already loses above. Windows draws these pickers
+			// without a border, and the app wraps them in its own Field border where it wants one; on
+			// iPhone the native outline sat inside that one and showed as a double frame once the Field
+			// radius went to 12 (owner, TestFlight build 9, 2026-10-21).
+			handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
 #elif WINDOWS
 			handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
 #endif
