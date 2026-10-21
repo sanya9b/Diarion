@@ -10,65 +10,66 @@
              x:Class="Diarion.Controls.QuickMenuView"
              x:Name="QuickMenuViewRoot">
 
-    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-        <ScrollView Grid.Column="0" Orientation="Horizontal"
+    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+        <!-- Pinned at the left, outside the scroll, like the streak tile at the right: the date is how the
+             calendar opens, and it must not slide away with the section tiles (owner, 2026-10-21). -->
+        <!-- The tile itself takes the tap and the press, not a transparent box laid over it: press
+             feedback scales the element it sits on, and a scaled invisible box shows nothing.
+             Transparent, not unset, so the grid is hit-testable once its children are not. -->
+        <Grid Grid.Column="0" Margin="6,0,0,0" WidthRequest="50" HeightRequest="50" BackgroundColor="Transparent"
+              behaviors:PressFeedback.IsEnabled="True"
+              SemanticProperties.Description="{x:Static localization:AppResources.ToggleCalendarAccessibility}">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CalendarSection.ToggleCalendarCommand}" />
+            </Grid.GestureRecognizers>
+            <Border StrokeShape="RoundRectangle 16"
+                    StrokeThickness="1"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    Padding="0">
+                <Border.Triggers>
+                    <DataTrigger TargetType="Border" Binding="{Binding CalendarSection.IsCalendarExpanded}" Value="True">
+                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Border" Binding="{Binding CalendarSection.IsCalendarExpanded}" Value="False">
+                        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+                    </DataTrigger>
+                </Border.Triggers>
+                <Grid RowDefinitions="Auto,*">
+                    <Border Grid.Row="0"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 16,16,0,0"
+                            BackgroundColor="{DynamicResource Theme_Ocean_Dust}"
+                            Padding="0,2">
+                        <Label Text="{Binding CalendarSection.TodayMonthShort}"
+                               InputTransparent="True"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               FontSize="9"
+                               FontAttributes="Bold"
+                               CharacterSpacing="1.2"
+                               TextColor="{DynamicResource Theme_Snow_Midnight}" />
+                    </Border>
+                    <Label Grid.Row="1"
+                            Text="{Binding CalendarSection.TodayDayNumber}"
+                            InputTransparent="True"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                </Grid>
+            </Border>
+        
+            <controls:ProgressBorder Progress="{Binding CalendarSection.TodayTaskCompletionPercentage}" 
+                                     StrokeColor="{DynamicResource Theme_Coral}"
+                                     CornerRadius="16"
+                                     InputTransparent="True" />
+        </Grid>
+        <ScrollView Grid.Column="1" Orientation="Horizontal"
                     HorizontalScrollBarVisibility="Never"
                     VerticalScrollBarVisibility="Never">
-            <HorizontalStackLayout Spacing="8" Padding="6,0,0,0">
-                <!-- The tile itself takes the tap and the press, not a transparent box laid over it: press
-                     feedback scales the element it sits on, and a scaled invisible box shows nothing.
-                     Transparent, not unset, so the grid is hit-testable once its children are not. -->
-                <Grid Margin="0,0,2,0" WidthRequest="50" HeightRequest="50" BackgroundColor="Transparent"
-                      behaviors:PressFeedback.IsEnabled="True"
-                      SemanticProperties.Description="{x:Static localization:AppResources.ToggleCalendarAccessibility}">
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding CalendarSection.ToggleCalendarCommand}" />
-                    </Grid.GestureRecognizers>
-                    <Border StrokeShape="RoundRectangle 16"
-                            StrokeThickness="1"
-                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                            Padding="0">
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding CalendarSection.IsCalendarExpanded}" Value="True">
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Border" Binding="{Binding CalendarSection.IsCalendarExpanded}" Value="False">
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Grid RowDefinitions="Auto,*">
-                            <Border Grid.Row="0"
-                                    StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 16,16,0,0"
-                                    BackgroundColor="{DynamicResource Theme_Ocean_Dust}"
-                                    Padding="0,2">
-                                <Label Text="{Binding CalendarSection.TodayMonthShort}"
-                                       InputTransparent="True"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center"
-                                       FontSize="9"
-                                       FontAttributes="Bold"
-                                       CharacterSpacing="1.2"
-                                       TextColor="{DynamicResource Theme_Snow_Midnight}" />
-                            </Border>
-                            <Label Grid.Row="1"
-                                    Text="{Binding CalendarSection.TodayDayNumber}"
-                                    InputTransparent="True"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"
-                                   FontSize="18"
-                                   FontAttributes="Bold"
-                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
-
-                        </Grid>
-                    </Border>
-                
-                    <controls:ProgressBorder Progress="{Binding CalendarSection.TodayTaskCompletionPercentage}" 
-                                             StrokeColor="{DynamicResource Theme_Coral}"
-                                             CornerRadius="16"
-                                             InputTransparent="True" />
-                </Grid>
-
+            <HorizontalStackLayout Spacing="8">
                 <HorizontalStackLayout BindableLayout.ItemsSource="{Binding QuickMenuSection.QuickMenuItems}" Spacing="8">
                     <HorizontalStackLayout.Behaviors>
                         <behaviors:DragAndDropReorderBehavior ShiftDistance="66" />
@@ -223,7 +224,7 @@
              which counted a path to a first hypothesis rather than the owner's own days (2026-10-21). A run
              kept alive by forgiven days carries an asterisk, as in statistics: a mark rather than a colour,
              because the palette cannot be told apart by hue alone. -->
-        <Grid Grid.Column="1" WidthRequest="50" HeightRequest="50" Margin="0,0,2,0" BackgroundColor="Transparent"
+        <Grid Grid.Column="2" WidthRequest="50" HeightRequest="50" Margin="0,0,2,0" BackgroundColor="Transparent"
               behaviors:PressFeedback.IsEnabled="True"
               SemanticProperties.Description="{Binding StreakAccessibleText}">
             <Grid.GestureRecognizers>
