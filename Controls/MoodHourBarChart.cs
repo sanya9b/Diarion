@@ -8,13 +8,35 @@ using Microsoft.Maui.Graphics;
 
 namespace Diarion.Controls;
 
+/// <summary>Which axis of the circumplex a <see cref="MoodHourBarChart"/> draws from its points.</summary>
+public enum MoodHourAxis
+{
+    /// <summary>Pleasant above the line, unpleasant below.</summary>
+    Valence,
+
+    /// <summary>Energetic above the line, calm below.</summary>
+    Energy
+}
+
 /// <summary>
-/// Average mood valence per hour of day, as bars diverging from a mid baseline: above the line for
-/// hours that skew positive, below for hours that skew negative. Hours with nothing logged are left
-/// blank rather than drawn at zero height, which would read as "neutral" instead of "no data".
+/// Average mood per hour of day on one axis of the circumplex, as bars diverging from a mid baseline:
+/// above the line for hours that skew positive (or energetic), below for hours that skew negative (or
+/// calm). Hours with nothing logged are left blank rather than drawn at zero height, which would read
+/// as "neutral" instead of "no data".
 /// </summary>
 public class MoodHourBarChart : ChartViewBase
 {
+    public static readonly BindableProperty AxisProperty =
+        BindableProperty.Create(nameof(Axis), typeof(MoodHourAxis), typeof(MoodHourBarChart), MoodHourAxis.Valence,
+            propertyChanged: OnVisualChanged);
+
+    /// <summary>Valence by default; the energy chart is the same control reading the other axis.</summary>
+    public MoodHourAxis Axis
+    {
+        get => (MoodHourAxis)GetValue(AxisProperty);
+        set => SetValue(AxisProperty, value);
+    }
+
     public static readonly BindableProperty ItemsProperty =
         BindableProperty.Create(nameof(Items), typeof(IEnumerable<MoodHourPoint>), typeof(MoodHourBarChart), null,
             propertyChanged: OnItemsChanged);
@@ -130,7 +152,8 @@ public class MoodHourBarChart : ChartViewBase
             // Nothing logged: leave the slot blank, but keep its position so the axis stays even.
             if (!point.HasData) continue;
 
-            double value = Math.Clamp(point.Valence, -max, max);
+            double raw = Axis == MoodHourAxis.Energy ? point.Energy : point.Valence;
+            double value = Math.Clamp(raw, -max, max);
             var color = value > 0 ? PositiveColor : value < 0 ? NegativeColor : MutedColor;
             if (point.DayCount < SparseThreshold) color = color.WithAlpha(SparseAlpha);
 

@@ -134,13 +134,15 @@ public class DiaryEntryViewModelTests
     }
 
     [Fact]
-    public void SelectEmotion_SameEmotionTwiceOnAnHour_ClearsIt()
+    public void ClearMood_OnAnHour_ClearsIt()
     {
+        // Clearing is its own action since the mood row (spec 18); faces and chips only set.
+        // See MoodPickerViewModelTests for the rest of the row.
         var viewModel = new DiaryEntryViewModel(new DiaryEntry());
         viewModel.SelectHourCommand.Execute(viewModel.HourlyMood.Single(h => h.Hour == 9));
 
-        viewModel.SelectEmotionCommand.Execute(Emotion.Angry);
-        viewModel.SelectEmotionCommand.Execute(Emotion.Angry);
+        viewModel.SelectQuadrantCommand.Execute(EmotionQuadrant.UnpleasantEnergetic);
+        viewModel.ClearMoodCommand.Execute(null);
 
         viewModel.HourlyMood.Single(h => h.Hour == 9).Mood.Should().Be(Emotion.None);
         viewModel.Model.HourlyMood.Should().BeEmpty("cleared hours are not stored");

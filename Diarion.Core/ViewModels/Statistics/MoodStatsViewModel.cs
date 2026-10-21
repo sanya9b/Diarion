@@ -212,32 +212,41 @@ public partial class MoodStatsViewModel : ObservableObject
             EntriesCountText = totalEmotions.ToString(System.Globalization.CultureInfo.CurrentCulture);
             TopEmotionText = moodStats.TopEmotion.ToLocalizedName();
 
+            // The donut and its legend read at quadrant grain: four accents, at most five segments,
+            // however many emotions the picker offers. Twenty-nine slivers would be unreadable and the
+            // palette has no colours for them. Emotions keep their own counts for the KPI tile and
+            // the AI snapshot.
             var newEmotionData = new System.Collections.ObjectModel.ObservableCollection<EmotionChartItem>();
-            foreach (var kvp in moodStats.EmotionCounts.OrderByDescending(x => x.Value))
+            var byQuadrant = moodStats.EmotionCounts
+                .Where(kvp => kvp.Value > 0)
+                .GroupBy(kvp => kvp.Key.ToQuadrant())
+                .Select(g => (Quadrant: g.Key, Count: g.Sum(kvp => kvp.Value)))
+                .OrderByDescending(g => g.Count)
+                .ThenBy(g => (int)g.Quadrant);
+            foreach (var (quadrant, count) in byQuadrant)
             {
-                if (kvp.Value > 0)
+                newEmotionData.Add(new EmotionChartItem
                 {
-                    var colorHex = kvp.Key.ToColorHex();
-
-                    newEmotionData.Add(new EmotionChartItem
-                    {
-                        Name = kvp.Key.ToLocalizedName(),
-                        Percentage = (double)kvp.Value / totalEmotions,
-                        Color = Microsoft.Maui.Graphics.Color.FromArgb(colorHex)
-                    });
-                }
+                    Name = quadrant.ToLocalizedName(),
+                    Percentage = (double)count / totalEmotions,
+                    Color = Microsoft.Maui.Graphics.Color.FromArgb(quadrant.ToColorHex())
+                });
             }
             EmotionChartData = newEmotionData;
 
             // A share is only a "most common mood" if one mood actually leads. With three emotions
             // tied at 33% the tile named whichever happened to sort first and the donut printed 33%
             // with nothing to attach it to — both asserting a winner that the data does not have.
-            var hasSingleLeader = newEmotionData.Count == 1
-                || (newEmotionData.Count > 1 && newEmotionData[0].Percentage > newEmotionData[1].Percentage);
+            var ranked = moodStats.EmotionCounts
+                .Where(kvp => kvp.Value > 0)
+                .OrderByDescending(kvp => kvp.Value)
+                .Select(kvp => kvp.Value)
+                .ToList();
+            var hasSingleLeader = ranked.Count == 1 || (ranked.Count > 1 && ranked[0] > ranked[1]);
 
             if (hasSingleLeader)
             {
-                TopEmotionShareText = newEmotionData[0].Percentage
+                TopEmotionShareText = ((double)ranked[0] / totalEmotions)
                     .ToString("P0", System.Globalization.CultureInfo.CurrentCulture);
             }
             else
@@ -255,7 +264,9 @@ public partial class MoodStatsViewModel : ObservableObject
                 {
                     Date = p.Date,
                     HasData = p.HasData,
-                    ColorHex = p.DominantEmotion.ToColorHex()
+                    ColorHex = (p.DominantQuadrant != EmotionQuadrant.None
+                        ? p.DominantQuadrant
+                        : p.DominantEmotion.ToQuadrant()).ToColorHex()
                 }));
 
             await LoadCorrelationsAsync(range);

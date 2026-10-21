@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              x:Class="Diarion.Views.GoodDeedsPage"
@@ -12,12 +14,7 @@
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
-                <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnCloseTapped" />
-                </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-            </Grid>
+            <controls:CloseButton Grid.Column="0" Tapped="OnCloseTapped" />
 
             <VerticalStackLayout Grid.Column="1" Spacing="4">
                 <Label Text="{localization:Translate Key=GoodDeedsTitle}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
@@ -38,89 +35,91 @@
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding DeedSlots}" Spacing="8">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:GoodDeedSlotItemViewModel">
-                            <Border Padding="12,10"
-                                    StrokeThickness="1"
-                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
-                                    StrokeShape="RoundRectangle 14">
-                                <Border.GestureRecognizers>
+                            <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                <ContentView.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectSlotCommand}"
                                                           CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                                <Border.Triggers>
-                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
-                                        <Setter Property="StrokeThickness" Value="2" />
-                                    </DataTrigger>
-                                </Border.Triggers>
+                                </ContentView.GestureRecognizers>
+                                <Border Padding="12,10"
+                                        StrokeThickness="1"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                        StrokeShape="RoundRectangle 14">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
 
-                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
-                                    <Border Grid.Column="0"
-                                            WidthRequest="36"
-                                            HeightRequest="36"
-                                            StrokeThickness="0"
-                                            StrokeShape="RoundRectangle 8"
-                                            BackgroundColor="{DynamicResource Theme_Val_1AC9985A_26C9985A}">
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsEmpty}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Val_14C9985A_1AFFFFFF}" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                        <Grid>
-                                            <Label Text="+"
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                        <Border Grid.Column="0"
+                                                WidthRequest="36"
+                                                HeightRequest="36"
+                                                StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 8"
+                                                BackgroundColor="{DynamicResource Theme_Val_1AC9985A_26C9985A}">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsEmpty}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Val_14C9985A_1AFFFFFF}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Grid>
+                                                <Label Text="+"
+                                                       IsVisible="{Binding IsEmpty}"
+                                                       FontSize="20"
+                                                       FontAttributes="Bold"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       InputTransparent="True"
+                                                       TextColor="{DynamicResource Theme_Amber}" />
+                                                <Label Text="♥"
+                                                       IsVisible="{Binding IsFilled}"
+                                                       FontSize="18"
+                                                       FontAttributes="Bold"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       InputTransparent="True"
+                                                       TextColor="{DynamicResource Theme_Amber}" />
+                                            </Grid>
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                            <Label Text="{Binding SlotCaption}"
                                                    IsVisible="{Binding IsEmpty}"
-                                                   FontSize="20"
+                                                   FontSize="13"
                                                    FontAttributes="Bold"
-                                                   HorizontalOptions="Center"
                                                    VerticalOptions="Center"
                                                    InputTransparent="True"
-                                                   TextColor="{DynamicResource Theme_Amber}" />
-                                            <Label Text="♥"
+                                                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                        
+                                            <Label Text="{Binding DeedTitle}"
                                                    IsVisible="{Binding IsFilled}"
-                                                   FontSize="18"
+                                                   FontSize="14"
                                                    FontAttributes="Bold"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center"
+                                                   LineBreakMode="WordWrap"
+                                                   MaxLines="2"
                                                    InputTransparent="True"
-                                                   TextColor="{DynamicResource Theme_Amber}" />
-                                        </Grid>
-                                    </Border>
+                                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        
+                                            <Label Text="{Binding SlotCaption}"
+                                                   IsVisible="{Binding IsFilled}"
+                                                   FontSize="10"
+                                                   InputTransparent="True"
+                                                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                        </VerticalStackLayout>
 
-                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                        <Label Text="{Binding SlotCaption}"
-                                               IsVisible="{Binding IsEmpty}"
-                                               FontSize="13"
+                                        <Label Grid.Column="2"
+                                               Text="{Binding DateText}"
+                                               IsVisible="{Binding IsFilled}"
+                                               FontSize="12"
                                                FontAttributes="Bold"
                                                VerticalOptions="Center"
                                                InputTransparent="True"
                                                TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                        
-                                        <Label Text="{Binding DeedTitle}"
-                                               IsVisible="{Binding IsFilled}"
-                                               FontSize="14"
-                                               FontAttributes="Bold"
-                                               LineBreakMode="WordWrap"
-                                               MaxLines="2"
-                                               InputTransparent="True"
-                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        
-                                        <Label Text="{Binding SlotCaption}"
-                                               IsVisible="{Binding IsFilled}"
-                                               FontSize="10"
-                                               InputTransparent="True"
-                                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                    </VerticalStackLayout>
-
-                                    <Label Grid.Column="2"
-                                           Text="{Binding DateText}"
-                                           IsVisible="{Binding IsFilled}"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           VerticalOptions="Center"
-                                           InputTransparent="True"
-                                           TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                </Grid>
-                            </Border>
+                                    </Grid>
+                                </Border>
+                            </ContentView>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
@@ -137,15 +136,15 @@
                 <TapGestureRecognizer Command="{Binding SelectSlotCommand}" CommandParameter="{Binding SelectedSlot}" />
             </Grid.GestureRecognizers>
 
-            <Border StrokeShape="RoundRectangle 24"
+            <Border StrokeShape="RoundRectangle 20"
                     StrokeThickness="1"
                     Stroke="{DynamicResource Theme_Amber}"
-                    BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="24"
                     Margin="24"
                     VerticalOptions="Center">
                 <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="10" Opacity="0.2" />
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.2" />
                 </Border.Shadow>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer />
@@ -177,7 +176,7 @@
                         </VerticalStackLayout>
 
                         <!-- Close Button -->
-                        <Grid Grid.Column="2" VerticalOptions="Start" Padding="8,0,0,8">
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="2" VerticalOptions="Start" Padding="8,0,0,8">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SelectSlotCommand}" CommandParameter="{Binding SelectedSlot}" />
                             </Grid.GestureRecognizers>

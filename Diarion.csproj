@@ -45,7 +45,7 @@
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.1</ApplicationDisplayVersion>
-		<ApplicationVersion>3</ApplicationVersion>
+		<ApplicationVersion>14</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -134,6 +134,9 @@
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
+		<!-- The mood faces (Microsoft Fluent Emoji, MIT, see THIRD-PARTY-NOTICES.md) are 256 px squares
+		     shown at about 40 dp: a 64 dp base gives every density a downscale, never a blurry upscale. -->
+		<MauiImage Update="Resources\Images\mood_*.png" BaseSize="64,64" />
 
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
@@ -147,9 +150,6 @@
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="LiteDB" Version="5.0.21" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.60" />
-		<!-- Native ONNX Runtime. Its Android AAR manifest is 196 bytes and declares no permissions;
-		     verify that stays true after any bump — the android-permissions CI job is the check. -->
-		<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.28.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 		<PackageReference Include="Plugin.Fingerprint" Version="3.0.0-beta.1" />
 		<PackageReference Include="Plugin.LocalNotification" Version="14.1.1" />
@@ -172,29 +172,5 @@
 	  <MauiXaml Remove="Diarion.Tests\**" />
 	  <None Remove="Diarion.Tests\**" />
 	</ItemGroup>
-
-	<!--
-	  Apple rejected the first upload (2026-09-20) with five errors, all about one file:
-	  Frameworks/onnxruntime-genai.framework/Info.plist as shipped in OnnxRuntimeGenAI 0.14.1 has
-	  CFBundleVersion and CFBundleShortVersionString set to "1.25.0-dev-<date>-<sha>" (must be up to
-	  three integers, at most 18 characters — ITMS-90058/90059/90060) and no MinimumOSVersion at all
-	  (ITMS-90360/90530). The build itself never complains; only App Store Connect does, after the
-	  macOS minutes are spent. The pin on 0.14.1 is deliberate (see Diarion.Core.csproj), so instead
-	  of bumping the package this rewrites the three keys in the copy inside the app bundle.
-	  _CreateAppBundle is the SDK target that has just copied the framework in; Codesign runs after
-	  it, so the signature covers the corrected plist. macOS only: plutil lives there, and so does
-	  every iOS build. The versions written are the package's own, not onnxruntime's.
-	-->
-	<Target Name="FixOnnxGenAiFrameworkPlist"
-	        AfterTargets="_CreateAppBundle"
-	        Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and $([MSBuild]::IsOSPlatform('osx'))">
-		<PropertyGroup>
-			<_GenAiFrameworkPlist>$(AppBundleDir)/Frameworks/onnxruntime-genai.framework/Info.plist</_GenAiFrameworkPlist>
-		</PropertyGroup>
-		<Exec Condition="Exists('$(_GenAiFrameworkPlist)')"
-		      Command="plutil -replace CFBundleShortVersionString -string 0.14.1 &quot;$(_GenAiFrameworkPlist)&quot; &amp;&amp; plutil -replace CFBundleVersion -string 0.14.1 &quot;$(_GenAiFrameworkPlist)&quot; &amp;&amp; plutil -replace MinimumOSVersion -string $(SupportedOSPlatformVersion) &quot;$(_GenAiFrameworkPlist)&quot;" />
-		<Message Importance="high" Condition="Exists('$(_GenAiFrameworkPlist)')" Text="onnxruntime-genai.framework/Info.plist: versions and MinimumOSVersion rewritten for App Store validation." />
-		<Warning Condition="!Exists('$(_GenAiFrameworkPlist)')" Text="onnxruntime-genai.framework not found in the app bundle; the Info.plist fix did nothing. If the package was removed, delete the FixOnnxGenAiFrameworkPlist target." />
-	</Target>
 
 </Project>

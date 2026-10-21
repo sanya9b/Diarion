@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.SearchPage"
              x:DataType="viewmodels:SearchViewModel"
              Title="{Binding Title}"
+             Shell.PresentationMode="ModalAnimated"
              BackgroundColor="{DynamicResource Theme_Earth_Midnight}">
 
-    <Grid RowDefinitions="Auto, *" Padding="20,16,20,0" RowSpacing="14">
+    <!-- Opened from the section strip like Notes, so it opens the way Notes does: a modal sheet with
+         the shared close button. Without it the screen had no way out on iPhone but the tab bar. -->
+    <Grid RowDefinitions="Auto, Auto, *">
+        <Grid Grid.Row="0" Padding="24,18,24,6" ColumnDefinitions="Auto,*">
+            <controls:CloseButton Grid.Column="0" Tapped="OnCloseTapped" />
+            <Label Grid.Column="1" Text="{Binding Title}" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                   VerticalOptions="Center" Margin="0,0,44,0" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+        </Grid>
 
-        <VerticalStackLayout Grid.Row="0" Spacing="12">
+        <VerticalStackLayout Grid.Row="1" Spacing="12" Padding="20,4,20,14">
 
             <SearchBar Text="{Binding Query}"
                        Placeholder="{x:Static localization:AppResources.SearchPlaceholder}"
@@ -19,60 +28,54 @@
                        TextColor="{DynamicResource Theme_Midnight_Snow}"
                        PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" />
 
-            <!-- Measured, not decorative: a single word scores barely above noise because the
-                 encoder reads sentences. Saying so is cheaper than a bad first result. -->
-            <Label Text="{x:Static localization:AppResources.SearchHintPhrase}"
-                   IsVisible="{Binding IsSemanticOffered}"
-                   FontSize="12"
-                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-            <Label Text="{x:Static localization:AppResources.SearchLexicalOnlyNotice}"
-                   IsVisible="{Binding ShowLexicalOnlyNotice}"
-                   FontSize="12"
-                   TextColor="{DynamicResource Theme_Amber}" />
-
             <HorizontalStackLayout Spacing="8">
-                <Border StrokeShape="RoundRectangle 14" StrokeThickness="0" Padding="14,7"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}">
-                    <Border.Triggers>
-                        <DataTrigger TargetType="Border" Binding="{Binding IsAllScope}" Value="True">
-                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
-                        </DataTrigger>
-                    </Border.Triggers>
-                    <Border.GestureRecognizers>
+                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                    <ContentView.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding SetScopeCommand}" CommandParameter="all" />
-                    </Border.GestureRecognizers>
-                    <Label Text="{x:Static localization:AppResources.SearchScopeAll}" InputTransparent="True"
-                           FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                </Border>
+                    </ContentView.GestureRecognizers>
+                    <Border StrokeShape="RoundRectangle 14" StrokeThickness="0" Padding="14,7"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsAllScope}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label Text="{x:Static localization:AppResources.SearchScopeAll}" InputTransparent="True"
+                               FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    </Border>
+                </ContentView>
 
-                <Border StrokeShape="RoundRectangle 14" StrokeThickness="0" Padding="14,7"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}">
-                    <Border.Triggers>
-                        <DataTrigger TargetType="Border" Binding="{Binding IsDiaryScope}" Value="True">
-                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
-                        </DataTrigger>
-                    </Border.Triggers>
-                    <Border.GestureRecognizers>
+                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                    <ContentView.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding SetScopeCommand}" CommandParameter="diary" />
-                    </Border.GestureRecognizers>
-                    <Label Text="{x:Static localization:AppResources.SearchScopeDiary}" InputTransparent="True"
-                           FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                </Border>
+                    </ContentView.GestureRecognizers>
+                    <Border StrokeShape="RoundRectangle 14" StrokeThickness="0" Padding="14,7"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsDiaryScope}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label Text="{x:Static localization:AppResources.SearchScopeDiary}" InputTransparent="True"
+                               FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    </Border>
+                </ContentView>
 
-                <Border StrokeShape="RoundRectangle 14" StrokeThickness="0" Padding="14,7"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}">
-                    <Border.Triggers>
-                        <DataTrigger TargetType="Border" Binding="{Binding IsNotesScope}" Value="True">
-                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
-                        </DataTrigger>
-                    </Border.Triggers>
-                    <Border.GestureRecognizers>
+                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                    <ContentView.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding SetScopeCommand}" CommandParameter="notes" />
-                    </Border.GestureRecognizers>
-                    <Label Text="{x:Static localization:AppResources.SearchScopeNotes}" InputTransparent="True"
-                           FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                </Border>
+                    </ContentView.GestureRecognizers>
+                    <Border StrokeShape="RoundRectangle 14" StrokeThickness="0" Padding="14,7"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsNotesScope}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label Text="{x:Static localization:AppResources.SearchScopeNotes}" InputTransparent="True"
+                               FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    </Border>
+                </ContentView>
             </HorizontalStackLayout>
 
             <Label Text="{Binding ResultsSummary}" FontSize="12"
@@ -86,18 +89,20 @@
                                      Hint="{x:Static localization:AppResources.EmptyStateSearchHint}" />
         </VerticalStackLayout>
 
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Results}">
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Results}" Margin="20,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:SearchResultItem">
-                    <Border StrokeShape="RoundRectangle 18" StrokeThickness="1"
-                            Stroke="{DynamicResource Theme_Dust_Ocean}"
-                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                            Padding="14" Margin="0,0,0,10">
+                    <!-- The pressable element is transparent and the card surface one layer down: press
+                         feedback writes the background of the element it is attached to, and a theme
+                         colour there stays behind after a theme switch. -->
+                    <Border behaviors:PressFeedback.IsEnabled="True" StrokeThickness="0" BackgroundColor="Transparent"
+                            Padding="0" Margin="0,0,0,10">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SearchViewModel}}, Path=OpenCommand}"
                                 CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
+                        <Border Style="{StaticResource Card}" Padding="14" InputTransparent="True">
                         <VerticalStackLayout Spacing="6">
                             <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
                                 <Label Grid.Column="0" Text="{Binding SourceLabel}" FontSize="11"
@@ -110,6 +115,7 @@
                             <Label Text="{Binding Snippet}" FontSize="14"
                                    TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </VerticalStackLayout>
+                        </Border>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

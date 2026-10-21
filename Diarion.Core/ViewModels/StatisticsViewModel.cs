@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Messages;
 using Diarion.Models;
+using Diarion.Resources.Icons;
 using Diarion.Resources.Localization;
 
 namespace Diarion.ViewModels;
@@ -46,8 +47,8 @@ public partial class StatisticsTabItem : ObservableObject
     public StatisticsTabOption Option { get; set; }
     public string DisplayName { get; set; } = string.Empty;
 
-    /// <summary>Emoji glyph shown before the tab label in the segmented selector.</summary>
-    public string Icon { get; set; } = string.Empty;
+    /// <summary>Line icon drawn before the tab label in the segmented selector (see <see cref="AppIcons"/>).</summary>
+    public Microsoft.Maui.Controls.Shapes.Geometry? IconGeometry { get; set; }
 
     [ObservableProperty]
     private bool _isSelected;
@@ -159,17 +160,17 @@ public partial class StatisticsViewModel : BaseViewModel
 
     public ViewModels.Statistics.MoodStatsViewModel MoodStats { get; }
 
-    /// <summary>Verbatim passages describing what the selected window was about. Empty when AI is off.</summary>
-    public ObservableCollection<DigestExcerptItem> DigestExcerpts { get; } = [];
-
-    /// <summary>Subjects the window kept coming back to. Empty when AI is off.</summary>
-    public ObservableCollection<ThemeItem> Themes { get; } = [];
-
+    /// <summary>The days of the window on which something was written. The activity card's squares.</summary>
     [ObservableProperty]
-    private bool _hasThemes;
+    private System.Collections.Generic.IReadOnlyList<DateTime> _activityDates = Array.Empty<DateTime>();
 
+    /// <summary>«18 з 31» — written days out of the window's days.</summary>
     [ObservableProperty]
-    private bool _hasDigest;
+    private string _activityCountText = string.Empty;
+
+    /// <summary>The card shows once the window has been read, written days or not.</summary>
+    [ObservableProperty]
+    private bool _hasActivityDays;
     public ViewModels.Statistics.SleepStatsViewModel SleepStats { get; }
     public ViewModels.Statistics.ProductivityStatsViewModel ProductivityStats { get; }
     public ViewModels.Statistics.FinanceStatsViewModel FinanceStats { get; }
@@ -192,8 +193,6 @@ public partial class StatisticsViewModel : BaseViewModel
         Diarion.Services.INavigationService navigationService,
         Diarion.Services.IDispatcherService dispatcher,
         ViewModels.Statistics.MoodStatsViewModel moodStats,
-        Services.Ai.IDigestService digestService,
-        Services.Ai.IThemeClusterService themeService,
         ViewModels.Statistics.SleepStatsViewModel sleepStats,
         ViewModels.Statistics.ProductivityStatsViewModel productivityStats,
         ViewModels.Statistics.FinanceStatsViewModel financeStats,
@@ -207,12 +206,10 @@ public partial class StatisticsViewModel : BaseViewModel
         _financeService = financeService;
         _navigationService = navigationService;
         _dispatcher = dispatcher;
-        // The home-screen insight path opens this screen on the window it counted (spec 17, R1.6).
+        // Lets another screen open this one on a given window.
         WeakReferenceMessenger.Default.Register<StatisticsRangeRequestedMessage>(
             this, (r, m) => ((StatisticsViewModel)r).ApplyRange(m.Range));
         MoodStats = moodStats;
-        _digestService = digestService;
-        _themeService = themeService;
         SleepStats = sleepStats;
         ProductivityStats = productivityStats;
         FinanceStats = financeStats;
@@ -246,7 +243,7 @@ public partial class StatisticsViewModel : BaseViewModel
             {
                 Option = StatisticsTabOption.Cycle,
                 DisplayName = AppResources.TabCycle,
-                Icon = "🩸"
+                IconGeometry = AppIcons.Drop
             });
         }
         else if (!available && existing != null)
@@ -261,12 +258,12 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         Tabs = new System.Collections.ObjectModel.ObservableCollection<StatisticsTabItem>
         {
-            new StatisticsTabItem { Option = StatisticsTabOption.Review, DisplayName = AppResources.TabReview, Icon = "📋", IsSelected = true },
-            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, Icon = "😊" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = AppResources.TabSleep, Icon = "😴" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = AppResources.TabProductivity, Icon = "✅" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Finance, DisplayName = AppResources.FinanceTitle ?? "Finance", Icon = "💸" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Habits, DisplayName = AppResources.TabHabits, Icon = "🌱" }
+            new StatisticsTabItem { Option = StatisticsTabOption.Review, DisplayName = AppResources.TabReview, IconGeometry = AppIcons.Bars, IsSelected = true },
+            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, IconGeometry = AppIcons.Smile },
+            new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = AppResources.TabSleep, IconGeometry = AppIcons.Moon },
+            new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = AppResources.TabProductivity, IconGeometry = AppIcons.CheckCircle },
+            new StatisticsTabItem { Option = StatisticsTabOption.Finance, DisplayName = AppResources.FinanceTitle ?? "Finance", IconGeometry = AppIcons.Banknote },
+            new StatisticsTabItem { Option = StatisticsTabOption.Habits, DisplayName = AppResources.TabHabits, IconGeometry = AppIcons.Sprout }
         };
         SelectTab(Tabs[0]);
     }
@@ -435,8 +432,8 @@ public partial class StatisticsViewModel : BaseViewModel
             }
             else if (IsGeneralTabVisible)
             {
+                await LoadActivityAsync(range);
                 await MoodStats.LoadDataAsync(range);
-                await LoadDigestAsync(range);
             }
             else if (IsSleepTabVisible)
             {
@@ -546,64 +543,18 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         _ = _navigationService.OpenFlyoutAsync();
     }
-    private readonly Services.Ai.IDigestService _digestService;
-    private readonly Services.Ai.IThemeClusterService _themeService;
-
     /// <summary>
-    /// The digest quotes the user's own sentences rather than paraphrasing them. That is what lets
-    /// weekly and monthly reports work on every device with no generative model at all.
+    /// Which days of the window were written on — by the same rule the streak counts, so the tile at the
+    /// top of the home screen and this card agree. A new list each time: the squares redraw when their
+    /// source is replaced.
     /// </summary>
-    private async Task LoadDigestAsync(StatsRange range)
+    private async Task LoadActivityAsync(StatsRange range)
     {
-        var start = range.Start;
-        var end = range.End;
+        var written = await _diaryService.GetContentDatesAsync(range.Start, range.End) ?? Array.Empty<DateTime>();
+        var days = (int)(range.End.Date - range.Start.Date).TotalDays + 1;
 
-        var digest = await _digestService.BuildAsync(start, end);
-
-        DigestExcerpts.Clear();
-        foreach (var excerpt in digest.Excerpts)
-        {
-            DigestExcerpts.Add(new DigestExcerptItem(excerpt));
-        }
-
-        HasDigest = digest.HasContent;
-
-        var themes = await _themeService.ClusterAsync(start, end);
-
-        Themes.Clear();
-        foreach (var theme in themes)
-        {
-            Themes.Add(new ThemeItem(theme));
-        }
-
-        HasThemes = themes.Count > 0;
+        ActivityDates = written.ToList();
+        ActivityCountText = string.Format(AppResources.StatsActivityCountFormat, written.Count, days);
+        HasActivityDays = true;
     }
-}
-
-/// <summary>A recurring theme, with its day count already phrased.</summary>
-public sealed class ThemeItem
-{
-    public ThemeItem(Services.Ai.DiaryTheme theme)
-    {
-        Label = theme.Label;
-        DaysLabel = string.Format(Resources.Localization.AppResources.StatsThemeDaysFormat, theme.DayCount);
-    }
-
-    public string Label { get; }
-
-    public string DaysLabel { get; }
-}
-
-/// <summary>A digest line with its date already formatted for display.</summary>
-public sealed class DigestExcerptItem
-{
-    public DigestExcerptItem(Services.Ai.DigestExcerpt excerpt)
-    {
-        Text = excerpt.Text;
-        DateLabel = excerpt.Date.ToString("d MMMM", System.Globalization.CultureInfo.CurrentCulture);
-    }
-
-    public string Text { get; }
-
-    public string DateLabel { get; }
 }

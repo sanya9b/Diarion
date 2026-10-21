@@ -14,9 +14,10 @@ public partial class MainPage : ContentPage
     private static readonly TimeSpan InitialLoadDelay = TimeSpan.FromMilliseconds(450);
 
     private readonly MainViewModel _viewModel;
+    private readonly CycleRecordViewModel _cycleRecord;
     private bool _hasRenderedOnce;
 
-    public MainPage(MainViewModel viewModel)
+    public MainPage(MainViewModel viewModel, CycleRecordViewModel cycleRecord)
     {
         using var _ = StartupTrace.Measure("MainPage..ctor");
         InitializeComponent();
@@ -29,6 +30,25 @@ public partial class MainPage : ContentPage
         TourOverlay.AnchorResolver = AnchorFor;
         TourOverlay.PrepareStepAsync = PrepareTourStepAsync;
         TourOverlay.Tour = _viewModel.Tour;
+
+        // The mood row's bubbles ask where their control is each time they are placed, so a card that
+        // moved since — the strip under the date appearing, a banner, the calendar — cannot leave them
+        // pointing at the wrong block.
+        RefinePopover.AnchorResolver = MoodBlock.GetRefineAnchor;
+        RefinePopover.PassThroughResolver = MoodBlock.GetFacesRowBounds;
+        HourPopover.AnchorResolver = MoodBlock.GetHourChipAnchor;
+
+        // Period recording lives on the home screen, in the health block (spec 18). Its panel has its
+        // own view model, like the settings cards do; the block's chip opens it, and a scroll folds it
+        // back, because a panel that stays while its chip scrolls away is wrong twice over.
+        _cycleRecord = cycleRecord;
+        CyclePopover.BindingContext = cycleRecord;
+        CyclePopover.AnchorResolver = HealthBlock.GetCycleChipAnchor;
+        HealthBlock.RecordCycleCommand = cycleRecord.OpenCommand;
+        DiaryContainer.Scrolled += (_, _) =>
+        {
+            if (_cycleRecord.IsOpen) _cycleRecord.CloseCommand.Execute(null);
+        };
     }
 
     private async void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -51,6 +71,9 @@ public partial class MainPage : ContentPage
                     PlannerContainer.Content = new PlannerView();
                 }
 
+                // The planner has its own scroll and sits below the whole header, so the header comes back.
+                _ = DayHeader.TranslateToAsync(0, 0, Motion.FastMs, Motion.EaseOut);
+
                 // Анімація: зникає Diary, з'являється Planner
                 await DiaryContainer.FadeToAsync(0, Motion.FastMs, Motion.EaseOut);
                 DiaryContainer.IsVisible = false;
@@ -67,9 +90,44 @@ public partial class MainPage : ContentPage
 
                 DiaryContainer.Opacity = 0;
                 DiaryContainer.IsVisible = true;
+                // Back to where the diary was left: slide the header to match its scroll.
+                _ = DayHeader.TranslateToAsync(0, HeaderOffsetFor(DiaryContainer.ScrollY), Motion.FastMs, Motion.EaseOut);
                 await DiaryContainer.FadeToAsync(1, Motion.FastMs, Motion.EaseOut);
             }
         }
+    }
+
+    // --- The header over the diary ---------------------------------------------------------------
+    // The diary scroll spans the page under the header (MainPage.xaml). Its top padding is the header's
+    // height, and the header slides up by however far the diary has scrolled, until only the tabs are
+    // left. Pure view geometry, so it lives here and not in the view model.
+
+    private const double GapAboveTabs = 8;
+
+    private void OnDayHeaderSizeChanged(object? sender, EventArgs e)
+    {
+        // The header grows when the calendar opens or a banner appears; the content has to start below
+        // it either way, or the first card would sit under the header.
+        if (DayHeader.Height <= 0) return;
+        DiaryContainer.Padding = new Thickness(24, DayHeader.Height + 10, 24, 40);
+        ApplyHeaderOffset();
+    }
+
+    private void OnDiaryScrolled(object? sender, ScrolledEventArgs e) => ApplyHeaderOffset();
+
+    private void ApplyHeaderOffset()
+    {
+        // In planner mode the header is whole; the planner sits below it in the layout.
+        if (_viewModel.IsPlannerMode) return;
+        DayHeader.TranslationY = HeaderOffsetFor(DiaryContainer.ScrollY);
+    }
+
+    /// <summary>How far up the header sits for a given diary scroll: follows the scroll, stops at the tabs.</summary>
+    private double HeaderOffsetFor(double scrollY)
+    {
+        // Everything above the tabs may slide away; the tabs stay, they are the only way to the planner.
+        double collapsible = Math.Max(0, HeaderStack.Y + TabsAnchor.Y - GapAboveTabs);
+        return -Math.Clamp(scrollY, 0, collapsible);
     }
 
     protected override void OnDisappearing()
@@ -97,9 +155,6 @@ public partial class MainPage : ContentPage
         // the model was deleted or AI switched off while we were away — and the tile order is written
         // by the onboarding module picker, which is dismissed onto this screen.
         await _viewModel.QuickMenuSection.RefreshAsync();
-
-        // A paired day may have been written on another screen while we were away.
-        InsightPath.Refresh();
 
         if (!_hasRenderedOnce)
         {
@@ -139,16 +194,20 @@ public partial class MainPage : ContentPage
 
     private async Task PrepareTourStepAsync(TourStep step)
     {
-        if (step.Id != TourStepId.DiaryBlocks) return;
-
-        // The blocks are the one target that can be scrolled out of view, and the guide runs over
-        // whichever tab was left open.
-        if (_viewModel.IsPlannerMode)
+        // The blocks are the one target that lives only in the diary, and the guide runs over whichever
+        // tab was left open.
+        if (step.Id == TourStepId.DiaryBlocks && _viewModel.IsPlannerMode)
         {
             _viewModel.SwitchToDiaryModeCommand.Execute(null);
         }
 
-        await DiaryContainer.ScrollToAsync(0, 0, animated: false);
+        // Every target can be scrolled out of view now: the blocks scroll, and the header slides away
+        // with them. Back to the top, header whole, before anything is measured.
+        if (!_viewModel.IsPlannerMode)
+        {
+            await DiaryContainer.ScrollToAsync(0, 0, animated: false);
+        }
+        DayHeader.TranslationY = 0;
     }
 
     private VisualElement? AnchorFor(TourStepId id) => id switch

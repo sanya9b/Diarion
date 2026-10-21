@@ -60,6 +60,8 @@ public partial class QuickCaptureViewModel : BaseViewModel
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
+    [NotifyPropertyChangedFor(nameof(SelectedMoodName))]
+    [NotifyPropertyChangedFor(nameof(HasSelectedMood))]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private Emotion _selectedEmotion;
 
@@ -77,17 +79,33 @@ public partial class QuickCaptureViewModel : BaseViewModel
     private bool _hasHabits;
 
     /// <summary>
-    /// The five the day screen offers, in its order and with its glyphs. A list rather than five
-    /// hard-coded tiles so the sheet follows whatever the picker becomes.
+    /// The day screen's row of faces, in its order — unpleasant on the left, pleasant on the right —
+    /// built from the same view model, so the sheet shows the same faces in the same hues and follows
+    /// the picker whenever it changes.
     /// </summary>
-    public IReadOnlyList<QuickEmotionChoice> Emotions { get; } = new[]
+    public IReadOnlyList<MoodQuadrantViewModel> Quadrants { get; } = new[]
     {
-        new QuickEmotionChoice(Emotion.Happy, "😊"),
-        new QuickEmotionChoice(Emotion.Calm, "😌"),
-        new QuickEmotionChoice(Emotion.Anxious, "😰"),
-        new QuickEmotionChoice(Emotion.Sad, "😢"),
-        new QuickEmotionChoice(Emotion.Angry, "😠")
+        new MoodQuadrantViewModel(EmotionQuadrant.UnpleasantCalm, column: 0),
+        new MoodQuadrantViewModel(EmotionQuadrant.UnpleasantEnergetic, column: 1),
+        new MoodQuadrantViewModel(EmotionQuadrant.Neutral, column: 2),
+        new MoodQuadrantViewModel(EmotionQuadrant.PleasantCalm, column: 3),
+        new MoodQuadrantViewModel(EmotionQuadrant.PleasantEnergetic, column: 4)
     };
+
+    /// <summary>
+    /// The precise states of the chosen face, representative first. Inline under the row rather than
+    /// in a bubble: the sheet is short, and the ten-second promise is that a face alone is an entry —
+    /// the chips are there for whoever wants the word, not a second step everyone must take.
+    /// </summary>
+    public ObservableCollection<MoodChipViewModel> Refinements { get; } = new();
+
+    [ObservableProperty]
+    private bool _hasRefinements;
+
+    /// <summary>The chosen state's name, under the row, the way the day screen names it.</summary>
+    public string SelectedMoodName => SelectedEmotion == Emotion.None ? string.Empty : SelectedEmotion.ToLocalizedName();
+
+    public bool HasSelectedMood => SelectedEmotion != Emotion.None;
 
     public ObservableCollection<QuickHabitChip> Habits { get; } = new();
 
@@ -160,16 +178,60 @@ public partial class QuickCaptureViewModel : BaseViewModel
 
     partial void OnSelectedEmotionChanged(Emotion value)
     {
-        foreach (var choice in Emotions)
+        var quadrant = value.ToQuadrant();
+        foreach (var face in Quadrants)
         {
-            choice.IsSelected = choice.Emotion == value;
+            face.IsSelected = value != Emotion.None && face.Quadrant == quadrant;
+        }
+
+        RebuildRefinements(quadrant);
+        foreach (var chip in Refinements)
+        {
+            chip.IsSelected = chip.Emotion == value;
         }
     }
 
-    /// <summary>Tap selects; tapping the selected one again clears it, the way the day screen's row works.</summary>
+    /// <summary>Rebuilt only when the quadrant changes, so tapping a chip does not redraw its row.</summary>
+    private void RebuildRefinements(EmotionQuadrant quadrant)
+    {
+        if (Refinements.Count > 0 && Refinements[0].Emotion.ToQuadrant() == quadrant) return;
+
+        Refinements.Clear();
+        if (quadrant != EmotionQuadrant.None)
+        {
+            var members = quadrant.Emotions();
+            // A quadrant of one (neutral) has nothing to refine to.
+            if (members.Count > 1)
+            {
+                foreach (var emotion in members)
+                {
+                    Refinements.Add(new MoodChipViewModel(emotion));
+                }
+            }
+        }
+
+        HasRefinements = Refinements.Count > 0;
+    }
+
+    /// <summary>
+    /// A face records its representative, as on the day screen. Tapping the chosen face again keeps the
+    /// precise state already picked inside it — a face is never an "off" switch here either; clearing
+    /// is its own, deliberate action.
+    /// </summary>
     [RelayCommand]
-    private void SelectEmotion(Emotion emotion) =>
-        SelectedEmotion = SelectedEmotion == emotion ? Emotion.None : emotion;
+    private void SelectQuadrant(EmotionQuadrant quadrant)
+    {
+        if (quadrant == EmotionQuadrant.None) return;
+        if (SelectedEmotion != Emotion.None && SelectedEmotion.ToQuadrant() == quadrant) return;
+
+        SelectedEmotion = quadrant.Representative();
+    }
+
+    [RelayCommand]
+    private void SelectEmotion(Emotion emotion) => SelectedEmotion = emotion;
+
+    [RelayCommand]
+    private void ClearMood() => SelectedEmotion = Emotion.None;
 
     [RelayCommand]
     private void ToggleHabit(QuickHabitChip? chip)
@@ -255,38 +317,6 @@ public partial class QuickCaptureViewModel : BaseViewModel
     }
 }
 
-/// <summary>One emotion tile on the sheet.</summary>
-public partial class QuickEmotionChoice : ObservableObject
-{
-    /// <summary>Coral, the palette's accent for the chosen one; transparent otherwise.</summary>
-    public const string SelectedFill = "#C26D53";
-
-    public const string NoFill = "#00000000";
-
-    public QuickEmotionChoice(Emotion emotion, string glyph)
-    {
-        Emotion = emotion;
-        Glyph = glyph;
-    }
-
-    public Emotion Emotion { get; }
-
-    public string Glyph { get; }
-
-    public string Name => Emotion.ToLocalizedName();
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(FillColorHex))]
-    private bool _isSelected;
-
-    /// <summary>
-    /// The tile's fill, bound on an inner layer rather than set by a trigger on the tappable Border:
-    /// a trigger setter on a Border that also carries press feedback applies but never reverts, and
-    /// the previous choice stays lit. A bound value has nothing to restore.
-    /// </summary>
-    public string FillColorHex => IsSelected ? SelectedFill : NoFill;
-}
-
 /// <summary>One habit chip: the tick as it stands, and whether it differs from how the sheet found it.</summary>
 public partial class QuickHabitChip : ObservableObject
 {
@@ -304,13 +334,19 @@ public partial class QuickHabitChip : ObservableObject
 
     public bool WasCompleted { get; }
 
+    /// <summary>The theme key a ticked chip fills with — the same accent as the home block's ticks.</summary>
+    public const string TickedColorKey = "Theme_Coral";
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsChanged))]
-    [NotifyPropertyChangedFor(nameof(FillColorHex))]
+    [NotifyPropertyChangedFor(nameof(FillColorKey))]
     private bool _isCompleted;
 
     public bool IsChanged => IsCompleted != WasCompleted;
 
-    /// <summary>Same arrangement as <see cref="QuickEmotionChoice.FillColorHex"/>, for the same reason.</summary>
-    public string FillColorHex => IsCompleted ? QuickEmotionChoice.SelectedFill : QuickEmotionChoice.NoFill;
+    /// <summary>
+    /// The chip's fill layer: a theme key while ticked, null (see-through) otherwise. A value rather
+    /// than a trigger, and a key rather than a colour, for the reasons in <see cref="MoodQuadrantViewModel"/>.
+    /// </summary>
+    public string? FillColorKey => IsCompleted ? TickedColorKey : null;
 }

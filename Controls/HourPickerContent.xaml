@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             x:Class="Diarion.Controls.HourPickerContent"
+             x:DataType="viewmodels:DiaryEntryViewModel">
+
+    <!-- The waking hours 07–23, each in the colour of its logged mood. Tapping one puts the picker
+         away and turns the mood row into that hour's row; tapping the chosen hour again returns the
+         row to the day. -->
+    <VerticalStackLayout Spacing="8" Margin="0,0,-6,-6">
+        <Label Text="{x:Static localization:AppResources.MoodHourPickerTitle}" FontSize="11"
+               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+        <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Center"
+                    BindableLayout.ItemsSource="{Binding HourlyMood}">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="viewmodels:HourMoodViewModel">
+                    <!-- Outer: the tap target with press feedback, and nothing else — no background, no stroke.
+                         The toolkit's touch behaviour writes BackgroundColor on the element it sits on, and a
+                         written value outranks the theme: the cell then keeps the colour of the theme it was
+                         first touched in (dark hours on a pink page, white numbers on a light cell). The cell
+                         itself — stroke, surface, the mood's hue, the selection ring — is one layer down. -->
+                    <Border WidthRequest="44" HeightRequest="36" Margin="0,0,6,6" Padding="0"
+                            StrokeThickness="0" BackgroundColor="Transparent"
+                            behaviors:PressFeedback.IsEnabled="True"
+                            SemanticProperties.Description="{Binding AccessibilityText}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryEntryViewModel}}, Path=SelectHourCommand}" CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Border StrokeShape="RoundRectangle 10" StrokeThickness="1" InputTransparent="True"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                behaviors:ThemeColor.BackgroundKey="{Binding ColorKey}"
+                                behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Setter Property="StrokeThickness" Value="3" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <!-- The colour is set on the label itself, not left to a trigger alone. -->
+                            <Label Text="{Binding HourLabel}" FontSize="12"
+                                   HorizontalOptions="Center" VerticalOptions="Center"
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding HasMood}" Value="True">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_OnAccent}" />
+                                        <Setter Property="FontAttributes" Value="Bold" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Border>
+                    </Border>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </FlexLayout>
+    </VerticalStackLayout>
+</ContentView>

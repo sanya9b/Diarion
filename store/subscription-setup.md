@@ -116,6 +116,7 @@ Product ID — **точно так**, як у коді (`Diarion.Core/Services/S
 
 ## 10. Після схвалення
 
-- Злити `feature/subscription` (і `feature/day-polish`, якщо його зміни йдуть у 1.1) у `develop`,
-  потім `develop` у `main` — як з 1.0.
+- ~~Злити `feature/subscription` у `develop`~~ — зроблено 2026-10-20, ще до рев'ю: збірку 3 для
+  TestFlight зібрано з `develop` (у неї ввійшли й зміни `feature/day-polish` та настрій зі spec 18).
+  Лишається `develop` у `main` після схвалення — як з 1.0.
 - Записати результат у `submission-runbook.md`.

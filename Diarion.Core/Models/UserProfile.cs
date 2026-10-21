@@ -92,15 +92,8 @@ public partial class UserProfile : ObservableObject
     [ObservableProperty] private bool _isForgivingStreaksEnabled = true;
     [ObservableProperty] private int _streakGraceDays = DefaultStreakGraceDays;
 
-    // ШІ на пристрої. Вимкнено за замовчуванням: фіча коштує сотні мегабайтів завантаження, тож
-    // вмикати її має користувач, а не оновлення застосунку. Наявні профілі читають false без міграції.
-    [ObservableProperty] private bool _isAiEnabled;
-
-    /// <summary>
-    /// Whether model downloads wait for Wi-Fi. On by default because the encoder alone is over
-    /// 100 MB, and spending someone's mobile data without asking is not a recoverable mistake.
-    /// </summary>
-    [ObservableProperty] private bool _isWifiOnlyModelDownload = true;
+    // IsAiEnabled and IsWifiOnlyModelDownload lived here for the on-device AI, removed 2026-10-21. Older
+    // profiles still carry the two fields; LiteDB ignores fields the class no longer has.
 
     // Сортування меню
     [ObservableProperty] private System.Collections.Generic.List<string>? _quickMenuOrder;
@@ -119,16 +112,9 @@ public partial class UserProfile : ObservableObject
     /// <summary>The same marker for the settings guide. See <see cref="TourVersionSeen"/>.</summary>
     [ObservableProperty] private int _settingsTourVersionSeen;
 
-    /// <summary>
-    /// The first-insight path on the home screen stays hidden while its highest reached milestone
-    /// (1, 3, 7 or 14 paired days) is below this number — "hide until the next milestone", never
-    /// "hide forever", so the card comes back when there is news; <see cref="int.MaxValue"/> once
-    /// the last milestone is dismissed. Like <see cref="TourVersionSeen"/> it is a LiteDB field
-    /// with no migration: profiles written before it existed read 0, which hides nothing. Written
-    /// only by <see cref="Services.InsightPath.InsightPathService"/>; "show the guides again"
-    /// resets it along with the tours.
-    /// </summary>
-    [ObservableProperty] private int _insightPathHiddenBelowMilestone;
+    // InsightPathHiddenBelowMilestone and IsInsightPathEnabled lived here until 2026-10-21, for the path to the
+    // first hypothesis under the date (spec 17). The strip gave way to the streak tile; profiles saved
+    // before still carry the two fields, and LiteDB ignores fields the class no longer has.
 
     public bool IsBirthDateKnown => BirthDate.HasValue;
 

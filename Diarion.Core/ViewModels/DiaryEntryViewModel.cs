@@ -66,6 +66,7 @@ public partial class DiaryEntryViewModel : ObservableObject
         Habits.CollectionChanged += (s, e) => UpdateModelHabits();
 
         BuildHourlyMood(model);
+        RefreshMoodSelection();
         RefreshPrompt();
         RefreshPromptText();
     }
@@ -99,6 +100,14 @@ public partial class DiaryEntryViewModel : ObservableObject
 
     public bool IsHourSelected => SelectedHour != null;
 
+    partial void OnSelectedHourChanged(int? value)
+    {
+        // Moving between hours closes the bubble: it belonged to the hour that was being edited.
+        IsRefinementOpen = false;
+        RefreshMoodSelection();
+        RefreshHourChip();
+    }
+
     /// <summary>
     /// What the emotion row should show as selected: the chosen hour's mood while an hour is picked,
     /// otherwise the day-level scalar. Without this the row would keep highlighting the day's mood
@@ -107,10 +116,6 @@ public partial class DiaryEntryViewModel : ObservableObject
     public Emotion CurrentMood => SelectedHour is int hour
         ? HourlyMood.FirstOrDefault(h => h.Hour == hour)?.Mood ?? Emotion.None
         : Emotion;
-
-    /// <summary>Collapsed by default — the day screen already stacks several cards.</summary>
-    [ObservableProperty]
-    private bool _isHourlyExpanded;
 
     private void BuildHourlyMood(DiaryEntry model)
     {
@@ -130,24 +135,203 @@ public partial class DiaryEntryViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    private void ToggleHourly() => IsHourlyExpanded = !IsHourlyExpanded;
-
+    /// <summary>
+    /// From the hour picker. The row becomes that hour's row and the picker goes away so the row is
+    /// reachable. Tapping the chosen hour again returns the row to the day.
+    /// </summary>
     [RelayCommand]
     private void SelectHour(HourMoodViewModel item)
     {
         if (item == null) return;
 
-        // Tapping the selected hour again returns the emotion row to day level.
         SelectedHour = SelectedHour == item.Hour ? null : item.Hour;
         foreach (var h in HourlyMood) h.IsSelected = h.Hour == SelectedHour;
+        IsHourPickerOpen = false;
     }
 
-    // Mood selection is 2-tap. With no hour selected it sets the day-level scalar, exactly as before;
-    // with an hour selected it writes that hour instead. Either way PropertyChanged reaches the main
-    // ViewModel, which triggers the debounced auto-save.
+    /// <summary>The ✕ beside the hours chip: back to the day, keeping whatever the hour got.</summary>
+    [RelayCommand]
+    private void ExitHourMode()
+    {
+        SelectedHour = null;
+        foreach (var h in HourlyMood) h.IsSelected = false;
+        IsHourPickerOpen = false;
+    }
+
+    // --- Hour picker: a bubble off the hours chip ---
+
+    /// <summary>Whether the hour grid is out. View state, kept here so it is testable.</summary>
+    [ObservableProperty]
+    private bool _isHourPickerOpen;
+
+    /// <summary>The hours chip. One bubble at a time: opening this one puts the refinement away.</summary>
+    [RelayCommand]
+    private void OpenHourPicker()
+    {
+        IsRefinementOpen = false;
+        IsHourPickerOpen = !IsHourPickerOpen;
+    }
+
+    [RelayCommand]
+    private void CloseHourPicker() => IsHourPickerOpen = false;
+
+    /// <summary>Hours with a mood logged, for the chip's count.</summary>
+    public int LoggedHourCount => HourlyMood.Count(h => h.HasMood);
+
+    /// <summary>
+    /// What the hours chip says: the chosen hour while the row speaks for an hour ("14:00"), otherwise
+    /// the label, with a count of logged hours once there are any. The chip is how the user can tell
+    /// which of the two the row is talking about.
+    /// </summary>
+    public string HourChipText
+    {
+        get
+        {
+            if (SelectedHour is int hour) return $"{hour:00}:00";
+
+            var label = Diarion.Resources.Localization.AppResources.MoodHourlyLabel;
+            return LoggedHourCount > 0 ? $"{label} · {LoggedHourCount}" : label;
+        }
+    }
+
+    /// <summary>
+    /// What the hours chip shows beside its clock: the chosen hour while the row speaks for one ("14:00"),
+    /// otherwise how many hours carry a mood, and nothing at all before the first — then the chip is
+    /// just the clock. State, never a caption: <see cref="HourChipText"/> stays the spoken label.
+    /// </summary>
+    public string HourChipBadge => SelectedHour is int hour
+        ? $"{hour:00}:00"
+        : LoggedHourCount > 0 ? LoggedHourCount.ToString(System.Globalization.CultureInfo.CurrentCulture) : string.Empty;
+
+    public bool HasHourChipBadge => HourChipBadge.Length > 0;
+
+    /// <summary>True while the row speaks for an hour that already has a mood: the chip wears its colour.</summary>
+    public bool IsHourChipFilled => SelectedHour is int hour
+        && (HourlyMood.FirstOrDefault(h => h.Hour == hour)?.HasMood ?? false);
+
+    /// <summary>The theme key for the chip's fill layer: the chosen hour's mood hue; null (see-through) otherwise.</summary>
+    public string? HourChipFillColorKey
+    {
+        get
+        {
+            if (SelectedHour is not int hour) return null;
+            var mood = HourlyMood.FirstOrDefault(h => h.Hour == hour)?.Mood ?? Emotion.None;
+            return mood == Emotion.None ? null : mood.ToQuadrant().ToThemeKey();
+        }
+    }
+
+    private void RefreshHourChip()
+    {
+        OnPropertyChanged(nameof(LoggedHourCount));
+        OnPropertyChanged(nameof(HourChipText));
+        OnPropertyChanged(nameof(HourChipBadge));
+        OnPropertyChanged(nameof(HasHourChipBadge));
+        OnPropertyChanged(nameof(IsHourChipFilled));
+        OnPropertyChanged(nameof(HourChipFillColorKey));
+    }
+
+    // --- Mood row: five faces, a bubble of precise states ---
+
+    /// <summary>
+    /// The five faces, left to right from unpleasant to pleasant: Sad, Anxious, Neutral, Calm, Happy.
+    /// Each face is a quadrant of the circumplex (Neutral the origin); the quadrant's other emotions
+    /// live in the bubble that opens from the face. Quadrant names never appear on the row — people
+    /// think "tired", not "unpleasant, calm".
+    /// </summary>
+    public IReadOnlyList<MoodQuadrantViewModel> Quadrants { get; } = new[]
+    {
+        new MoodQuadrantViewModel(EmotionQuadrant.UnpleasantCalm, column: 0),
+        new MoodQuadrantViewModel(EmotionQuadrant.UnpleasantEnergetic, column: 1),
+        new MoodQuadrantViewModel(EmotionQuadrant.Neutral, column: 2),
+        new MoodQuadrantViewModel(EmotionQuadrant.PleasantCalm, column: 3),
+        new MoodQuadrantViewModel(EmotionQuadrant.PleasantEnergetic, column: 4)
+    };
+
+    /// <summary>
+    /// The emotions of the quadrant <see cref="CurrentMood"/> sits in, representative first. Rebuilt
+    /// only when the quadrant changes, so choosing chips within one quadrant never re-creates them.
+    /// Empty with nothing or Neutral chosen: there is nothing to refine.
+    /// </summary>
+    public ObservableCollection<MoodChipViewModel> Refinements { get; } = new();
+
+    private EmotionQuadrant _refinementQuadrant = EmotionQuadrant.None;
+
+    /// <summary>Whether the bubble under the chosen face is out. View state, kept here so it is testable.</summary>
+    [ObservableProperty]
+    private bool _isRefinementOpen;
+
+    /// <summary>A tap anywhere outside the bubble, or a scroll, puts it away. The mood stays.</summary>
+    [RelayCommand]
+    private void CloseRefinement() => IsRefinementOpen = false;
+
+    public EmotionQuadrant CurrentQuadrant => CurrentMood.ToQuadrant();
+
+    public bool HasRefinements => Refinements.Count > 0;
+
+    /// <summary>Which face the caption and the bubble's tail sit under; the middle when nothing is chosen.</summary>
+    public int SelectedColumn => Quadrants.FirstOrDefault(q => q.IsSelected)?.Column ?? 2;
+
+    public bool HasCurrentMood => CurrentMood != Emotion.None;
+
+    /// <summary>
+    /// The chosen face's glyph, for the copy of the face the refinement panel draws over the real one
+    /// while it is out. Empty when nothing is chosen.
+    /// </summary>
+    public string CurrentEmoji => CurrentQuadrant.ToEmoji();
+
+    /// <summary>The chosen face's image, for the copy of it the refinement panel draws over the real one.</summary>
+    public string CurrentIconFile => CurrentQuadrant.ToIconFile();
+
+    /// <summary>The one word on the row: the precise state chosen, shown under its face.</summary>
+    public string CurrentMoodName => HasCurrentMood ? CurrentMood.ToLocalizedName() : string.Empty;
+
+    /// <summary>
+    /// The theme key of the chosen quadrant's hue for that word; null when nothing is chosen. A key
+    /// rather than a colour so each theme decides what a highlight looks like: the pink theme paints
+    /// every highlight in pinks, the brand themes use the quadrant's accent.
+    /// </summary>
+    public string? CurrentColorKey => HasCurrentMood ? CurrentQuadrant.ToThemeKey() : null;
+
+    /// <summary>
+    /// A face. The first tap records the quadrant's representative emotion (Sad, Anxious, Neutral, Calm
+    /// or Happy — the two-tap promise of spec 05 holds) and opens the bubble with the precise states.
+    /// Tapping the chosen face again only toggles the bubble; the mood stays until <see cref="ClearMood"/>.
+    /// </summary>
+    [RelayCommand]
+    private void SelectQuadrant(EmotionQuadrant quadrant)
+    {
+        if (quadrant == EmotionQuadrant.None) return;
+
+        if (CurrentQuadrant == quadrant)
+        {
+            IsRefinementOpen = HasRefinements && !IsRefinementOpen;
+            return;
+        }
+
+        WriteMood(quadrant.Representative());
+        IsRefinementOpen = HasRefinements;
+    }
+
+    /// <summary>A chip in the bubble: the precise state. Choosing one closes the bubble.</summary>
     [RelayCommand]
     private void SelectEmotion(Emotion emotion)
+    {
+        WriteMood(emotion);
+        IsRefinementOpen = false;
+    }
+
+    /// <summary>Un-logs the day, or the selected hour. Lives in the bubble, so a stray double tap cannot do it.</summary>
+    [RelayCommand]
+    private void ClearMood()
+    {
+        WriteMood(Emotion.None);
+        IsRefinementOpen = false;
+    }
+
+    // With no hour selected the row writes the day-level scalar, exactly as before; with an hour
+    // selected it writes that hour instead. Either way PropertyChanged reaches the main ViewModel,
+    // which triggers the debounced auto-save.
+    private void WriteMood(Emotion emotion)
     {
         if (SelectedHour is not int hour)
         {
@@ -158,11 +342,47 @@ public partial class DiaryEntryViewModel : ObservableObject
         var slot = HourlyMood.FirstOrDefault(h => h.Hour == hour);
         if (slot == null) return;
 
-        // Re-picking the same emotion clears the hour — otherwise there would be no way to undo it.
-        slot.Mood = slot.Mood == emotion ? Emotion.None : emotion;
+        slot.Mood = emotion;
         OnPropertyChanged(nameof(CurrentMood));
         UpdateModelHourlyMood();
         RefreshPrompt();
+        RefreshMoodSelection();
+        RefreshHourChip();
+    }
+
+    /// <summary>Brings the faces, the caption and the chips in line with <see cref="CurrentMood"/>.</summary>
+    private void RefreshMoodSelection()
+    {
+        var mood = CurrentMood;
+        var quadrant = mood.ToQuadrant();
+
+        foreach (var face in Quadrants) face.IsSelected = face.Quadrant == quadrant;
+
+        if (quadrant != _refinementQuadrant)
+        {
+            _refinementQuadrant = quadrant;
+            Refinements.Clear();
+            if (quadrant != EmotionQuadrant.None && quadrant != EmotionQuadrant.Neutral)
+            {
+                foreach (var emotion in quadrant.Emotions())
+                {
+                    Refinements.Add(new MoodChipViewModel(emotion));
+                }
+            }
+            OnPropertyChanged(nameof(HasRefinements));
+        }
+
+        foreach (var chip in Refinements) chip.IsSelected = chip.Emotion == mood;
+
+        if (!HasRefinements) IsRefinementOpen = false;
+
+        OnPropertyChanged(nameof(CurrentQuadrant));
+        OnPropertyChanged(nameof(SelectedColumn));
+        OnPropertyChanged(nameof(HasCurrentMood));
+        OnPropertyChanged(nameof(CurrentMoodName));
+        OnPropertyChanged(nameof(CurrentColorKey));
+        OnPropertyChanged(nameof(CurrentEmoji));
+        OnPropertyChanged(nameof(CurrentIconFile));
     }
 
     [ObservableProperty]
@@ -418,6 +638,7 @@ public partial class DiaryEntryViewModel : ObservableObject
         Model.Emotion = value;
         OnPropertyChanged(nameof(CurrentMood));
         RefreshPrompt();
+        RefreshMoodSelection();
     }
 
     [ObservableProperty]
@@ -476,7 +697,7 @@ public partial class HourMoodViewModel : ObservableObject
     public string HourLabel => Hour.ToString("00");
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ColorHex))]
+    [NotifyPropertyChangedFor(nameof(ColorKey))]
     [NotifyPropertyChangedFor(nameof(HasMood))]
     [NotifyPropertyChangedFor(nameof(AccessibilityText))]
     private Emotion _mood;
@@ -485,8 +706,8 @@ public partial class HourMoodViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSelected;
 
-    /// <summary>Transparent while unset; MAUI parses the hex straight into BackgroundColor.</summary>
-    public string ColorHex => Mood == Emotion.None ? "#00000000" : Mood.ToColorHex();
+    /// <summary>Theme key of the hour's mood hue; null while unset, which the view paints see-through.</summary>
+    public string? ColorKey => Mood == Emotion.None ? null : Mood.ToQuadrant().ToThemeKey();
 
     public bool HasMood => Mood != Emotion.None;
 

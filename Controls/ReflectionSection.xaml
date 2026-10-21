@@ -4,33 +4,29 @@
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Controls.ReflectionSection">
              
-    <Border StrokeShape="RoundRectangle 16"
-            StrokeThickness="1"
-            Stroke="{DynamicResource Theme_Dust_Ocean}"
-            BackgroundColor="{DynamicResource Theme_Snow_Black}"
-            Padding="16">
+    <Border Style="{StaticResource Card}">
         <VerticalStackLayout Spacing="16">
             
             <!-- Triggers -->
             <VerticalStackLayout Spacing="6">
-                <Label Text="{x:Static localization:AppResources.TriggersLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" Padding="12,8">
+                <Label Text="{x:Static localization:AppResources.TriggersLabel}" Style="{StaticResource SectionHeader}" />
+                <Border Style="{StaticResource Field}" Padding="12,8">
                     <Editor Text="{Binding Triggers}" Placeholder="{x:Static localization:AppResources.TriggersPlaceholder}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" MinimumHeightRequest="40" AutoSize="TextChanges" />
                 </Border>
             </VerticalStackLayout>
             
             <!-- Gratitude -->
             <VerticalStackLayout Spacing="6">
-                <Label Text="{x:Static localization:AppResources.GratitudeLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" Padding="12,8">
+                <Label Text="{x:Static localization:AppResources.GratitudeLabel}" Style="{StaticResource SectionHeader}" />
+                <Border Style="{StaticResource Field}" Padding="12,8">
                     <Editor Text="{Binding Gratitude}" Placeholder="{x:Static localization:AppResources.GratitudePlaceholder}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" MinimumHeightRequest="40" AutoSize="TextChanges" />
                 </Border>
             </VerticalStackLayout>
 
             <!-- Soul Food -->
             <VerticalStackLayout Spacing="6">
-                <Label Text="{x:Static localization:AppResources.SoulFoodLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" Padding="12,8">
+                <Label Text="{x:Static localization:AppResources.SoulFoodLabel}" Style="{StaticResource SectionHeader}" />
+                <Border Style="{StaticResource Field}" Padding="12,8">
                     <Editor Text="{Binding SoulFood}" Placeholder="{x:Static localization:AppResources.SoulFoodPlaceholder}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" MinimumHeightRequest="40" AutoSize="TextChanges" />
                 </Border>
             </VerticalStackLayout>

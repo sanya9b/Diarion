@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Recording a period, in the panel the health block's drop button grows into — the same gesture as the
+  hours chip on the mood card. Kept to one row: the first day, the last day, and a round button that
+  saves; under it one quiet line with how many days that is and the period already on record. No title
+  and no captions on the controls: the drop says what this is, and the spoken labels carry the rest.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             x:Class="Diarion.Controls.CycleRecordContent"
+             x:DataType="viewmodels:CycleRecordViewModel">
+
+    <VerticalStackLayout Spacing="8">
+        <!-- Each date is a frame behind a picker, not a picker inside a frame: as a Border's content the
+             picker took roughly one tap in six (learned on the old cycle page). -->
+        <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="8" HeightRequest="40">
+            <Grid Grid.Column="0">
+                <Border Style="{StaticResource Field}" StrokeShape="RoundRectangle 20" InputTransparent="True" />
+                <DatePicker Date="{Binding Start}" MaximumDate="{Binding MaximumDate}" Format="d MMM"
+                            FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
+                            BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}"
+                            SemanticProperties.Description="{x:Static localization:AppResources.CycleRecordStart}" />
+            </Grid>
+
+            <Label Grid.Column="1" Text="–" FontSize="15" FontAttributes="Bold" VerticalOptions="Center"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+            <Grid Grid.Column="2">
+                <Border Style="{StaticResource Field}" StrokeShape="RoundRectangle 20" InputTransparent="True" />
+                <DatePicker Date="{Binding End}" MinimumDate="{Binding Start}" MaximumDate="{Binding MaximumDate}" Format="d MMM"
+                            FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
+                            BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}"
+                            SemanticProperties.Description="{x:Static localization:AppResources.CycleRecordEnd}" />
+            </Grid>
+
+            <!-- Save: a round button with a check, the cycle's colour. Dimmed while the range cannot be saved. -->
+            <!-- The colour and the dimming live on the inner disc: the touch behaviour on the outer one
+                 writes its background and opacity, which would override both. -->
+            <Border Grid.Column="3" behaviors:PressFeedback.IsEnabled="True" StrokeShape="Ellipse" StrokeThickness="0"
+                    WidthRequest="40" HeightRequest="40" BackgroundColor="Transparent"
+                    SemanticProperties.Description="{x:Static localization:AppResources.CycleAddTitle}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SaveCommand}" />
+                </Border.GestureRecognizers>
+                <Border StrokeShape="Ellipse" StrokeThickness="0" InputTransparent="True" BackgroundColor="{DynamicResource Theme_Berry}">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding CanSave}" Value="False">
+                            <Setter Property="Opacity" Value="0.4" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Path Data="M 5 12.5 L 10 17 L 19 7.5"
+                          Stroke="{DynamicResource Theme_OnAccent}" StrokeThickness="2.2" StrokeLineCap="Round" StrokeLineJoin="Round"
+                          WidthRequest="18" HeightRequest="18" Aspect="Uniform" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Border>
+        </Grid>
+
+        <HorizontalStackLayout Spacing="6" HorizontalOptions="Center">
+            <Label Text="{Binding DaysText}" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource Theme_Berry}" />
+            <Label Text="·" FontSize="11" IsVisible="{Binding HasLastRecorded}" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            <Label Text="{Binding LastRecordedText}" IsVisible="{Binding HasLastRecorded}" FontSize="11"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+</ContentView>

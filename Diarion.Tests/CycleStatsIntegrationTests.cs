@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
-using Diarion.Services.Ai;
 using Diarion.ViewModels.Statistics;
 using FluentAssertions;
 using Moq;
@@ -156,8 +155,7 @@ public class CycleCorrelationTests
                .ReturnsAsync(new List<FinanceTransaction>());
 
         return new CorrelationService(
-            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object,
-            new NullThemeClusterService());
+            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object);
     }
 
     /// <summary>Thirty days where mood is low exactly on the five logged period days.</summary>

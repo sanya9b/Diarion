@@ -67,7 +67,8 @@ public class QuickCaptureViewModelTests
         vm.Date.Should().Be(Today);
         vm.Hour.Should().Be(14);
         vm.SelectedEmotion.Should().Be(Emotion.Calm);
-        vm.Emotions.Single(e => e.Emotion == Emotion.Calm).IsSelected.Should().BeTrue();
+        vm.Quadrants.Single(q => q.Quadrant == EmotionQuadrant.PleasantCalm).IsSelected.Should().BeTrue();
+        vm.Refinements.Single(c => c.Emotion == Emotion.Calm).IsSelected.Should().BeTrue();
         vm.CanSave.Should().BeFalse("nothing has changed yet");
         _diary.Verify(d => d.GetEntryForDateAsync(Today), Times.Once);
     }
@@ -93,7 +94,9 @@ public class QuickCaptureViewModelTests
 
         try
         {
-            vm.SelectEmotionCommand.Execute(Emotion.Happy);
+            // A face records its quadrant's representative, as on the day screen.
+            vm.SelectQuadrantCommand.Execute(EmotionQuadrant.PleasantEnergetic);
+            vm.SelectedEmotion.Should().Be(Emotion.Happy);
             vm.CanSave.Should().BeTrue();
 
             await vm.SaveCommand.ExecuteAsync(null);
@@ -136,32 +139,67 @@ public class QuickCaptureViewModelTests
     }
 
     [Fact]
+    public async Task A_chip_refines_the_face_and_the_chosen_face_keeps_the_refinement()
+    {
+        var vm = await LoadedAsync(Create(Today.AddHours(10)));
+
+        vm.SelectQuadrantCommand.Execute(EmotionQuadrant.UnpleasantCalm);
+        vm.HasRefinements.Should().BeTrue();
+        vm.Refinements.Select(c => c.Emotion).Should().Equal(EmotionCatalog.Emotions(EmotionQuadrant.UnpleasantCalm));
+        vm.Refinements[0].IsSelected.Should().BeTrue("the representative is what a face tap records");
+
+        vm.SelectEmotionCommand.Execute(Emotion.Tired);
+        vm.SelectedEmotion.Should().Be(Emotion.Tired);
+        vm.SelectedMoodName.Should().Be(Emotion.Tired.ToLocalizedName());
+
+        // Tapping the same face again is not an off switch and does not throw the refinement away.
+        vm.SelectQuadrantCommand.Execute(EmotionQuadrant.UnpleasantCalm);
+        vm.SelectedEmotion.Should().Be(Emotion.Tired);
+
+        await vm.SaveCommand.ExecuteAsync(null);
+        _entry.HourlyMood.Should().ContainSingle(h => h.Hour == 10 && h.Mood == Emotion.Tired);
+    }
+
+    [Fact]
+    public async Task The_neutral_face_has_nothing_to_refine()
+    {
+        var vm = await LoadedAsync(Create(Today.AddHours(10)));
+
+        vm.SelectQuadrantCommand.Execute(EmotionQuadrant.Neutral);
+
+        vm.SelectedEmotion.Should().Be(Emotion.Neutral);
+        vm.HasRefinements.Should().BeFalse();
+        vm.HasSelectedMood.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task The_fill_follows_the_selection_both_ways()
     {
-        // The tiles and chips colour an inner layer from this value rather than through a trigger
-        // on the tappable Border, because such a trigger applies and never reverts. So the value
-        // itself has to go back to transparent, and say so, when the choice moves on.
+        // Faces and chips colour an inner layer from a theme key rather than through a trigger on
+        // the tappable Border, because press feedback writes that Border's background and a trigger
+        // never gets it back. So the key itself has to go back to null, and say so, when the choice
+        // moves on.
         var vm = await LoadedAsync(Create(Today.AddHours(10)));
-        var calm = vm.Emotions.Single(e => e.Emotion == Emotion.Calm);
-        var happy = vm.Emotions.Single(e => e.Emotion == Emotion.Happy);
+        var calm = vm.Quadrants.Single(q => q.Quadrant == EmotionQuadrant.PleasantCalm);
+        var energetic = vm.Quadrants.Single(q => q.Quadrant == EmotionQuadrant.PleasantEnergetic);
         var raised = new List<string>();
         calm.PropertyChanged += (_, e) => raised.Add(e.PropertyName ?? string.Empty);
 
-        vm.SelectEmotionCommand.Execute(Emotion.Calm);
-        calm.FillColorHex.Should().Be(QuickEmotionChoice.SelectedFill);
-        happy.FillColorHex.Should().Be(QuickEmotionChoice.NoFill);
+        vm.SelectQuadrantCommand.Execute(EmotionQuadrant.PleasantCalm);
+        calm.FillColorKey.Should().Be(EmotionQuadrant.PleasantCalm.ToThemeKey());
+        energetic.FillColorKey.Should().BeNull();
 
-        vm.SelectEmotionCommand.Execute(Emotion.Happy);
-        calm.FillColorHex.Should().Be(QuickEmotionChoice.NoFill);
-        happy.FillColorHex.Should().Be(QuickEmotionChoice.SelectedFill);
-        raised.Should().Contain(nameof(QuickEmotionChoice.FillColorHex));
+        vm.SelectQuadrantCommand.Execute(EmotionQuadrant.PleasantEnergetic);
+        calm.FillColorKey.Should().BeNull();
+        energetic.FillColorKey.Should().Be(EmotionQuadrant.PleasantEnergetic.ToThemeKey());
+        raised.Should().Contain(nameof(MoodQuadrantViewModel.FillColorKey));
 
         var chip = new QuickHabitChip(Guid.NewGuid(), "Вода", wasCompleted: false);
-        chip.FillColorHex.Should().Be(QuickEmotionChoice.NoFill);
+        chip.FillColorKey.Should().BeNull();
         chip.IsCompleted = true;
-        chip.FillColorHex.Should().Be(QuickEmotionChoice.SelectedFill);
+        chip.FillColorKey.Should().Be(QuickHabitChip.TickedColorKey);
         chip.IsCompleted = false;
-        chip.FillColorHex.Should().Be(QuickEmotionChoice.NoFill);
+        chip.FillColorKey.Should().BeNull();
     }
 
     [Fact]
@@ -170,9 +208,11 @@ public class QuickCaptureViewModelTests
         _entry.HourlyMood.Add(new HourMood { Hour = 14, Mood = Emotion.Calm });
         var vm = await LoadedAsync(Create(Today.AddHours(14)));
 
-        // Tapping the selected emotion again clears it, the way the day screen's row does.
-        vm.SelectEmotionCommand.Execute(Emotion.Calm);
+        // Clearing is its own action, as on the day screen, never a second tap on a face.
+        vm.ClearMoodCommand.Execute(null);
         vm.SelectedEmotion.Should().Be(Emotion.None);
+        vm.Quadrants.Should().OnlyContain(q => !q.IsSelected);
+        vm.HasRefinements.Should().BeFalse();
         vm.CanSave.Should().BeTrue("removing a reading is a change too");
 
         await vm.SaveCommand.ExecuteAsync(null);

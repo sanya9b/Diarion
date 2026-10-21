@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.LockPage"
@@ -12,7 +13,7 @@
 
         <!-- Header + PIN dots -->
         <VerticalStackLayout Grid.Row="1" Spacing="18" VerticalOptions="End" HorizontalOptions="Center">
-            <Label Text="🔒" FontSize="52" HorizontalOptions="Center" />
+            <Path Data="{x:Static icons:AppIcons.Lock}" WidthRequest="44" HeightRequest="44" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" />
             <Label Text="{x:Static localization:AppResources.EnterPinTitle}"
                    FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"
                    TextColor="{DynamicResource Theme_Midnight_Snow}" />
@@ -42,12 +43,16 @@
             <Button Grid.Row="2" Grid.Column="2" Text="9" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="9" />
 
             <!-- Biometric (only when available) -->
-            <Button Grid.Row="3" Grid.Column="0" Text="👆"
+            <Button Grid.Row="3" Grid.Column="0"
                     Style="{StaticResource PinKey}"
                     BackgroundColor="Transparent" BorderWidth="0"
                     IsVisible="{Binding IsBiometricAvailable}"
                     Command="{Binding TryBiometricCommand}"
                     SemanticProperties.Description="{x:Static localization:AppResources.UnlockWithBiometricsButton}" />
+            <!-- Drawn over the button rather than typed into it: a Button can only show text, and the
+                 pointing-hand emoji was a colour glyph on a monochrome keypad. The button keeps the tap
+                 and the screen-reader name. -->
+            <Path Grid.Row="3" Grid.Column="0" IsVisible="{Binding IsBiometricAvailable}" Data="{x:Static icons:AppIcons.Fingerprint}" WidthRequest="28" HeightRequest="28" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" />
 
             <Button Grid.Row="3" Grid.Column="1" Text="0" Style="{StaticResource PinKey}" Command="{Binding EnterDigitCommand}" CommandParameter="0" />
 

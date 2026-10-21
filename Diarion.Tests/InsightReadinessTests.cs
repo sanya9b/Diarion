@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
-using Diarion.Services.Ai;
 using Diarion.ViewModels.Statistics;
 using FluentAssertions;
 using Moq;
@@ -45,8 +44,7 @@ public class InsightReadinessTests
                .ReturnsAsync(new List<FinanceTransaction>());
 
         return new CorrelationService(
-            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object,
-            new NullThemeClusterService());
+            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object);
     }
 
     /// <summary>Days carrying both a mood and a sleep quality, which is one paired day each.</summary>
@@ -126,7 +124,7 @@ public class InsightReadinessTests
         var correlation = new Mock<ICorrelationService>();
         correlation.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
                    .ReturnsAsync(correlations ?? new List<MoodCorrelation>());
-        correlation.Setup(c => c.GetReadinessAsync(It.IsAny<StatsRange>(), It.IsAny<int>(), It.IsAny<bool>()))
+        correlation.Setup(c => c.GetReadinessAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
                    .ReturnsAsync(readiness);
 
         return new MoodStatsViewModel(stats.Object, correlation.Object);

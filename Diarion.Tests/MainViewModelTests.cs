@@ -90,8 +90,7 @@ public class MainViewModelTests
         _quickMenuSection = new QuickMenuViewModel(
             _menuConfigServiceMock.Object,
             _profileServiceMock.Object,
-            _navigationServiceMock.Object,
-            new FakeAiAvailability());
+            _navigationServiceMock.Object);
 
         _habitsSection = new HabitsSectionViewModel(
             _habitServiceMock.Object,
@@ -159,6 +158,43 @@ public class MainViewModelTests
     }
 
     [Fact]
+    public void StreakTile_FollowsTheDiarySave()
+    {
+        // The autosave announces the write; the tile must move then, not on the next visit to the screen.
+        var viewModel = CreateViewModel();
+        _diaryServiceMock.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(5, 1));
+
+        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(DocumentKind.Diary, Guid.NewGuid().ToString()));
+
+        viewModel.CurrentStreak.Should().Be(5);
+        viewModel.IsStreakVisible.Should().BeTrue();
+        viewModel.IsStreakHeldByGrace.Should().BeTrue("one of the five days was forgiven");
+        viewModel.StreakAccessibleText.Should().Contain("5");
+    }
+
+    [Fact]
+    public void StreakTile_IgnoresNotes()
+    {
+        // Notes never count toward the streak, so saving one has nothing to recount.
+        var viewModel = CreateViewModel();
+        _diaryServiceMock.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(9, 0));
+
+        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(DocumentKind.Note, Guid.NewGuid().ToString()));
+
+        viewModel.CurrentStreak.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task StreakTile_OpensStatistics()
+    {
+        var viewModel = CreateViewModel();
+
+        await viewModel.OpenStatisticsCommand.ExecuteAsync(null);
+
+        _navigationServiceMock.Verify(n => n.NavigateToAsync("//StatisticsPage", null), Times.Once);
+    }
+
+    [Fact]
     public void SwitchModes_ChangesPropertiesCorrectly()
     {
         // Arrange
@@ -217,6 +253,28 @@ public class MainViewModelTests
 
         viewModel.CurrentEntry!.CycleDay.Should().Be("15");
         viewModel.CurrentEntry.HasCycleDay.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task RefreshCycleDay_AfterRecordingOnThisScreen_UpdatesTheDayWithoutSavingIt()
+    {
+        // Recording a period moved from its own page to a panel on this screen, so nothing reloads the
+        // day afterwards: the recount has to happen in place, and must not write an untouched day.
+        _profileServiceMock
+            .Setup(s => s.GetUserProfileAsync())
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
+        var viewModel = CreateViewModel();
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+        viewModel.CurrentEntry!.HasCycleDay.Should().BeFalse("nothing is recorded yet");
+
+        _cycleLogServiceMock
+            .Setup(s => s.GetMarkedDatesAsync())
+            .ReturnsAsync(new List<DateTime> { DateTime.Today });
+        await viewModel.RefreshCycleDayAsync();
+        await viewModel.FlushAutoSaveAsync();
+
+        viewModel.CurrentEntry.CycleDay.Should().Be("1");
+        _diaryServiceMock.Verify(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()), Times.Never);
     }
 
     [Fact]

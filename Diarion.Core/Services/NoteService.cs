@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Messages;
 using Diarion.Models;
-using Diarion.Models.Ai;
 using Diarion.Services.Database;
 using Diarion.Services.Store;
 using LiteDB;
@@ -134,7 +133,7 @@ public class NoteService : INoteService
 
     private static void Announce(string id) =>
         WeakReferenceMessenger.Default.Send(
-            new DocumentChangedMessage(EmbeddingSourceKind.Note, id));
+            new DocumentChangedMessage(DocumentKind.Note, id));
 
     public Task<List<Note>> GetBacklinksAsync(string title, string? excludeId = null)
     {

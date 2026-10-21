@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:sys="clr-namespace:System;assembly=netstandard"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
@@ -30,7 +32,7 @@
                     Stroke="{DynamicResource Theme_Dust_Ocean}"
                     BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     Padding="4">
-                <Grid ColumnDefinitions="*,*,*,Auto" ColumnSpacing="4">
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="4">
                     <!-- Profile tab -->
                     <Border Grid.Column="0" StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="Transparent" Padding="0,10">
                         <Border.Triggers>
@@ -96,32 +98,6 @@
                             </Label.Triggers>
                         </Label>
                     </Border>
-
-                    <!-- AI tab. Auto-width, not a fourth equal column: the label is two characters
-                         in Ukrainian and stealing a third of the bar for it would squeeze the rest.
-                         Hidden while the on-device models are retired — the Auto column collapses to
-                         nothing and the other three share the bar, so no ColumnDefinitions change. -->
-                    <Border Grid.Column="3" StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="Transparent" Padding="14,10"
-                            IsVisible="{Binding IsAiTabAvailable}">
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding IsAiTab}" Value="True">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Ocean_Ocean}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="3" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{x:Static localization:AppResources.SettingsTabAi}" InputTransparent="True" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center">
-                            <Label.Triggers>
-                                <DataTrigger TargetType="Label" Binding="{Binding IsAiTab}" Value="True">
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Label" Binding="{Binding IsAiTab}" Value="False">
-                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
-                    </Border>
                 </Grid>
             </Border>
 
@@ -129,12 +105,12 @@
             <VerticalStackLayout Spacing="20" IsVisible="{Binding IsProfileTab}">
 
                 <!-- App Customization (Moved from Flyout) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <VerticalStackLayout Spacing="16">
-                        <Label Text="APPEARANCE &amp; LANGUAGE" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{x:Static localization:AppResources.SettingsAppearanceTitle}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
                         <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
                             <!-- Language Switch -->
@@ -142,8 +118,8 @@
                                 <Border StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" />
                                 <Border x:Name="LangThumb" StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" WidthRequest="50" HorizontalOptions="{Binding LangThumbAlignment, Source={RelativeSource AncestorType={x:Type ContentPage}}}" Margin="4" />
                                 <Grid ColumnDefinitions="*,*">
-                                    <Label Grid.Column="0" Text="🇬🇧 EN" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                    <Label Grid.Column="1" Text="🇺🇦 UA" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Label Grid.Column="0" Text="EN" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Label Grid.Column="1" Text="UA" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                                 </Grid>
                                 <Button BackgroundColor="Transparent" BorderWidth="0" Clicked="OnToggleLanguageClicked" HorizontalOptions="Fill" VerticalOptions="Fill" ZIndex="10" />
                             </Grid>
@@ -153,9 +129,9 @@
                                 <Border StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" />
                                 <Border x:Name="ThemeThumb" StrokeShape="RoundRectangle 16" StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" WidthRequest="40" HorizontalOptions="{Binding ThemeThumbAlignment, Source={RelativeSource AncestorType={x:Type ContentPage}}}" Margin="4" />
                                 <Grid ColumnDefinitions="*,*,*">
-                                    <Label Grid.Column="0" Text="☀️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                    <Label Grid.Column="1" Text="🌙" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                    <Label Grid.Column="2" Text="🌸" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Path Grid.Column="0" Data="{x:Static icons:AppIcons.Sun}" WidthRequest="16" HeightRequest="16" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Path Grid.Column="1" Data="{x:Static icons:AppIcons.Moon}" WidthRequest="15" HeightRequest="15" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Path Grid.Column="2" Data="{x:Static icons:AppIcons.Blossom}" WidthRequest="16" HeightRequest="16" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.4" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Grid>
                                 <Button BackgroundColor="Transparent" BorderWidth="0" Clicked="OnToggleThemeClicked" HorizontalOptions="Fill" VerticalOptions="Fill" ZIndex="10" />
                             </Grid>
@@ -164,12 +140,12 @@
                 </Border>
 
                 <!-- Особиста інформація -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -218,7 +194,7 @@
 
                 <!-- Stands where the cycle card would be while the birth date is unknown (and the gender does
                      not rule the feature out). Once the date is known and under 14, neither card shows. -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         IsVisible="{Binding Profile.NeedsBirthDateForCycle}"
@@ -230,21 +206,21 @@
                 </Border>
 
                 <!-- Менструальний календар (Menstrual Tracker) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         IsVisible="{Binding Profile.IsCycleFeatureAvailable}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{x:Static localization:AppResources.MenstrualTrackingTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsMenstrualTrackingEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.EnableTrackingLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.EnableTrackingLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsMenstrualTrackingEnabled}" VerticalOptions="Center" />
                         </Grid>
 
                         <VerticalStackLayout Spacing="16" IsVisible="{Binding Profile.IsMenstrualTrackingEnabled}">
@@ -264,12 +240,14 @@
 
                             <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
 
-                            <!-- Recording and correcting periods lives on its own page: it is a handful of
+                            <!-- Recording a period moved to the home screen, the "+ Місячні" chip in the health
+                                 block (spec 18). What stays here is the page with the history and forecast. -->
+                            <!-- The history, forecast and symptoms live on their own page: it is a handful of
                                  days a month, so it has no business occupying the daily screen. That page is
                                  reachable from here alone, so the row is a row and not dim small print. -->
                             <!-- Padded to a full touch target rather than to the text: at two pixels the row
                                  was a 24dp strip, and a tap that lands a hair above or below it does nothing. -->
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,12" BackgroundColor="Transparent">
+                            <Grid behaviors:PressFeedback.IsEnabled="True" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,12" BackgroundColor="Transparent">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenCycleCommand}" />
                                 </Grid.GestureRecognizers>
@@ -288,40 +266,40 @@
                 <!-- x:Name on the three settings-guide anchors; ProfilePage.xaml.cs maps a TourStepId
                      onto each one and measures it. -->
                 <Border x:Name="BlocksCardAnchor"
-                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{x:Static localization:AppResources.HomeBlocksTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsMoodBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockMoodLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockMoodLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsMoodBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsSleepBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockSleepLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockSleepLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsSleepBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsHealthBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockHealthLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockHealthLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsHealthBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsFoodBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockFoodLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockFoodLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsFoodBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsHabitsBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockHabitsLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockHabitsLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsHabitsBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
                         <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" Margin="0,2" />
@@ -329,7 +307,7 @@
                         <!-- The guides, replayable. They belong to this card because they are about
                              the layout it configures, and this is the one way back to an explanation
                              that otherwise happens once and never again. -->
-                        <Label Text="{x:Static localization:AppResources.TourReplayLabel}"
+                        <Label behaviors:PressFeedback.IsEnabled="True" Text="{x:Static localization:AppResources.TourReplayLabel}"
                                FontSize="13" TextColor="{DynamicResource Theme_Sage}">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ReplayTourCommand}" />
@@ -344,27 +322,27 @@
                      and the library and the answer history hang off them. Buried among the toggles
                      they read as switches for something already understood, which they are not. -->
                 <Border x:Name="PromptsCardAnchor"
-                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{x:Static localization:AppResources.SettingsPromptsTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                         <Label Text="{x:Static localization:AppResources.SettingsPromptsHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsGuidedPromptBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockGuidedPromptLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockGuidedPromptLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsGuidedPromptBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
                         <!-- Full rows with a chevron, like the cycle link above. As indented grey
                              captions these two were read as help text and never tapped, which is the
                              whole reason this card exists. -->
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
+                        <Grid behaviors:PressFeedback.IsEnabled="True" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
                               IsVisible="{Binding Profile.IsGuidedPromptBlockVisible}">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding OpenPromptLibraryCommand}" />
@@ -373,7 +351,7 @@
                             <Label Grid.Column="1" Text="›" InputTransparent="True" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
+                        <Grid behaviors:PressFeedback.IsEnabled="True" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,10" BackgroundColor="Transparent"
                               IsVisible="{Binding Profile.IsGuidedPromptBlockVisible}">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding OpenPromptHistoryCommand}" />
@@ -384,9 +362,9 @@
 
                         <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" Margin="0,2" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsReflectionBlockVisible}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.BlockReflectionLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.BlockReflectionLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsReflectionBlockVisible}" VerticalOptions="Center" />
                         </Grid>
 
                         <Label Text="{x:Static localization:AppResources.SettingsReflectionHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
@@ -395,25 +373,25 @@
 
                 <!-- Фінанси (Finances). Out of the blocks card: none of these three decide what shows
                      on the home screen, which is what that card is about. -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{x:Static localization:AppResources.SettingsFinanceTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsBudgetsEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.SettingsBudgetsToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.SettingsBudgetsToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsBudgetsEnabled}" VerticalOptions="Center" />
                         </Grid>
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsPlannedTransactionsEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.SettingsPlannedToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.SettingsPlannedToggle}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.IsPlannedTransactionsEnabled}" VerticalOptions="Center" />
                         </Grid>
 
                         <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
@@ -430,31 +408,31 @@
                 </Border>
 
                 <!-- Налаштування завдань -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{x:Static localization:AppResources.TaskSettingsTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.AutoMigrateUncompletedTasksEnabled}" Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AutoMigrateTasksLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="{x:Static localization:AppResources.AutoMigrateTasksLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Profile.AutoMigrateUncompletedTasksEnabled}" VerticalOptions="Center" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
 
                 <!-- Нагадування (Reminders) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -473,12 +451,12 @@
                 </Border>
 
                 <!-- Серії (Streaks) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -507,12 +485,12 @@
                      is the one card here that can change what the rest of the app lets you do. -->
                 <Border x:Name="SubscriptionCard" x:DataType="viewmodels:SubscriptionSectionViewModel"
                         IsVisible="{Binding IsVisible}"
-                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -555,12 +533,12 @@
                 </Border>
 
                 <!-- Безпека (Security) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -607,12 +585,12 @@
                 </Border>
 
                 <!-- Backup & Restore -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -647,16 +625,13 @@
                      to a folder the user picked once — iCloud Drive, Google Drive, a card — whenever the
                      app opens and the interval has passed. Restoring goes through the ordinary "Restore". -->
                 <Border x:Name="AutoBackupCard" x:DataType="viewmodels:ScheduledBackupViewModel"
-                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        Padding="16">
+                        Style="{StaticResource Card}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="{x:Static localization:AppResources.AutoBackupTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{x:Static localization:AppResources.AutoBackupTitle}" Style="{StaticResource SectionHeader}" />
 
                         <Label Text="{x:Static localization:AppResources.AutoBackupDescription}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
@@ -664,9 +639,10 @@
                                FontSize="13" TextColor="{DynamicResource Theme_Amber}" />
 
                         <VerticalStackLayout Spacing="12" IsVisible="{Binding IsSupported}">
-                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                                <Switch Grid.Column="0" IsToggled="{Binding IsEnabled}" OnColor="{DynamicResource Theme_Ocean_Ocean}" VerticalOptions="Center" />
-                                <Label Grid.Column="1" Text="{x:Static localization:AppResources.AutoBackupEnableLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <!-- The settings screen's switch row: label left, switch right. -->
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.AutoBackupEnableLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Switch Grid.Column="1" IsToggled="{Binding IsEnabled}" VerticalOptions="Center" />
                             </Grid>
 
                             <VerticalStackLayout Spacing="12" IsVisible="{Binding IsEnabled}">
@@ -710,7 +686,7 @@
                 </Border>
 
                 <!-- Crash report. Hidden entirely until something has actually crashed. -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Coral}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16"
@@ -756,12 +732,12 @@
                 </Border>
 
                 <!-- Export data (open, portable formats) -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="16">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="10">
@@ -795,178 +771,6 @@
                         CornerRadius="12"
                         HeightRequest="48"
                         Margin="0,0,0,4" />
-            </VerticalStackLayout>
-
-            <!-- ============ AI TAB ============ -->
-            <VerticalStackLayout Spacing="20" IsVisible="{Binding IsAiTab}">
-
-                <!-- Увімкнення та пояснення -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        Padding="16">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="{x:Static localization:AppResources.AiSectionTitle}"
-                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
-                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsAiEnabled}"
-                                      Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AiEnableToggle}"
-                                   VerticalOptions="Center"
-                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        </Grid>
-
-                        <Label Text="{x:Static localization:AppResources.AiIntro}"
-                               FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-                        <!-- The permission list says INTERNET, so the reason has to be visible here
-                             rather than only in the store listing. -->
-                        <Label Text="{x:Static localization:AppResources.AiNetworkNotice}"
-                               FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Пристрій -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        Padding="16">
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="{x:Static localization:AppResources.AiDeviceHeader}"
-                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
-                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                        <Label Text="{Binding Ai.DeviceSummary}" FontSize="14"
-                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        <Label Text="{Binding Ai.TierDescription}" FontSize="13"
-                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Моделі -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        Padding="16">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="{x:Static localization:AppResources.AiModelsHeader}"
-                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
-                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Ai.Models}" Spacing="16">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="viewmodels:AiModelItemViewModel">
-                                    <VerticalStackLayout Spacing="6">
-                                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
-                                            <Label Grid.Column="0" Text="{Binding DisplayName}"
-                                                   FontSize="14" FontAttributes="Bold"
-                                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AiRecommendedBadge}"
-                                                   IsVisible="{Binding IsRecommended}"
-                                                   FontSize="11" VerticalOptions="Center"
-                                                   TextColor="{DynamicResource Theme_Sage}" />
-                                        </Grid>
-
-                                        <Label FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}">
-                                            <Label.Text>
-                                                <MultiBinding StringFormat="{}{0} · {1} · {2}">
-                                                    <Binding Path="SizeText" />
-                                                    <Binding Path="LicenseText" />
-                                                    <Binding Path="StateText" />
-                                                </MultiBinding>
-                                            </Label.Text>
-                                        </Label>
-
-                                        <Label Text="{Binding UnavailableReason}" FontSize="12"
-                                               IsVisible="{Binding ShowUnavailableReason}"
-                                               TextColor="{DynamicResource Theme_Amber}" />
-
-                                        <ProgressBar Progress="{Binding ProgressFraction}"
-                                                     IsVisible="{Binding ShowProgress}"
-                                                     ProgressColor="{DynamicResource Theme_Ocean_Ocean}" />
-
-                                        <Label Text="{Binding ProgressDetail}"
-                                               IsVisible="{Binding HasProgressDetail}"
-                                               FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-                                        <Label Text="{Binding BackgroundNotice}"
-                                               IsVisible="{Binding IsDownloading}"
-                                               FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-                                        <Label Text="{Binding ErrorMessage}" FontSize="12"
-                                               IsVisible="{Binding HasError}"
-                                               TextColor="{DynamicResource Theme_Coral}" />
-
-                                        <HorizontalStackLayout Spacing="8">
-                                            <Button Text="{Binding DownloadActionText}"
-                                                    Command="{Binding DownloadCommand}"
-                                                    IsVisible="{Binding CanDownload}"
-                                                    BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
-                                                    TextColor="{DynamicResource Theme_Snow}"
-                                                    CornerRadius="10" HeightRequest="40" Padding="16,0" />
-                                            <Button Text="{x:Static localization:AppResources.AiCancelAction}"
-                                                    Command="{Binding CancelCommand}"
-                                                    IsVisible="{Binding IsDownloading}"
-                                                    BackgroundColor="Transparent"
-                                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                                    CornerRadius="10" HeightRequest="40" Padding="16,0" />
-                                            <Button Text="{x:Static localization:AppResources.AiDeleteAction}"
-                                                    Command="{Binding DeleteCommand}"
-                                                    IsVisible="{Binding CanDelete}"
-                                                    BackgroundColor="Transparent"
-                                                    TextColor="{DynamicResource Theme_Coral}"
-                                                    CornerRadius="10" HeightRequest="40" Padding="16,0" />
-                                        </HorizontalStackLayout>
-                                    </VerticalStackLayout>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
-
-                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                            <CheckBox Grid.Column="0" IsChecked="{Binding Profile.IsWifiOnlyModelDownload}"
-                                      Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="{x:Static localization:AppResources.AiWifiOnlyToggle}"
-                                   VerticalOptions="Center"
-                                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Індекс -->
-                <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        Padding="16">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="{x:Static localization:AppResources.AiIndexHeader}"
-                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
-                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-                        <Label Text="{Binding Ai.IndexStatus}" FontSize="14"
-                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
-
-                        <ProgressBar Progress="{Binding Ai.IndexFraction}"
-                                     IsVisible="{Binding Ai.IsIndexing}"
-                                     ProgressColor="{DynamicResource Theme_Ocean_Ocean}" />
-
-                        <Label Text="{Binding Ai.IndexedChunks}" FontSize="12"
-                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-                        <HorizontalStackLayout Spacing="8">
-                            <Button Text="{x:Static localization:AppResources.AiIndexRebuildAction}"
-                                    Command="{Binding Ai.RebuildIndexCommand}"
-                                    BackgroundColor="Transparent"
-                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                    CornerRadius="10" HeightRequest="40" Padding="16,0" />
-                            <Button Text="{x:Static localization:AppResources.AiIndexClearAction}"
-                                    Command="{Binding Ai.ClearIndexCommand}"
-                                    BackgroundColor="Transparent"
-                                    TextColor="{DynamicResource Theme_Coral}"
-                                    CornerRadius="10" HeightRequest="40" Padding="16,0" />
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
             </VerticalStackLayout>
 
             <!-- Save Button (applies to all tabs) -->

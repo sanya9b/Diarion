@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:viewModels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
@@ -15,12 +16,7 @@
     <Grid RowDefinitions="Auto,*">
         <!-- Top Custom Bar -->
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
-                <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnCloseTapped" />
-                </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-            </Grid>
+            <controls:CloseButton Grid.Column="0" Tapped="OnCloseTapped" />
 
             <VerticalStackLayout Grid.Column="1" Spacing="4">
                 <Label Text="{localization:Translate Key=Notes}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
@@ -60,29 +56,31 @@
                                 HorizontalScrollBarVisibility="Never">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:NoteFilterChip">
-                            <Border Padding="12,0" Margin="0,0,6,0" HeightRequest="32" StrokeThickness="1"
-                                    StrokeShape="RoundRectangle 16" Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                    BackgroundColor="Transparent">
-                                <Border.Triggers>
-                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                                    </DataTrigger>
-                                </Border.Triggers>
-                                <Border.GestureRecognizers>
+                            <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                <ContentView.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectFilterCommand}" CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                                <Label Text="{Binding DisplayName}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold">
-                                    <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                </ContentView.GestureRecognizers>
+                                <Border Padding="12,0" Margin="0,0,6,0" HeightRequest="32" StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 16" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                        BackgroundColor="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                                         </DataTrigger>
-                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                        </DataTrigger>
-                                    </Label.Triggers>
-                                </Label>
-                            </Border>
+                                    </Border.Triggers>
+                                    <Label Text="{Binding DisplayName}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                            </ContentView>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
@@ -125,9 +123,9 @@
                                         </SwipeItemView>
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-                                <Border StrokeThickness="1"
+                                <Border behaviors:PressFeedback.IsEnabled="True" StrokeThickness="1"
                                         Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                        BackgroundColor="{DynamicResource Theme_Snow_Midnight}"
+                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
                                         StrokeShape="RoundRectangle 14"
                                         Padding="14,10">
                                     <Border.GestureRecognizers>
@@ -163,7 +161,7 @@
             </CollectionView>
             
             <!-- Floating Action Button (iOS Style Compose) -->
-            <Border Grid.Row="1"
+            <Border behaviors:PressFeedback.IsEnabled="True" Grid.Row="1"
                     WidthRequest="56"
                     HeightRequest="56"
                     StrokeShape="RoundRectangle 28"
@@ -201,7 +199,7 @@
                            ReturnCommand="{Binding QuickCaptureCommand}"
                            VerticalOptions="Center"
                            Margin="10,0,0,0" />
-                    <Border Grid.Column="1" WidthRequest="40" HeightRequest="40"
+                    <Border behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" WidthRequest="40" HeightRequest="40"
                             StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Amber}"
                             StrokeShape="RoundRectangle 20" VerticalOptions="Center">
                         <Border.GestureRecognizers>

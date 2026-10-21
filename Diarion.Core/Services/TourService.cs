@@ -68,10 +68,6 @@ public class TourService : ITourService
         profile.TourVersionSeen = 0;
         profile.StatsTourVersionSeen = 0;
         profile.SettingsTourVersionSeen = 0;
-
-        // Not a guide, but dismissed like one, and this is the one place that promises everything
-        // from the start again (spec 17, D5).
-        profile.InsightPathHiddenBelowMilestone = 0;
     }
 
     private static int SeenVersion(TourId tour, UserProfile profile) => tour switch
@@ -143,12 +139,6 @@ public class TourService : ITourService
             Id = TourStepId.StatsTabs,
             Title = AppResources.TourStatsTabsTitle,
             Body = AppResources.TourStatsTabsText
-        },
-        new()
-        {
-            Id = TourStepId.StatsThemes,
-            Title = AppResources.TourStatsThemesTitle,
-            Body = AppResources.TourStatsThemesText
         },
         new()
         {

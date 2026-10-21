@@ -163,8 +163,7 @@ public class TourViewModelTests
         next.Should().NotBeEmpty();
 
         await vm.NextCommand.ExecuteAsync(null);
-        await vm.NextCommand.ExecuteAsync(null);
-        vm.PrimaryButtonText.Should().Be(next, "three of four steps still have somewhere to go");
+        vm.PrimaryButtonText.Should().Be(next, "two of three steps still have somewhere to go");
 
         await vm.NextCommand.ExecuteAsync(null);
         vm.IsLastStep.Should().BeTrue();

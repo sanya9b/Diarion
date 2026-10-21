@@ -10,4 +10,9 @@ public partial class SearchPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    private async void OnCloseTapped(object? sender, TappedEventArgs e)
+    {
+        await Shell.Current.Navigation.PopModalAsync();
+    }
 }

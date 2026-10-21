@@ -7,7 +7,6 @@ using Diarion.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Messages;
 using Diarion.Models;
-using Diarion.Models.Ai;
 using Diarion.Services.Database;
 using Diarion.Services.Store;
 using LiteDB;
@@ -80,7 +79,7 @@ public class DiaryService : IDiaryService
 
     private static void Announce(Guid id) =>
         WeakReferenceMessenger.Default.Send(
-            new DocumentChangedMessage(EmbeddingSourceKind.Diary, id.ToString()));
+            new DocumentChangedMessage(DocumentKind.Diary, id.ToString()));
 
     public async Task<StreakResult> GetCurrentStreakAsync()
     {
@@ -99,6 +98,19 @@ public class DiaryService : IDiaryService
 
             return StreakWalker.Walk(dates, DateTime.Today, grace);
         });
+    }
+
+    public Task<IReadOnlyList<DateTime>> GetContentDatesAsync(DateTime startDate, DateTime endDate)
+    {
+        var start = startDate.Date;
+        var end = endDate.Date;
+        return Task.Run(() => (IReadOnlyList<DateTime>)EntriesCollection
+            .Find(x => x.Date >= start && x.Date <= end)
+            .Where(e => e.HasContent())
+            .Select(e => e.Date.Date)
+            .Distinct()
+            .OrderBy(d => d)
+            .ToList());
     }
 
     public Task<IEnumerable<DiaryEntryStatsDto>> GetDiaryEntriesForStatsAsync(DateTime startDate, DateTime endDate)

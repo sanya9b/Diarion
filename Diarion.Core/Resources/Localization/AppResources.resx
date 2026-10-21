@@ -148,6 +148,93 @@
   <data name="EmotionAngry" xml:space="preserve">
     <value>Angry</value>
   </data>
+  <data name="EmotionNeutral" xml:space="preserve">
+    <value>Neutral</value>
+  </data>
+  <data name="EmotionInspired" xml:space="preserve">
+    <value>Inspired</value>
+  </data>
+  <data name="EmotionExcited" xml:space="preserve">
+    <value>Excited</value>
+  </data>
+  <data name="EmotionProud" xml:space="preserve">
+    <value>Proud</value>
+  </data>
+  <data name="EmotionEnergetic" xml:space="preserve">
+    <value>Energetic</value>
+  </data>
+  <data name="EmotionPlayful" xml:space="preserve">
+    <value>Playful</value>
+  </data>
+  <data name="EmotionOptimistic" xml:space="preserve">
+    <value>Optimistic</value>
+  </data>
+  <data name="EmotionContent" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="EmotionGrateful" xml:space="preserve">
+    <value>Grateful</value>
+  </data>
+  <data name="EmotionRelaxed" xml:space="preserve">
+    <value>Relaxed</value>
+  </data>
+  <data name="EmotionLoving" xml:space="preserve">
+    <value>Loving</value>
+  </data>
+  <data name="EmotionSecure" xml:space="preserve">
+    <value>Secure</value>
+  </data>
+  <data name="EmotionPeaceful" xml:space="preserve">
+    <value>Peaceful</value>
+  </data>
+  <data name="EmotionStressed" xml:space="preserve">
+    <value>Stressed</value>
+  </data>
+  <data name="EmotionIrritated" xml:space="preserve">
+    <value>Irritated</value>
+  </data>
+  <data name="EmotionOverwhelmed" xml:space="preserve">
+    <value>Overwhelmed</value>
+  </data>
+  <data name="EmotionScared" xml:space="preserve">
+    <value>Scared</value>
+  </data>
+  <data name="EmotionFrustrated" xml:space="preserve">
+    <value>Frustrated</value>
+  </data>
+  <data name="EmotionTired" xml:space="preserve">
+    <value>Tired</value>
+  </data>
+  <data name="EmotionBored" xml:space="preserve">
+    <value>Bored</value>
+  </data>
+  <data name="EmotionLonely" xml:space="preserve">
+    <value>Lonely</value>
+  </data>
+  <data name="EmotionDisappointed" xml:space="preserve">
+    <value>Disappointed</value>
+  </data>
+  <data name="EmotionExhausted" xml:space="preserve">
+    <value>Exhausted</value>
+  </data>
+  <data name="EmotionHopeless" xml:space="preserve">
+    <value>Hopeless</value>
+  </data>
+  <data name="QuadrantPleasantEnergetic" xml:space="preserve">
+    <value>Upbeat</value>
+  </data>
+  <data name="QuadrantPleasantCalm" xml:space="preserve">
+    <value>At ease</value>
+  </data>
+  <data name="QuadrantUnpleasantEnergetic" xml:space="preserve">
+    <value>Tense</value>
+  </data>
+  <data name="QuadrantUnpleasantCalm" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="MoodClear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
   <data name="TodoListLabel" xml:space="preserve">
     <value>Tasks</value>
   </data>
@@ -610,6 +697,9 @@
   <data name="HomeBlocksTitle" xml:space="preserve">
     <value>HOME SCREEN BLOCKS</value>
   </data>
+  <data name="SettingsAppearanceTitle" xml:space="preserve">
+    <value>APPEARANCE &amp; LANGUAGE</value>
+  </data>
   <data name="BlockMoodLabel" xml:space="preserve">
     <value>Mood</value>
   </data>
@@ -631,11 +721,11 @@
   <data name="MoodHourlyLabel" xml:space="preserve">
     <value>By the hour</value>
   </data>
-  <data name="MoodHourlyHint" xml:space="preserve">
-    <value>Pick an hour, then tap a mood above</value>
+  <data name="MoodHourPickerTitle" xml:space="preserve">
+    <value>Choose an hour</value>
   </data>
-  <data name="MoodHourlyDayHint" xml:space="preserve">
-    <value>Tap a mood above to set the whole day</value>
+  <data name="MoodHourExit" xml:space="preserve">
+    <value>Back to the whole day</value>
   </data>
   <data name="MoodHourAccessibility" xml:space="preserve">
     <value>{0}:00 — {1}</value>
@@ -800,7 +890,22 @@
     <value>ADD</value>
   </data>
   <data name="CycleAddHint" xml:space="preserve">
-    <value>Pick the first day. Each period you record makes the forecast more accurate.</value>
+    <value>Pick the first and the last day. Each period you record makes the forecast more accurate.</value>
+  </data>
+  <data name="CycleRecordStart" xml:space="preserve">
+    <value>First day</value>
+  </data>
+  <data name="CycleRecordEnd" xml:space="preserve">
+    <value>Last day</value>
+  </data>
+  <data name="CycleRecordDaysFormat" xml:space="preserve">
+    <value>Days: {0}</value>
+  </data>
+  <data name="CycleRecordLastFormat" xml:space="preserve">
+    <value>Last recorded: {0}</value>
+  </data>
+  <data name="CycleRecordChip" xml:space="preserve">
+    <value>Period</value>
   </data>
   <data name="CycleHistoryTitle" xml:space="preserve">
     <value>Recorded periods</value>
@@ -833,7 +938,7 @@
     <value>Based on {0} recorded cycles (avg {1} days)</value>
   </data>
   <data name="CycleNoDataHint" xml:space="preserve">
-    <value>Mark the first day of your period to start the forecast</value>
+    <value>Record a period with the “+ Period” chip in the Health block on the home screen to start the forecast</value>
   </data>
   <data name="CycleLateFormat" xml:space="preserve">
     <value>Expected {0} days ago</value>
@@ -927,6 +1032,21 @@
   </data>
   <data name="StatsMoodByHourNoHourlyData" xml:space="preserve">
     <value>You've only logged mood for the whole day. Mark mood by hour in your diary to see this chart.</value>
+  </data>
+  <data name="StatsEnergyByHour" xml:space="preserve">
+    <value>Energy by hour</value>
+  </data>
+  <data name="StatsEnergyByHourSubtitle" xml:space="preserve">
+    <value>How much energy you usually have at each time of day</value>
+  </data>
+  <data name="StatsEnergyByHourHigh" xml:space="preserve">
+    <value>Energetic</value>
+  </data>
+  <data name="StatsEnergyByHourLow" xml:space="preserve">
+    <value>Calm</value>
+  </data>
+  <data name="StatsEnergyByHourBalanced" xml:space="preserve">
+    <value>Balanced on average</value>
   </data>
   <data name="StreaksTitle" xml:space="preserve">
     <value>STREAKS</value>
@@ -1360,9 +1480,6 @@
   <data name="MinutesShort" xml:space="preserve">
     <value>m</value>
   </data>
-  <data name="SecondsShort" xml:space="preserve">
-    <value>s</value>
-  </data>
   <data name="SecurityLabel" xml:space="preserve">
     <value>SECURITY</value>
   </data>
@@ -1485,6 +1602,18 @@
   </data>
   <data name="StreakHeldByGraceHint" xml:space="preserve">
     <value>A forgiven day is holding this streak.</value>
+  </data>
+  <data name="StreakTileAccessibleFormat" xml:space="preserve">
+    <value>Days in a row: {0}. Opens statistics</value>
+  </data>
+  <data name="StatsActivityHeader" xml:space="preserve">
+    <value>DAYS WITH ENTRIES</value>
+  </data>
+  <data name="StatsActivityCountFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="StatsActivityHint" xml:space="preserve">
+    <value>A filled square is a day on which something was written. The same days the streak counts.</value>
   </data>
   <data name="CycleSymptomsLabel" xml:space="preserve">
     <value>Symptoms</value>
@@ -1663,12 +1792,6 @@
   <data name="TourStatsTabsText" xml:space="preserve">
     <value>Mood, sleep, tasks, money, habits, cycle. Switching a tab keeps the dates you picked.</value>
   </data>
-  <data name="TourStatsThemesTitle" xml:space="preserve">
-    <value>What you keep coming back to</value>
-  </data>
-  <data name="TourStatsThemesText" xml:space="preserve">
-    <value>Once there are a couple of weeks of entries, the subjects that repeat gather here, counted in days rather than in passages. Your own wording, grouped on the device.</value>
-  </data>
   <data name="TourStatsInfluencesTitle" xml:space="preserve">
     <value>Guesses, checked</value>
   </data>
@@ -1676,10 +1799,10 @@
     <value>Sleep, meals, habits and the days themselves are compared with how you felt, and only what survives the check is listed — with the number of days it rests on. Often nothing survives, and the card says that too.</value>
   </data>
   <data name="TourSettingsTabsTitle" xml:space="preserve">
-    <value>Four groups of settings</value>
+    <value>Three groups of settings</value>
   </data>
   <data name="TourSettingsTabsText" xml:space="preserve">
-    <value>You, the screen, your data, and on-device AI. Nothing set here leaves the device.</value>
+    <value>You, the screen, and your data. Nothing set here leaves the device.</value>
   </data>
   <data name="TourSettingsBlocksTitle" xml:space="preserve">
     <value>Choose what the day asks you</value>
@@ -1819,9 +1942,6 @@
   <data name="FactorDailySpend" xml:space="preserve">
     <value>Money spent</value>
   </data>
-  <data name="FactorThemeFormat" xml:space="preserve">
-    <value>Theme: {0}</value>
-  </data>
   <data name="SettingsCurrencyLabel" xml:space="preserve">
     <value>Currency</value>
   </data>
@@ -1834,176 +1954,11 @@
   <data name="StatsInsightProgressHint" xml:space="preserve">
     <value>Links between your mood and sleep, habits, meals, tasks and spending appear once there is enough to compare.</value>
   </data>
-  <data name="SettingsTabAi" xml:space="preserve">
-    <value>AI</value>
-  </data>
-  <data name="AiSectionTitle" xml:space="preserve">
-    <value>ON-DEVICE AI</value>
-  </data>
-  <data name="AiEnableToggle" xml:space="preserve">
-    <value>Enable on-device AI</value>
-  </data>
-  <data name="AiIntro" xml:space="preserve">
-    <value>See what your months were about, get weekly summaries, and find out how what you wrote about tracks your mood. Everything runs on this device.</value>
-  </data>
-  <data name="AiNetworkNotice" xml:space="preserve">
-    <value>The only thing Diarion downloads is the model file itself. Your entries are never sent anywhere.</value>
-  </data>
-  <data name="AiDeviceHeader" xml:space="preserve">
-    <value>YOUR DEVICE</value>
-  </data>
-  <data name="AiDeviceSummaryFormat" xml:space="preserve">
-    <value>{0} RAM · {1} free</value>
-  </data>
-  <data name="AiTierLow" xml:space="preserve">
-    <value>Search and summaries</value>
-  </data>
-  <data name="AiTierMid" xml:space="preserve">
-    <value>Search, summaries and chat</value>
-  </data>
-  <data name="AiTierHigh" xml:space="preserve">
-    <value>Everything, including larger models</value>
-  </data>
-  <data name="AiTierEmbeddingsOnly" xml:space="preserve">
-    <value>Themes and summaries — 123 MB, runs on any device</value>
-  </data>
-  <data name="AiModelsHeader" xml:space="preserve">
-    <value>MODELS</value>
-  </data>
-  <data name="AiRecommendedBadge" xml:space="preserve">
-    <value>recommended</value>
-  </data>
-  <data name="AiModelTooLargeForDevice" xml:space="preserve">
-    <value>Not enough memory on this device</value>
-  </data>
-  <data name="AiDownloadAction" xml:space="preserve">
-    <value>Download</value>
-  </data>
-  <data name="AiResumeAction" xml:space="preserve">
-    <value>Resume</value>
-  </data>
-  <data name="AiDeleteAction" xml:space="preserve">
-    <value>Delete</value>
-  </data>
-  <data name="AiCancelAction" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-  <data name="AiRetryAction" xml:space="preserve">
-    <value>Try again</value>
-  </data>
-  <data name="AiStateNotInstalled" xml:space="preserve">
-    <value>Not downloaded</value>
-  </data>
-  <data name="AiStateDownloading" xml:space="preserve">
-    <value>Downloading</value>
-  </data>
-  <data name="AiStateInstalled" xml:space="preserve">
-    <value>Ready</value>
-  </data>
-  <data name="AiStateCorrupt" xml:space="preserve">
-    <value>Damaged — download again</value>
-  </data>
-  <data name="AiStateInterrupted" xml:space="preserve">
-    <value>Interrupted — resume to finish</value>
-  </data>
-  <data name="AiDownloadFailed" xml:space="preserve">
-    <value>Download failed. Check the connection and try again.</value>
-  </data>
-  <data name="AiDownloadWifiOnlyStopped" xml:space="preserve">
-    <value>Stopped: Wi-Fi is gone. Downloaded files are kept — resume once you are back on Wi-Fi.</value>
-  </data>
-  <data name="AiMobileDataTitle" xml:space="preserve">
-    <value>You are on mobile data</value>
-  </data>
-  <data name="AiMobileDataConfirmFormat" xml:space="preserve">
-    <value>This model is {0} and will be downloaded over your mobile data allowance. Download anyway?</value>
-  </data>
-  <data name="AiMobileDataDownloadAnyway" xml:space="preserve">
-    <value>Download anyway</value>
-  </data>
-  <data name="AiWifiOnlyToggle" xml:space="preserve">
-    <value>Download over Wi-Fi only</value>
-  </data>
-  <data name="AiKeepOpenNotice" xml:space="preserve">
-    <value>Keep the app open while the model downloads.</value>
-  </data>
-  <data name="AiBackgroundNotice" xml:space="preserve">
-    <value>You can leave the app — the download continues in the background.</value>
-  </data>
-  <data name="AiStateVerifying" xml:space="preserve">
-    <value>Verifying</value>
-  </data>
-  <data name="AiDownloadOfFormat" xml:space="preserve">
-    <value>{0} of {1}</value>
-  </data>
-  <data name="AiDownloadRateFormat" xml:space="preserve">
-    <value>{0}/s</value>
-  </data>
-  <data name="AiDownloadEtaFormat" xml:space="preserve">
-    <value>~{0} left</value>
-  </data>
-  <data name="AiDownloadNotificationChannel" xml:space="preserve">
-    <value>Model downloads</value>
-  </data>
-  <data name="AiDownloadNotificationChannelDescription" xml:space="preserve">
-    <value>Progress of on-device AI model downloads.</value>
-  </data>
-  <data name="AiDownloadNotificationTitle" xml:space="preserve">
-    <value>Downloading AI model</value>
-  </data>
-  <data name="AiIndexHeader" xml:space="preserve">
-    <value>INDEX</value>
-  </data>
-  <data name="AiIndexIdle" xml:space="preserve">
-    <value>Not started</value>
-  </data>
-  <data name="AiIndexScanning" xml:space="preserve">
-    <value>Checking what changed</value>
-  </data>
-  <data name="AiIndexEmbeddingFormat" xml:space="preserve">
-    <value>Reading your entries — {0} of {1}</value>
-  </data>
-  <data name="AiIndexComplete" xml:space="preserve">
-    <value>Up to date</value>
-  </data>
-  <data name="AiIndexCancelled" xml:space="preserve">
-    <value>Paused</value>
-  </data>
-  <data name="AiIndexChunksFormat" xml:space="preserve">
-    <value>{0} fragments indexed</value>
-  </data>
-  <data name="AiIndexRebuildAction" xml:space="preserve">
-    <value>Rebuild index</value>
-  </data>
-  <data name="AiIndexClearAction" xml:space="preserve">
-    <value>Delete index</value>
-  </data>
-  <data name="AiIndexClearConfirm" xml:space="preserve">
-    <value>Delete the search index? Your entries are not affected — it can be rebuilt.</value>
-  </data>
-  <data name="UnitByte" xml:space="preserve">
-    <value>B</value>
-  </data>
-  <data name="UnitKilobyte" xml:space="preserve">
-    <value>KB</value>
-  </data>
-  <data name="UnitMegabyte" xml:space="preserve">
-    <value>MB</value>
-  </data>
-  <data name="UnitGigabyte" xml:space="preserve">
-    <value>GB</value>
-  </data>
-  <data name="UnitTerabyte" xml:space="preserve">
-    <value>TB</value>
-  </data>
   <data name="SearchTitle" xml:space="preserve">
     <value>Search</value>
   </data>
   <data name="SearchPlaceholder" xml:space="preserve">
     <value>What are you looking for?</value>
-  </data>
-  <data name="SearchHintPhrase" xml:space="preserve">
-    <value>A phrase works better than a single word — the model reads sentences.</value>
   </data>
   <data name="SearchScopeAll" xml:space="preserve">
     <value>Everything</value>
@@ -2013,9 +1968,6 @@
   </data>
   <data name="SearchScopeNotes" xml:space="preserve">
     <value>Notes</value>
-  </data>
-  <data name="SearchLexicalOnlyNotice" xml:space="preserve">
-    <value>Searching words only. Turn on AI in settings to search by meaning.</value>
   </data>
   <data name="SearchResultsCountFormat" xml:space="preserve">
     <value>{0} found</value>
@@ -2028,45 +1980,6 @@
   </data>
   <data name="QuickMenuSearch" xml:space="preserve">
     <value>Search</value>
-  </data>
-  <data name="StatsDigestHeader" xml:space="preserve">
-    <value>WHAT THIS PERIOD WAS ABOUT</value>
-  </data>
-  <data name="StatsDigestHint" xml:space="preserve">
-    <value>Your own words, picked as the most typical of the period — nothing here is generated.</value>
-  </data>
-  <data name="StatsThemesHeader" xml:space="preserve">
-    <value>RECURRING THEMES</value>
-  </data>
-  <data name="StatsThemeDaysFormat" xml:space="preserve">
-    <value>{0} days</value>
-  </data>
-  <data name="AiChatTitle" xml:space="preserve">
-    <value>Ask your diary</value>
-  </data>
-  <data name="AiChatPlaceholder" xml:space="preserve">
-    <value>Ask about your entries…</value>
-  </data>
-  <data name="AiChatIntro" xml:space="preserve">
-    <value>Answers come only from what you wrote, with the entries they came from shown underneath.</value>
-  </data>
-  <data name="AiChatUnavailable" xml:space="preserve">
-    <value>No chat model is installed. You can add one in Settings → AI.</value>
-  </data>
-  <data name="AiChatNothingRelevant" xml:space="preserve">
-    <value>I did not find entries to answer this from.</value>
-  </data>
-  <data name="AiChatUngrounded" xml:space="preserve">
-    <value>I could not answer this from your entries without guessing, so I would rather not.</value>
-  </data>
-  <data name="AiChatSourcesLabel" xml:space="preserve">
-    <value>Sources</value>
-  </data>
-  <data name="AiChatStop" xml:space="preserve">
-    <value>Stop</value>
-  </data>
-  <data name="QuickMenuAiChat" xml:space="preserve">
-    <value>Ask diary</value>
   </data>
   <data name="SnapshotPreviewTitle" xml:space="preserve">
     <value>What would be sent</value>
@@ -2258,7 +2171,7 @@
     <value>Nothing recorded yet</value>
   </data>
   <data name="EmptyStateCycleHint" xml:space="preserve">
-    <value>Mark the first day of your period, and the history and forecast will appear here.</value>
+    <value>Record a period with the “+ Period” chip in the Health block on the home screen, and the history and forecast will appear here.</value>
   </data>
   <data name="EmptyStateMoodTitle" xml:space="preserve">
     <value>No mood for this period</value>
@@ -2283,51 +2196,6 @@
   </data>
   <data name="EmptyStateSearchHint" xml:space="preserve">
     <value>Try another word or a shorter query.</value>
-  </data>
-  <data name="InsightPathTitle" xml:space="preserve">
-    <value>To the first hypothesis</value>
-  </data>
-  <data name="InsightPathProgressFormat" xml:space="preserve">
-    <value>{0} of {1}</value>
-  </data>
-  <data name="InsightPathHintFormat" xml:space="preserve">
-    <value>closest: {0}</value>
-  </data>
-  <data name="InsightPathHintNoFactor" xml:space="preserve">
-    <value>Mark your mood and sleep, and the day counts</value>
-  </data>
-  <data name="InsightPathMilestone1Title" xml:space="preserve">
-    <value>First day counted</value>
-  </data>
-  <data name="InsightPathMilestone1Body" xml:space="preserve">
-    <value>Your first pixel of the year is on the board.</value>
-  </data>
-  <data name="InsightPathMilestone3Title" xml:space="preserve">
-    <value>Three days</value>
-  </data>
-  <data name="InsightPathMilestone3Body" xml:space="preserve">
-    <value>The board can now show how your emotions split.</value>
-  </data>
-  <data name="InsightPathMilestone7Title" xml:space="preserve">
-    <value>A week</value>
-  </data>
-  <data name="InsightPathMilestone7Body" xml:space="preserve">
-    <value>Mood by hour and by day is on the board. Halfway to the first hypothesis.</value>
-  </data>
-  <data name="InsightPathMilestone14Title" xml:space="preserve">
-    <value>The first hypothesis holds</value>
-  </data>
-  <data name="InsightPathMilestone14Body" xml:space="preserve">
-    <value>Checked on your own fortnight. A coincidence in your records, not a cause.</value>
-  </data>
-  <data name="InsightPathOpen" xml:space="preserve">
-    <value>View</value>
-  </data>
-  <data name="InsightPathHide" xml:space="preserve">
-    <value>Hide</value>
-  </data>
-  <data name="InsightPathAccessibleFormat" xml:space="preserve">
-    <value>{0} of {1} days to the first hypothesis, {2}</value>
   </data>
   <data name="TabReview" xml:space="preserve">
     <value>Review</value>

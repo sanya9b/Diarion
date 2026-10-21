@@ -8,7 +8,10 @@
     <Color x:Key="Theme_Dust_Ocean">#929FA7</Color>
     <!-- Lines on the page background; unchanged here, where Dust_Ocean already reads against #22282C. -->
     <Color x:Key="Theme_GridLine">#929FA7</Color>
-    <Color x:Key="Theme_Snow_Black">#22282C</Color>
+    <!-- Cards, panels and the tab bar: one step above the page. Equal to the page they were held
+         up only by a 1px outline, and no shadow lifts a surface off a background this dark.
+         Midnight mixed 8% toward Ocean, so the tone stays inside the palette. -->
+    <Color x:Key="Theme_Snow_Black">#2B3136</Color>
     <Color x:Key="Theme_Ocean_Ocean">#929FA7</Color>
     <Color x:Key="Theme_Snow_Midnight">#22282C</Color>
     <Color x:Key="Theme_Midnight_Dust">#E0E6EA</Color>
@@ -45,11 +48,19 @@
     <Color x:Key="Theme_Amber">#C9985A</Color>
     <Color x:Key="Theme_Sage">#8FA083</Color>
     <Color x:Key="Theme_Berry">#A87C8E</Color>
+    <!-- Mood row highlights (spec 18): the quadrant accents, one per quadrant, and the text that sits on them. -->
+    <Color x:Key="Theme_MoodPleasantEnergetic">#C26D53</Color>
+    <Color x:Key="Theme_MoodPleasantCalm">#8FA083</Color>
+    <Color x:Key="Theme_MoodUnpleasantEnergetic">#C9985A</Color>
+    <Color x:Key="Theme_MoodUnpleasantCalm">#929FA7</Color>
+    <Color x:Key="Theme_MoodNeutral">#6E6E6E</Color>
+    <Color x:Key="Theme_OnAccent">#FFFFFF</Color>
     <Color x:Key="Theme_BerryTransparent">#33A87C8E</Color>
     
     <!-- Base Colors mapped for Semantic Use -->
     <Color x:Key="Theme_Snow">#FFFFFF</Color>
     <Color x:Key="Theme_Midnight">#22282C</Color>
+    <Color x:Key="Theme_Shadow">#000000</Color>
     
     <!-- Reading Tracker Book Colors -->
     <Color x:Key="Theme_BookSpineLeft">#47553F</Color>

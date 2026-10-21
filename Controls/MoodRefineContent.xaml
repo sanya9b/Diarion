@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             x:Class="Diarion.Controls.MoodRefineContent"
+             x:DataType="viewmodels:DiaryEntryViewModel">
+
+    <ContentView.Resources>
+        <!-- A precise state, and the clear action: the chip grammar of the mood row. The margin is even
+             on all sides so a centred row is centred, not pushed left by a right-hand gutter.
+
+             FlexLayout.Shrink="0" is the fix for names cut to "Розчарув…" on iPhone: FlexLayout shrinks
+             items by default when a line is full, and on iOS it shrank the chip below its text rather
+             than wrapping it to the next line. A chip that cannot shrink wraps instead. -->
+        <Style x:Key="MoodChip" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="FlexLayout.Shrink" Value="0" />
+            <Setter Property="behaviors:PressFeedback.IsEnabled" Value="True" />
+        </Style>
+
+        <!-- The fill layer inside a chip: transparent until chosen (a binding, not a trigger — see MoodSection). -->
+        <Style x:Key="MoodFill" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 15" />
+            <Setter Property="StrokeThickness" Value="0" />
+            <Setter Property="InputTransparent" Value="True" />
+        </Style>
+    </ContentView.Resources>
+
+    <!-- The chosen quadrant's precise states, representative first, centred line by line; a chip sets
+         and closes the bubble. The chosen chip is shown by its fill and text colour only: a bold face
+         is wider, and a chip whose text grows after layout is a chip that gets cut. -->
+    <VerticalStackLayout Spacing="2">
+        <FlexLayout Wrap="Wrap" JustifyContent="Center" AlignItems="Center" AlignContent="Center"
+                    BindableLayout.ItemsSource="{Binding Refinements}">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="viewmodels:MoodChipViewModel">
+                    <Border Style="{StaticResource MoodChip}" SemanticProperties.Description="{Binding Name}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryEntryViewModel}}, Path=SelectEmotionCommand}"
+                                                  CommandParameter="{Binding Emotion}" />
+                        </Border.GestureRecognizers>
+                        <Border Style="{StaticResource MoodFill}" Padding="12,7" behaviors:ThemeColor.BackgroundKey="{Binding FillColorKey}"
+                                behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
+                            <Label Text="{Binding Name}" FontSize="13" LineBreakMode="NoWrap"
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_OnAccent}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Border>
+                    </Border>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </FlexLayout>
+
+        <!-- Un-logging lives here, behind a deliberate tap, never on a face. Centred with the rest. -->
+        <Border Style="{StaticResource MoodChip}" HorizontalOptions="Center" StrokeThickness="0"
+                BackgroundColor="Transparent"
+                SemanticProperties.Description="{x:Static localization:AppResources.MoodClear}">
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding ClearMoodCommand}" />
+            </Border.GestureRecognizers>
+            <Border Style="{StaticResource MoodFill}" Padding="12,6">
+                <Label Text="{x:Static localization:AppResources.MoodClear}" FontSize="12" LineBreakMode="NoWrap"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            </Border>
+        </Border>
+    </VerticalStackLayout>
+</ContentView>
