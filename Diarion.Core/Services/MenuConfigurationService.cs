@@ -52,7 +52,11 @@ public class MenuConfigurationService : IMenuConfigurationService
                 Id = "Reading", 
                 StrokeColorKey = "Theme_Sage", 
                 UsesUniformAspect = true,
-                PathData = "M 19,36 H 50 C 50.5,36 51,36.5 51,37 V 44 C 51,44.5 50.5,45 50,45 H 19 C 17.5,45 16,43.5 16,42 V 38 C 16,36.5 17.5,36 19,36 Z M 22,36 V 45 M 45,28 H 15 C 14.5,28 14,28.5 14,29 V 36 C 14,36.5 14.5,37 15,37 H 45 C 46.5,37 48,35.5 48,34 V 30 C 48,28.5 46.5,28 45,28 Z M 42,28 V 37 M 20,20 H 46 C 46.5,20 47,20.5 47,21 V 28 C 47,28.5 46.5,29 46,29 H 20 C 18.5,29 17,27.5 17,26 V 22 C 17,20.5 18.5,20 20,20 Z M 23,20 V 29 M 47,39 H 51 M 47,42 H 51 M 18,31 H 14 M 18,34 H 14 M 43,23 H 47 M 43,26 H 47 M 29,20 V 32 L 32,29 L 35,32 V 20 Z"
+                // An open book with a ribbon in the right page: reading, and the brand's bookmark. It
+                // replaced a stack of three books whose spines, page lines and ribbon ran into one lump
+                // at 24 px (owner, 2026-10-21: "не гарна і не зрозуміла"). A closed book was passed
+                // over: beside Notes' notepad the two silhouettes were the same rectangle.
+                PathData = "M 12 6.5 C 10 5 6 4.5 3 5 V 18.5 C 6 18 10 18.5 12 20 C 14 18.5 18 18 21 18.5 V 5 C 18 4.5 14 5 12 6.5 Z M 12 6.5 V 20 M 15.5 5.3 V 11.5 L 17 10.2 L 18.5 11.5 V 4.9"
             },
             new QuickMenuItem 
             { 
