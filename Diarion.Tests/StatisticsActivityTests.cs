@@ -29,8 +29,7 @@ public class StatisticsActivityTests
 
         await vm.LoadStatisticsAsync();
 
-        vm.ActivityDays.Should().HaveCount(7, "one square per day of the window, written or not");
-        vm.ActivityDays.Where(d => d.HasData).Select(d => d.Date).Should().Equal(Start, Start.AddDays(3));
+        vm.ActivityDates.Should().Equal(Start, Start.AddDays(3));
         vm.ActivityCountText.Should().Be(string.Format(AppResources.StatsActivityCountFormat, 2, 7));
         vm.HasActivityDays.Should().BeTrue();
     }
@@ -47,7 +46,8 @@ public class StatisticsActivityTests
 
         await vm.LoadStatisticsAsync();
 
-        vm.ActivityDays.Should().HaveCount(7).And.OnlyContain(d => !d.HasData);
+        vm.ActivityDates.Should().BeEmpty();
+        vm.HasActivityDays.Should().BeTrue("the squares still show the window");
         vm.ActivityCountText.Should().Be(string.Format(AppResources.StatsActivityCountFormat, 0, 7));
     }
 }

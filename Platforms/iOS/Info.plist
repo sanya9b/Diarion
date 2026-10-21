@@ -43,8 +43,8 @@
 	     The claim being made is "no non-exempt encryption", and this is the whole basis for it:
 	     the app encrypts the user's own database on the user's own device with standard published
 	     algorithms (AES through LiteDB, PBKDF2 for the portable backup passphrase, SHA for the PIN
-	     hash), reaches the network only over ordinary HTTPS to fetch model files, and ships no
-	     cryptography of its own design.
+	     hash), makes no network calls at all since the on-device AI and its model downloads were
+	     removed (2026-10-21), and ships no cryptography of its own design.
 
 	     Flip this to <true/> the day any of that stops being true — a Diarion-operated proxy, a
 	     custom cipher, or encryption offered to the user as a feature rather than used to protect

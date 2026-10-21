@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
-using Diarion.Services.Ai;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -55,8 +54,7 @@ public class CorrelationFactorsTests
                .ReturnsAsync(transactions?.ToList() ?? new List<FinanceTransaction>());
 
         return new CorrelationService(
-            diary.Object, cycle.Object, profile.Object, todoService.Object, finance.Object,
-            new NullThemeClusterService());
+            diary.Object, cycle.Object, profile.Object, todoService.Object, finance.Object);
     }
 
     private static List<DiaryEntryStatsDto> MoodOnly() =>

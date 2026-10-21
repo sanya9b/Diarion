@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
-using Diarion.Services.Ai;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -42,8 +41,7 @@ public class CorrelationServiceTests
     private static CorrelationService Build(
         IEnumerable<DiaryEntryStatsDto> data,
         IEnumerable<CycleLog>? cycleLogs = null,
-        bool cycleTracking = false,
-        IThemeClusterService? themes = null)
+        bool cycleTracking = false)
     {
         var diary = new Mock<IDiaryService>();
         diary.Setup(s => s.GetDiaryEntriesForStatsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
@@ -70,21 +68,8 @@ public class CorrelationServiceTests
                .ReturnsAsync(new List<FinanceTransaction>());
 
         return new CorrelationService(
-            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object,
-            themes ?? new NullThemeClusterService());
+            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object);
     }
-
-    /// <summary>A single theme on the first <paramref name="presentOn"/> of <paramref name="writtenDays"/>, every one of which was written on.</summary>
-    private static Mock<IThemeClusterService> Themes(string label, IReadOnlyList<DateTime> writtenDays, int presentOn)
-    {
-        var themes = new Mock<IThemeClusterService>();
-        themes.Setup(t => t.SummariseAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync(new ThemeSummary([new DiaryTheme(label, writtenDays.Take(presentOn).ToList())], writtenDays));
-        return themes;
-    }
-
-    private static List<DateTime> DaysOf(IEnumerable<DiaryEntryStatsDto> data) =>
-        data.Select(e => e.Date).Order().ToList();
 
     [Fact]
     public async Task StrongPositive_SleepDurationVsMood_IsDetected()
@@ -207,49 +192,5 @@ public class CorrelationServiceTests
 
         readiness.PairedDays.Should().Be(0);
         readiness.BestFactorKey.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task Readiness_WhenTheOnlyFactorLacksSpread_NamesNothing()
-    {
-        // A theme on two of twenty written days pairs twenty times and is still not testable, so it
-        // must not be named either: a hint would be asking for something the engine then refuses.
-        var data = Enumerable.Range(0, 20).Select(i => Entry(daysAgo: i, emotion: Tier(i))).ToList();
-        var themes = Themes("Work", DaysOf(data), presentOn: 2);
-
-        var readiness = await Build(data, themes: themes.Object).GetReadinessAsync(StatsRange.LastDays(30));
-
-        readiness.PairedDays.Should().Be(0);
-        readiness.BestFactorKey.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task Readiness_ByDefault_CountsThemesLikeTheCorrelationPass()
-    {
-        // The statistics screen leaves themes on, so its readiness agrees with its correlations.
-        var data = Enumerable.Range(0, 20).Select(i => Entry(daysAgo: i, emotion: Tier(i))).ToList();
-        var themes = Themes("Work", DaysOf(data), presentOn: 10);
-
-        var readiness = await Build(data, themes: themes.Object).GetReadinessAsync(StatsRange.LastDays(30));
-
-        readiness.PairedDays.Should().Be(20);
-        readiness.BestFactorKey.Should().Be(CorrelationService.Factors.ThemePrefix + "Work");
-    }
-
-    [Fact]
-    public async Task Readiness_WithoutThemes_NeverAsksTheClusterService()
-    {
-        // Whether today counted must not wait on the encoder (spec 17, R1.1).
-        var data = Enumerable.Range(0, 9).Select(i => Entry(daysAgo: i, sleepHours: 4 + i * 0.2, emotion: Tier(i)));
-        var themes = new Mock<IThemeClusterService>(MockBehavior.Strict);
-
-        var readiness = await Build(data, themes: themes.Object)
-            .GetReadinessAsync(StatsRange.LastDays(30), includeThemes: false);
-
-        readiness.PairedDays.Should().Be(9);
-        readiness.BestFactorKey.Should().Be(CorrelationService.Factors.SleepDuration);
-        themes.Verify(
-            t => t.SummariseAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
-            Times.Never);
     }
 }

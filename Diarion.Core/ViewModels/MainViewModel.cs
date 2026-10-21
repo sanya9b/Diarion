@@ -9,7 +9,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Diagnostics;
 using Diarion.Messages;
 using Diarion.Models;
-using Diarion.Models.Ai;
 using Diarion.Services;
 using Diarion.Core.Services;
 using Diarion.Helpers;
@@ -125,7 +124,7 @@ public partial class MainViewModel : BaseViewModel
         // into one; the tile at the top must move then, not on the next visit.
         WeakReferenceMessenger.Default.Register<DocumentChangedMessage>(this, (r, m) =>
         {
-            if (m.SourceKind == EmbeddingSourceKind.Diary)
+            if (m.SourceKind == DocumentKind.Diary)
                 _ = ((MainViewModel)r).UpdateStreakAsync();
         });
 

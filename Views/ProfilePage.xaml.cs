@@ -63,16 +63,6 @@ public partial class ProfilePage : ContentPage
         await _viewModel.Tour.StartAsync(TourId.Settings);
     }
 
-    protected override void OnDisappearing()
-    {
-        base.OnDisappearing();
-
-        // This page is transient and the AI services are singletons, so its rows have to let go of
-        // them on the way out or every visit leaves another set of listeners behind. A download in
-        // flight is unaffected — the service owns it, and OnAppearing reattaches to it.
-        _viewModel.Ai.Unload();
-    }
-
     // --- Settings guide (onboarding stage 3) ------------------------------------------------------
     // TourOverlayView does the drawing. This half answers what only the page can: which element an
     // id means, and what has to be on screen before it can be measured.

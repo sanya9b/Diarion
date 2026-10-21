@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
-using Diarion.Services.Ai;
 using Diarion.ViewModels;
 using Diarion.ViewModels.Statistics;
 using FluentAssertions;
@@ -207,23 +206,12 @@ public class StatisticsRangeTests
         var correlation = new Mock<ICorrelationService>();
         correlation.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
                    .ReturnsAsync(new List<MoodCorrelation>());
-        correlation.Setup(c => c.GetReadinessAsync(It.IsAny<StatsRange>(), It.IsAny<int>(), It.IsAny<bool>()))
+        correlation.Setup(c => c.GetReadinessAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
                    .ReturnsAsync(new CorrelationReadiness(0, CorrelationService.MinSampleSize));
 
         var diary = new Mock<IDiaryService>();
         diary.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(0, 0));
         configureDiary?.Invoke(diary);
-
-        var digest = new Mock<IDigestService>();
-        digest.Setup(d => d.BuildAsync(
-                  It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync((DateTime start, DateTime end, int _, CancellationToken __) =>
-                  new Digest(start, end, 0, 0, Array.Empty<DigestExcerpt>()));
-
-        var themes = new Mock<IThemeClusterService>();
-        themes.Setup(t => t.ClusterAsync(
-                  It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync(Array.Empty<DiaryTheme>());
 
         var profile = new Mock<IProfileService>();
         profile.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile());
@@ -243,8 +231,6 @@ public class StatisticsRangeTests
             new Mock<INavigationService>().Object,
             dispatcher.Object,
             new MoodStatsViewModel(stats.Object, correlation.Object),
-            digest.Object,
-            themes.Object,
             new SleepStatsViewModel(stats.Object),
             new ProductivityStatsViewModel(stats.Object),
             new FinanceStatsViewModel(stats.Object, profile.Object),

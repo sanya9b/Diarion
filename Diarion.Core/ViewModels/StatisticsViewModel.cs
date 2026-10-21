@@ -155,28 +155,17 @@ public partial class StatisticsViewModel : BaseViewModel
 
     public ViewModels.Statistics.MoodStatsViewModel MoodStats { get; }
 
-    /// <summary>Verbatim passages describing what the selected window was about. Empty when AI is off.</summary>
-    public ObservableCollection<DigestExcerptItem> DigestExcerpts { get; } = [];
-
-    /// <summary>Subjects the window kept coming back to. Empty when AI is off.</summary>
-    public ObservableCollection<ThemeItem> Themes { get; } = [];
-
+    /// <summary>The days of the window on which something was written. The activity card's squares.</summary>
     [ObservableProperty]
-    private bool _hasThemes;
-
-    [ObservableProperty]
-    private bool _hasDigest;
-
-    /// <summary>Every day of the window, filled where something was written. The activity card.</summary>
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasActivityDays))]
-    private ObservableCollection<MoodHeatDay> _activityDays = [];
+    private System.Collections.Generic.IReadOnlyList<DateTime> _activityDates = Array.Empty<DateTime>();
 
     /// <summary>«18 з 31» — written days out of the window's days.</summary>
     [ObservableProperty]
     private string _activityCountText = string.Empty;
 
-    public bool HasActivityDays => ActivityDays.Count > 0;
+    /// <summary>The card shows once the window has been read, written days or not.</summary>
+    [ObservableProperty]
+    private bool _hasActivityDays;
     public ViewModels.Statistics.SleepStatsViewModel SleepStats { get; }
     public ViewModels.Statistics.ProductivityStatsViewModel ProductivityStats { get; }
     public ViewModels.Statistics.FinanceStatsViewModel FinanceStats { get; }
@@ -193,8 +182,6 @@ public partial class StatisticsViewModel : BaseViewModel
         Diarion.Services.INavigationService navigationService,
         Diarion.Services.IDispatcherService dispatcher,
         ViewModels.Statistics.MoodStatsViewModel moodStats,
-        Services.Ai.IDigestService digestService,
-        Services.Ai.IThemeClusterService themeService,
         ViewModels.Statistics.SleepStatsViewModel sleepStats,
         ViewModels.Statistics.ProductivityStatsViewModel productivityStats,
         ViewModels.Statistics.FinanceStatsViewModel financeStats,
@@ -207,12 +194,10 @@ public partial class StatisticsViewModel : BaseViewModel
         _financeService = financeService;
         _navigationService = navigationService;
         _dispatcher = dispatcher;
-        // The home-screen insight path opens this screen on the window it counted (spec 17, R1.6).
+        // Lets another screen open this one on a given window.
         WeakReferenceMessenger.Default.Register<StatisticsRangeRequestedMessage>(
             this, (r, m) => ((StatisticsViewModel)r).ApplyRange(m.Range));
         MoodStats = moodStats;
-        _digestService = digestService;
-        _themeService = themeService;
         SleepStats = sleepStats;
         ProductivityStats = productivityStats;
         FinanceStats = financeStats;
@@ -430,7 +415,6 @@ public partial class StatisticsViewModel : BaseViewModel
             {
                 await LoadActivityAsync(range);
                 await MoodStats.LoadDataAsync(range);
-                await LoadDigestAsync(range);
             }
             else if (IsSleepTabVisible)
             {
@@ -540,82 +524,18 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         _ = _navigationService.OpenFlyoutAsync();
     }
-    private readonly Services.Ai.IDigestService _digestService;
-    private readonly Services.Ai.IThemeClusterService _themeService;
-
     /// <summary>
-    /// The digest quotes the user's own sentences rather than paraphrasing them. That is what lets
-    /// weekly and monthly reports work on every device with no generative model at all.
-    /// </summary>
-    /// <summary>
-    /// The days of the window and whether each was written on — by the same rule the streak counts, so
-    /// the tile at the top of the home screen and this card agree. A new collection each time: the
-    /// pixel grid redraws when its source is replaced, not when an existing one changes.
+    /// Which days of the window were written on — by the same rule the streak counts, so the tile at the
+    /// top of the home screen and this card agree. A new list each time: the squares redraw when their
+    /// source is replaced.
     /// </summary>
     private async Task LoadActivityAsync(StatsRange range)
     {
-        var written = new System.Collections.Generic.HashSet<DateTime>(
-            await _diaryService.GetContentDatesAsync(range.Start, range.End) ?? Array.Empty<DateTime>());
+        var written = await _diaryService.GetContentDatesAsync(range.Start, range.End) ?? Array.Empty<DateTime>();
+        var days = (int)(range.End.Date - range.Start.Date).TotalDays + 1;
 
-        var days = new System.Collections.Generic.List<MoodHeatDay>();
-        for (var day = range.Start.Date; day <= range.End.Date; day = day.AddDays(1))
-            days.Add(new MoodHeatDay { Date = day, HasData = written.Contains(day) });
-
-        ActivityDays = new ObservableCollection<MoodHeatDay>(days);
-        ActivityCountText = string.Format(AppResources.StatsActivityCountFormat, days.Count(d => d.HasData), days.Count);
+        ActivityDates = written.ToList();
+        ActivityCountText = string.Format(AppResources.StatsActivityCountFormat, written.Count, days);
+        HasActivityDays = true;
     }
-
-    private async Task LoadDigestAsync(StatsRange range)
-    {
-        var start = range.Start;
-        var end = range.End;
-
-        var digest = await _digestService.BuildAsync(start, end);
-
-        DigestExcerpts.Clear();
-        foreach (var excerpt in digest.Excerpts)
-        {
-            DigestExcerpts.Add(new DigestExcerptItem(excerpt));
-        }
-
-        HasDigest = digest.HasContent;
-
-        var themes = await _themeService.ClusterAsync(start, end);
-
-        Themes.Clear();
-        foreach (var theme in themes)
-        {
-            Themes.Add(new ThemeItem(theme));
-        }
-
-        HasThemes = themes.Count > 0;
-    }
-}
-
-/// <summary>A recurring theme, with its day count already phrased.</summary>
-public sealed class ThemeItem
-{
-    public ThemeItem(Services.Ai.DiaryTheme theme)
-    {
-        Label = theme.Label;
-        DaysLabel = string.Format(Resources.Localization.AppResources.StatsThemeDaysFormat, theme.DayCount);
-    }
-
-    public string Label { get; }
-
-    public string DaysLabel { get; }
-}
-
-/// <summary>A digest line with its date already formatted for display.</summary>
-public sealed class DigestExcerptItem
-{
-    public DigestExcerptItem(Services.Ai.DigestExcerpt excerpt)
-    {
-        Text = excerpt.Text;
-        DateLabel = excerpt.Date.ToString("d MMMM", System.Globalization.CultureInfo.CurrentCulture);
-    }
-
-    public string Text { get; }
-
-    public string DateLabel { get; }
 }

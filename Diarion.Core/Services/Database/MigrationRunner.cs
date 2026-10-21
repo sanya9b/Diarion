@@ -11,7 +11,7 @@ namespace Diarion.Services.Database;
 /// </summary>
 public static class MigrationRunner
 {
-    public const int CurrentVersion = 7;
+    public const int CurrentVersion = 8;
 
     private static readonly IMigration[] Migrations =
     {
@@ -22,6 +22,7 @@ public static class MigrationRunner
         new M005_MigrateLastPeriodDate(),
         new M006_SplitHabitScheduleIntoRecurrence(),
         new M007_ExtractTodoRepeatsIntoRecurringTasks(),
+        new M008_DropRetiredEmbeddings(),
     };
 
     public static void Run(LiteDatabase db)

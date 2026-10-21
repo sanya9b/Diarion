@@ -38,12 +38,6 @@ public interface ICorrelationService
     /// How much more logging it takes before any correlation can be reported. Exists so the screen
     /// can say "six days of fourteen" instead of showing nothing at all for a fortnight — which is
     /// the fortnight during which people decide whether the app is worth keeping.
-    /// <para>
-    /// <paramref name="includeThemes"/> says whether what the user wrote about counts as a factor.
-    /// The statistics screen leaves it on, so its readiness agrees with its correlations; the home
-    /// screen passes <c>false</c>, because themes need the encoder and a clustering pass, and
-    /// whether today counted should not wait on either.
-    /// </para>
     /// </summary>
-    Task<CorrelationReadiness> GetReadinessAsync(StatsRange range, int lagDays = 0, bool includeThemes = true);
+    Task<CorrelationReadiness> GetReadinessAsync(StatsRange range, int lagDays = 0);
 }

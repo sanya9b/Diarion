@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Messages;
 using Diarion.Models;
-using Diarion.Models.Ai;
 using Diarion.Services;
 using Diarion.Core.Services;
 using Diarion.ViewModels;
@@ -91,8 +90,7 @@ public class MainViewModelTests
         _quickMenuSection = new QuickMenuViewModel(
             _menuConfigServiceMock.Object,
             _profileServiceMock.Object,
-            _navigationServiceMock.Object,
-            new FakeAiAvailability());
+            _navigationServiceMock.Object);
 
         _habitsSection = new HabitsSectionViewModel(
             _habitServiceMock.Object,
@@ -126,7 +124,7 @@ public class MainViewModelTests
         var viewModel = CreateViewModel();
         _diaryServiceMock.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(5, 1));
 
-        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(EmbeddingSourceKind.Diary, Guid.NewGuid().ToString()));
+        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(DocumentKind.Diary, Guid.NewGuid().ToString()));
 
         viewModel.CurrentStreak.Should().Be(5);
         viewModel.IsStreakVisible.Should().BeTrue();
@@ -141,7 +139,7 @@ public class MainViewModelTests
         var viewModel = CreateViewModel();
         _diaryServiceMock.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(9, 0));
 
-        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(EmbeddingSourceKind.Note, Guid.NewGuid().ToString()));
+        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(DocumentKind.Note, Guid.NewGuid().ToString()));
 
         viewModel.CurrentStreak.Should().Be(0);
     }

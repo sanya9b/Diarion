@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
-using Diarion.Services.Ai;
 using Microsoft.Maui.Controls;
 
 namespace Diarion.ViewModels;
@@ -51,36 +50,19 @@ public partial class ProfileViewModel : BaseViewModel
     public DateTime MinimumBirthDate => DateTime.Today.AddYears(-120);
     public DateTime MaximumBirthDate => DateTime.Today;
 
-    /// <summary>The AI tab's own state. A section view model rather than more fields here.</summary>
-    public AiSettingsViewModel Ai { get; }
-
     /// <summary>The first-visit coach marks over this screen. Idle until the page starts it.</summary>
     public TourViewModel Tour { get; }
 
-    // Settings tabs: 0 = Profile, 1 = Screen, 2 = Data, 3 = AI.
+    // Settings tabs: 0 = Profile, 1 = Screen, 2 = Data.
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsProfileTab))]
     [NotifyPropertyChangedFor(nameof(IsScreenTab))]
     [NotifyPropertyChangedFor(nameof(IsDataTab))]
-    [NotifyPropertyChangedFor(nameof(IsAiTab))]
     private int _selectedTabIndex;
 
     public bool IsProfileTab => SelectedTabIndex == 0;
     public bool IsScreenTab => SelectedTabIndex == 1;
     public bool IsDataTab => SelectedTabIndex == 2;
-    public bool IsAiTab => SelectedTabIndex == 3 && IsAiTabAvailable;
-
-    /// <summary>
-    /// Whether the AI tab is shown at all. False only when nothing local is offered any more.
-    /// </summary>
-    /// <remarks>
-    /// The point is not to offer a download for something nothing is allowed to call — the worst of
-    /// both, a long wait for a feature that stays switched off. The encoder is still called, by the
-    /// themes in statistics and the mood factors, so the tab stays; the generative model is not, so
-    /// its row is gone from inside it. It is the last tab, so hiding it renumbers nothing.
-    /// </remarks>
-    public bool IsAiTabAvailable => OnDeviceAi.IsOffered;
-
     [RelayCommand]
     private void SelectTab(string index)
     {
@@ -108,10 +90,8 @@ public partial class ProfileViewModel : BaseViewModel
         Diarion.Diagnostics.ICrashReporter crashReporter,
         IShareService shareService,
         ITourService tourService,
-        TourViewModel tour,
-        AiSettingsViewModel ai)
+        TourViewModel tour)
     {
-        Ai = ai;
         Tour = tour;
         _tourService = tourService;
         _crashReporter = crashReporter;
@@ -139,13 +119,6 @@ public partial class ProfileViewModel : BaseViewModel
 
         NotifyLockState();
         RefreshCrashReport();
-
-        // Load() stats the model directory and subscribes to download progress. Neither is free, and
-        // neither leads anywhere while the tab is hidden.
-        if (IsAiTabAvailable)
-        {
-            Ai.Load();
-        }
 
         IsBusy = false;
     }

@@ -7,7 +7,6 @@ using Diarion.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Messages;
 using Diarion.Models;
-using Diarion.Models.Ai;
 using Diarion.Services.Database;
 using Diarion.Services.Store;
 using LiteDB;
@@ -80,7 +79,7 @@ public class DiaryService : IDiaryService
 
     private static void Announce(Guid id) =>
         WeakReferenceMessenger.Default.Send(
-            new DocumentChangedMessage(EmbeddingSourceKind.Diary, id.ToString()));
+            new DocumentChangedMessage(DocumentKind.Diary, id.ToString()));
 
     public async Task<StreakResult> GetCurrentStreakAsync()
     {
