@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
+using Diarion.Messages;
 using Diarion.Models;
+using Diarion.Models.Ai;
 using Diarion.Services;
 using Diarion.Core.Services;
 using Diarion.ViewModels;
@@ -114,6 +117,43 @@ public class MainViewModelTests
             _habitsSection,
             new Mock<CycleStatusViewModel>(_cycleLogServiceMock.Object, _profileServiceMock.Object).Object,
             new TourViewModel(_profileServiceMock.Object, new TourService()));
+    }
+
+    [Fact]
+    public void StreakTile_FollowsTheDiarySave()
+    {
+        // The autosave announces the write; the tile must move then, not on the next visit to the screen.
+        var viewModel = CreateViewModel();
+        _diaryServiceMock.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(5, 1));
+
+        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(EmbeddingSourceKind.Diary, Guid.NewGuid().ToString()));
+
+        viewModel.CurrentStreak.Should().Be(5);
+        viewModel.IsStreakVisible.Should().BeTrue();
+        viewModel.IsStreakHeldByGrace.Should().BeTrue("one of the five days was forgiven");
+        viewModel.StreakAccessibleText.Should().Contain("5");
+    }
+
+    [Fact]
+    public void StreakTile_IgnoresNotes()
+    {
+        // Notes never count toward the streak, so saving one has nothing to recount.
+        var viewModel = CreateViewModel();
+        _diaryServiceMock.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(9, 0));
+
+        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(EmbeddingSourceKind.Note, Guid.NewGuid().ToString()));
+
+        viewModel.CurrentStreak.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task StreakTile_OpensStatistics()
+    {
+        var viewModel = CreateViewModel();
+
+        await viewModel.OpenStatisticsCommand.ExecuteAsync(null);
+
+        _navigationServiceMock.Verify(n => n.NavigateToAsync("//StatisticsPage", null), Times.Once);
     }
 
     [Fact]

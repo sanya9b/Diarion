@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Diagnostics;
 using Diarion.Messages;
 using Diarion.Models;
+using Diarion.Models.Ai;
 using Diarion.Services;
 using Diarion.Core.Services;
 using Diarion.Helpers;
@@ -61,6 +62,14 @@ public partial class MainViewModel : BaseViewModel
 
     public bool IsStreakVisible => CurrentStreak > 0;
 
+    /// <summary>The run is alive only thanks to forgiven days (streak settings); the tile marks it, as statistics does.</summary>
+    [ObservableProperty]
+    private bool _isStreakHeldByGrace;
+
+    /// <summary>What a screen reader says for the streak tile.</summary>
+    [ObservableProperty]
+    private string _streakAccessibleText = string.Empty;
+
     [ObservableProperty]
     private bool _isPlannerMode;
 
@@ -110,6 +119,14 @@ public partial class MainViewModel : BaseViewModel
         WeakReferenceMessenger.Default.Register<TodoChangedMessage>(this, (r, m) =>
         {
             _ = CalendarSection.UpdateCalendarTasksForDayAsync(m.Date);
+        });
+
+        // The streak counts days with something written, and the day's autosave is what usually turns today
+        // into one; the tile at the top must move then, not on the next visit.
+        WeakReferenceMessenger.Default.Register<DocumentChangedMessage>(this, (r, m) =>
+        {
+            if (m.SourceKind == EmbeddingSourceKind.Diary)
+                _ = ((MainViewModel)r).UpdateStreakAsync();
         });
 
         WeakReferenceMessenger.Default.Register<PromptLibraryChangedMessage>(this, (r, m) =>
@@ -414,9 +431,16 @@ public partial class MainViewModel : BaseViewModel
 
     private async Task UpdateStreakAsync()
     {
-        CurrentStreak = (await _diaryService.GetCurrentStreakAsync()).Length;
+        var streak = await _diaryService.GetCurrentStreakAsync();
+        CurrentStreak = streak.Length;
+        IsStreakHeldByGrace = streak.HeldByGrace;
+        StreakAccessibleText = string.Format(Diarion.Resources.Localization.AppResources.StreakTileAccessibleFormat, streak.Length);
         OnPropertyChanged(nameof(IsStreakVisible));
     }
+
+    /// <summary>The streak tile opens the statistics, where the days themselves are shown.</summary>
+    [RelayCommand]
+    private Task OpenStatisticsAsync() => _navigationService.NavigateToAsync("//StatisticsPage");
 
     [RelayCommand]
     public void OpenMenu()

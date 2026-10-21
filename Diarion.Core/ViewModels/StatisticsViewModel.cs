@@ -166,6 +166,17 @@ public partial class StatisticsViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool _hasDigest;
+
+    /// <summary>Every day of the window, filled where something was written. The activity card.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasActivityDays))]
+    private ObservableCollection<MoodHeatDay> _activityDays = [];
+
+    /// <summary>«18 з 31» — written days out of the window's days.</summary>
+    [ObservableProperty]
+    private string _activityCountText = string.Empty;
+
+    public bool HasActivityDays => ActivityDays.Count > 0;
     public ViewModels.Statistics.SleepStatsViewModel SleepStats { get; }
     public ViewModels.Statistics.ProductivityStatsViewModel ProductivityStats { get; }
     public ViewModels.Statistics.FinanceStatsViewModel FinanceStats { get; }
@@ -417,6 +428,7 @@ public partial class StatisticsViewModel : BaseViewModel
 
             if (IsGeneralTabVisible)
             {
+                await LoadActivityAsync(range);
                 await MoodStats.LoadDataAsync(range);
                 await LoadDigestAsync(range);
             }
@@ -535,6 +547,24 @@ public partial class StatisticsViewModel : BaseViewModel
     /// The digest quotes the user's own sentences rather than paraphrasing them. That is what lets
     /// weekly and monthly reports work on every device with no generative model at all.
     /// </summary>
+    /// <summary>
+    /// The days of the window and whether each was written on — by the same rule the streak counts, so
+    /// the tile at the top of the home screen and this card agree. A new collection each time: the
+    /// pixel grid redraws when its source is replaced, not when an existing one changes.
+    /// </summary>
+    private async Task LoadActivityAsync(StatsRange range)
+    {
+        var written = new System.Collections.Generic.HashSet<DateTime>(
+            await _diaryService.GetContentDatesAsync(range.Start, range.End) ?? Array.Empty<DateTime>());
+
+        var days = new System.Collections.Generic.List<MoodHeatDay>();
+        for (var day = range.Start.Date; day <= range.End.Date; day = day.AddDays(1))
+            days.Add(new MoodHeatDay { Date = day, HasData = written.Contains(day) });
+
+        ActivityDays = new ObservableCollection<MoodHeatDay>(days);
+        ActivityCountText = string.Format(AppResources.StatsActivityCountFormat, days.Count(d => d.HasData), days.Count);
+    }
+
     private async Task LoadDigestAsync(StatsRange range)
     {
         var start = range.Start;

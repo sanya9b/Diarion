@@ -156,9 +156,6 @@ public partial class MainPage : ContentPage
         // by the onboarding module picker, which is dismissed onto this screen.
         await _viewModel.QuickMenuSection.RefreshAsync();
 
-        // A paired day may have been written on another screen while we were away.
-        InsightPath.Refresh();
-
         if (!_hasRenderedOnce)
         {
             _hasRenderedOnce = true;

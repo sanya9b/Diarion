@@ -101,6 +101,19 @@ public class DiaryService : IDiaryService
         });
     }
 
+    public Task<IReadOnlyList<DateTime>> GetContentDatesAsync(DateTime startDate, DateTime endDate)
+    {
+        var start = startDate.Date;
+        var end = endDate.Date;
+        return Task.Run(() => (IReadOnlyList<DateTime>)EntriesCollection
+            .Find(x => x.Date >= start && x.Date <= end)
+            .Where(e => e.HasContent())
+            .Select(e => e.Date.Date)
+            .Distinct()
+            .OrderBy(d => d)
+            .ToList());
+    }
+
     public Task<IEnumerable<DiaryEntryStatsDto>> GetDiaryEntriesForStatsAsync(DateTime startDate, DateTime endDate)
     {
         return Task.Run(() =>

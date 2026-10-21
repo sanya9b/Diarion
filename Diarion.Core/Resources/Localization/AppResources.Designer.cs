@@ -2025,6 +2025,10 @@ public static string ClearAllDataSuccessMsg {
         public static string StreakHeldByGraceHint {
             get { return ResourceManager.GetString("StreakHeldByGraceHint", resourceCulture) ?? string.Empty; }
         }
+        public static string StreakTileAccessibleFormat => ResourceManager.GetString("StreakTileAccessibleFormat", resourceCulture) ?? string.Empty;
+        public static string StatsActivityHeader => ResourceManager.GetString("StatsActivityHeader", resourceCulture) ?? string.Empty;
+        public static string StatsActivityCountFormat => ResourceManager.GetString("StatsActivityCountFormat", resourceCulture) ?? string.Empty;
+        public static string StatsActivityHint => ResourceManager.GetString("StatsActivityHint", resourceCulture) ?? string.Empty;
 
         public static string CycleSymptomsLabel {
             get { return ResourceManager.GetString("CycleSymptomsLabel", resourceCulture) ?? string.Empty; }
@@ -2722,13 +2726,7 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("EmptyStateSearchHint", resourceCulture) ?? string.Empty; }
         }
 
-        public static string InsightPathProgressFormat {
-            get { return ResourceManager.GetString("InsightPathProgressFormat", resourceCulture) ?? string.Empty; }
-        }
 
-        public static string InsightPathAccessibleFormat {
-            get { return ResourceManager.GetString("InsightPathAccessibleFormat", resourceCulture) ?? string.Empty; }
-        }
 
         public static string EmotionNeutral {
             get { return ResourceManager.GetString("EmotionNeutral", resourceCulture) ?? string.Empty; }
@@ -2866,17 +2864,8 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("MoodClear", resourceCulture) ?? string.Empty; }
         }
 
-        public static string InsightPathSettingsTitle {
-            get { return ResourceManager.GetString("InsightPathSettingsTitle", resourceCulture) ?? string.Empty; }
-        }
 
-        public static string InsightPathSettingsLabel {
-            get { return ResourceManager.GetString("InsightPathSettingsLabel", resourceCulture) ?? string.Empty; }
-        }
 
-        public static string InsightPathSettingsHint {
-            get { return ResourceManager.GetString("InsightPathSettingsHint", resourceCulture) ?? string.Empty; }
-        }
 
         public static string MoodHourPickerTitle {
             get { return ResourceManager.GetString("MoodHourPickerTitle", resourceCulture) ?? string.Empty; }
