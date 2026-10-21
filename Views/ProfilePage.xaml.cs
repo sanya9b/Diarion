@@ -32,6 +32,7 @@ public partial class ProfilePage : ContentPage
     {
         InitializeComponent();
         SubscriptionCard.BindingContext = subscription;
+
         _viewModel = viewModel;
         BindingContext = _viewModel;
         

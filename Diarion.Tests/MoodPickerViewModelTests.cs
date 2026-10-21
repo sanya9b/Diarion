@@ -269,24 +269,6 @@ public class MoodPickerViewModelTests
     }
 
     [Fact]
-    public void Anchors_ArePlainState_TheRowWritesAndThePopoversRead()
-    {
-        var viewModel = new DiaryEntryViewModel(new DiaryEntry());
-        var raised = new List<string?>();
-        viewModel.PropertyChanged += (_, e) => raised.Add(e.PropertyName);
-
-        var faceBounds = new Microsoft.Maui.Graphics.Rect(120, 300, 64, 60);
-        var chipBounds = new Microsoft.Maui.Graphics.Rect(280, 240, 90, 26);
-        viewModel.RefineAnchor = faceBounds;
-        viewModel.HourAnchor = chipBounds;
-
-        viewModel.RefineAnchor.Should().Be(faceBounds);
-        viewModel.HourAnchor.Should().Be(chipBounds);
-        raised.Should().Contain(nameof(DiaryEntryViewModel.RefineAnchor));
-        raised.Should().Contain(nameof(DiaryEntryViewModel.HourAnchor));
-    }
-
-    [Fact]
     public void OpenHourPicker_TogglesTheGrid_AndPutsTheRefinementAway()
     {
         var viewModel = new DiaryEntryViewModel(new DiaryEntry());
@@ -349,12 +331,46 @@ public class MoodPickerViewModelTests
     }
 
     [Fact]
+    public void HourChipBadge_IsNothing_ThenTheCount_ThenTheChosenHour()
+    {
+        // The chip carries no caption: a clock alone, then a count, then the hour it speaks for.
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry());
+        viewModel.HourChipBadge.Should().BeEmpty();
+        viewModel.HasHourChipBadge.Should().BeFalse();
+
+        viewModel.SelectHourCommand.Execute(viewModel.HourlyMood.Single(h => h.Hour == 9));
+        viewModel.HourChipBadge.Should().Be("09:00");
+        viewModel.SelectQuadrantCommand.Execute(EmotionQuadrant.PleasantCalm);
+        viewModel.ExitHourModeCommand.Execute(null);
+
+        viewModel.HourChipBadge.Should().Be("1");
+        viewModel.HasHourChipBadge.Should().BeTrue();
+    }
+
+    [Fact]
     public void HourChipText_IsTheBareLabel_WhileNoHourIsLogged()
     {
         var viewModel = new DiaryEntryViewModel(new DiaryEntry());
 
         viewModel.LoggedHourCount.Should().Be(0);
         viewModel.HourChipText.Should().Be(Diarion.Resources.Localization.AppResources.MoodHourlyLabel);
+    }
+
+    [Fact]
+    public void CurrentEmoji_IsTheChosenFacesGlyph_ForThePanelsCopyOfIt()
+    {
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry());
+        viewModel.CurrentEmoji.Should().BeEmpty();
+
+        var raised = new List<string?>();
+        viewModel.PropertyChanged += (_, e) => raised.Add(e.PropertyName);
+        viewModel.SelectQuadrantCommand.Execute(EmotionQuadrant.UnpleasantCalm);
+
+        viewModel.CurrentEmoji.Should().Be(EmotionQuadrant.UnpleasantCalm.ToEmoji());
+        raised.Should().Contain(nameof(DiaryEntryViewModel.CurrentEmoji));
+
+        viewModel.SelectEmotionCommand.Execute(Emotion.Tired);
+        viewModel.CurrentEmoji.Should().Be(EmotionQuadrant.UnpleasantCalm.ToEmoji(), "a precise state keeps its face");
     }
 
     [Fact]

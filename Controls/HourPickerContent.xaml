@@ -18,34 +18,36 @@
                     BindableLayout.ItemsSource="{Binding HourlyMood}">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:HourMoodViewModel">
-                    <!-- Outer: stroke and press feedback. Inner: the mood's hue as a theme key on a fill
-                         layer, so the behaviour that animates the outer element never touches the fill. -->
+                    <!-- Outer: the tap target with press feedback, and nothing else — no background, no stroke.
+                         The toolkit's touch behaviour writes BackgroundColor on the element it sits on, and a
+                         written value outranks the theme: the cell then keeps the colour of the theme it was
+                         first touched in (dark hours on a pink page, white numbers on a light cell). The cell
+                         itself — stroke, surface, the mood's hue, the selection ring — is one layer down. -->
                     <Border WidthRequest="44" HeightRequest="36" Margin="0,0,6,6" Padding="0"
-                            StrokeShape="RoundRectangle 10" StrokeThickness="1"
-                            Stroke="{DynamicResource Theme_Dust_Ocean}"
-                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                            StrokeThickness="0" BackgroundColor="Transparent"
                             behaviors:PressFeedback.IsEnabled="True"
                             SemanticProperties.Description="{Binding AccessibilityText}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryEntryViewModel}}, Path=SelectHourCommand}" CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                <Setter Property="StrokeThickness" Value="3" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Border StrokeShape="RoundRectangle 9" StrokeThickness="0" InputTransparent="True"
-                                behaviors:ThemeColor.BackgroundKey="{Binding ColorKey}">
+                        <Border StrokeShape="RoundRectangle 10" StrokeThickness="1" InputTransparent="True"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                behaviors:ThemeColor.BackgroundKey="{Binding ColorKey}"
+                                behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Setter Property="StrokeThickness" Value="3" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <!-- The colour is set on the label itself, not left to a trigger alone. -->
                             <Label Text="{Binding HourLabel}" FontSize="12"
-                                   HorizontalOptions="Center" VerticalOptions="Center">
+                                   HorizontalOptions="Center" VerticalOptions="Center"
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}">
                                 <Label.Triggers>
                                     <DataTrigger TargetType="Label" Binding="{Binding HasMood}" Value="True">
                                         <Setter Property="TextColor" Value="{DynamicResource Theme_OnAccent}" />
                                         <Setter Property="FontAttributes" Value="Bold" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="Label" Binding="{Binding HasMood}" Value="False">
-                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
                                     </DataTrigger>
                                 </Label.Triggers>
                             </Label>

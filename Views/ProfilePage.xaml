@@ -266,7 +266,9 @@
 
                             <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
 
-                            <!-- Recording and correcting periods lives on its own page: it is a handful of
+                            <!-- Recording a period moved to the home screen, the "+ Місячні" chip in the health
+                                 block (spec 18). What stays here is the page with the history and forecast. -->
+                            <!-- The history, forecast and symptoms live on their own page: it is a handful of
                                  days a month, so it has no business occupying the daily screen. That page is
                                  reachable from here alone, so the row is a row and not dim small print. -->
                             <!-- Padded to a full touch target rather than to the text: at two pixels the row

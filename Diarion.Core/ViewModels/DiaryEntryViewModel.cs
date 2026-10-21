@@ -164,10 +164,6 @@ public partial class DiaryEntryViewModel : ObservableObject
     [ObservableProperty]
     private bool _isHourPickerOpen;
 
-    /// <summary>The hours chip's bounds on the page, published by the row's view: where the hour grid grows from.</summary>
-    [ObservableProperty]
-    private Microsoft.Maui.Graphics.Rect _hourAnchor;
-
     /// <summary>The hours chip. One bubble at a time: opening this one puts the refinement away.</summary>
     [RelayCommand]
     private void OpenHourPicker()
@@ -198,6 +194,17 @@ public partial class DiaryEntryViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// What the hours chip shows beside its clock: the chosen hour while the row speaks for one ("14:00"),
+    /// otherwise how many hours carry a mood, and nothing at all before the first — then the chip is
+    /// just the clock. State, never a caption: <see cref="HourChipText"/> stays the spoken label.
+    /// </summary>
+    public string HourChipBadge => SelectedHour is int hour
+        ? $"{hour:00}:00"
+        : LoggedHourCount > 0 ? LoggedHourCount.ToString(System.Globalization.CultureInfo.CurrentCulture) : string.Empty;
+
+    public bool HasHourChipBadge => HourChipBadge.Length > 0;
+
     /// <summary>True while the row speaks for an hour that already has a mood: the chip wears its colour.</summary>
     public bool IsHourChipFilled => SelectedHour is int hour
         && (HourlyMood.FirstOrDefault(h => h.Hour == hour)?.HasMood ?? false);
@@ -217,6 +224,8 @@ public partial class DiaryEntryViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(LoggedHourCount));
         OnPropertyChanged(nameof(HourChipText));
+        OnPropertyChanged(nameof(HourChipBadge));
+        OnPropertyChanged(nameof(HasHourChipBadge));
         OnPropertyChanged(nameof(IsHourChipFilled));
         OnPropertyChanged(nameof(HourChipFillColorKey));
     }
@@ -251,15 +260,6 @@ public partial class DiaryEntryViewModel : ObservableObject
     [ObservableProperty]
     private bool _isRefinementOpen;
 
-    /// <summary>
-    /// Where the bubble grows from: the chosen face's bounds in page coordinates, published by the
-    /// row's view whenever the chosen face moves or the page scrolls. The bubble lives in a page-level
-    /// layer so it can float over the cards below and be dismissed by a tap anywhere else; the two
-    /// views meet here rather than knowing each other.
-    /// </summary>
-    [ObservableProperty]
-    private Microsoft.Maui.Graphics.Rect _refineAnchor;
-
     /// <summary>A tap anywhere outside the bubble, or a scroll, puts it away. The mood stays.</summary>
     [RelayCommand]
     private void CloseRefinement() => IsRefinementOpen = false;
@@ -272,6 +272,15 @@ public partial class DiaryEntryViewModel : ObservableObject
     public int SelectedColumn => Quadrants.FirstOrDefault(q => q.IsSelected)?.Column ?? 2;
 
     public bool HasCurrentMood => CurrentMood != Emotion.None;
+
+    /// <summary>
+    /// The chosen face's glyph, for the copy of the face the refinement panel draws over the real one
+    /// while it is out. Empty when nothing is chosen.
+    /// </summary>
+    public string CurrentEmoji => CurrentQuadrant.ToEmoji();
+
+    /// <summary>The chosen face's image, for the copy of it the refinement panel draws over the real one.</summary>
+    public string CurrentIconFile => CurrentQuadrant.ToIconFile();
 
     /// <summary>The one word on the row: the precise state chosen, shown under its face.</summary>
     public string CurrentMoodName => HasCurrentMood ? CurrentMood.ToLocalizedName() : string.Empty;
@@ -372,6 +381,8 @@ public partial class DiaryEntryViewModel : ObservableObject
         OnPropertyChanged(nameof(HasCurrentMood));
         OnPropertyChanged(nameof(CurrentMoodName));
         OnPropertyChanged(nameof(CurrentColorKey));
+        OnPropertyChanged(nameof(CurrentEmoji));
+        OnPropertyChanged(nameof(CurrentIconFile));
     }
 
     [ObservableProperty]

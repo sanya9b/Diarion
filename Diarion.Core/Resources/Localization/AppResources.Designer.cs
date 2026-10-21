@@ -2889,5 +2889,25 @@ public static string ClearAllDataSuccessMsg {
         public static string MoodHourlyLabel {
             get { return ResourceManager.GetString("MoodHourlyLabel", resourceCulture) ?? string.Empty; }
         }
+
+        public static string CycleRecordStart {
+            get { return ResourceManager.GetString("CycleRecordStart", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CycleRecordEnd {
+            get { return ResourceManager.GetString("CycleRecordEnd", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CycleRecordDaysFormat {
+            get { return ResourceManager.GetString("CycleRecordDaysFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CycleRecordLastFormat {
+            get { return ResourceManager.GetString("CycleRecordLastFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CycleRecordChip {
+            get { return ResourceManager.GetString("CycleRecordChip", resourceCulture) ?? string.Empty; }
+        }
     }
 }

@@ -32,7 +32,7 @@
             <VerticalStackLayout x:Name="BlocksAnchor" behaviors:ReadOnlyAccess.DisableWhenReadOnly="True" Spacing="16" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
                                  IsVisible="{Binding BindingContext.IsContentReady, Source={x:Reference PageRoot}}">
 
-                <controls:MoodSection BindingContext="{Binding}"
+                <controls:MoodSection x:Name="MoodBlock" BindingContext="{Binding}"
                                       IsVisible="{Binding BindingContext.Profile.IsMoodBlockVisible, Source={x:Reference PageRoot}}" />
 
                 <controls:SleepSection BindingContext="{Binding}"
@@ -40,7 +40,8 @@
 
                 <!-- The intimate-life row inside is age-gated (18+); the block itself is not. Both
                      flags come off the profile the same way the block visibility does. -->
-                <controls:HealthSection BindingContext="{Binding}"
+                <controls:HealthSection x:Name="HealthBlock" BindingContext="{Binding}"
+                                        IsCycleRecordAvailable="{Binding BindingContext.Profile.IsCycleTrackingActive, Source={x:Reference PageRoot}}"
                                         IsVisible="{Binding BindingContext.Profile.IsHealthBlockVisible, Source={x:Reference PageRoot}}"
                                         IsIntimateLifeAvailable="{Binding BindingContext.Profile.IsIntimateLifeAvailable, Source={x:Reference PageRoot}}"
                                         ShowsIntimateLifeAgeHint="{Binding BindingContext.Profile.ShowsIntimateLifeAgeHint, Source={x:Reference PageRoot}}" />
@@ -163,24 +164,94 @@
         <!-- Гід по головному екрану (онбординг, етап 2). Last child and RowSpan over both rows, so
              it covers the page. Everything it does lives in the control; this page only tells it
              which element each step means (MainPage.xaml.cs). -->
-        <!-- The mood row's two bubbles (spec 18): the precise states under the chosen face, and the hour
-             grid off the hours chip. Page-level layers, so they float over the cards below the row and a
-             tap anywhere else puts them away; each binds to the same day as the row and is placed from
-             the anchor the row publishes. Under the tour, which must stay on top. -->
-        <controls:AnchoredPopover BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+        <!-- The panels the home screen's chips expand into (spec 18): the precise states out of the chosen
+             face, the hour grid out of the hours chip, period recording out of the health block's chip.
+             Page-level layers, so they cover the cards below and a tap anywhere else folds them back. Each
+             draws a copy of its button (HeaderContent) exactly over the real one — keep the copy looking
+             like the button — and asks where that button is at the moment it opens (MainPage.xaml.cs).
+             Under the tour, which must stay on top. -->
+        <controls:AnchoredPopover x:Name="RefinePopover" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
                                   Grid.Row="0" Grid.RowSpan="2"
-                                  IsOpen="{Binding IsRefinementOpen}" Anchor="{Binding RefineAnchor}"
+                                  IsOpen="{Binding IsRefinementOpen}" AnchorKey="{Binding CurrentQuadrant}"
                                   CloseCommand="{Binding CloseRefinementCommand}">
+            <controls:AnchoredPopover.HeaderContent>
+                <!-- The chosen face's disc: same size, same hue, same lift as on the row. -->
+                <Border StrokeShape="Ellipse" StrokeThickness="0" WidthRequest="48" HeightRequest="48"
+                        HorizontalOptions="Center" VerticalOptions="Center"
+                        BackgroundColor="{DynamicResource Theme_Earth_Midnight}"
+                        behaviors:SelectionEmphasis.IsActive="True">
+                    <Border StrokeShape="Ellipse" StrokeThickness="0" InputTransparent="True"
+                            behaviors:ThemeColor.BackgroundKey="{Binding CurrentColorKey}">
+                        <Image Source="{Binding CurrentIconFile}" WidthRequest="38" HeightRequest="38"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                </Border>
+            </controls:AnchoredPopover.HeaderContent>
             <controls:AnchoredPopover.PopoverContent>
                 <controls:MoodRefineContent />
             </controls:AnchoredPopover.PopoverContent>
         </controls:AnchoredPopover>
-        <controls:AnchoredPopover BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
+
+        <controls:AnchoredPopover x:Name="HourPopover" BindingContext="{Binding CurrentEntry}" x:DataType="viewmodels:DiaryEntryViewModel"
                                   Grid.Row="0" Grid.RowSpan="2"
-                                  IsOpen="{Binding IsHourPickerOpen}" Anchor="{Binding HourAnchor}"
+                                  IsOpen="{Binding IsHourPickerOpen}"
                                   CloseCommand="{Binding CloseHourPickerCommand}">
+            <controls:AnchoredPopover.HeaderContent>
+                <!-- The hours chip, as on the mood card. -->
+                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="0"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                    <!-- A clock, and beside it only state: the chosen hour, or how many hours carry a mood. No
+                         caption — the spoken label is the chip's description. Round while it is just the clock. -->
+                    <Border StrokeThickness="0" InputTransparent="True" StrokeShape="RoundRectangle 15" Padding="8,0"
+                            HeightRequest="30" MinimumWidthRequest="30"
+                            behaviors:ThemeColor.BackgroundKey="{Binding HourChipFillColorKey}"
+                        behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
+                        <HorizontalStackLayout Spacing="5" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Path Data="M 12 2 A 10 10 0 1 0 12 22 A 10 10 0 1 0 12 2 M 12 6 V 12 L 16 16"
+                                  Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round"
+                                  WidthRequest="15" HeightRequest="15" Aspect="Uniform" VerticalOptions="Center">
+                                <Path.Triggers>
+                                    <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
+                                    </DataTrigger>
+                                </Path.Triggers>
+                            </Path>
+                            <Label Text="{Binding HourChipBadge}" IsVisible="{Binding HasHourChipBadge}"
+                                   FontSize="12" FontAttributes="Bold" VerticalOptions="Center"
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsHourChipFilled}" Value="True">
+                                        <Setter Property="TextColor" Value="{DynamicResource Theme_OnAccent}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </HorizontalStackLayout>
+                    </Border>
+                </Border>
+            </controls:AnchoredPopover.HeaderContent>
             <controls:AnchoredPopover.PopoverContent>
                 <controls:HourPickerContent />
+            </controls:AnchoredPopover.PopoverContent>
+        </controls:AnchoredPopover>
+
+        <!-- Period recording. Its own view model, set in code-behind; the health block's chip opens it. -->
+        <controls:AnchoredPopover x:Name="CyclePopover" x:DataType="viewmodels:CycleRecordViewModel"
+                                  Grid.Row="0" Grid.RowSpan="2"
+                                  IsOpen="{Binding IsOpen}" CloseCommand="{Binding CloseCommand}">
+            <controls:AnchoredPopover.HeaderContent>
+                <!-- The drop button, as in the health block. -->
+                <Border StrokeShape="Ellipse" StrokeThickness="1" WidthRequest="32" HeightRequest="32"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        VerticalOptions="Center"
+                        SemanticProperties.Description="{x:Static localization:AppResources.CycleAddTitle}">
+                    <Path Data="M 12 3 C 12 3 6 10 6 14.5 A 6 6 0 0 0 18 14.5 C 18 10 12 3 12 3 Z" InputTransparent="True"
+                          Stroke="{DynamicResource Theme_Berry}" StrokeThickness="1.8" StrokeLineJoin="Round"
+                          WidthRequest="16" HeightRequest="16" Aspect="Uniform"
+                          HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </controls:AnchoredPopover.HeaderContent>
+            <controls:AnchoredPopover.PopoverContent>
+                <controls:CycleRecordContent />
             </controls:AnchoredPopover.PopoverContent>
         </controls:AnchoredPopover>
 

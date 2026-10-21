@@ -5,13 +5,34 @@
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              x:Class="Diarion.Controls.HealthSection"
              x:Name="Root"
              x:DataType="vms:DiaryEntryViewModel">
     
     <Border Style="{StaticResource Card}">
         <VerticalStackLayout Spacing="10">
-            <Label Text="{x:Static localization:AppResources.HealthLabel}" Style="{StaticResource SectionHeader}" Margin="0,0,0,4" />
+            <!-- Header: the caption and, at the right while cycle tracking is on, a round button with a drop
+                 that records a period. No caption on the button; it grows into a panel (CycleRecordContent
+                 in an AnchoredPopover on the page), the same gesture as the hours chip on the mood card. -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,0,0,4">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.HealthLabel}" Style="{StaticResource SectionHeader}" VerticalOptions="Center" />
+
+                <Border x:Name="CycleChip" Grid.Column="1" StrokeShape="Ellipse" StrokeThickness="1" WidthRequest="32" HeightRequest="32"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent"
+                        VerticalOptions="Center"
+                        behaviors:PressFeedback.IsEnabled="True"
+                        IsVisible="{Binding Source={x:Reference Root}, Path=IsCycleRecordAvailable, x:DataType=controls:HealthSection}"
+                        SemanticProperties.Description="{x:Static localization:AppResources.CycleAddTitle}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCycleChipTapped" />
+                    </Border.GestureRecognizers>
+                    <Path Data="M 12 3 C 12 3 6 10 6 14.5 A 6 6 0 0 0 18 14.5 C 18 10 12 3 12 3 Z" InputTransparent="True"
+                          Stroke="{DynamicResource Theme_Berry}" StrokeThickness="1.8" StrokeLineJoin="Round"
+                          WidthRequest="16" HeightRequest="16" Aspect="Uniform"
+                          HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
             
             <!-- Read-only: the number is counted from the recorded periods, not typed here. The row is
                  gone entirely when there is nothing to count, so a blank never reads as "day zero".

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
@@ -39,12 +38,13 @@
             <Setter Property="InputTransparent" Value="True" />
         </Style>
 
-        <!-- The hours chip and its ✕: outlined, press feedback on the outer element, fill inside. -->
+        <!-- The hours chip and its ✕: outlined, press feedback on the outer element, the surface and the
+             fill inside it. No background here: the touch behaviour would write over a theme colour. -->
         <Style x:Key="HourChip" TargetType="Border">
-            <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 16" />
             <Setter Property="StrokeThickness" Value="1" />
             <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
-            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Black}" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="VerticalOptions" Value="Center" />
             <Setter Property="behaviors:PressFeedback.IsEnabled" Value="True" />
@@ -66,17 +66,24 @@
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenHourPickerCommand}" />
                     </Border.GestureRecognizers>
-                    <Border Style="{StaticResource MoodFill}" StrokeShape="RoundRectangle 13" Padding="10,4"
-                            behaviors:ThemeColor.BackgroundKey="{Binding HourChipFillColorKey}">
-                        <HorizontalStackLayout Spacing="5">
-                            <Path Data="{x:Static icons:AppIcons.Clock}" WidthRequest="12" HeightRequest="12" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" VerticalOptions="Center">
+                    <!-- A clock, and beside it only state: the chosen hour, or how many hours carry a mood. No
+                         caption — the spoken label is the chip's description. Round while it is just the clock. -->
+                    <Border Style="{StaticResource MoodFill}" StrokeShape="RoundRectangle 15" Padding="8,0"
+                            HeightRequest="30" MinimumWidthRequest="30"
+                            behaviors:ThemeColor.BackgroundKey="{Binding HourChipFillColorKey}"
+                            behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
+                        <HorizontalStackLayout Spacing="5" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Path Data="M 12 2 A 10 10 0 1 0 12 22 A 10 10 0 1 0 12 2 M 12 6 V 12 L 16 16"
+                                  Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round"
+                                  WidthRequest="15" HeightRequest="15" Aspect="Uniform" VerticalOptions="Center">
                                 <Path.Triggers>
                                     <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
                                         <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
                                     </DataTrigger>
                                 </Path.Triggers>
                             </Path>
-                            <Label Text="{Binding HourChipText}" FontSize="11" FontAttributes="Bold" VerticalOptions="Center"
+                            <Label Text="{Binding HourChipBadge}" IsVisible="{Binding HasHourChipBadge}"
+                                   FontSize="12" FontAttributes="Bold" VerticalOptions="Center"
                                    TextColor="{DynamicResource Theme_Midnight_Snow}">
                                 <Label.Triggers>
                                     <DataTrigger TargetType="Label" Binding="{Binding IsHourChipFilled}" Value="True">
@@ -93,7 +100,8 @@
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ExitHourModeCommand}" />
                     </Border.GestureRecognizers>
-                    <Label Text="✕" FontSize="11" Padding="9,4" VerticalOptions="Center" InputTransparent="True"
+                    <Label Text="✕" FontSize="12" WidthRequest="30" HeightRequest="30" InputTransparent="True"
+                           HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                            TextColor="{DynamicResource Theme_Midnight_Snow}" />
                 </Border>
             </Grid>
@@ -113,7 +121,14 @@
                                 </Border.GestureRecognizers>
                                 <Border Style="{StaticResource MoodFaceDisc}" behaviors:SelectionEmphasis.IsActive="{Binding IsSelected}">
                                     <Border Style="{StaticResource MoodFill}" StrokeShape="Ellipse" behaviors:ThemeColor.BackgroundKey="{Binding FillColorKey}">
-                                        <Label Text="{Binding Emoji}" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
+                                        <!-- A bundled 3D face (Fluent Emoji), the same on every phone. Dimmed at rest,
+                                             full and lifting for a moment when chosen (MoodIconMotion). It starts
+                                             dimmed here: a face that is not chosen binds false, the default, and
+                                             a binding that changes nothing raises nothing. -->
+                                        <Image Source="{Binding IconFile}" WidthRequest="38" HeightRequest="38"
+                                               HorizontalOptions="Center" VerticalOptions="Center"
+                                               Opacity="{x:Static behaviors:MoodIconMotion.RestOpacity}"
+                                               behaviors:MoodIconMotion.IsActive="{Binding IsSelected}" />
                                     </Border>
                                 </Border>
                             </Border>
@@ -132,8 +147,8 @@
                 </Grid>
             </Grid>
 
-            <!-- The bubble of precise states is a page-level layer (MoodRefinePopover), placed under
-                 the chosen face from the anchor this control publishes; see MoodSection.xaml.cs. -->
+            <!-- The bubble of precise states is a page-level AnchoredPopover holding MoodRefineContent;
+                 it asks this control where the chosen face is when it opens (MoodSection.xaml.cs). -->
 
             <!-- The hours live in a bubble off the chip above (HourPickerContent in an AnchoredPopover
                  on the page); with an hour chosen, this same row writes that hour. -->
