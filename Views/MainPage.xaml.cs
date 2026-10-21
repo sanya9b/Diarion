@@ -35,6 +35,7 @@ public partial class MainPage : ContentPage
         // moved since — the strip under the date appearing, a banner, the calendar — cannot leave them
         // pointing at the wrong block.
         RefinePopover.AnchorResolver = MoodBlock.GetRefineAnchor;
+        RefinePopover.PassThroughResolver = MoodBlock.GetFacesRowBounds;
         HourPopover.AnchorResolver = MoodBlock.GetHourChipAnchor;
 
         // Period recording lives on the home screen, in the health block (spec 18). Its panel has its

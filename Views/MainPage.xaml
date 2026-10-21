@@ -173,7 +173,8 @@
                         behaviors:SelectionEmphasis.IsActive="True">
                     <Border StrokeShape="Ellipse" StrokeThickness="0" InputTransparent="True"
                             behaviors:ThemeColor.BackgroundKey="{Binding CurrentColorKey}">
-                        <Label Text="{Binding CurrentEmoji}" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Image Source="{Binding CurrentIconFile}" WidthRequest="38" HeightRequest="38"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </Border>
             </controls:AnchoredPopover.HeaderContent>

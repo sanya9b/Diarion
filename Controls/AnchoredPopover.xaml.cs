@@ -128,6 +128,13 @@ public partial class AnchoredPopover : ContentView
     /// </summary>
     public Func<Rect?>? AnchorResolver { get; set; }
 
+    /// <summary>
+    /// A part of the page, in page coordinates, that stays live while the panel is out: taps there reach
+    /// the page instead of folding the panel. The mood row uses it so another face is one tap, not two
+    /// (owner's feedback, 2026-10-21). Null: the scrim covers everything.
+    /// </summary>
+    public Func<Rect?>? PassThroughResolver { get; set; }
+
     private static async void OnIsOpenChanged(BindableObject bindable, object oldValue, object newValue)
     {
         if (bindable is not AnchoredPopover popover) return;
@@ -252,6 +259,7 @@ public partial class AnchoredPopover : ContentView
             }
 
             Surface.SetGeometry(bump, bodyStart, bodyFull, opensDown);
+            LayoutScrim(layerWidth, layerHeight);
 
             Body.TranslationX = bodyLeft + PadH;
             Body.TranslationY = contentTop;
@@ -266,6 +274,42 @@ public partial class AnchoredPopover : ContentView
         {
             _placing = false;
         }
+    }
+
+    /// <summary>The scrim's four pieces around the pass-through hole, or the top piece over everything.</summary>
+    private void LayoutScrim(double width, double height)
+    {
+        Rect? hole = null;
+        if (PassThroughResolver?.Invoke() is Rect page && page.Width > 0 && page.Height > 0)
+        {
+            var layer = VisualTreeGeometry.BoundsOnPage(this);
+            var x = Math.Clamp(page.X - layer.X, 0, width);
+            var y = Math.Clamp(page.Y - layer.Y, 0, height);
+            hole = new Rect(x, y, Math.Clamp(page.Width, 0, width - x), Math.Clamp(page.Height, 0, height - y));
+        }
+
+        if (hole is not Rect h)
+        {
+            Put(ScrimTop, 0, 0, width, height);
+            Put(ScrimBottom, 0, 0, 0, 0);
+            Put(ScrimLeft, 0, 0, 0, 0);
+            Put(ScrimRight, 0, 0, 0, 0);
+            return;
+        }
+
+        Put(ScrimTop, 0, 0, width, h.Top);
+        Put(ScrimBottom, 0, h.Bottom, width, height - h.Bottom);
+        Put(ScrimLeft, 0, h.Top, h.Left, h.Height);
+        Put(ScrimRight, h.Right, h.Top, width - h.Right, h.Height);
+    }
+
+    private static void Put(VisualElement piece, double x, double y, double width, double height)
+    {
+        piece.IsVisible = width > 0 && height > 0;
+        piece.TranslationX = x;
+        piece.TranslationY = y;
+        piece.WidthRequest = Math.Max(0, width);
+        piece.HeightRequest = Math.Max(0, height);
     }
 
     private Task GrowToAsync(double target, int length)
@@ -378,13 +422,14 @@ public partial class AnchoredPopover : ContentView
     }
 
     /// <summary>
-    /// Purpose: state indication. The panel's button changed while it was out: the shape re-seats on the
-    /// new button and the content settles — a short dim-and-return, not a second entrance.
+    /// Another button of the row was chosen while the panel was out. The panel stands at the new button
+    /// at once and only its content settles — purpose: feedback, the list is a different one now. The
+    /// bump does not travel: carrying the copy along made the old button look as if it drove over to
+    /// the new one, which is not what happened (owner, 2026-10-21).
     /// </summary>
     private async Task ReseatAsync()
     {
         if (!Place(ResolveAnchor())) return;
-
         Surface.AbortAnimation(GrowAnimation);
         Surface.Progress = 1;
 
