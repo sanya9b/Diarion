@@ -1858,6 +1858,18 @@
   <data name="StreakHeldByGraceHint" xml:space="preserve">
     <value>Серію тримає прощений день.</value>
   </data>
+  <data name="StreakTileAccessibleFormat" xml:space="preserve">
+    <value>Днів поспіль: {0}. Відкриває статистику</value>
+  </data>
+  <data name="StatsActivityHeader" xml:space="preserve">
+    <value>ДНІ ІЗ ЗАПИСАМИ</value>
+  </data>
+  <data name="StatsActivityCountFormat" xml:space="preserve">
+    <value>{0} з {1}</value>
+  </data>
+  <data name="StatsActivityHint" xml:space="preserve">
+    <value>Заповнена клітинка — день, коли щось записано. Ті самі дні, що рахує стрік.</value>
+  </data>
   <data name="CycleSymptomsLabel" xml:space="preserve">
     <value>Симптоми</value>
   </data>
@@ -2403,20 +2415,5 @@
   </data>
   <data name="EmptyStateSearchHint" xml:space="preserve">
     <value>Спробуйте інше слово або коротший запит.</value>
-  </data>
-  <data name="InsightPathProgressFormat" xml:space="preserve">
-    <value>{0} з {1}</value>
-  </data>
-  <data name="InsightPathAccessibleFormat" xml:space="preserve">
-    <value>{0} з {1} днів до першої гіпотези</value>
-  </data>
-  <data name="InsightPathSettingsTitle" xml:space="preserve">
-    <value>Шлях до першої гіпотези</value>
-  </data>
-  <data name="InsightPathSettingsLabel" xml:space="preserve">
-    <value>Стрічка під датою на головному</value>
-  </data>
-  <data name="InsightPathSettingsHint" xml:space="preserve">
-    <value>Чотирнадцять поділок до першого перевіреного зв'язку між настроєм і рештою щоденника. Зникає сама, щойно він з'явиться.</value>
   </data>
 </root>

@@ -80,7 +80,7 @@
             
                     <!-- x:Name on the four tour targets. They are anchors for the spotlight and nothing
                          else; MainPage.xaml.cs maps a TourStepId onto each one and measures it. -->
-                    <controls:QuickMenuView x:Name="QuickMenuAnchor" Grid.Column="0" HorizontalOptions="Start" />
+                    <controls:QuickMenuView x:Name="QuickMenuAnchor" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Fill" />
                 </Grid>
 
                 <VerticalStackLayout x:Name="HeaderStack" Padding="24,4,24,10" Spacing="0">
@@ -111,10 +111,6 @@
                              costs more than two points of display type. -->
                         <Label Text="{Binding CalendarSection.SelectedDateLabel}" FontFamily="MarckScript" FontSize="24" MaxLines="1" HorizontalTextAlignment="Center" HorizontalOptions="Center" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                     </VerticalStackLayout>
-
-                    <!-- The path to the first hypothesis (spec 17): one quiet row under the date, its own
-                         view model like the banner. Pulled up a little into the date block's bottom margin. -->
-                    <controls:InsightPathCard x:Name="InsightPath" Margin="0,-6,0,0" />
 
                     <!-- Tabs: Typography-Driven Design -->
                     <Grid x:Name="TabsAnchor" Margin="0,0,0,16" ColumnDefinitions="*,*">

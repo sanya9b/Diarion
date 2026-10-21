@@ -185,9 +185,14 @@ public class StatisticsRangeTests
     internal static StatisticsViewModel BuildViewModel(out Mock<IStatisticsService> stats)
         => BuildViewModel(out stats, out _);
 
+    /// <summary>The same view model, with a say over the diary service (the activity card reads it).</summary>
+    internal static StatisticsViewModel BuildViewModel(Action<Mock<IDiaryService>> configureDiary)
+        => BuildViewModel(out _, out _, configureDiary);
+
     private static StatisticsViewModel BuildViewModel(
         out Mock<IStatisticsService> stats,
-        out Mock<IDispatcherService> dispatcher)
+        out Mock<IDispatcherService> dispatcher,
+        Action<Mock<IDiaryService>>? configureDiary = null)
     {
         stats = new Mock<IStatisticsService>();
         stats.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>()))
@@ -207,6 +212,7 @@ public class StatisticsRangeTests
 
         var diary = new Mock<IDiaryService>();
         diary.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(0, 0));
+        configureDiary?.Invoke(diary);
 
         var digest = new Mock<IDigestService>();
         digest.Setup(d => d.BuildAsync(

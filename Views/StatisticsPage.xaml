@@ -171,6 +171,31 @@
             <!-- ================= GENERAL TAB (Mood) ================= -->
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsGeneralTabVisible}">
 
+                <!-- Days with entries: every day of the window, filled where something was written. The days
+                     the streak tile on the home screen counts, drawn out, so a gap is visible here rather than
+                     only as a number that went back to zero. One colour for every written day: this card is
+                     about whether a day was kept, the pixel grid further down is about how it felt. -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding HasActivityDays}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <Label Text="{x:Static localization:AppResources.StatsActivityHeader}" FontAttributes="Bold" FontSize="12"
+                                   CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{Binding ActivityCountText}" FontSize="13" FontAttributes="Bold"
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                        </Grid>
+                        <controls:ActivityGridView Items="{Binding ActivityDays}"
+                                                   ActiveColor="{DynamicResource Theme_Coral}"
+                                                   TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                                   MutedColor="{DynamicResource Theme_Ocean_Dust}"
+                                                   SemanticProperties.Description="{Binding ActivityCountText}" />
+                        <Label Text="{x:Static localization:AppResources.StatsActivityHint}" FontSize="11"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Recurring themes. Labels are the user's own leading sentences, so this needs
                      only the encoder; day counts, not passage counts, because one long evening
                      about a subject is one day of it. -->

@@ -1606,6 +1606,18 @@
   <data name="StreakHeldByGraceHint" xml:space="preserve">
     <value>A forgiven day is holding this streak.</value>
   </data>
+  <data name="StreakTileAccessibleFormat" xml:space="preserve">
+    <value>Days in a row: {0}. Opens statistics</value>
+  </data>
+  <data name="StatsActivityHeader" xml:space="preserve">
+    <value>DAYS WITH ENTRIES</value>
+  </data>
+  <data name="StatsActivityCountFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="StatsActivityHint" xml:space="preserve">
+    <value>A filled square is a day on which something was written. The same days the streak counts.</value>
+  </data>
   <data name="CycleSymptomsLabel" xml:space="preserve">
     <value>Symptoms</value>
   </data>
@@ -2403,20 +2415,5 @@
   </data>
   <data name="EmptyStateSearchHint" xml:space="preserve">
     <value>Try another word or a shorter query.</value>
-  </data>
-  <data name="InsightPathProgressFormat" xml:space="preserve">
-    <value>{0} of {1}</value>
-  </data>
-  <data name="InsightPathAccessibleFormat" xml:space="preserve">
-    <value>{0} of {1} days to the first hypothesis</value>
-  </data>
-  <data name="InsightPathSettingsTitle" xml:space="preserve">
-    <value>Path to the first hypothesis</value>
-  </data>
-  <data name="InsightPathSettingsLabel" xml:space="preserve">
-    <value>Strip under the date on the home screen</value>
-  </data>
-  <data name="InsightPathSettingsHint" xml:space="preserve">
-    <value>Fourteen notches to the first verified link between your mood and the rest of the diary. It leaves on its own once one holds.</value>
   </data>
 </root>

@@ -757,6 +757,24 @@ public class DiaryServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetContentDates_KeepsOnlyWrittenDaysInsideTheRange()
+    {
+        // The activity card in statistics draws these days and the streak tile counts by the same rule, so
+        // a row persisted by merely opening a day must not show up as a written one.
+        await ClearDatabaseAsync();
+        var today = DateTime.Today;
+
+        await _diaryService.SaveEntryAsync(JournaledOn(today));
+        await _diaryService.SaveEntryAsync(JournaledOn(today.AddDays(-2)));
+        await _diaryService.SaveEntryAsync(new DiaryEntry { Date = today.AddDays(-1) });
+        await _diaryService.SaveEntryAsync(JournaledOn(today.AddDays(-10)));
+
+        var days = await _diaryService.GetContentDatesAsync(today.AddDays(-5), today);
+
+        days.Should().Equal(today.AddDays(-2), today);
+    }
+
+    [Fact]
     public async Task GetCurrentStreak_WhenLastEntryWasYesterday_ReturnsCorrectStreak()
     {
         await ClearDatabaseAsync();
