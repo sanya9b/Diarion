@@ -134,6 +134,9 @@
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
+		<!-- The mood faces (Microsoft Fluent Emoji, MIT, see THIRD-PARTY-NOTICES.md) are 256 px squares
+		     shown at about 40 dp: a 64 dp base gives every density a downscale, never a blurry upscale. -->
+		<MauiImage Update="Resources\Images\mood_*.png" BaseSize="64,64" />
 
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />

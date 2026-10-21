@@ -32,6 +32,9 @@ public partial class MoodQuadrantViewModel : ObservableObject
 
     public string Emoji => Quadrant.ToEmoji();
 
+    /// <summary>The bundled face image the row shows (see <see cref="EmotionQuadrantExtensions.ToIconFile"/>).</summary>
+    public string IconFile => Quadrant.ToIconFile();
+
     /// <summary>The theme key of the quadrant's highlight hue.</summary>
     public string ColorKey { get; }
 

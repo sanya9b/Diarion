@@ -244,6 +244,7 @@ public partial class MainViewModel : BaseViewModel
         nameof(DiaryEntryViewModel.CurrentMoodName),
         nameof(DiaryEntryViewModel.CurrentColorKey),
         nameof(DiaryEntryViewModel.CurrentEmoji),
+        nameof(DiaryEntryViewModel.CurrentIconFile),
         nameof(DiaryEntryViewModel.IsHourPickerOpen),
         nameof(DiaryEntryViewModel.LoggedHourCount),
         nameof(DiaryEntryViewModel.HourChipText),

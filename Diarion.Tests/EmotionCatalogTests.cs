@@ -85,6 +85,17 @@ public class EmotionCatalogTests
     }
 
     [Fact]
+    public void Recordable_quadrants_have_distinct_face_images()
+    {
+        // MAUI image names: lowercase letters, digits and underscores, starting with a letter.
+        var files = EmotionCatalog.Quadrants.Select(q => q.ToIconFile()).ToList();
+
+        files.Should().OnlyHaveUniqueItems();
+        files.Should().OnlyContain(f => System.Text.RegularExpressions.Regex.IsMatch(f, @"^[a-z][a-z0-9_]*\.png$"));
+        EmotionQuadrant.None.ToIconFile().Should().BeEmpty();
+    }
+
+    [Fact]
     public void Recordable_quadrants_have_a_glyph()
     {
         EmotionCatalog.Quadrants.Select(q => q.ToEmoji()).Should().OnlyContain(e => !string.IsNullOrEmpty(e));

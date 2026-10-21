@@ -62,6 +62,10 @@ public partial class MoodSection : ContentView
         return disc.Width > 0 ? VisualTreeGeometry.BoundsOnPage(disc) : null;
     }
 
+    /// <summary>The row of faces in page coordinates: it stays live while the refinement panel is out.</summary>
+    public Rect? GetFacesRowBounds() =>
+        FacesRow.Width > 0 ? VisualTreeGeometry.BoundsOnPage(FacesRow) : null;
+
     /// <summary>Where the hour panel grows from: the hours chip, which its copy covers. Page coordinates; null while not laid out.</summary>
     public Rect? GetHourChipAnchor() =>
         HourChip.Width > 0 ? VisualTreeGeometry.BoundsOnPage(HourChip) : null;

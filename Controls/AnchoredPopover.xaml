@@ -3,18 +3,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:Diarion.Controls"
              x:Class="Diarion.Controls.AnchoredPopover"
-             IsVisible="False">
+             IsVisible="False"
+             InputTransparent="True"
+             CascadeInputTransparent="False">
 
     <!-- This layer spans the page. The scrim is see-through and only exists to catch the tap that folds
          the panel back. The panel is one shape with the button (BubbleSurface): a bump around the button
          flowing into the body through smooth fillets, the body growing out of the bump. A copy of the
          button (HeaderSlot) sits exactly over the real one, so the button never moves. Everything is
-         placed from code-behind in this layer's coordinates. -->
-    <Grid>
-        <Grid x:Name="Scrim" BackgroundColor="Transparent">
-            <Grid.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnScrimTapped" />
-            </Grid.GestureRecognizers>
+         placed from code-behind in this layer's coordinates. The layer itself takes no taps: a layout
+         catches every tap inside its bounds unless it is input-transparent, and this one spans the
+         page — it would swallow the hole below. Only the pieces inside answer. -->
+    <Grid InputTransparent="True" CascadeInputTransparent="False">
+        <!-- The scrim in four pieces around an optional hole (PassThroughResolver): the mood row stays
+             live under it, so another face can be chosen while the panel is out, in one tap. -->
+        <Grid x:Name="ScrimTop" BackgroundColor="Transparent" HorizontalOptions="Start" VerticalOptions="Start">
+            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnScrimTapped" /></Grid.GestureRecognizers>
+        </Grid>
+        <Grid x:Name="ScrimBottom" BackgroundColor="Transparent" HorizontalOptions="Start" VerticalOptions="Start">
+            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnScrimTapped" /></Grid.GestureRecognizers>
+        </Grid>
+        <Grid x:Name="ScrimLeft" BackgroundColor="Transparent" HorizontalOptions="Start" VerticalOptions="Start">
+            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnScrimTapped" /></Grid.GestureRecognizers>
+        </Grid>
+        <Grid x:Name="ScrimRight" BackgroundColor="Transparent" HorizontalOptions="Start" VerticalOptions="Start">
+            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnScrimTapped" /></Grid.GestureRecognizers>
         </Grid>
 
         <controls:BubbleSurface x:Name="Surface" Opacity="0"

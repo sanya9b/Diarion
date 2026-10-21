@@ -121,7 +121,14 @@
                                 </Border.GestureRecognizers>
                                 <Border Style="{StaticResource MoodFaceDisc}" behaviors:SelectionEmphasis.IsActive="{Binding IsSelected}">
                                     <Border Style="{StaticResource MoodFill}" StrokeShape="Ellipse" behaviors:ThemeColor.BackgroundKey="{Binding FillColorKey}">
-                                        <Label Text="{Binding Emoji}" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
+                                        <!-- A bundled 3D face (Fluent Emoji), the same on every phone. Dimmed at rest,
+                                             full and lifting for a moment when chosen (MoodIconMotion). It starts
+                                             dimmed here: a face that is not chosen binds false, the default, and
+                                             a binding that changes nothing raises nothing. -->
+                                        <Image Source="{Binding IconFile}" WidthRequest="38" HeightRequest="38"
+                                               HorizontalOptions="Center" VerticalOptions="Center"
+                                               Opacity="{x:Static behaviors:MoodIconMotion.RestOpacity}"
+                                               behaviors:MoodIconMotion.IsActive="{Binding IsSelected}" />
                                     </Border>
                                 </Border>
                             </Border>

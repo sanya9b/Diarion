@@ -279,6 +279,9 @@ public partial class DiaryEntryViewModel : ObservableObject
     /// </summary>
     public string CurrentEmoji => CurrentQuadrant.ToEmoji();
 
+    /// <summary>The chosen face's image, for the copy of it the refinement panel draws over the real one.</summary>
+    public string CurrentIconFile => CurrentQuadrant.ToIconFile();
+
     /// <summary>The one word on the row: the precise state chosen, shown under its face.</summary>
     public string CurrentMoodName => HasCurrentMood ? CurrentMood.ToLocalizedName() : string.Empty;
 
@@ -379,6 +382,7 @@ public partial class DiaryEntryViewModel : ObservableObject
         OnPropertyChanged(nameof(CurrentMoodName));
         OnPropertyChanged(nameof(CurrentColorKey));
         OnPropertyChanged(nameof(CurrentEmoji));
+        OnPropertyChanged(nameof(CurrentIconFile));
     }
 
     [ObservableProperty]
