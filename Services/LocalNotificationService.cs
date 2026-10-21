@@ -79,8 +79,9 @@ public class LocalNotificationService : INotificationService
 #endif
     }
 
-    // Fixed, unusual id so the single daily reminder can be reliably updated/cancelled.
-    private const int DailyReminderId = 990424;
+    // Fixed, unusual id so the single daily reminder can be reliably updated/cancelled. Public
+    // because a tap on this one notification opens the quick entry (App.OnNotificationActionTapped).
+    public const int DailyReminderId = 990424;
 
     public void ScheduleDailyJournalReminder(TimeSpan timeOfDay)
     {
@@ -99,6 +100,9 @@ public class LocalNotificationService : INotificationService
             NotificationId = DailyReminderId,
             Title = Diarion.Resources.Localization.AppResources.DailyReminderTitle,
             Description = Diarion.Resources.Localization.AppResources.DailyReminderMessage,
+            // Tapping it opens the quick entry, not just the app. The id is what the handler
+            // matches on; this is the same intent spelled out for anyone reading the request.
+            ReturningData = LaunchActions.QuickCaptureActionId,
             Schedule = At(next, NotificationRepeat.Daily)
         };
 

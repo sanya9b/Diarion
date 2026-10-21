@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -61,7 +62,14 @@ public partial class SearchViewModel : BaseViewModel
     /// </summary>
     public bool IsSemanticOffered => OnDeviceAi.EmbeddingsOffered;
 
-    public ObservableCollection<SearchResultItem> Results { get; } = [];
+    /// <summary>
+    /// Replaced per search rather than cleared and refilled. On Windows a CollectionView that is
+    /// cleared and refilled in one pass drew every row twice — "Знайдено: 1" over two identical
+    /// cards — and a fresh collection is the one refresh that cannot leave a stale row behind.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasResults))]
+    private ObservableCollection<SearchResultItem> _results = [];
 
     public bool HasResults => Results.Count > 0;
 
@@ -93,10 +101,9 @@ public partial class SearchViewModel : BaseViewModel
     {
         if (string.IsNullOrWhiteSpace(Query))
         {
-            Results.Clear();
+            Results = [];
             ResultsSummary = string.Empty;
             ShowEmptyState = false;
-            OnPropertyChanged(nameof(HasResults));
             return;
         }
 
@@ -107,17 +114,12 @@ public partial class SearchViewModel : BaseViewModel
 
             var hits = await _search.SearchAsync(Query, Scope);
 
-            Results.Clear();
-            foreach (var hit in hits)
-            {
-                Results.Add(new SearchResultItem(hit));
-            }
+            Results = new ObservableCollection<SearchResultItem>(hits.Select(hit => new SearchResultItem(hit)));
 
             ResultsSummary = hits.Count > 0
                 ? string.Format(AppResources.SearchResultsCountFormat, hits.Count)
                 : string.Empty;
             ShowEmptyState = hits.Count == 0;
-            OnPropertyChanged(nameof(HasResults));
         }
         finally
         {

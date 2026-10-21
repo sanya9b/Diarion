@@ -36,7 +36,9 @@ public enum StatisticsTabOption
     Productivity,
     Finance,
     Habits,
-    Cycle
+    Cycle,
+    /// <summary>The period against the one before it. First in the strip, last in the enum: nothing orders by this.</summary>
+    Review
 }
 
 public partial class StatisticsTabItem : ObservableObject
@@ -101,6 +103,9 @@ public partial class StatisticsViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool _isCycleTabVisible;
+
+    [ObservableProperty]
+    private bool _isReviewTabVisible;
 
     // --- The period, as two dates ---
 
@@ -171,6 +176,12 @@ public partial class StatisticsViewModel : BaseViewModel
     public ViewModels.Statistics.HabitStatsViewModel HabitStats { get; }
     public ViewModels.Statistics.CycleStatsViewModel CycleStats { get; }
 
+    /// <summary>
+    /// The window against the window before it — the tab the screen opens on. What a person wants
+    /// first from a statistics screen is "what changed", and every other tab answers "what is".
+    /// </summary>
+    public ViewModels.Statistics.PeriodReviewViewModel Review { get; }
+
     /// <summary>The first-visit coach marks over this screen. Idle until the page starts it.</summary>
     public TourViewModel Tour { get; }
 
@@ -188,6 +199,7 @@ public partial class StatisticsViewModel : BaseViewModel
         ViewModels.Statistics.FinanceStatsViewModel financeStats,
         ViewModels.Statistics.HabitStatsViewModel habitStats,
         ViewModels.Statistics.CycleStatsViewModel cycleStats,
+        ViewModels.Statistics.PeriodReviewViewModel review,
         TourViewModel tour)
     {
         _statisticsService = statisticsService;
@@ -206,6 +218,7 @@ public partial class StatisticsViewModel : BaseViewModel
         FinanceStats = financeStats;
         HabitStats = habitStats;
         CycleStats = cycleStats;
+        Review = review;
         Tour = tour;
 
         Title = AppResources.StatisticsTitle;
@@ -248,7 +261,8 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         Tabs = new System.Collections.ObjectModel.ObservableCollection<StatisticsTabItem>
         {
-            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, Icon = "😊", IsSelected = true },
+            new StatisticsTabItem { Option = StatisticsTabOption.Review, DisplayName = AppResources.TabReview, Icon = "📋", IsSelected = true },
+            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, Icon = "😊" },
             new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = AppResources.TabSleep, Icon = "😴" },
             new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = AppResources.TabProductivity, Icon = "✅" },
             new StatisticsTabItem { Option = StatisticsTabOption.Finance, DisplayName = AppResources.FinanceTitle ?? "Finance", Icon = "💸" },
@@ -275,6 +289,7 @@ public partial class StatisticsViewModel : BaseViewModel
         IsFinanceTabVisible = item.Option == StatisticsTabOption.Finance;
         IsHabitsTabVisible = item.Option == StatisticsTabOption.Habits;
         IsCycleTabVisible = item.Option == StatisticsTabOption.Cycle;
+        IsReviewTabVisible = item.Option == StatisticsTabOption.Review;
 
         // Load data for the selected tab when switched
         if (_isInitialized)
@@ -414,7 +429,11 @@ public partial class StatisticsViewModel : BaseViewModel
 
             var range = CurrentRange;
 
-            if (IsGeneralTabVisible)
+            if (IsReviewTabVisible)
+            {
+                await Review.LoadDataAsync(range);
+            }
+            else if (IsGeneralTabVisible)
             {
                 await MoodStats.LoadDataAsync(range);
                 await LoadDigestAsync(range);

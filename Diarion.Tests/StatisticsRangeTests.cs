@@ -187,7 +187,8 @@ public class StatisticsRangeTests
 
     private static StatisticsViewModel BuildViewModel(
         out Mock<IStatisticsService> stats,
-        out Mock<IDispatcherService> dispatcher)
+        out Mock<IDispatcherService> dispatcher,
+        Diarion.Services.Reports.IPeriodReviewService? reviews = null)
     {
         stats = new Mock<IStatisticsService>();
         stats.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>()))
@@ -244,7 +245,26 @@ public class StatisticsRangeTests
             new FinanceStatsViewModel(stats.Object, profile.Object),
             new HabitStatsViewModel(new Mock<IHabitService>().Object, profile.Object),
             new CycleStatsViewModel(new Mock<ICycleLogService>().Object, profile.Object),
+            new PeriodReviewViewModel(reviews ?? EmptyReviews(), profile.Object),
             new TourViewModel(profile.Object, new TourService()));
+    }
+
+    /// <summary>
+    /// The review tab is the one the screen opens on, so every load in these tests goes through it.
+    /// A real calculator over two empty snapshots, rather than a bare mock, so the view model gets
+    /// the shape it expects and the tests here stay about the period.
+    /// </summary>
+    private static Diarion.Services.Reports.IPeriodReviewService EmptyReviews()
+    {
+        var reviews = new Mock<Diarion.Services.Reports.IPeriodReviewService>();
+        reviews.Setup(r => r.BuildAsync(It.IsAny<StatsRange>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync((StatsRange range, CancellationToken _) =>
+                   Diarion.Services.Reports.PeriodReviewCalculator.Compare(
+                       new Diarion.Models.Ai.Reports.PeriodSnapshot(),
+                       new Diarion.Models.Ai.Reports.PeriodSnapshot(),
+                       range,
+                       Diarion.Services.Reports.PeriodReviewService.PreviousOf(range)));
+        return reviews.Object;
     }
 
     [Fact]
@@ -316,6 +336,7 @@ public class StatisticsRangeTests
         // collections, and WinUI ignores those writes from a background thread without complaining:
         // the charts stayed on the previous window while the numbers beside them moved on.
         var vm = BuildViewModel(out var stats, out var dispatcher);
+        vm.SelectTab(vm.Tabs.Single(t => t.Option == StatisticsTabOption.General));
         stats.Invocations.Clear();
 
         vm.RangeStart = LastMarch.Start;
@@ -331,6 +352,7 @@ public class StatisticsRangeTests
     public async Task ViewModel_LoadsExactlyTheChosenWindow()
     {
         var vm = BuildViewModel(out var stats);
+        vm.SelectTab(vm.Tabs.Single(t => t.Option == StatisticsTabOption.General));
         vm.RangeStart = LastMarch.Start;
         vm.RangeEnd = LastMarch.End;
         stats.Invocations.Clear();
@@ -338,6 +360,36 @@ public class StatisticsRangeTests
         await vm.LoadStatisticsAsync();
 
         stats.Verify(s => s.GetMoodStatisticsAsync(LastMarch), Times.Once);
+    }
+
+    [Fact]
+    public async Task ViewModel_OpensOnTheReviewTab_AndReviewsTheChosenWindow()
+    {
+        // The review is what the screen opens on: "what changed" before "what is". It is asked for
+        // the same two dates as every other tab, so the comparison and the charts count the same days.
+        var reviews = new Mock<Diarion.Services.Reports.IPeriodReviewService>();
+        reviews.Setup(r => r.BuildAsync(It.IsAny<StatsRange>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync((StatsRange range, CancellationToken _) =>
+                   Diarion.Services.Reports.PeriodReviewCalculator.Compare(
+                       new Diarion.Models.Ai.Reports.PeriodSnapshot(),
+                       new Diarion.Models.Ai.Reports.PeriodSnapshot(),
+                       range,
+                       Diarion.Services.Reports.PeriodReviewService.PreviousOf(range)));
+        var vm = BuildViewModel(out var stats, out _, reviews.Object);
+
+        vm.Tabs[0].Option.Should().Be(StatisticsTabOption.Review);
+        vm.IsReviewTabVisible.Should().BeTrue();
+
+        vm.RangeStart = LastMarch.Start;
+        vm.RangeEnd = LastMarch.End;
+        reviews.Invocations.Clear();
+        stats.Invocations.Clear();
+
+        await vm.LoadStatisticsAsync();
+
+        reviews.Verify(r => r.BuildAsync(LastMarch, It.IsAny<CancellationToken>()), Times.Once);
+        stats.Verify(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>()), Times.Never,
+            "the review tab does not also load the mood tab's charts");
     }
 
     [Fact]

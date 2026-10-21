@@ -22,6 +22,24 @@
             <!-- x:Name on the four tour targets. They are anchors for the spotlight and nothing
                  else; MainPage.xaml.cs maps a TourStepId onto each one and measures it. -->
             <controls:QuickMenuView x:Name="QuickMenuAnchor" Grid.Column="0" HorizontalOptions="Start" />
+
+            <!-- The quick entry (roadmap 2.1): the one thing on this screen that is about right now
+                 rather than about the selected day. A pencil, not a plus — a plus here used to mean
+                 "new entry", and the day screen already is the entry. -->
+            <Border Grid.Column="1" x:Name="QuickCaptureAnchor"
+                    WidthRequest="44" HeightRequest="44" VerticalOptions="Center" Padding="0"
+                    StrokeShape="RoundRectangle 14" StrokeThickness="1"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    behaviors:PressFeedback.IsEnabled="True"
+                    SemanticProperties.Description="{x:Static localization:AppResources.QuickCaptureOpenAccessibility}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenQuickCaptureCommand}" />
+                </Border.GestureRecognizers>
+                <Label Text="✎" FontSize="20" InputTransparent="True"
+                       HorizontalOptions="Center" VerticalOptions="Center"
+                       TextColor="{DynamicResource Theme_Coral}" />
+            </Border>
         </Grid>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">

@@ -46,4 +46,11 @@ public interface IBackupService
     /// file turns out to be a portable backup, so legacy same-device backups still restore without one.
     /// </summary>
     Task<BackupOutcome> ImportBackupAsync(Func<Task<string?>> passphraseProvider);
+
+    /// <summary>
+    /// Writes the portable envelope to <paramref name="destinationPath"/> and nothing more — no share
+    /// sheet, no prompt. The scheduled backup uses this with a stored passphrase; the manual export
+    /// is this plus the share sheet. One writer, so the two files can never differ in format.
+    /// </summary>
+    Task<BackupOutcome> WritePortableBackupAsync(string passphrase, string destinationPath);
 }

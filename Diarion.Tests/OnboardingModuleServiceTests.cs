@@ -120,9 +120,11 @@ public class OnboardingModuleServiceTests
         service.Apply(profile, service.GetModules());
 
         // Habits sits in the daily-entry group and so is listed before the tile-only modules; the
-        // rest follow the menu catalogue.
+        // rest follow the menu catalogue. Search and chat are not modules anyone picks — search is
+        // a utility, chat appears only with a model — so both land after everything that was chosen.
         profile.QuickMenuOrder!.Should().Equal(
             "Habits", "Notes", "Reading", "Moments", "Deeds", "Wishlist", "Finance",
+            MenuConfigurationService.SearchId,
             MenuConfigurationService.AiChatId);
     }
 }

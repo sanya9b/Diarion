@@ -2780,5 +2780,201 @@ public static string ClearAllDataSuccessMsg {
         public static string InsightPathAccessibleFormat {
             get { return ResourceManager.GetString("InsightPathAccessibleFormat", resourceCulture) ?? string.Empty; }
         }
+
+        public static string TabReview {
+            get { return ResourceManager.GetString("TabReview", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewVersusFormat {
+            get { return ResourceManager.GetString("ReviewVersusFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewHint {
+            get { return ResourceManager.GetString("ReviewHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewDaysWritten {
+            get { return ResourceManager.GetString("ReviewDaysWritten", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewMood {
+            get { return ResourceManager.GetString("ReviewMood", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewSleep {
+            get { return ResourceManager.GetString("ReviewSleep", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewHabits {
+            get { return ResourceManager.GetString("ReviewHabits", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewTasks {
+            get { return ResourceManager.GetString("ReviewTasks", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewExpense {
+            get { return ResourceManager.GetString("ReviewExpense", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewOfFormat {
+            get { return ResourceManager.GetString("ReviewOfFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewNoChange {
+            get { return ResourceManager.GetString("ReviewNoChange", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewNoPrevious {
+            get { return ResourceManager.GetString("ReviewNoPrevious", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewNoData {
+            get { return ResourceManager.GetString("ReviewNoData", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewNoValue {
+            get { return ResourceManager.GetString("ReviewNoValue", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewHabitsHeader {
+            get { return ResourceManager.GetString("ReviewHabitsHeader", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewTopEmotionFormat {
+            get { return ResourceManager.GetString("ReviewTopEmotionFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateReviewTitle {
+            get { return ResourceManager.GetString("EmptyStateReviewTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string EmptyStateReviewHint {
+            get { return ResourceManager.GetString("EmptyStateReviewHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickCaptureTitle {
+            get { return ResourceManager.GetString("QuickCaptureTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickCaptureHourFormat {
+            get { return ResourceManager.GetString("QuickCaptureHourFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickCaptureMoodLabel {
+            get { return ResourceManager.GetString("QuickCaptureMoodLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickCaptureTextPlaceholder {
+            get { return ResourceManager.GetString("QuickCaptureTextPlaceholder", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickCaptureHabitsLabel {
+            get { return ResourceManager.GetString("QuickCaptureHabitsLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickCaptureSave {
+            get { return ResourceManager.GetString("QuickCaptureSave", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickCaptureCancel {
+            get { return ResourceManager.GetString("QuickCaptureCancel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickCaptureOpenFull {
+            get { return ResourceManager.GetString("QuickCaptureOpenFull", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickCaptureActionTitle {
+            get { return ResourceManager.GetString("QuickCaptureActionTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickCaptureOpenAccessibility {
+            get { return ResourceManager.GetString("QuickCaptureOpenAccessibility", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupTitle {
+            get { return ResourceManager.GetString("AutoBackupTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupDescription {
+            get { return ResourceManager.GetString("AutoBackupDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupUnsupported {
+            get { return ResourceManager.GetString("AutoBackupUnsupported", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupEnableLabel {
+            get { return ResourceManager.GetString("AutoBackupEnableLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupFolderFormat {
+            get { return ResourceManager.GetString("AutoBackupFolderFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupNoFolder {
+            get { return ResourceManager.GetString("AutoBackupNoFolder", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupIntervalLabel {
+            get { return ResourceManager.GetString("AutoBackupIntervalLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupIntervalDaily {
+            get { return ResourceManager.GetString("AutoBackupIntervalDaily", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupIntervalDaysFormat {
+            get { return ResourceManager.GetString("AutoBackupIntervalDaysFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupLastRunFormat {
+            get { return ResourceManager.GetString("AutoBackupLastRunFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupNeverRun {
+            get { return ResourceManager.GetString("AutoBackupNeverRun", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupRunNow {
+            get { return ResourceManager.GetString("AutoBackupRunNow", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupChangeFolder {
+            get { return ResourceManager.GetString("AutoBackupChangeFolder", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupPassphrasePrompt {
+            get { return ResourceManager.GetString("AutoBackupPassphrasePrompt", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupPassphraseConfirm {
+            get { return ResourceManager.GetString("AutoBackupPassphraseConfirm", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupPassphraseMismatch {
+            get { return ResourceManager.GetString("AutoBackupPassphraseMismatch", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupOutcomeSuccess {
+            get { return ResourceManager.GetString("AutoBackupOutcomeSuccess", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupOutcomeFolderUnavailable {
+            get { return ResourceManager.GetString("AutoBackupOutcomeFolderUnavailable", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupOutcomeNoPassphrase {
+            get { return ResourceManager.GetString("AutoBackupOutcomeNoPassphrase", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupOutcomeFailed {
+            get { return ResourceManager.GetString("AutoBackupOutcomeFailed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupKeepHint {
+            get { return ResourceManager.GetString("AutoBackupKeepHint", resourceCulture) ?? string.Empty; }
+        }
     }
 }

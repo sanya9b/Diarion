@@ -642,6 +642,73 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Automatic copies (roadmap 0.1). Its BindingContext is ScheduledBackupViewModel, set in
+                     ProfilePage.xaml.cs. The same passphrase-protected envelope as "Export" above, written
+                     to a folder the user picked once — iCloud Drive, Google Drive, a card — whenever the
+                     app opens and the interval has passed. Restoring goes through the ordinary "Restore". -->
+                <Border x:Name="AutoBackupCard" x:DataType="viewmodels:ScheduledBackupViewModel"
+                        StrokeShape="RoundRectangle 24" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{x:Static localization:AppResources.AutoBackupTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Label Text="{x:Static localization:AppResources.AutoBackupDescription}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Label Text="{x:Static localization:AppResources.AutoBackupUnsupported}" IsVisible="{Binding IsUnsupported}"
+                               FontSize="13" TextColor="{DynamicResource Theme_Amber}" />
+
+                        <VerticalStackLayout Spacing="12" IsVisible="{Binding IsSupported}">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                                <Switch Grid.Column="0" IsToggled="{Binding IsEnabled}" OnColor="{DynamicResource Theme_Ocean_Ocean}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{x:Static localization:AppResources.AutoBackupEnableLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </Grid>
+
+                            <VerticalStackLayout Spacing="12" IsVisible="{Binding IsEnabled}">
+                                <Label Text="{Binding FolderText}" FontSize="13" LineBreakMode="MiddleTruncation"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                                    <Label Grid.Column="0" Text="{x:Static localization:AppResources.AutoBackupIntervalLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Picker Grid.Column="1" ItemsSource="{Binding Intervals}" ItemDisplayBinding="{Binding Label}" SelectedItem="{Binding SelectedInterval}"
+                                            BackgroundColor="Transparent" FontSize="14" HeightRequest="36"
+                                            TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </Grid>
+
+                                <Label Text="{Binding StatusText}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                                <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                                    <Button Grid.Column="0" Text="{x:Static localization:AppResources.AutoBackupRunNow}"
+                                            Command="{Binding RunNowCommand}"
+                                            IsEnabled="{Binding IsNotBusy}"
+                                            BackgroundColor="Transparent"
+                                            BorderColor="{DynamicResource Theme_Ocean_Ocean}"
+                                            BorderWidth="1"
+                                            TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                            CornerRadius="12"
+                                            HeightRequest="44" />
+
+                                    <Button Grid.Column="1" Text="{x:Static localization:AppResources.AutoBackupChangeFolder}"
+                                            Command="{Binding ChangeFolderCommand}"
+                                            BackgroundColor="Transparent"
+                                            BorderColor="{DynamicResource Theme_Amber}"
+                                            BorderWidth="1"
+                                            TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                            CornerRadius="12"
+                                            HeightRequest="44" />
+                                </Grid>
+
+                                <Label Text="{x:Static localization:AppResources.AutoBackupKeepHint}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Crash report. Hidden entirely until something has actually crashed. -->
                 <Border StrokeShape="RoundRectangle 24" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Coral}"

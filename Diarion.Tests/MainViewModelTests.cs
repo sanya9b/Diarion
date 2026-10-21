@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
+using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Services;
 using Diarion.Core.Services;
@@ -96,6 +98,46 @@ public class MainViewModelTests
             _dialogServiceMock.Object,
             _calendarSection,
             _navigationServiceMock.Object);
+    }
+
+    [Fact]
+    public async Task QuickCaptureSaved_ForTheDayOnShow_RereadsThatDay()
+    {
+        // The sheet wrote today's row behind this screen's back. Keeping the copy held here would
+        // let the next autosave put the stale copy back over the quick entry.
+        var vm = CreateViewModel();
+        await vm.LoadEntriesCommand.ExecuteAsync(null);
+        _diaryServiceMock.Invocations.Clear();
+
+        WeakReferenceMessenger.Default.Send(
+            new QuickCaptureSavedMessage(_calendarSection.GetSelectedDate()));
+        await WaitUntilAsync(() => _diaryServiceMock.Invocations.Any(i => i.Method.Name == nameof(IDiaryService.GetEntryForDateAsync)));
+
+        _diaryServiceMock.Verify(s => s.GetEntryForDateAsync(_calendarSection.GetSelectedDate().Date), Times.Once);
+    }
+
+    [Fact]
+    public async Task QuickCaptureSaved_ForAnotherDay_LeavesTheScreenAlone()
+    {
+        var vm = CreateViewModel();
+        await vm.LoadEntriesCommand.ExecuteAsync(null);
+        _diaryServiceMock.Invocations.Clear();
+
+        WeakReferenceMessenger.Default.Send(
+            new QuickCaptureSavedMessage(_calendarSection.GetSelectedDate().AddDays(-3)));
+        await Task.Delay(100);
+
+        _diaryServiceMock.Verify(s => s.GetEntryForDateAsync(It.IsAny<DateTime>()), Times.Never);
+    }
+
+    /// <summary>The message handler is fire-and-forget, so the test waits for its effect rather than for it.</summary>
+    private static async Task WaitUntilAsync(Func<bool> condition)
+    {
+        var deadline = DateTime.UtcNow.AddSeconds(2);
+        while (!condition() && DateTime.UtcNow < deadline)
+        {
+            await Task.Delay(10);
+        }
     }
 
     private MainViewModel CreateViewModel()

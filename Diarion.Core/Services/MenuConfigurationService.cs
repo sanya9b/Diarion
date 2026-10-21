@@ -13,16 +13,18 @@ public class MenuConfigurationService : IMenuConfigurationService
     public const string SearchId = "Search";
 
     /// <summary>
-    /// Whether the search screen is reachable. Retired: its distinctive half was searching the diary
-    /// by meaning, which went with the generative model, and what is left is a keyword box that the
-    /// notes and reading screens each already have over their own contents.
+    /// Whether the search screen is reachable. Retired on 2026-08-16 together with the generative
+    /// model, on the grounds that the notes and reading screens each had a keyword box of their own.
+    /// Brought back on 2026-10-14: the diary itself had no keyword box anywhere, so a sentence
+    /// written in gratitude or sleep notes three months ago could not be found at all, and that is
+    /// the one half of this screen that never depended on a model.
     /// </summary>
     /// <remarks>
     /// The tile is the only way in — no other screen navigates to the route — so this one flag is the
-    /// whole switch. <c>SearchPage</c>, <c>SearchViewModel</c> and their tests stay where they are;
-    /// flip this to <c>true</c> and the tile comes back in its old place, first in the strip.
+    /// whole switch. With the encoder off the screen is keyword search over the diary and the notes,
+    /// and says so on a single line; with it on, the same box also searches by meaning.
     /// </remarks>
-    public static bool SearchOffered { get; } = false;
+    public static bool SearchOffered { get; } = true;
 
     public List<QuickMenuItem> GetDefaultMenuItems()
     {

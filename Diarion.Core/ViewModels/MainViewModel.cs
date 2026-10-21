@@ -123,6 +123,16 @@ public partial class MainViewModel : BaseViewModel
             _ = CalendarSection.UpdateCalendarTasksCompletionAsync();
         });
 
+        WeakReferenceMessenger.Default.Register<QuickCaptureSavedMessage>(this, (r, m) =>
+        {
+            // The sheet saved into a row this screen may be holding a copy of. Re-read it rather than
+            // keep the copy: the next autosave from here would otherwise put the stale copy back.
+            if (CalendarSection.GetSelectedDate().Date == m.Date)
+            {
+                _ = LoadDayContentAsync(m.Date);
+            }
+        });
+
         CalendarSection.Initialize();
         QuickMenuSection.Initialize();
     }
@@ -385,6 +395,13 @@ public partial class MainViewModel : BaseViewModel
     public async Task GoToNewEntryAsync()
     {
         await _navigationService.NavigateToAsync("DiaryDetail");
+    }
+
+    /// <summary>The ten-second sheet over this screen: mood at this hour, a line, habit ticks.</summary>
+    [RelayCommand]
+    public async Task OpenQuickCaptureAsync()
+    {
+        await _navigationService.NavigateToAsync(QuickCaptureViewModel.Route);
     }
 
     [RelayCommand]

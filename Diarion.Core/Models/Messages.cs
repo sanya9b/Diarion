@@ -29,6 +29,20 @@ public class NavigateToDateMessage
 }
 
 /// <summary>
+/// The quick-entry sheet saved into a day behind the home screen's back. The home screen reloads
+/// that day if it is the one on show, so the copy it holds cannot win the next autosave.
+/// </summary>
+public sealed class QuickCaptureSavedMessage
+{
+    public DateTime Date { get; }
+
+    public QuickCaptureSavedMessage(DateTime date)
+    {
+        Date = date.Date;
+    }
+}
+
+/// <summary>
 /// A diary entry or note was written or deleted. Announced by the services rather than by their
 /// callers, so every save path is covered by one hook instead of one per view model — and sent as
 /// a message rather than a method call because the indexer already depends on those services.

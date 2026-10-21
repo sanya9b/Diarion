@@ -153,6 +153,104 @@
 
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{DynamicResource Theme_Ocean_Dust}" />
 
+            <!-- ================= REVIEW TAB ================= -->
+            <!-- The period against the period of the same length before it. Six tiles, always the
+                 same six, so the eye learns where each number lives; a tile with nothing logged says
+                 so rather than disappearing and shifting the rest. Every change carries an arrow
+                 and a magnitude — the palette is not distinguishable by hue alone, so colour is only
+                 ever added on top of text, never instead of it. -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsReviewTabVisible}">
+
+                <controls:EmptyStateView IsVisible="{Binding Review.IsEmpty}" Scene="Productivity"
+                                         Title="{x:Static localization:AppResources.EmptyStateReviewTitle}"
+                                         Hint="{x:Static localization:AppResources.EmptyStateReviewHint}" />
+
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding Review.IsNotEmpty}">
+
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="{Binding Review.PeriodText}" FontSize="16" FontAttributes="Bold"
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Label Text="{Binding Review.PreviousPeriodText}" FontSize="12"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                        <controls:StatTile Grid.Row="0" Grid.Column="0"
+                                           Label="{x:Static localization:AppResources.ReviewDaysWritten}"
+                                           Value="{Binding Review.DaysWrittenValue}"
+                                           Caption="{Binding Review.DaysWrittenDelta}"
+                                           AccentColor="{DynamicResource Theme_Coral}" />
+                        <controls:StatTile Grid.Row="0" Grid.Column="1"
+                                           Label="{x:Static localization:AppResources.ReviewMood}"
+                                           Value="{Binding Review.MoodValue}"
+                                           Caption="{Binding Review.MoodDelta}"
+                                           AccentColor="{DynamicResource Theme_Coral}" />
+                        <controls:StatTile Grid.Row="1" Grid.Column="0"
+                                           Label="{x:Static localization:AppResources.ReviewSleep}"
+                                           Value="{Binding Review.SleepValue}"
+                                           Caption="{Binding Review.SleepDelta}"
+                                           AccentColor="{DynamicResource Theme_Amber}" />
+                        <controls:StatTile Grid.Row="1" Grid.Column="1"
+                                           Label="{x:Static localization:AppResources.ReviewHabits}"
+                                           Value="{Binding Review.HabitsValue}"
+                                           Caption="{Binding Review.HabitsDelta}"
+                                           AccentColor="{DynamicResource Theme_Sage}" />
+                        <controls:StatTile Grid.Row="2" Grid.Column="0"
+                                           Label="{x:Static localization:AppResources.ReviewTasks}"
+                                           Value="{Binding Review.TasksValue}"
+                                           Caption="{Binding Review.TasksDelta}"
+                                           AccentColor="{DynamicResource Theme_Sage}" />
+                        <controls:StatTile Grid.Row="2" Grid.Column="1"
+                                           Label="{x:Static localization:AppResources.ReviewExpense}"
+                                           Value="{Binding Review.ExpenseValue}"
+                                           Caption="{Binding Review.ExpenseDelta}"
+                                           AccentColor="{DynamicResource Theme_Amber}" />
+                    </Grid>
+
+                    <Label Text="{Binding Review.TopEmotionText}" IsVisible="{Binding Review.HasTopEmotion}"
+                           FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                    <Border Style="{StaticResource StatCard}" IsVisible="{Binding Review.HasHabitRows}">
+                        <Border.Shadow>
+                            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="{x:Static localization:AppResources.ReviewHabitsHeader}"
+                                   FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5"
+                                   TextColor="{DynamicResource Theme_Sage}" />
+
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Review.HabitRows}" Spacing="8">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="stats:ReviewHabitRow">
+                                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                                            <Label Grid.Column="0" Text="{Binding Name}" FontSize="14" LineBreakMode="TailTruncation"
+                                                   VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Label Grid.Column="1" Text="{Binding ValueText}" FontSize="14" FontAttributes="Bold"
+                                                   VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Label Grid.Column="2" Text="{Binding DeltaText}" FontSize="12" VerticalOptions="Center"
+                                                   MinimumWidthRequest="72" HorizontalTextAlignment="End"
+                                                   TextColor="{DynamicResource Theme_Ocean_Dust}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding Tone}" Value="{x:Static stats:ReviewTone.Better}">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding Tone}" Value="{x:Static stats:ReviewTone.Worse}">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </Grid>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Label Text="{x:Static localization:AppResources.ReviewHint}"
+                           FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
             <!-- ================= GENERAL TAB (Mood) ================= -->
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsGeneralTabVisible}">
 

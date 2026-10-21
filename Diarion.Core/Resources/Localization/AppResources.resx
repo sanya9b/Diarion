@@ -2329,4 +2329,151 @@
   <data name="InsightPathAccessibleFormat" xml:space="preserve">
     <value>{0} of {1} days to the first hypothesis, {2}</value>
   </data>
+  <data name="TabReview" xml:space="preserve">
+    <value>Review</value>
+  </data>
+  <data name="ReviewVersusFormat" xml:space="preserve">
+    <value>vs {0}</value>
+  </data>
+  <data name="ReviewHint" xml:space="preserve">
+    <value>Compared with the period of the same length just before it. Nothing leaves the phone.</value>
+  </data>
+  <data name="ReviewDaysWritten" xml:space="preserve">
+    <value>Days written</value>
+  </data>
+  <data name="ReviewMood" xml:space="preserve">
+    <value>Mood</value>
+  </data>
+  <data name="ReviewSleep" xml:space="preserve">
+    <value>Sleep</value>
+  </data>
+  <data name="ReviewHabits" xml:space="preserve">
+    <value>Habits</value>
+  </data>
+  <data name="ReviewTasks" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="ReviewExpense" xml:space="preserve">
+    <value>Spent</value>
+  </data>
+  <data name="ReviewOfFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="ReviewNoChange" xml:space="preserve">
+    <value>no change</value>
+  </data>
+  <data name="ReviewNoPrevious" xml:space="preserve">
+    <value>nothing to compare with</value>
+  </data>
+  <data name="ReviewNoData" xml:space="preserve">
+    <value>not logged</value>
+  </data>
+  <data name="ReviewNoValue" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="ReviewHabitsHeader" xml:space="preserve">
+    <value>HABITS THIS PERIOD</value>
+  </data>
+  <data name="ReviewTopEmotionFormat" xml:space="preserve">
+    <value>Most often: {0}</value>
+  </data>
+  <data name="EmptyStateReviewTitle" xml:space="preserve">
+    <value>Nothing to compare yet</value>
+  </data>
+  <data name="EmptyStateReviewHint" xml:space="preserve">
+    <value>Write a few days and this tab will show what changed against the period before.</value>
+  </data>
+  <data name="QuickCaptureTitle" xml:space="preserve">
+    <value>Quick entry</value>
+  </data>
+  <data name="QuickCaptureHourFormat" xml:space="preserve">
+    <value>Now, around {0}:00 — goes into today</value>
+  </data>
+  <data name="QuickCaptureMoodLabel" xml:space="preserve">
+    <value>HOW ARE YOU RIGHT NOW</value>
+  </data>
+  <data name="QuickCaptureTextPlaceholder" xml:space="preserve">
+    <value>One line for yourself…</value>
+  </data>
+  <data name="QuickCaptureHabitsLabel" xml:space="preserve">
+    <value>HABITS TODAY</value>
+  </data>
+  <data name="QuickCaptureSave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="QuickCaptureCancel" xml:space="preserve">
+    <value>Close without saving</value>
+  </data>
+  <data name="QuickCaptureOpenFull" xml:space="preserve">
+    <value>Open the full day instead</value>
+  </data>
+  <data name="QuickCaptureActionTitle" xml:space="preserve">
+    <value>Quick entry</value>
+  </data>
+  <data name="QuickCaptureOpenAccessibility" xml:space="preserve">
+    <value>Quick entry: mood, a line, habits</value>
+  </data>
+  <data name="AutoBackupTitle" xml:space="preserve">
+    <value>AUTOMATIC COPIES</value>
+  </data>
+  <data name="AutoBackupDescription" xml:space="preserve">
+    <value>A passphrase-protected copy is written to a folder you choose — iCloud Drive, Google Drive, a memory card — when you open the app and the interval has passed. Restore it with the Restore button above.</value>
+  </data>
+  <data name="AutoBackupUnsupported" xml:space="preserve">
+    <value>Not available on this platform.</value>
+  </data>
+  <data name="AutoBackupEnableLabel" xml:space="preserve">
+    <value>Keep copies automatically</value>
+  </data>
+  <data name="AutoBackupFolderFormat" xml:space="preserve">
+    <value>Folder: {0}</value>
+  </data>
+  <data name="AutoBackupNoFolder" xml:space="preserve">
+    <value>No folder chosen</value>
+  </data>
+  <data name="AutoBackupIntervalLabel" xml:space="preserve">
+    <value>How often</value>
+  </data>
+  <data name="AutoBackupIntervalDaily" xml:space="preserve">
+    <value>Every day</value>
+  </data>
+  <data name="AutoBackupIntervalDaysFormat" xml:space="preserve">
+    <value>Every {0} days</value>
+  </data>
+  <data name="AutoBackupLastRunFormat" xml:space="preserve">
+    <value>Last copy: {0}</value>
+  </data>
+  <data name="AutoBackupNeverRun" xml:space="preserve">
+    <value>No copies yet. The first one is made as soon as this is switched on.</value>
+  </data>
+  <data name="AutoBackupRunNow" xml:space="preserve">
+    <value>Back up now</value>
+  </data>
+  <data name="AutoBackupChangeFolder" xml:space="preserve">
+    <value>Change folder</value>
+  </data>
+  <data name="AutoBackupPassphrasePrompt" xml:space="preserve">
+    <value>Choose a passphrase for the automatic copies. You will need it to restore one; the app cannot recover it for you.</value>
+  </data>
+  <data name="AutoBackupPassphraseConfirm" xml:space="preserve">
+    <value>Repeat the passphrase.</value>
+  </data>
+  <data name="AutoBackupPassphraseMismatch" xml:space="preserve">
+    <value>The two entries differ. Nothing was changed.</value>
+  </data>
+  <data name="AutoBackupOutcomeSuccess" xml:space="preserve">
+    <value>Copy saved.</value>
+  </data>
+  <data name="AutoBackupOutcomeFolderUnavailable" xml:space="preserve">
+    <value>The folder is no longer reachable. Choose it again.</value>
+  </data>
+  <data name="AutoBackupOutcomeNoPassphrase" xml:space="preserve">
+    <value>The passphrase is gone from secure storage. Switch the copies off and on again to set a new one.</value>
+  </data>
+  <data name="AutoBackupOutcomeFailed" xml:space="preserve">
+    <value>The copy could not be made. Nothing was changed.</value>
+  </data>
+  <data name="AutoBackupKeepHint" xml:space="preserve">
+    <value>The five newest copies stay in the folder; older ones are removed.</value>
+  </data>
 </root>

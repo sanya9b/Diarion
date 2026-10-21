@@ -4,6 +4,7 @@ using Diarion.Services.Database;
 using Diarion.Core.Services;
 using Diarion.Services.Ai;
 using Diarion.Services.Ai.Reports;
+using Diarion.Services.Backup;
 using Diarion.Services.Store;
 using Diarion.ViewModels;
 using Diarion.ViewModels.Statistics;
@@ -67,6 +68,21 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IOnboardingModuleService, OnboardingModuleService>();
         services.AddSingleton<ITourService, TourService>();
         services.AddSingleton<IBackupService, BackupService>();
+        // Scheduled copies to a folder of the user's choosing (roadmap 0.1). The folder provider is
+        // the platform's own — SAF on Android, security-scoped bookmarks on iOS, the FutureAccessList
+        // on Windows; the schedule, the envelope and the pruning are Core's and tested there. Where
+        // there is no provider the card says so instead of offering a switch.
+#if ANDROID
+        services.AddSingleton<IBackupFolderService, AndroidBackupFolderService>();
+#elif IOS
+        services.AddSingleton<IBackupFolderService, IosBackupFolderService>();
+#elif WINDOWS
+        services.AddSingleton<IBackupFolderService, WindowsBackupFolderService>();
+#else
+        services.AddSingleton<IBackupFolderService, NullBackupFolderService>();
+#endif
+        services.AddSingleton<IScheduledBackupStore, PreferencesScheduledBackupStore>();
+        services.AddSingleton<IScheduledBackupService, ScheduledBackupService>();
         services.AddSingleton<IExportService, ExportService>();
         services.AddSingleton<INavigationService, MauiNavigationService>();
         services.AddSingleton<IDialogService, MauiDialogService>();
@@ -174,6 +190,8 @@ public static class ServiceCollectionExtensions
         // models: the builder only gathers what the app already knows about a period, so it stays
         // registered and useful while the on-device stack is off.
         services.AddSingleton<ISnapshotBuilder, SnapshotBuilder>();
+        // The local review tab: the same snapshot, twice, compared on the device. No network, no model.
+        services.AddSingleton<Diarion.Services.Reports.IPeriodReviewService, Diarion.Services.Reports.PeriodReviewService>();
 
         return services;
     }
@@ -209,6 +227,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<FinanceStatsViewModel>();
         services.AddTransient<HabitStatsViewModel>();
         services.AddTransient<CycleStatsViewModel>();
+        services.AddTransient<PeriodReviewViewModel>();
         services.AddTransient<StatisticsViewModel>();
         
         services.AddTransient<WishlistViewModel>();
@@ -223,6 +242,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<PromptHistoryViewModel>();
         services.AddTransient<CycleViewModel>();
         services.AddTransient<SnapshotPreviewViewModel>();
+        services.AddTransient<QuickCaptureViewModel>();
+        services.AddTransient<ScheduledBackupViewModel>();
 
         return services;
     }
@@ -254,6 +275,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<CyclePage>();
         services.AddTransient<SnapshotPreviewPage>();
         services.AddTransient<PaywallPage>();
+        services.AddTransient<QuickCapturePage>();
 
         return services;
     }

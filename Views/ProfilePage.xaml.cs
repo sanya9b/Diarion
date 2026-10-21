@@ -28,10 +28,14 @@ public partial class ProfilePage : ContentPage
         set => SetValue(ThemeThumbAlignmentProperty, value);
     }
 
-    public ProfilePage(ProfileViewModel viewModel, SubscriptionSectionViewModel subscription)
+    private readonly ScheduledBackupViewModel _autoBackup;
+
+    public ProfilePage(ProfileViewModel viewModel, SubscriptionSectionViewModel subscription, ScheduledBackupViewModel autoBackup)
     {
         InitializeComponent();
         SubscriptionCard.BindingContext = subscription;
+        _autoBackup = autoBackup;
+        AutoBackupCard.BindingContext = autoBackup;
         _viewModel = viewModel;
         BindingContext = _viewModel;
         
@@ -56,6 +60,9 @@ public partial class ProfilePage : ContentPage
     {
         base.OnAppearing();
         await _viewModel.LoadProfileAsync();
+        // The card reads device-local settings, not the profile; a run that happened at launch
+        // shows up here on the next visit.
+        _autoBackup.Load();
 
         // After the profile: the guide is about the switches on this screen, and until it is loaded
         // they are showing defaults.

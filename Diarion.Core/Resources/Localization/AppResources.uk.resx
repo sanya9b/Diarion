@@ -2329,4 +2329,151 @@
   <data name="InsightPathAccessibleFormat" xml:space="preserve">
     <value>{0} з {1} днів до першої гіпотези, {2}</value>
   </data>
+  <data name="TabReview" xml:space="preserve">
+    <value>Огляд</value>
+  </data>
+  <data name="ReviewVersusFormat" xml:space="preserve">
+    <value>проти {0}</value>
+  </data>
+  <data name="ReviewHint" xml:space="preserve">
+    <value>Порівняно з періодом такої ж довжини перед цим. Нічого не покидає телефон.</value>
+  </data>
+  <data name="ReviewDaysWritten" xml:space="preserve">
+    <value>Днів із записом</value>
+  </data>
+  <data name="ReviewMood" xml:space="preserve">
+    <value>Настрій</value>
+  </data>
+  <data name="ReviewSleep" xml:space="preserve">
+    <value>Сон</value>
+  </data>
+  <data name="ReviewHabits" xml:space="preserve">
+    <value>Звички</value>
+  </data>
+  <data name="ReviewTasks" xml:space="preserve">
+    <value>Задачі</value>
+  </data>
+  <data name="ReviewExpense" xml:space="preserve">
+    <value>Витрати</value>
+  </data>
+  <data name="ReviewOfFormat" xml:space="preserve">
+    <value>{0} з {1}</value>
+  </data>
+  <data name="ReviewNoChange" xml:space="preserve">
+    <value>без змін</value>
+  </data>
+  <data name="ReviewNoPrevious" xml:space="preserve">
+    <value>нема з чим порівняти</value>
+  </data>
+  <data name="ReviewNoData" xml:space="preserve">
+    <value>не записано</value>
+  </data>
+  <data name="ReviewNoValue" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="ReviewHabitsHeader" xml:space="preserve">
+    <value>ЗВИЧКИ ЗА ПЕРІОД</value>
+  </data>
+  <data name="ReviewTopEmotionFormat" xml:space="preserve">
+    <value>Найчастіше: {0}</value>
+  </data>
+  <data name="EmptyStateReviewTitle" xml:space="preserve">
+    <value>Поки нема що порівнювати</value>
+  </data>
+  <data name="EmptyStateReviewHint" xml:space="preserve">
+    <value>Запишіть кілька днів, і тут з'явиться, що змінилось проти попереднього періоду.</value>
+  </data>
+  <data name="QuickCaptureTitle" xml:space="preserve">
+    <value>Швидкий запис</value>
+  </data>
+  <data name="QuickCaptureHourFormat" xml:space="preserve">
+    <value>Зараз, близько {0}:00 — піде в сьогоднішній день</value>
+  </data>
+  <data name="QuickCaptureMoodLabel" xml:space="preserve">
+    <value>ЯК ВИ ЗАРАЗ</value>
+  </data>
+  <data name="QuickCaptureTextPlaceholder" xml:space="preserve">
+    <value>Один рядок для себе…</value>
+  </data>
+  <data name="QuickCaptureHabitsLabel" xml:space="preserve">
+    <value>ЗВИЧКИ СЬОГОДНІ</value>
+  </data>
+  <data name="QuickCaptureSave" xml:space="preserve">
+    <value>Зберегти</value>
+  </data>
+  <data name="QuickCaptureCancel" xml:space="preserve">
+    <value>Закрити без збереження</value>
+  </data>
+  <data name="QuickCaptureOpenFull" xml:space="preserve">
+    <value>Відкрити повний запис дня</value>
+  </data>
+  <data name="QuickCaptureActionTitle" xml:space="preserve">
+    <value>Швидкий запис</value>
+  </data>
+  <data name="QuickCaptureOpenAccessibility" xml:space="preserve">
+    <value>Швидкий запис: настрій, рядок, звички</value>
+  </data>
+  <data name="AutoBackupTitle" xml:space="preserve">
+    <value>АВТОМАТИЧНІ КОПІЇ</value>
+  </data>
+  <data name="AutoBackupDescription" xml:space="preserve">
+    <value>Копія під паролем пишеться в обрану вами папку — iCloud Drive, Google Drive, картку пам'яті — коли ви відкриваєте застосунок і минув інтервал. Відновлюється кнопкою «Відновити» вище.</value>
+  </data>
+  <data name="AutoBackupUnsupported" xml:space="preserve">
+    <value>На цій платформі недоступно.</value>
+  </data>
+  <data name="AutoBackupEnableLabel" xml:space="preserve">
+    <value>Зберігати копії автоматично</value>
+  </data>
+  <data name="AutoBackupFolderFormat" xml:space="preserve">
+    <value>Папка: {0}</value>
+  </data>
+  <data name="AutoBackupNoFolder" xml:space="preserve">
+    <value>Папку не обрано</value>
+  </data>
+  <data name="AutoBackupIntervalLabel" xml:space="preserve">
+    <value>Як часто</value>
+  </data>
+  <data name="AutoBackupIntervalDaily" xml:space="preserve">
+    <value>Щодня</value>
+  </data>
+  <data name="AutoBackupIntervalDaysFormat" xml:space="preserve">
+    <value>Кожні {0} дн.</value>
+  </data>
+  <data name="AutoBackupLastRunFormat" xml:space="preserve">
+    <value>Остання копія: {0}</value>
+  </data>
+  <data name="AutoBackupNeverRun" xml:space="preserve">
+    <value>Копій ще не було. Перша робиться одразу після ввімкнення.</value>
+  </data>
+  <data name="AutoBackupRunNow" xml:space="preserve">
+    <value>Зробити зараз</value>
+  </data>
+  <data name="AutoBackupChangeFolder" xml:space="preserve">
+    <value>Змінити папку</value>
+  </data>
+  <data name="AutoBackupPassphrasePrompt" xml:space="preserve">
+    <value>Придумайте пароль для автоматичних копій. Він знадобиться, щоб відновити копію; застосунок його не відновить.</value>
+  </data>
+  <data name="AutoBackupPassphraseConfirm" xml:space="preserve">
+    <value>Повторіть пароль.</value>
+  </data>
+  <data name="AutoBackupPassphraseMismatch" xml:space="preserve">
+    <value>Паролі не збігаються. Нічого не змінено.</value>
+  </data>
+  <data name="AutoBackupOutcomeSuccess" xml:space="preserve">
+    <value>Копію збережено.</value>
+  </data>
+  <data name="AutoBackupOutcomeFolderUnavailable" xml:space="preserve">
+    <value>Папка більше недоступна. Оберіть її знову.</value>
+  </data>
+  <data name="AutoBackupOutcomeNoPassphrase" xml:space="preserve">
+    <value>Пароль зник із захищеного сховища. Вимкніть і знову ввімкніть копії, щоб задати новий.</value>
+  </data>
+  <data name="AutoBackupOutcomeFailed" xml:space="preserve">
+    <value>Копію зробити не вдалося. Нічого не змінено.</value>
+  </data>
+  <data name="AutoBackupKeepHint" xml:space="preserve">
+    <value>У папці лишаються п'ять найновіших копій; старіші видаляються.</value>
+  </data>
 </root>

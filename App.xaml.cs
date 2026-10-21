@@ -67,6 +67,11 @@ public partial class App : Application
         services?.GetService<PaywallPresenter>()?.Start();
         StartReminderCoordinator(services);
 
+        // Routes that arrive from outside — the home-screen shortcut, a tap on the evening reminder —
+        // wait behind the lock screen and are flushed at each point below where the shell is reachable.
+        LaunchActions.IsBlocked = () => _isLockShown;
+        WireLaunchActions();
+
         var window = new Window();
 
         if (services != null && lockService?.IsLockEnabled == true)
@@ -80,7 +85,11 @@ public partial class App : Application
                     _isLockShown = false;
                     _backgroundedAtUtc = null;
                     // Unlocked may fire off the UI thread (biometric continuation); swap on main.
-                    MainThread.BeginInvokeOnMainThread(() => window.Page = new AppShell());
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        window.Page = new AppShell();
+                        LaunchActions.TryFlush();
+                    });
                 };
                 window.Page = lockPage;
             }
@@ -96,11 +105,14 @@ public partial class App : Application
             RefreshEntitlements(entitlements);
             await CheckOnboardingAsync(window);
             await CheckSecurityAsync(window, coldStart: true);
+            LaunchActions.TryFlush();
+            StartScheduledBackup(services);
         };
         window.Resumed += async (s, e) =>
         {
             await CheckSecurityAsync(window, coldStart: false);
             StartEmbeddingIndex(window.Handler?.MauiContext?.Services);
+            LaunchActions.TryFlush();
         };
 
         return window;
@@ -124,6 +136,31 @@ public partial class App : Application
         var coordinator = services?.GetService<ReminderAccessCoordinator>();
         if (coordinator is null) return;
         _ = Task.Run(coordinator.StartAsync);
+    }
+
+    /// <summary>
+    /// The scheduled backup's one trigger: a check when the app opens. Not a background job — iOS
+    /// has twice been measured as giving none worth having — and not immediate: writing the copy
+    /// closes and reopens the database for a moment, so it waits until well after the home screen
+    /// has read its day. Does nothing unless the feature is on and the interval has passed.
+    /// </summary>
+    private static void StartScheduledBackup(IServiceProvider? services)
+    {
+        var scheduler = services?.GetService<Diarion.Services.Backup.IScheduledBackupService>();
+        if (scheduler is null || !scheduler.IsSupported) return;
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(15));
+            try
+            {
+                await scheduler.RunIfDueAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Scheduled backup check failed: {ex}");
+            }
+        });
     }
 
     private static void RefreshEntitlements(IEntitlementService? entitlements)
@@ -150,7 +187,79 @@ public partial class App : Application
     {
         await navigation.PopModalAsync();
         WeakReferenceMessenger.Default.Send(new PaywallRequestedMessage(PaywallReason.AfterOnboarding));
+        // After the paywall has had its say: the flush steps aside for any modal, so if the sheet
+        // is up this waits for the next resume rather than stacking under it.
+        LaunchActions.TryFlush();
     }
+
+    /// <summary>
+    /// The two ways into the quick entry from outside the app (roadmap 2.1): the home-screen
+    /// shortcut, and a tap on the daily reminder. Neither reads anything outside the process and
+    /// neither shows anything past the lock, which is what keeps them on the right side of the
+    /// line the roadmap drew against widgets.
+    /// </summary>
+    private static void WireLaunchActions()
+    {
+#if ANDROID || IOS
+        try
+        {
+            if (AppActions.Current.IsSupported)
+            {
+                AppActions.Current.AppActionActivated -= OnAppActionActivated;
+                AppActions.Current.AppActionActivated += OnAppActionActivated;
+                _ = PublishAppActionsAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"App actions unavailable: {ex.Message}");
+        }
+#endif
+#if ANDROID || IOS || MACCATALYST
+        Plugin.LocalNotification.LocalNotificationCenter.Current.NotificationActionTapped -= OnNotificationActionTapped;
+        Plugin.LocalNotification.LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationActionTapped;
+#endif
+    }
+
+#if ANDROID || IOS
+    private static async Task PublishAppActionsAsync()
+    {
+        try
+        {
+            await AppActions.Current.SetAsync(new[]
+            {
+                new AppAction(
+                    LaunchActions.QuickCaptureActionId,
+                    Diarion.Resources.Localization.AppResources.QuickCaptureActionTitle)
+            });
+        }
+        catch (Exception ex)
+        {
+            // A launcher that does not do shortcuts is not an error worth a crash report.
+            System.Diagnostics.Debug.WriteLine($"App actions not published: {ex.Message}");
+        }
+    }
+
+    private static void OnAppActionActivated(object? sender, AppActionEventArgs e)
+    {
+        if (e.AppAction.Id == LaunchActions.QuickCaptureActionId)
+        {
+            LaunchActions.Request(Diarion.ViewModels.QuickCaptureViewModel.Route);
+        }
+    }
+#endif
+
+#if ANDROID || IOS || MACCATALYST
+    private static void OnNotificationActionTapped(Plugin.LocalNotification.EventArgs.NotificationActionEventArgs e)
+    {
+        if (e.IsDismissed) return;
+
+        if (e.Request?.NotificationId == LocalNotificationService.DailyReminderId)
+        {
+            LaunchActions.Request(Diarion.ViewModels.QuickCaptureViewModel.Route);
+        }
+    }
+#endif
 
     private async Task CheckOnboardingAsync(Window window)
     {
@@ -217,7 +326,11 @@ public partial class App : Application
         {
             _isLockShown = false;
             _backgroundedAtUtc = null;
-            _ = navigation.PopModalAsync();
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await navigation.PopModalAsync();
+                LaunchActions.TryFlush();
+            });
         };
 
         await navigation.PushModalAsync(lockPage);

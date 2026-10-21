@@ -107,13 +107,20 @@ public class QuickMenuViewModelTests
     }
 
     [Fact]
-    public void TheSearchTileIsNotOffered()
+    public void TheSearchTileIsOfferedAndLeadsToTheSearchScreen()
     {
         // The tile is the only way into the search screen — no other page navigates to the route —
-        // so a failure here means the retired screen is reachable again.
-        MenuConfigurationService.SearchOffered.Should().BeFalse();
+        // so this is the test that the diary can be searched at all. Keyword search needs no model;
+        // the tile was retired with the generative model by mistake of association, not of fact.
+        MenuConfigurationService.SearchOffered.Should().BeTrue();
 
-        Ids(Build()).Should().NotContain(MenuConfigurationService.SearchId);
+        var viewModel = Build();
+        Ids(viewModel).Should().Contain(MenuConfigurationService.SearchId);
+
+        var search = viewModel.QuickMenuItems.Single(i => i.Id == MenuConfigurationService.SearchId);
+        search.Command.Should().NotBeNull();
+        search.Command!.Execute(null);
+        _navigation.Verify(n => n.NavigateToAsync("Search"), Times.Once);
     }
 
     [Fact]
