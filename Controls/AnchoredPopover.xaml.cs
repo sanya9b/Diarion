@@ -72,6 +72,14 @@ public partial class AnchoredPopover : Grid
 
     private bool _placing;
 
+    /// <summary>Where the button was the last time the panel was placed, in this layer's coordinates.</summary>
+    private Rect? _placedAnchor;
+
+    /// <summary>How often an open panel checks that its button has not moved.</summary>
+    private static readonly TimeSpan TrackInterval = TimeSpan.FromMilliseconds(50);
+
+    private bool _tracking;
+
     public AnchoredPopover()
     {
         InitializeComponent();
@@ -180,6 +188,7 @@ public partial class AnchoredPopover : Grid
         if (layerWidth <= 0 || layerHeight <= 0) return false;
 
         _placing = true;
+        _placedAnchor = anchor;
         try
         {
             var bodyLeft = PageMargin;
@@ -332,6 +341,44 @@ public partial class AnchoredPopover : Grid
     }
 
     /// <summary>
+    /// While the panel is out, keeps it on its button. The button can move after the panel was placed for
+    /// reasons this control never hears about: the header above the cards changes height when the strip
+    /// under the date updates after a mood is chosen, iPhone reports a scroll offset late while the page
+    /// is still settling, a banner arrives. Each moved it a different distance, which is why the bubble
+    /// slid a random amount below its face (owner, TestFlight build 10, 2026-10-21). Checking the
+    /// button's place on a short timer catches every one of them, at the cost of one bounds query.
+    /// </summary>
+    private void StartTracking()
+    {
+        if (_tracking) return;
+        _tracking = true;
+
+        Dispatcher.StartTimer(TrackInterval, () =>
+        {
+            if (!IsOpen || !IsVisible)
+            {
+                _tracking = false;
+                return false;
+            }
+
+            // Growing or shrinking, the animation owns the geometry; the next tick looks again.
+            if (_placing || Surface.AnimationIsRunning(GrowAnimation)) return true;
+
+            var now = ResolveAnchor();
+            if (Moved(_placedAnchor, now) && Place(now)) Surface.Progress = 1;
+            return true;
+        });
+    }
+
+    private static bool Moved(Rect? before, Rect? now) => (before, now) switch
+    {
+        (null, null) => false,
+        (Rect a, Rect b) => Math.Abs(a.X - b.X) > 0.5 || Math.Abs(a.Y - b.Y) > 0.5
+                            || Math.Abs(a.Width - b.Width) > 0.5 || Math.Abs(a.Height - b.Height) > 0.5,
+        _ => true
+    };
+
+    /// <summary>
     /// Purpose: spatial sequence. The bump draws round the button and the body runs out of it, widening
     /// into the panel, while the button's copy stays put on the real button; the content arrives once
     /// there is room, its items in a short stagger. Under reduce motion nothing grows; it fades in.
@@ -340,6 +387,7 @@ public partial class AnchoredPopover : Grid
     {
         var reopening = IsVisible;
         IsVisible = true;
+        StartTracking();
 
         var anchor = ResolveAnchor();
         if (!Place(anchor))
