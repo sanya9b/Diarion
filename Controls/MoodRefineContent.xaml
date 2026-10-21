@@ -18,7 +18,7 @@
             <Setter Property="StrokeShape" Value="RoundRectangle 16" />
             <Setter Property="StrokeThickness" Value="1" />
             <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
-            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Black}" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="4" />
             <Setter Property="FlexLayout.Shrink" Value="0" />
@@ -46,7 +46,8 @@
                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryEntryViewModel}}, Path=SelectEmotionCommand}"
                                                   CommandParameter="{Binding Emotion}" />
                         </Border.GestureRecognizers>
-                        <Border Style="{StaticResource MoodFill}" Padding="12,7" behaviors:ThemeColor.BackgroundKey="{Binding FillColorKey}">
+                        <Border Style="{StaticResource MoodFill}" Padding="12,7" behaviors:ThemeColor.BackgroundKey="{Binding FillColorKey}"
+                                behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
                             <Label Text="{Binding Name}" FontSize="13" LineBreakMode="NoWrap"
                                    TextColor="{DynamicResource Theme_Midnight_Snow}">
                                 <Label.Triggers>

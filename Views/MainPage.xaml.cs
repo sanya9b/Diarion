@@ -14,9 +14,10 @@ public partial class MainPage : ContentPage
     private static readonly TimeSpan InitialLoadDelay = TimeSpan.FromMilliseconds(450);
 
     private readonly MainViewModel _viewModel;
+    private readonly CycleRecordViewModel _cycleRecord;
     private bool _hasRenderedOnce;
 
-    public MainPage(MainViewModel viewModel)
+    public MainPage(MainViewModel viewModel, CycleRecordViewModel cycleRecord)
     {
         using var _ = StartupTrace.Measure("MainPage..ctor");
         InitializeComponent();
@@ -35,6 +36,18 @@ public partial class MainPage : ContentPage
         // pointing at the wrong block.
         RefinePopover.AnchorResolver = MoodBlock.GetRefineAnchor;
         HourPopover.AnchorResolver = MoodBlock.GetHourChipAnchor;
+
+        // Period recording lives on the home screen, in the health block (spec 18). Its panel has its
+        // own view model, like the settings cards do; the block's chip opens it, and a scroll folds it
+        // back, because a panel that stays while its chip scrolls away is wrong twice over.
+        _cycleRecord = cycleRecord;
+        CyclePopover.BindingContext = cycleRecord;
+        CyclePopover.AnchorResolver = HealthBlock.GetCycleChipAnchor;
+        HealthBlock.RecordCycleCommand = cycleRecord.OpenCommand;
+        DiaryContainer.Scrolled += (_, _) =>
+        {
+            if (_cycleRecord.IsOpen) _cycleRecord.CloseCommand.Execute(null);
+        };
     }
 
     private async void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)

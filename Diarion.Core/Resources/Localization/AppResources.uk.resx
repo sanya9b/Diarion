@@ -892,6 +892,9 @@
   <data name="CycleRecordLastFormat" xml:space="preserve">
     <value>Останні записані: {0}</value>
   </data>
+  <data name="CycleRecordChip" xml:space="preserve">
+    <value>Місячні</value>
+  </data>
   <data name="CycleHistoryTitle" xml:space="preserve">
     <value>Записані місячні</value>
   </data>
@@ -923,7 +926,7 @@
     <value>На основі {0} записаних циклів (у середньому {1} дн.)</value>
   </data>
   <data name="CycleNoDataHint" xml:space="preserve">
-    <value>Запишіть місячні в налаштуваннях, щоб почати прогноз</value>
+    <value>Запишіть місячні чипом «+ Місячні» в блоці «Фізіологія та здоров'я» на головному екрані, щоб почати прогноз</value>
   </data>
   <data name="CycleLateFormat" xml:space="preserve">
     <value>Очікувались {0} дн. тому</value>
@@ -2375,7 +2378,7 @@
     <value>Поки нічого не записано</value>
   </data>
   <data name="EmptyStateCycleHint" xml:space="preserve">
-    <value>Запишіть місячні в налаштуваннях, і тут з'являться історія та прогноз.</value>
+    <value>Запишіть місячні чипом «+ Місячні» в блоці «Фізіологія та здоров'я» на головному екрані, і тут з'являться історія та прогноз.</value>
   </data>
   <data name="EmptyStateMoodTitle" xml:space="preserve">
     <value>Настрою за цей період немає</value>

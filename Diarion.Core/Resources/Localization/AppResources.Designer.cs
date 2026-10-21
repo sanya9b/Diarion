@@ -2905,5 +2905,9 @@ public static string ClearAllDataSuccessMsg {
         public static string CycleRecordLastFormat {
             get { return ResourceManager.GetString("CycleRecordLastFormat", resourceCulture) ?? string.Empty; }
         }
+
+        public static string CycleRecordChip {
+            get { return ResourceManager.GetString("CycleRecordChip", resourceCulture) ?? string.Empty; }
+        }
     }
 }
