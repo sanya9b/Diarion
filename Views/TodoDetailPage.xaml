@@ -304,6 +304,16 @@
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.ReminderLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
 
+                        <!-- Read aloud by the device when the reminder arrives (spec 19). Nested under the
+                             reminder: there is nothing for a voice to do without one. -->
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" IsVisible="{Binding HasReminder}">
+                            <CheckBox IsChecked="{Binding IsVoiceReminder}" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{x:Static localization:AppResources.VoiceReminderLabel}" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Label Text="{x:Static localization:AppResources.VoiceReminderHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            </VerticalStackLayout>
+                        </Grid>
+
                         <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
 
                         <VerticalStackLayout Spacing="8">

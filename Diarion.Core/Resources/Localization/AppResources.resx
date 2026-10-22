@@ -2197,4 +2197,22 @@
   <data name="EmptyStateSearchHint" xml:space="preserve">
     <value>Try another word or a shorter query.</value>
   </data>
+  <data name="SpokenReminderPhrase" xml:space="preserve">
+    <value>Reminder: {0}</value>
+  </data>
+  <data name="SpokenReminderEmpty" xml:space="preserve">
+    <value>Reminder</value>
+  </data>
+  <data name="VoiceReminderLabel" xml:space="preserve">
+    <value>Read aloud</value>
+  </data>
+  <data name="VoiceReminderHint" xml:space="preserve">
+    <value>The device reads the task out loud when the reminder arrives. Nothing leaves the phone.</value>
+  </data>
+  <data name="VoiceMissingTitle" xml:space="preserve">
+    <value>No voice for this language</value>
+  </data>
+  <data name="VoiceMissingMessage" xml:space="preserve">
+    <value>This device has no voice for the app's language, so the reminder will be read in the system voice. Voices can be added in the system settings.</value>
+  </data>
 </root>

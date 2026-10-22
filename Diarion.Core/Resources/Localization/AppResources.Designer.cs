@@ -2679,5 +2679,29 @@ public static string ClearAllDataSuccessMsg {
         public static string CycleRecordChip {
             get { return ResourceManager.GetString("CycleRecordChip", resourceCulture) ?? string.Empty; }
         }
+
+        public static string SpokenReminderPhrase {
+            get { return ResourceManager.GetString("SpokenReminderPhrase", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SpokenReminderEmpty {
+            get { return ResourceManager.GetString("SpokenReminderEmpty", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string VoiceReminderLabel {
+            get { return ResourceManager.GetString("VoiceReminderLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string VoiceReminderHint {
+            get { return ResourceManager.GetString("VoiceReminderHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string VoiceMissingTitle {
+            get { return ResourceManager.GetString("VoiceMissingTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string VoiceMissingMessage {
+            get { return ResourceManager.GetString("VoiceMissingMessage", resourceCulture) ?? string.Empty; }
+        }
     }
 }

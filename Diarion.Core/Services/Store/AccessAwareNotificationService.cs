@@ -30,16 +30,16 @@ public sealed class AccessAwareNotificationService : INotificationService
     public void CancelDailyJournalReminder() => _inner.CancelDailyJournalReminder();
     public void CancelHabitReminder(Guid habitId) => _inner.CancelHabitReminder(habitId);
 
-    public void ScheduleTodoReminder(Guid todoId, string title, string description, DateTime targetTime) =>
-        _inner.ScheduleTodoReminder(todoId, title, description, targetTime);
+    public void ScheduleTodoReminder(Guid todoId, string title, string description, DateTime targetTime, bool spoken = false) =>
+        _inner.ScheduleTodoReminder(todoId, title, description, targetTime, spoken);
 
     public void CancelTodoReminder(Guid todoId) => _inner.CancelTodoReminder(todoId);
 
-    public void ScheduleRepeatingTaskReminder(Guid ruleId, string title, TimeSpan timeOfDay, IReadOnlyList<int>? weekdays) =>
-        _inner.ScheduleRepeatingTaskReminder(ruleId, title, timeOfDay, weekdays);
+    public void ScheduleRepeatingTaskReminder(Guid ruleId, string title, TimeSpan timeOfDay, IReadOnlyList<int>? weekdays, bool spoken = false) =>
+        _inner.ScheduleRepeatingTaskReminder(ruleId, title, timeOfDay, weekdays, spoken);
 
-    public void ScheduleTaskOccurrenceReminders(Guid ruleId, string title, IReadOnlyList<DateTime> moments) =>
-        _inner.ScheduleTaskOccurrenceReminders(ruleId, title, moments);
+    public void ScheduleTaskOccurrenceReminders(Guid ruleId, string title, IReadOnlyList<DateTime> moments, bool spoken = false) =>
+        _inner.ScheduleTaskOccurrenceReminders(ruleId, title, moments, spoken);
 
     public void CancelRepeatingTaskReminder(Guid ruleId) => _inner.CancelRepeatingTaskReminder(ruleId);
 

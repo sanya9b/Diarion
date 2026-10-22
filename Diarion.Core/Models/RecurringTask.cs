@@ -31,6 +31,8 @@ public class RecurringTask
     /// <summary>The block's end, exclusive, or null for a point task. See <see cref="TodoItem.EndTime"/>.</summary>
     public TimeSpan? EndTime { get; set; }
     public bool HasReminder { get; set; }
+    /// <summary>Spoken aloud as well as shown. See <see cref="TodoItem.IsVoiceReminder"/>.</summary>
+    public bool IsVoiceReminder { get; set; }
 
     /// <summary>Which days the task lands on. Its <c>Anchor</c> starts the series and <c>EndDate</c> ends it.</summary>
     public RecurrenceRule Recurrence { get; set; } = new();

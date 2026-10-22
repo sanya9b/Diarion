@@ -43,6 +43,11 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IDatabaseContext, DatabaseContext>();
         // The platform service behind a read-only gate: no daily or habit reminder is scheduled
         // while the diary is read-only; the coordinator puts them back when access returns.
+        // The device's own synthesizer, for reminders that are read aloud (spec 19). The dispatcher
+        // speaks when a spoken notification arrives; MauiProgram starts it, because on Android the
+        // process that receives the alarm has an application and no window.
+        services.AddSingleton<ISpeechService, MauiSpeechService>();
+        services.AddSingleton<SpokenReminderDispatcher>();
         services.AddSingleton<LocalNotificationService>();
         services.AddSingleton<INotificationService>(sp => new AccessAwareNotificationService(
             sp.GetRequiredService<LocalNotificationService>(), sp.GetRequiredService<IAccessGuard>()));

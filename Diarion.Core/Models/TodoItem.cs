@@ -48,6 +48,14 @@ public class TodoItem
     public Guid? RecurringTaskId { get; set; }
 
     public bool HasReminder { get; set; }
+
+    /// <summary>
+    /// Whether the reminder is spoken aloud by the device's own synthesizer as well as shown (spec 19).
+    /// Meaningless without <see cref="HasReminder"/>; the form hides it until that is on. Additive and
+    /// false by default, so a row written before this existed reads as a silent reminder without a
+    /// migration — which is what every reminder was.
+    /// </summary>
+    public bool IsVoiceReminder { get; set; }
     
     public TodoPriority Priority { get; set; } = TodoPriority.Medium;
     
