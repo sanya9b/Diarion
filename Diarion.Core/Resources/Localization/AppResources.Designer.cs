@@ -2758,46 +2758,6 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("EmptyStateReviewHint", resourceCulture) ?? string.Empty; }
         }
 
-        public static string QuickCaptureTitle {
-            get { return ResourceManager.GetString("QuickCaptureTitle", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string QuickCaptureHourFormat {
-            get { return ResourceManager.GetString("QuickCaptureHourFormat", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string QuickCaptureMoodLabel {
-            get { return ResourceManager.GetString("QuickCaptureMoodLabel", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string QuickCaptureTextPlaceholder {
-            get { return ResourceManager.GetString("QuickCaptureTextPlaceholder", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string QuickCaptureHabitsLabel {
-            get { return ResourceManager.GetString("QuickCaptureHabitsLabel", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string QuickCaptureSave {
-            get { return ResourceManager.GetString("QuickCaptureSave", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string QuickCaptureCancel {
-            get { return ResourceManager.GetString("QuickCaptureCancel", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string QuickCaptureOpenFull {
-            get { return ResourceManager.GetString("QuickCaptureOpenFull", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string QuickCaptureActionTitle {
-            get { return ResourceManager.GetString("QuickCaptureActionTitle", resourceCulture) ?? string.Empty; }
-        }
-
-        public static string QuickCaptureOpenAccessibility {
-            get { return ResourceManager.GetString("QuickCaptureOpenAccessibility", resourceCulture) ?? string.Empty; }
-        }
-
         public static string AutoBackupTitle {
             get { return ResourceManager.GetString("AutoBackupTitle", resourceCulture) ?? string.Empty; }
         }
@@ -2904,6 +2864,18 @@ public static string ClearAllDataSuccessMsg {
 
         public static string VoiceMissingMessage {
             get { return ResourceManager.GetString("VoiceMissingMessage", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupDeviceFolderIos {
+            get { return ResourceManager.GetString("AutoBackupDeviceFolderIos", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupDeviceFolderAndroid {
+            get { return ResourceManager.GetString("AutoBackupDeviceFolderAndroid", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupUseDevice {
+            get { return ResourceManager.GetString("AutoBackupUseDevice", resourceCulture) ?? string.Empty; }
         }
     }
 }

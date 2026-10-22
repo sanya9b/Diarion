@@ -165,7 +165,6 @@ public static class ServiceCollectionExtensions
         services.AddTransient<CycleRecordViewModel>();
         services.AddTransient<MoodIconSetViewModel>();
         services.AddTransient<SnapshotPreviewViewModel>();
-        services.AddTransient<QuickCaptureViewModel>();
         services.AddTransient<ScheduledBackupViewModel>();
 
         return services;
@@ -197,7 +196,6 @@ public static class ServiceCollectionExtensions
         services.AddTransient<CyclePage>();
         services.AddTransient<SnapshotPreviewPage>();
         services.AddTransient<PaywallPage>();
-        services.AddTransient<QuickCapturePage>();
 
         return services;
     }

@@ -83,6 +83,57 @@ public class ScheduledBackupViewModelTests
     }
 
     [Fact]
+    public async Task Switching_on_saves_to_the_phone_without_a_picker()
+    {
+        // The owner's default (2026-10-23): a passphrase twice, and the copies are on the phone.
+        var device = new BackupFolderPick(BackupFolderPick.DeviceToken, "On My iPhone → Diarion → Backups");
+        _service.SetupGet(s => s.DeviceFolder).Returns(device);
+        var vm = Create();
+
+        vm.IsEnabled = true;
+        await SettleAsync(() => _settings.IsEnabled);
+
+        _service.Verify(s => s.PickFolderAsync(), Times.Never);
+        _service.Verify(s => s.Enable(It.Is<BackupFolderPick>(f => f.IsDevice), "hunter2", It.IsAny<int>()), Times.Once);
+        _service.Verify(s => s.RunNowAsync(It.IsAny<CancellationToken>()), Times.Once);
+        vm.FolderText.Should().Contain("On My iPhone → Diarion → Backups");
+        vm.CanUseDeviceFolder.Should().BeFalse("the copies already go to the phone");
+    }
+
+    [Fact]
+    public void After_a_picked_folder_the_phone_is_offered_again_and_taking_it_moves_the_copies_back()
+    {
+        var device = new BackupFolderPick(BackupFolderPick.DeviceToken, "Downloads → Diarion");
+        _service.SetupGet(s => s.DeviceFolder).Returns(device);
+        _service.Setup(s => s.SetFolder(It.IsAny<BackupFolderPick>()))
+                .Callback((BackupFolderPick f) => { _settings.FolderToken = f.Token; _settings.FolderName = f.DisplayName; });
+        _settings.IsEnabled = true;
+        _settings.FolderToken = "tree://drive";
+        _settings.FolderName = "Google Drive/Diarion";
+        var vm = Create();
+
+        vm.CanUseDeviceFolder.Should().BeTrue();
+        vm.UseDeviceFolderCommand.Execute(null);
+
+        _service.Verify(s => s.SetFolder(device), Times.Once);
+        vm.FolderText.Should().Contain("Downloads → Diarion");
+        vm.CanUseDeviceFolder.Should().BeFalse();
+    }
+
+    [Fact]
+    public void The_phone_folder_is_named_in_the_current_language_not_from_the_stored_name()
+    {
+        _service.SetupGet(s => s.DeviceFolder).Returns(new BackupFolderPick(BackupFolderPick.DeviceToken, "Завантаження → Diarion"));
+        _settings.IsEnabled = true;
+        _settings.FolderToken = BackupFolderPick.DeviceToken;
+        _settings.FolderName = "Downloads → Diarion";
+
+        var vm = Create();
+
+        vm.FolderText.Should().Contain("Завантаження → Diarion");
+    }
+
+    [Fact]
     public async Task Switching_on_picks_a_folder_asks_the_passphrase_twice_enables_and_makes_the_first_copy()
     {
         var vm = Create();

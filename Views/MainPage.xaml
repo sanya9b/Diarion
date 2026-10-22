@@ -81,31 +81,7 @@
             
                     <!-- x:Name on the four tour targets. They are anchors for the spotlight and nothing
                          else; MainPage.xaml.cs maps a TourStepId onto each one and measures it. -->
-                    <controls:QuickMenuView x:Name="QuickMenuAnchor" Grid.Column="0" HorizontalOptions="Fill" />
-
-                    <!-- The quick entry (roadmap 2.1): the one thing in this header that is about right now
-                         rather than about the selected day. Outside the strip's scroll, like the pinned
-                         calendar tile on the other side, so it never scrolls away. A pencil, not a plus —
-                         a plus here used to mean "new entry", and the day screen already is the entry.
-                         The pressable element is transparent and the surface sits one layer down: press
-                         feedback writes the background of the element it is attached to. -->
-                    <Border Grid.Column="1" x:Name="QuickCaptureAnchor"
-                            WidthRequest="50" HeightRequest="50" VerticalOptions="Center" Padding="0"
-                            StrokeThickness="0" BackgroundColor="Transparent"
-                            behaviors:PressFeedback.IsEnabled="True"
-                            SemanticProperties.Description="{x:Static localization:AppResources.QuickCaptureOpenAccessibility}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding OpenQuickCaptureCommand}" />
-                        </Border.GestureRecognizers>
-                        <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" InputTransparent="True"
-                                Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                BackgroundColor="{DynamicResource Theme_Snow_Black}">
-                            <Path Data="{x:Static icons:AppIcons.Pencil}" WidthRequest="20" HeightRequest="20" Aspect="Uniform"
-                                  Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.8"
-                                  StrokeLineCap="Round" StrokeLineJoin="Round"
-                                  HorizontalOptions="Center" VerticalOptions="Center" />
-                        </Border>
-                    </Border>
+                    <controls:QuickMenuView x:Name="QuickMenuAnchor" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Fill" />
                 </Grid>
 
                 <VerticalStackLayout x:Name="HeaderStack" Padding="24,4,24,10" Spacing="0">
@@ -229,19 +205,16 @@
                                   IsOpen="{Binding IsHourPickerOpen}"
                                   CloseCommand="{Binding CloseHourPickerCommand}">
             <controls:AnchoredPopover.HeaderContent>
-                <!-- The hours chip, as on the mood card. -->
-                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="0"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                <!-- The hours chip, as on the mood card: the same shared styles, so the copy sits exactly over it. -->
+                <Border Style="{StaticResource HeaderChip}" behaviors:PressFeedback.IsEnabled="False">
                     <!-- A clock, and beside it only state: the chosen hour, or how many hours carry a mood. No
                          caption — the spoken label is the chip's description. Round while it is just the clock. -->
-                    <Border StrokeThickness="0" InputTransparent="True" StrokeShape="RoundRectangle 15" Padding="8,0"
-                            HeightRequest="30" MinimumWidthRequest="30"
+                    <Border Style="{StaticResource HeaderChipSurface}"
                             behaviors:ThemeColor.BackgroundKey="{Binding HourChipFillColorKey}"
                         behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
                         <HorizontalStackLayout Spacing="5" HorizontalOptions="Center" VerticalOptions="Center">
-                            <Path Data="M 12 2 A 10 10 0 1 0 12 22 A 10 10 0 1 0 12 2 M 12 6 V 12 L 16 16"
-                                  Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round"
-                                  WidthRequest="15" HeightRequest="15" Aspect="Uniform" VerticalOptions="Center">
+                            <Path Data="{x:Static icons:AppIcons.Clock}" Style="{StaticResource HeaderChipIcon}"
+                                  Stroke="{DynamicResource Theme_Midnight_Snow}">
                                 <Path.Triggers>
                                     <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
                                         <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
@@ -271,15 +244,13 @@
                                   Grid.Row="0" Grid.RowSpan="2"
                                   IsOpen="{Binding IsOpen}" CloseCommand="{Binding CloseCommand}">
             <controls:AnchoredPopover.HeaderContent>
-                <!-- The drop button, as in the health block. -->
-                <Border StrokeShape="Ellipse" StrokeThickness="1" WidthRequest="32" HeightRequest="32"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        VerticalOptions="Center"
+                <!-- The drop button, as in the health block: the same shared styles as the hours chip. -->
+                <Border Style="{StaticResource HeaderChip}" WidthRequest="32" behaviors:PressFeedback.IsEnabled="False"
                         SemanticProperties.Description="{x:Static localization:AppResources.CycleAddTitle}">
-                    <Path Data="M 12 3 C 12 3 6 10 6 14.5 A 6 6 0 0 0 18 14.5 C 18 10 12 3 12 3 Z" InputTransparent="True"
-                          Stroke="{DynamicResource Theme_Berry}" StrokeThickness="1.8" StrokeLineJoin="Round"
-                          WidthRequest="16" HeightRequest="16" Aspect="Uniform"
-                          HorizontalOptions="Center" VerticalOptions="Center" />
+                    <Border Style="{StaticResource HeaderChipSurface}" Padding="0">
+                        <Path Data="{x:Static icons:AppIcons.Drop}" Style="{StaticResource HeaderChipIcon}"
+                              Stroke="{DynamicResource Theme_Berry}" />
+                    </Border>
                 </Border>
             </controls:AnchoredPopover.HeaderContent>
             <controls:AnchoredPopover.PopoverContent>

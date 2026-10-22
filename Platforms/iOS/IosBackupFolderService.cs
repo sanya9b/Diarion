@@ -26,6 +26,13 @@ public sealed class IosBackupFolderService : IBackupFolderService
 {
     public bool IsSupported => true;
 
+    /// <summary>
+    /// Documents/Backups inside the app: Files → On My iPhone → Diarion (Info.plist turns on file
+    /// sharing), and part of the iPhone's own iCloud backup. No picker, no bookmark, no security scope.
+    /// </summary>
+    public BackupFolderPick? DeviceFolder =>
+        new(BackupFolderPick.DeviceToken, Diarion.Resources.Localization.AppResources.AutoBackupDeviceFolderIos);
+
     public async Task<BackupFolderPick?> PickFolderAsync()
     {
         var tcs = new TaskCompletionSource<NSUrl?>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -147,6 +154,20 @@ public sealed class IosBackupFolderService : IBackupFolderService
     private static NSUrl? Resolve(string token)
     {
         if (string.IsNullOrEmpty(token)) return null;
+
+        if (token == BackupFolderPick.DeviceToken)
+        {
+            var documents = NSFileManager.DefaultManager
+                .GetUrls(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomain.User)
+                .FirstOrDefault();
+            if (documents?.Path is null) return null;
+
+            var backups = Path.Combine(documents.Path, "Backups");
+            Directory.CreateDirectory(backups);
+            // Starting a security scope on a plain sandbox URL answers false, and the callers skip the
+            // matching stop on false, so the device folder needs no special handling past this point.
+            return NSUrl.FromFilename(backups);
+        }
 
         var data = new NSData(token, NSDataBase64DecodingOptions.None);
         var url = NSUrl.FromBookmarkData(data, NSUrlBookmarkResolutionOptions.WithoutUI, null, out _, out var error);

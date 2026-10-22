@@ -19,6 +19,16 @@ public sealed class WindowsBackupFolderService : IBackupFolderService
 {
     public bool IsSupported => true;
 
+    private static string DevicePath =>
+        Directory.CreateDirectory(
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Diarion Backups")).FullName;
+
+    /// <summary>Documents\Diarion Backups — the computer's own counterpart of the phone's folder.</summary>
+    public BackupFolderPick? DeviceFolder => new(BackupFolderPick.DeviceToken, DevicePath);
+
+    /// <summary>A picked folder's token is its path; the device token stands for <see cref="DevicePath"/>.</summary>
+    private static string PathOf(string token) => token == BackupFolderPick.DeviceToken ? DevicePath : token;
+
     public async Task<BackupFolderPick?> PickFolderAsync()
     {
         var picker = new FolderPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
@@ -42,10 +52,11 @@ public sealed class WindowsBackupFolderService : IBackupFolderService
     }
 
     public Task<bool> CanWriteAsync(string token) =>
-        Task.FromResult(!string.IsNullOrEmpty(token) && Directory.Exists(token));
+        Task.FromResult(!string.IsNullOrEmpty(token) && Directory.Exists(PathOf(token)));
 
     public async Task WriteFileAsync(string token, string fileName, string sourcePath)
     {
+        token = PathOf(token);
         if (!Directory.Exists(token))
         {
             throw new IOException("The backup folder is no longer reachable.");
@@ -59,6 +70,7 @@ public sealed class WindowsBackupFolderService : IBackupFolderService
 
     public Task<IReadOnlyList<string>> ListFileNamesAsync(string token)
     {
+        token = PathOf(token);
         if (!Directory.Exists(token))
         {
             return Task.FromResult<IReadOnlyList<string>>(Array.Empty<string>());
@@ -74,7 +86,7 @@ public sealed class WindowsBackupFolderService : IBackupFolderService
 
     public Task DeleteFileAsync(string token, string fileName)
     {
-        var path = Path.Combine(token, fileName);
+        var path = Path.Combine(PathOf(token), fileName);
         if (File.Exists(path))
         {
             File.Delete(path);

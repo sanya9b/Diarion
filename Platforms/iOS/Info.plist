@@ -26,6 +26,15 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
+	<!-- Automatic copies land in the app's Documents/Backups (2026-10-23, owner: backups "в телефон").
+	     These two keys put that folder in the Files app as On My iPhone → Diarion, so a copy can be
+	     seen, shared and moved without the app; Documents is also part of the iPhone's own iCloud
+	     backup, which is how a copy reaches a new phone with no setup at all. Nothing else is kept in
+	     Documents: the database lives in Library and stays hidden. -->
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Allows you to securely unlock your diary.</string>
 	<!-- Removed for v1 together with the HealthKit entitlement and both localised copies:

@@ -2269,41 +2269,11 @@
   <data name="EmptyStateReviewHint" xml:space="preserve">
     <value>Запишіть кілька днів, і тут з'явиться, що змінилось проти попереднього періоду.</value>
   </data>
-  <data name="QuickCaptureTitle" xml:space="preserve">
-    <value>Швидкий запис</value>
-  </data>
-  <data name="QuickCaptureHourFormat" xml:space="preserve">
-    <value>Зараз, близько {0}:00 — піде в сьогоднішній день</value>
-  </data>
-  <data name="QuickCaptureMoodLabel" xml:space="preserve">
-    <value>ЯК ВИ ЗАРАЗ</value>
-  </data>
-  <data name="QuickCaptureTextPlaceholder" xml:space="preserve">
-    <value>Один рядок для себе…</value>
-  </data>
-  <data name="QuickCaptureHabitsLabel" xml:space="preserve">
-    <value>ЗВИЧКИ СЬОГОДНІ</value>
-  </data>
-  <data name="QuickCaptureSave" xml:space="preserve">
-    <value>Зберегти</value>
-  </data>
-  <data name="QuickCaptureCancel" xml:space="preserve">
-    <value>Закрити без збереження</value>
-  </data>
-  <data name="QuickCaptureOpenFull" xml:space="preserve">
-    <value>Відкрити повний запис дня</value>
-  </data>
-  <data name="QuickCaptureActionTitle" xml:space="preserve">
-    <value>Швидкий запис</value>
-  </data>
-  <data name="QuickCaptureOpenAccessibility" xml:space="preserve">
-    <value>Швидкий запис: настрій, рядок, звички</value>
-  </data>
   <data name="AutoBackupTitle" xml:space="preserve">
     <value>АВТОМАТИЧНІ КОПІЇ</value>
   </data>
   <data name="AutoBackupDescription" xml:space="preserve">
-    <value>Копія під паролем пишеться в обрану вами папку — iCloud Drive, Google Drive, картку пам'яті — коли ви відкриваєте застосунок і минув інтервал. Відновлюється кнопкою «Відновити» вище.</value>
+    <value>Копія під паролем щодня зберігається в цьому телефоні, коли ви відкриваєте застосунок: у «Файли → На iPhone → Diarion» або в «Завантаження» на Android. Щоб тримати копії в iCloud Drive чи Google Drive, змініть папку. Відновлюється кнопкою «Відновити» вище.</value>
   </data>
   <data name="AutoBackupUnsupported" xml:space="preserve">
     <value>На цій платформі недоступно.</value>
@@ -2379,5 +2349,14 @@
   </data>
   <data name="VoiceMissingMessage" xml:space="preserve">
     <value>На цьому пристрої немає голосу для мови застосунку, тож нагадування прозвучить системним голосом. Голоси можна додати в налаштуваннях системи.</value>
+  </data>
+  <data name="AutoBackupDeviceFolderIos" xml:space="preserve">
+    <value>На iPhone → Diarion → Backups</value>
+  </data>
+  <data name="AutoBackupDeviceFolderAndroid" xml:space="preserve">
+    <value>Завантаження → Diarion</value>
+  </data>
+  <data name="AutoBackupUseDevice" xml:space="preserve">
+    <value>Зберігати в телефоні</value>
   </data>
 </root>

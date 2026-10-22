@@ -6,10 +6,6 @@ using Plugin.Fingerprint;
 namespace Diarion;
 
 [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
-// The home-screen shortcut ("Quick entry") arrives as an intent with this action; MAUI's own
-// OnNewIntent/OnResume hand it to AppActions, which App.OnAppActionActivated listens to. A static
-// filter, not a permission: the allowlist in the manifest is unchanged.
-[IntentFilter(new[] { Microsoft.Maui.ApplicationModel.Platform.Intent.ActionAppAction }, Categories = new[] { Android.Content.Intent.CategoryDefault })]
 public class MainActivity : MauiAppCompatActivity
 {
     protected override void OnCreate(Bundle? savedInstanceState)

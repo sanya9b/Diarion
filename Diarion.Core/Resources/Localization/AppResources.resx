@@ -2269,41 +2269,11 @@
   <data name="EmptyStateReviewHint" xml:space="preserve">
     <value>Write a few days and this tab will show what changed against the period before.</value>
   </data>
-  <data name="QuickCaptureTitle" xml:space="preserve">
-    <value>Quick entry</value>
-  </data>
-  <data name="QuickCaptureHourFormat" xml:space="preserve">
-    <value>Now, around {0}:00 — goes into today</value>
-  </data>
-  <data name="QuickCaptureMoodLabel" xml:space="preserve">
-    <value>HOW ARE YOU RIGHT NOW</value>
-  </data>
-  <data name="QuickCaptureTextPlaceholder" xml:space="preserve">
-    <value>One line for yourself…</value>
-  </data>
-  <data name="QuickCaptureHabitsLabel" xml:space="preserve">
-    <value>HABITS TODAY</value>
-  </data>
-  <data name="QuickCaptureSave" xml:space="preserve">
-    <value>Save</value>
-  </data>
-  <data name="QuickCaptureCancel" xml:space="preserve">
-    <value>Close without saving</value>
-  </data>
-  <data name="QuickCaptureOpenFull" xml:space="preserve">
-    <value>Open the full day instead</value>
-  </data>
-  <data name="QuickCaptureActionTitle" xml:space="preserve">
-    <value>Quick entry</value>
-  </data>
-  <data name="QuickCaptureOpenAccessibility" xml:space="preserve">
-    <value>Quick entry: mood, a line, habits</value>
-  </data>
   <data name="AutoBackupTitle" xml:space="preserve">
     <value>AUTOMATIC COPIES</value>
   </data>
   <data name="AutoBackupDescription" xml:space="preserve">
-    <value>A passphrase-protected copy is written to a folder you choose — iCloud Drive, Google Drive, a memory card — when you open the app and the interval has passed. Restore it with the Restore button above.</value>
+    <value>A passphrase-protected copy is saved on this phone every day when you open the app: in Files → On My iPhone → Diarion, or in Downloads on Android. To keep the copies in iCloud Drive or Google Drive instead, change the folder. Restore one with the Restore button above.</value>
   </data>
   <data name="AutoBackupUnsupported" xml:space="preserve">
     <value>Not available on this platform.</value>
@@ -2379,5 +2349,14 @@
   </data>
   <data name="VoiceMissingMessage" xml:space="preserve">
     <value>This device has no voice for the app's language, so the reminder will be read in the system voice. Voices can be added in the system settings.</value>
+  </data>
+  <data name="AutoBackupDeviceFolderIos" xml:space="preserve">
+    <value>On My iPhone → Diarion → Backups</value>
+  </data>
+  <data name="AutoBackupDeviceFolderAndroid" xml:space="preserve">
+    <value>Downloads → Diarion</value>
+  </data>
+  <data name="AutoBackupUseDevice" xml:space="preserve">
+    <value>Keep on the phone</value>
   </data>
 </root>

@@ -66,11 +66,6 @@ public partial class App : Application
         services?.GetService<PaywallPresenter>()?.Start();
         StartReminderCoordinator(services);
 
-        // Routes that arrive from outside — the home-screen shortcut, a tap on the evening reminder —
-        // wait behind the lock screen and are flushed at each point below where the shell is reachable.
-        LaunchActions.IsBlocked = () => _isLockShown;
-        WireLaunchActions();
-
         var window = new Window();
 
         if (services != null && lockService?.IsLockEnabled == true)
@@ -84,11 +79,7 @@ public partial class App : Application
                     _isLockShown = false;
                     _backgroundedAtUtc = null;
                     // Unlocked may fire off the UI thread (biometric continuation); swap on main.
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        window.Page = new AppShell();
-                        LaunchActions.TryFlush();
-                    });
+                    MainThread.BeginInvokeOnMainThread(() => window.Page = new AppShell());
                 };
                 window.Page = lockPage;
             }
@@ -105,29 +96,41 @@ public partial class App : Application
             await CheckOnboardingAsync(window);
             await CheckSecurityAsync(window, coldStart: true);
             RetiredModelFiles.Sweep();
-            LaunchActions.TryFlush();
+            ClearRetiredAppActions();
             StartScheduledBackup(services);
         };
         window.Resumed += async (s, e) =>
         {
             await CheckSecurityAsync(window, coldStart: false);
-            LaunchActions.TryFlush();
         };
 
         return window;
     }
 
     /// <summary>
-    /// Asks the store in the background. The service never downgrades the state for a missing
-    /// answer, so nothing here is on the critical path of the first screen.
+    /// Build 16 published a "Quick entry" home-screen shortcut; the sheet it opened was removed on the
+    /// owner's word (2026-10-23). The system keeps a published shortcut across app updates, so without
+    /// this the icon would go on offering a menu item that opens nothing. Publishing an empty set clears
+    /// it; on a phone that never had it, this is a no-op.
     /// </summary>
-    /// <summary>Pauses or restores reminders to match the access state (spec 15, R1.6). Off the
-    /// first frame's path: it reads the profile and habits from the database.</summary>
-    private static void StartReminderCoordinator(IServiceProvider? services)
+    private static void ClearRetiredAppActions()
     {
-        var coordinator = services?.GetService<ReminderAccessCoordinator>();
-        if (coordinator is null) return;
-        _ = Task.Run(coordinator.StartAsync);
+#if ANDROID || IOS
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                if (AppActions.Current.IsSupported)
+                {
+                    await AppActions.Current.SetAsync(Array.Empty<AppAction>());
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Retired app actions not cleared: {ex.Message}");
+            }
+        });
+#endif
     }
 
     /// <summary>
@@ -155,6 +158,19 @@ public partial class App : Application
         });
     }
 
+    /// <summary>
+    /// Asks the store in the background. The service never downgrades the state for a missing
+    /// answer, so nothing here is on the critical path of the first screen.
+    /// </summary>
+    /// <summary>Pauses or restores reminders to match the access state (spec 15, R1.6). Off the
+    /// first frame's path: it reads the profile and habits from the database.</summary>
+    private static void StartReminderCoordinator(IServiceProvider? services)
+    {
+        var coordinator = services?.GetService<ReminderAccessCoordinator>();
+        if (coordinator is null) return;
+        _ = Task.Run(coordinator.StartAsync);
+    }
+
     private static void RefreshEntitlements(IEntitlementService? entitlements)
     {
         if (entitlements is null) return;
@@ -179,79 +195,7 @@ public partial class App : Application
     {
         await navigation.PopModalAsync();
         WeakReferenceMessenger.Default.Send(new PaywallRequestedMessage(PaywallReason.AfterOnboarding));
-        // After the paywall has had its say: the flush steps aside for any modal, so if the sheet
-        // is up this waits for the next resume rather than stacking under it.
-        LaunchActions.TryFlush();
     }
-
-    /// <summary>
-    /// The two ways into the quick entry from outside the app (roadmap 2.1): the home-screen
-    /// shortcut, and a tap on the daily reminder. Neither reads anything outside the process and
-    /// neither shows anything past the lock, which is what keeps them on the right side of the
-    /// line the roadmap drew against widgets.
-    /// </summary>
-    private static void WireLaunchActions()
-    {
-#if ANDROID || IOS
-        try
-        {
-            if (AppActions.Current.IsSupported)
-            {
-                AppActions.Current.AppActionActivated -= OnAppActionActivated;
-                AppActions.Current.AppActionActivated += OnAppActionActivated;
-                _ = PublishAppActionsAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"App actions unavailable: {ex.Message}");
-        }
-#endif
-#if ANDROID || IOS || MACCATALYST
-        Plugin.LocalNotification.LocalNotificationCenter.Current.NotificationActionTapped -= OnNotificationActionTapped;
-        Plugin.LocalNotification.LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationActionTapped;
-#endif
-    }
-
-#if ANDROID || IOS
-    private static async Task PublishAppActionsAsync()
-    {
-        try
-        {
-            await AppActions.Current.SetAsync(new[]
-            {
-                new AppAction(
-                    LaunchActions.QuickCaptureActionId,
-                    Diarion.Resources.Localization.AppResources.QuickCaptureActionTitle)
-            });
-        }
-        catch (Exception ex)
-        {
-            // A launcher that does not do shortcuts is not an error worth a crash report.
-            System.Diagnostics.Debug.WriteLine($"App actions not published: {ex.Message}");
-        }
-    }
-
-    private static void OnAppActionActivated(object? sender, AppActionEventArgs e)
-    {
-        if (e.AppAction.Id == LaunchActions.QuickCaptureActionId)
-        {
-            LaunchActions.Request(Diarion.ViewModels.QuickCaptureViewModel.Route);
-        }
-    }
-#endif
-
-#if ANDROID || IOS || MACCATALYST
-    private static void OnNotificationActionTapped(Plugin.LocalNotification.EventArgs.NotificationActionEventArgs e)
-    {
-        if (e.IsDismissed) return;
-
-        if (e.Request?.NotificationId == LocalNotificationService.DailyReminderId)
-        {
-            LaunchActions.Request(Diarion.ViewModels.QuickCaptureViewModel.Route);
-        }
-    }
-#endif
 
     private async Task CheckOnboardingAsync(Window window)
     {
@@ -307,11 +251,7 @@ public partial class App : Application
         {
             _isLockShown = false;
             _backgroundedAtUtc = null;
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                await navigation.PopModalAsync();
-                LaunchActions.TryFlush();
-            });
+            _ = navigation.PopModalAsync();
         };
 
         await navigation.PushModalAsync(lockPage);

@@ -234,18 +234,34 @@
                     Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}"
                     InputTransparent="True">
                 <VerticalStackLayout Spacing="0" HorizontalOptions="Center" VerticalOptions="Center">
-                    <Path Data="{x:Static icons:AppIcons.Flame}" WidthRequest="17" HeightRequest="17" Aspect="Uniform"
-                          StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
-                          Stroke="{DynamicResource Theme_Coral}" HorizontalOptions="Center">
+                    <!-- The season over the count, drawn in the line of the other icons: a sprout (Sage) in
+                         spring, a sun (Amber) in summer, a yellow leaf (Amber) in autumn, a snowflake (Ocean)
+                         in winter. Grey while there is no run yet. The zero trigger is last so it wins. -->
+                    <Path Data="{Binding StreakIcon}" WidthRequest="17" HeightRequest="17" Aspect="Uniform"
+                          StrokeThickness="1.7" StrokeLineCap="Round" StrokeLineJoin="Round"
+                          Stroke="{DynamicResource Theme_Amber}" HorizontalOptions="Center">
                         <Path.Triggers>
+                            <DataTrigger TargetType="Path" Binding="{Binding StreakSeason}" Value="{x:Static models:Season.Spring}">
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Path" Binding="{Binding StreakSeason}" Value="{x:Static models:Season.Winter}">
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                            </DataTrigger>
                             <DataTrigger TargetType="Path" Binding="{Binding IsStreakVisible}" Value="False">
                                 <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
                             </DataTrigger>
                         </Path.Triggers>
                     </Path>
                     <HorizontalStackLayout Spacing="0" HorizontalOptions="Center">
-                        <Label Text="{Binding CurrentStreak}" FontSize="15" FontAttributes="Bold"
-                               TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                        <!-- No upper limit on the count; from three digits it drops a size instead of being cut. -->
+                        <Label Text="{Binding CurrentStreak}" FontSize="15" FontAttributes="Bold" LineBreakMode="NoWrap"
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsStreakLong}" Value="True">
+                                    <Setter Property="FontSize" Value="12" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
                         <Label Text="*" FontSize="13" FontAttributes="Bold" VerticalOptions="Start"
                                IsVisible="{Binding IsStreakHeldByGrace}" TextColor="{DynamicResource Theme_Amber}" />
                     </HorizontalStackLayout>

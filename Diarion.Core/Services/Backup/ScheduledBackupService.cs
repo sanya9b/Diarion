@@ -142,9 +142,12 @@ public sealed class ScheduledBackupService : IScheduledBackupService
 
     public Task<BackupFolderPick?> PickFolderAsync() => _folder.PickFolderAsync();
 
-    public void Enable(BackupFolderPick folder, string passphrase, int intervalDays)
+    public BackupFolderPick? DeviceFolder => _folder.DeviceFolder;
+
+    public void Enable(BackupFolderPick? folder, string passphrase, int intervalDays)
     {
-        ArgumentNullException.ThrowIfNull(folder);
+        folder ??= _folder.DeviceFolder
+                   ?? throw new InvalidOperationException("This platform has no folder on the device; pick one.");
         if (string.IsNullOrWhiteSpace(passphrase))
         {
             throw new ArgumentException("A passphrase is required.", nameof(passphrase));

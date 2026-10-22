@@ -9,6 +9,8 @@ public sealed class NullBackupFolderService : IBackupFolderService
 {
     public bool IsSupported => false;
 
+    public BackupFolderPick? DeviceFolder => null;
+
     public Task<BackupFolderPick?> PickFolderAsync() => Task.FromResult<BackupFolderPick?>(null);
 
     public Task<bool> CanWriteAsync(string token) => Task.FromResult(false);

@@ -27,7 +27,14 @@ public interface IScheduledBackupService
 
     Task<BackupFolderPick?> PickFolderAsync();
 
-    void Enable(BackupFolderPick folder, string passphrase, int intervalDays);
+    /// <summary>The folder on the phone, or null where there is none (see <see cref="IBackupFolderService.DeviceFolder"/>).</summary>
+    BackupFolderPick? DeviceFolder { get; }
+
+    /// <summary>
+    /// Switches on. A null <paramref name="folder"/> means the phone itself — the default, which needs no
+    /// picker; it throws where the platform has no device folder.
+    /// </summary>
+    void Enable(BackupFolderPick? folder, string passphrase, int intervalDays);
 
     /// <summary>Switches off and forgets the passphrase; the folder choice is kept for next time.</summary>
     void Disable();

@@ -58,9 +58,34 @@ public partial class MainViewModel : BaseViewModel
     protected override void OnBusyStateChanged() => OnPropertyChanged(nameof(IsLoading));
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsStreakLong))]
     private int _currentStreak;
 
     public bool IsStreakVisible => CurrentStreak > 0;
+
+    /// <summary>
+    /// Three digits and up. The tile is 50 points wide and the count has no upper limit, so from 100 on
+    /// the number is set a size smaller rather than being cut — a run that long is the last one to hide.
+    /// </summary>
+    public bool IsStreakLong => CurrentStreak >= 100;
+
+    /// <summary>
+    /// The picture over the count: a sprout in spring, a sun in summer, a yellow leaf in autumn, a
+    /// snowflake in winter (owner, 2026-10-23). Read from today's date when the streak is counted, so the
+    /// tile turns with the season on its own.
+    /// </summary>
+    [ObservableProperty]
+    private Season _streakSeason = SeasonCalendar.Of(DateTime.Today);
+
+    public Microsoft.Maui.Controls.Shapes.Geometry StreakIcon => StreakSeason switch
+    {
+        Season.Winter => Diarion.Resources.Icons.AppIcons.Snowflake,
+        Season.Spring => Diarion.Resources.Icons.AppIcons.Sprout,
+        Season.Summer => Diarion.Resources.Icons.AppIcons.Sun,
+        _ => Diarion.Resources.Icons.AppIcons.Leaf
+    };
+
+    partial void OnStreakSeasonChanged(Season value) => OnPropertyChanged(nameof(StreakIcon));
 
     /// <summary>The run is alive only thanks to forgiven days (streak settings); the tile marks it, as statistics does.</summary>
     [ObservableProperty]
@@ -144,16 +169,6 @@ public partial class MainViewModel : BaseViewModel
             // A period recorded from the health block's own panel changes the day shown right here;
             // there is no page to come back from that would reload it.
             _ = ((MainViewModel)r).RefreshCycleDayAsync();
-        });
-
-        WeakReferenceMessenger.Default.Register<QuickCaptureSavedMessage>(this, (r, m) =>
-        {
-            // The sheet saved into a row this screen may be holding a copy of. Re-read it rather than
-            // keep the copy: the next autosave from here would otherwise put the stale copy back.
-            if (CalendarSection.GetSelectedDate().Date == m.Date)
-            {
-                _ = LoadDayContentAsync(m.Date);
-            }
         });
 
         // The faces' picture set was changed in settings: the day already open redraws them now.
@@ -453,6 +468,7 @@ public partial class MainViewModel : BaseViewModel
     private async Task UpdateStreakAsync()
     {
         var streak = await _diaryService.GetCurrentStreakAsync();
+        StreakSeason = SeasonCalendar.Of(DateTime.Today);
         CurrentStreak = streak.Length;
         IsStreakHeldByGrace = streak.HeldByGrace;
         StreakAccessibleText = string.Format(Diarion.Resources.Localization.AppResources.StreakTileAccessibleFormat, streak.Length);
@@ -475,12 +491,6 @@ public partial class MainViewModel : BaseViewModel
         await _navigationService.NavigateToAsync("DiaryDetail");
     }
 
-    /// <summary>The ten-second sheet over this screen: mood at this hour, a line, habit ticks.</summary>
-    [RelayCommand]
-    public async Task OpenQuickCaptureAsync()
-    {
-        await _navigationService.NavigateToAsync(QuickCaptureViewModel.Route);
-    }
 
     [RelayCommand]
     public async Task GoToNewTodoAsync()

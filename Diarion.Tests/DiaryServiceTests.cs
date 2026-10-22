@@ -815,6 +815,27 @@ public class DiaryServiceTests : IDisposable
         streak.Length.Should().Be(3);
     }
 
+    [Theory]
+    [InlineData(15)]
+    [InlineData(40)]
+    [InlineData(120)]
+    public async Task GetCurrentStreak_HasNoCeiling_AtFourteenOrAnywhereElse(int days)
+    {
+        // The owner saw the tile stop at 14 (2026-10-23). Nothing in the count is tied to 14 — the
+        // hypothesis threshold is, which is where the number came from — and this holds that line.
+        await ClearDatabaseAsync();
+        await SetStreakGrace(1);
+        var today = DateTime.Today;
+
+        for (var i = 0; i < days; i++)
+        {
+            await _diaryService.SaveEntryAsync(JournaledOn(today.AddDays(-i)));
+        }
+
+        var streak = await _diaryService.GetCurrentStreakAsync();
+        streak.Length.Should().Be(days);
+    }
+
     [Fact]
     public async Task GetCurrentStreak_WithGap_ReturnsCorrectStreakBeforeGap()
     {

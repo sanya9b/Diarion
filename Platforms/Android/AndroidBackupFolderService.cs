@@ -35,6 +35,10 @@ public sealed class AndroidBackupFolderService : IBackupFolderService
 
     public bool IsSupported => true;
 
+    /// <summary>Download/Diarion on the phone, no picker and no permission (see <see cref="AndroidDeviceBackupFolder"/>).</summary>
+    public BackupFolderPick? DeviceFolder =>
+        new(BackupFolderPick.DeviceToken, AndroidDeviceBackupFolder.DisplayName);
+
     public async Task<BackupFolderPick?> PickFolderAsync()
     {
         var launcher = Launcher ?? throw new InvalidOperationException("The folder picker is not registered yet.");
@@ -75,6 +79,8 @@ public sealed class AndroidBackupFolderService : IBackupFolderService
 
     public Task<bool> CanWriteAsync(string token)
     {
+        if (token == BackupFolderPick.DeviceToken) return AndroidDeviceBackupFolder.CanWriteAsync();
+
         try
         {
             var tree = AndroidUri.Parse(token) ?? throw new ArgumentException("Not a URI.", nameof(token));
@@ -96,6 +102,12 @@ public sealed class AndroidBackupFolderService : IBackupFolderService
 
     public async Task WriteFileAsync(string token, string fileName, string sourcePath)
     {
+        if (token == BackupFolderPick.DeviceToken)
+        {
+            await AndroidDeviceBackupFolder.WriteFileAsync(fileName, sourcePath);
+            return;
+        }
+
         var tree = AndroidUri.Parse(token) ?? throw new ArgumentException("Not a URI.", nameof(token));
         var resolver = Resolver;
 
@@ -119,6 +131,8 @@ public sealed class AndroidBackupFolderService : IBackupFolderService
 
     public Task<IReadOnlyList<string>> ListFileNamesAsync(string token)
     {
+        if (token == BackupFolderPick.DeviceToken) return AndroidDeviceBackupFolder.ListFileNamesAsync();
+
         var tree = AndroidUri.Parse(token) ?? throw new ArgumentException("Not a URI.", nameof(token));
         var names = Children(Resolver, tree).Select(c => c.Name).ToList();
         return Task.FromResult<IReadOnlyList<string>>(names);
@@ -126,6 +140,8 @@ public sealed class AndroidBackupFolderService : IBackupFolderService
 
     public Task DeleteFileAsync(string token, string fileName)
     {
+        if (token == BackupFolderPick.DeviceToken) return AndroidDeviceBackupFolder.DeleteFileAsync(fileName);
+
         var tree = AndroidUri.Parse(token) ?? throw new ArgumentException("Not a URI.", nameof(token));
         var resolver = Resolver;
 

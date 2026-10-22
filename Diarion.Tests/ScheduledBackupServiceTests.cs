@@ -241,6 +241,33 @@ public class ScheduledBackupServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Enable_without_a_folder_means_the_phone_and_the_copy_lands_there()
+    {
+        // The default since 2026-10-23: copies go to the phone itself, no picker involved.
+        var service = Create();
+
+        service.Enable(null, "pass", ScheduledBackupSettings.DefaultIntervalDays);
+
+        _store.Settings.FolderToken.Should().Be(BackupFolderPick.DeviceToken);
+        _store.Settings.IntervalDays.Should().Be(1, "copies to the phone are daily by default");
+        (await service.RunNowAsync()).Should().Be(ScheduledBackupOutcome.Success);
+        _folder.Files.Keys.Should().ContainSingle().Which.Should().StartWith(ScheduledBackupService.FilePrefix);
+    }
+
+    [Fact]
+    public void Enable_without_a_folder_refuses_where_the_platform_has_no_phone_folder()
+    {
+        _folder.DeviceFolder = null;
+        var service = Create();
+
+        var act = () => service.Enable(null, "pass", 1);
+
+        act.Should().Throw<InvalidOperationException>();
+        _store.Settings.IsEnabled.Should().BeFalse();
+        _store.Passphrase.Should().BeNull("nothing is stored for a switch that did not go on");
+    }
+
+    [Fact]
     public void Disable_forgets_the_passphrase_but_keeps_the_folder()
     {
         var service = Enabled();
@@ -341,6 +368,8 @@ public class ScheduledBackupServiceTests : IDisposable
         public bool ThrowOnWrite { get; set; }
 
         public bool IsSupported => true;
+
+        public BackupFolderPick? DeviceFolder { get; set; } = new(BackupFolderPick.DeviceToken, "Phone");
 
         public Task<BackupFolderPick?> PickFolderAsync() =>
             Task.FromResult<BackupFolderPick?>(new BackupFolderPick("tree://picked", "Picked"));

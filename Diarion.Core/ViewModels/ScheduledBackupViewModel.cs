@@ -19,11 +19,12 @@ public sealed record BackupIntervalOption(int Days, string Label);
 /// the profile view model is already the size it is.
 /// </summary>
 /// <remarks>
-/// Switching the feature on is a short conversation — pick a folder, choose a passphrase twice — and
-/// the switch only stays on if the conversation finishes. Backing out of any step flips it back,
-/// so the switch never claims a backup is being kept that is not. The first copy is made at once,
-/// which is both the proof that it works and the one backup most people would otherwise never get
-/// round to making.
+/// Switching the feature on is a short conversation — a passphrase, twice — and the switch only stays
+/// on if the conversation finishes. Backing out flips it back, so the switch never claims a backup is
+/// being kept that is not. Copies go to the phone itself unless another folder is chosen (owner,
+/// 2026-10-23); only where the platform has no such folder does switching on open a picker first. The
+/// first copy is made at once, which is both the proof that it works and the one backup most people
+/// would otherwise never get round to making.
 /// </remarks>
 public partial class ScheduledBackupViewModel : ObservableObject
 {
@@ -44,6 +45,10 @@ public partial class ScheduledBackupViewModel : ObservableObject
 
     [ObservableProperty]
     private string _folderText = string.Empty;
+
+    /// <summary>True while copies go somewhere other than the phone and the phone is an option — the way back.</summary>
+    [ObservableProperty]
+    private bool _canUseDeviceFolder;
 
     [ObservableProperty]
     private string _statusText = string.Empty;
@@ -112,7 +117,9 @@ public partial class ScheduledBackupViewModel : ObservableObject
     {
         try
         {
-            var folder = await _service.PickFolderAsync();
+            // The phone itself when it has a folder for copies — no picker, nothing to grant. Only a
+            // platform without one asks where.
+            var folder = _service.DeviceFolder ?? await _service.PickFolderAsync();
             if (folder is null)
             {
                 Revert();
@@ -193,6 +200,16 @@ public partial class ScheduledBackupViewModel : ObservableObject
         return first;
     }
 
+    /// <summary>Back from a picked folder to the phone itself.</summary>
+    [RelayCommand]
+    private void UseDeviceFolder()
+    {
+        if (_service.DeviceFolder is not { } device) return;
+
+        _service.SetFolder(device);
+        RefreshTexts();
+    }
+
     [RelayCommand]
     private async Task ChangeFolderAsync()
     {
@@ -231,9 +248,16 @@ public partial class ScheduledBackupViewModel : ObservableObject
         var settings = _service.Settings;
         var culture = CultureInfo.CurrentCulture;
 
-        FolderText = string.IsNullOrEmpty(settings.FolderName)
+        var isDevice = settings.FolderToken == BackupFolderPick.DeviceToken;
+
+        // The phone's folder is named from the service each time rather than from the stored name, so it
+        // follows a change of the app's language.
+        var name = isDevice ? _service.DeviceFolder?.DisplayName : settings.FolderName;
+        FolderText = string.IsNullOrEmpty(name)
             ? AppResources.AutoBackupNoFolder
-            : string.Format(culture, AppResources.AutoBackupFolderFormat, settings.FolderName);
+            : string.Format(culture, AppResources.AutoBackupFolderFormat, name);
+
+        CanUseDeviceFolder = !isDevice && _service.DeviceFolder is not null;
 
         StatusText = StatusFor(settings, culture);
     }

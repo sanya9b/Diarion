@@ -4,6 +4,7 @@
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
              xmlns:controls="clr-namespace:Diarion.Controls"
              x:Class="Diarion.Controls.MoodSection"
              x:DataType="viewmodels:DiaryEntryViewModel">
@@ -39,17 +40,6 @@
             <Setter Property="InputTransparent" Value="True" />
         </Style>
 
-        <!-- The hours chip and its ✕: outlined, press feedback on the outer element, the surface and the
-             fill inside it. No background here: the touch behaviour would write over a theme colour. -->
-        <Style x:Key="HourChip" TargetType="Border">
-            <Setter Property="StrokeShape" Value="RoundRectangle 16" />
-            <Setter Property="StrokeThickness" Value="1" />
-            <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
-            <Setter Property="BackgroundColor" Value="Transparent" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="VerticalOptions" Value="Center" />
-            <Setter Property="behaviors:PressFeedback.IsEnabled" Value="True" />
-        </Style>
     </ContentView.Resources>
 
     <Border Style="{StaticResource Card}">
@@ -58,25 +48,26 @@
             <!-- Header: the caption and, at the right, the hours chip. The row below speaks for the
                  day until an hour is chosen in the chip's bubble; then the chip reads the hour and the
                  ✕ beside it returns the row to the day, so the switch is never silent. -->
-            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+            <!-- Two columns, the chips in one row: a third column for the ✕ kept its spacing while the ✕ was
+                 hidden, and the clock sat 6 points left of the health block's drop (owner, 2026-10-23). -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
                 <Label Grid.Column="0" Text="{x:Static localization:AppResources.EmotionLabel}"
                        Style="{StaticResource SectionHeader}" VerticalOptions="Center" />
 
-                <Border x:Name="HourChip" Grid.Column="1" Style="{StaticResource HourChip}"
+                <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                <Border x:Name="HourChip" Style="{StaticResource HeaderChip}"
                         SemanticProperties.Description="{Binding HourChipText}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenHourPickerCommand}" />
                     </Border.GestureRecognizers>
                     <!-- A clock, and beside it only state: the chosen hour, or how many hours carry a mood. No
                          caption — the spoken label is the chip's description. Round while it is just the clock. -->
-                    <Border Style="{StaticResource MoodFill}" StrokeShape="RoundRectangle 15" Padding="8,0"
-                            HeightRequest="30" MinimumWidthRequest="30"
+                    <Border Style="{StaticResource HeaderChipSurface}"
                             behaviors:ThemeColor.BackgroundKey="{Binding HourChipFillColorKey}"
                             behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
                         <HorizontalStackLayout Spacing="5" HorizontalOptions="Center" VerticalOptions="Center">
-                            <Path Data="M 12 2 A 10 10 0 1 0 12 22 A 10 10 0 1 0 12 2 M 12 6 V 12 L 16 16"
-                                  Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round"
-                                  WidthRequest="15" HeightRequest="15" Aspect="Uniform" VerticalOptions="Center">
+                            <Path Data="{x:Static icons:AppIcons.Clock}" Style="{StaticResource HeaderChipIcon}"
+                                  Stroke="{DynamicResource Theme_Midnight_Snow}">
                                 <Path.Triggers>
                                     <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
                                         <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
@@ -96,15 +87,17 @@
                     </Border>
                 </Border>
 
-                <Border Grid.Column="2" Style="{StaticResource HourChip}" IsVisible="{Binding IsHourSelected}"
+                <Border Style="{StaticResource HeaderChip}" WidthRequest="32" IsVisible="{Binding IsHourSelected}"
                         SemanticProperties.Description="{x:Static localization:AppResources.MoodHourExit}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ExitHourModeCommand}" />
                     </Border.GestureRecognizers>
-                    <Label Text="✕" FontSize="12" WidthRequest="30" HeightRequest="30" InputTransparent="True"
-                           HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                           TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    <Border Style="{StaticResource HeaderChipSurface}" Padding="0">
+                        <Path Data="M 7 7 L 17 17 M 17 7 L 7 17" Style="{StaticResource HeaderChipIcon}"
+                              WidthRequest="12" HeightRequest="12" Stroke="{DynamicResource Theme_Midnight_Snow}" />
+                    </Border>
                 </Border>
+                </HorizontalStackLayout>
             </Grid>
 
             <!-- The row: five faces from unpleasant to pleasant, no words until one is chosen. A tap

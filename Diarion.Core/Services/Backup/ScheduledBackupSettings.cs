@@ -9,7 +9,12 @@ namespace Diarion.Services.Backup;
 /// </summary>
 public sealed class ScheduledBackupSettings
 {
-    public const int DefaultIntervalDays = 7;
+    /// <summary>
+    /// Every day since copies go to the phone by default (2026-10-23): a copy costs a second of CPU when
+    /// the app opens, five of them a few megabytes, and the day lost to a weekly schedule is the day
+    /// someone would want back.
+    /// </summary>
+    public const int DefaultIntervalDays = 1;
 
     /// <summary>How many of the app's own backup files to leave in the folder; older ones are deleted.</summary>
     public const int DefaultKeepCount = 5;

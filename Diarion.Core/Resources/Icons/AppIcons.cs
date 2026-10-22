@@ -56,6 +56,21 @@ public static class AppIcons
     public const string BarsPath = "M 3.5 20.5 L 20.5 20.5 M 7 17 L 7 12 M 12 17 L 12 6.5 M 17 17 L 17 9.5";
 
     public static Geometry Bars => Parse(BarsPath);
+
+    /// <summary>An autumn leaf with its midrib — the streak tile from September to November.</summary>
+    public const string LeafPath = "M 5 19 C 5 10.5 10.5 5 19 5 C 19 13.5 13.5 19 5 19 Z M 5 19 L 14 10";
+
+    /// <summary>
+    /// A six-armed snowflake — the streak tile from December to February. The arms and their chevrons are
+    /// one shape rotated by 60° about the centre, so all six are identical rather than drawn by eye.
+    /// </summary>
+    public const string SnowflakePath =
+        "M 12 3 L 12 21 M 19.8 7.5 L 4.2 16.5 M 19.8 16.5 L 4.2 7.5 " +
+        "M 9.6 4.4 L 12 6.8 L 14.4 4.4 M 17.4 6.1 L 16.5 9.4 L 19.8 10.3 M 19.8 13.7 L 16.5 14.6 L 17.4 17.9 " +
+        "M 14.4 19.6 L 12 17.2 L 9.6 19.6 M 6.6 17.9 L 7.5 14.6 L 4.2 13.7 M 4.2 10.3 L 7.5 9.4 L 6.6 6.1";
+
+    public static Geometry Leaf => Parse(LeafPath);
+    public static Geometry Snowflake => Parse(SnowflakePath);
     public static Geometry Smile => Parse(SmilePath);
     public static Geometry Moon => Parse(MoonPath);
     public static Geometry CheckCircle => Parse(CheckCirclePath);

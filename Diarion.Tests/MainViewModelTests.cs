@@ -100,46 +100,6 @@ public class MainViewModelTests
             _navigationServiceMock.Object);
     }
 
-    [Fact]
-    public async Task QuickCaptureSaved_ForTheDayOnShow_RereadsThatDay()
-    {
-        // The sheet wrote today's row behind this screen's back. Keeping the copy held here would
-        // let the next autosave put the stale copy back over the quick entry.
-        var vm = CreateViewModel();
-        await vm.LoadEntriesCommand.ExecuteAsync(null);
-        _diaryServiceMock.Invocations.Clear();
-
-        WeakReferenceMessenger.Default.Send(
-            new QuickCaptureSavedMessage(_calendarSection.GetSelectedDate()));
-        await WaitUntilAsync(() => _diaryServiceMock.Invocations.Any(i => i.Method.Name == nameof(IDiaryService.GetEntryForDateAsync)));
-
-        _diaryServiceMock.Verify(s => s.GetEntryForDateAsync(_calendarSection.GetSelectedDate().Date), Times.Once);
-    }
-
-    [Fact]
-    public async Task QuickCaptureSaved_ForAnotherDay_LeavesTheScreenAlone()
-    {
-        var vm = CreateViewModel();
-        await vm.LoadEntriesCommand.ExecuteAsync(null);
-        _diaryServiceMock.Invocations.Clear();
-
-        WeakReferenceMessenger.Default.Send(
-            new QuickCaptureSavedMessage(_calendarSection.GetSelectedDate().AddDays(-3)));
-        await Task.Delay(100);
-
-        _diaryServiceMock.Verify(s => s.GetEntryForDateAsync(It.IsAny<DateTime>()), Times.Never);
-    }
-
-    /// <summary>The message handler is fire-and-forget, so the test waits for its effect rather than for it.</summary>
-    private static async Task WaitUntilAsync(Func<bool> condition)
-    {
-        var deadline = DateTime.UtcNow.AddSeconds(2);
-        while (!condition() && DateTime.UtcNow < deadline)
-        {
-            await Task.Delay(10);
-        }
-    }
-
     private MainViewModel CreateViewModel()
     {
         return new MainViewModel(
@@ -172,6 +132,36 @@ public class MainViewModelTests
         viewModel.IsStreakVisible.Should().BeTrue();
         viewModel.IsStreakHeldByGrace.Should().BeTrue("one of the five days was forgiven");
         viewModel.StreakAccessibleText.Should().Contain("5");
+    }
+
+    [Theory]
+    [InlineData(15, false)]
+    [InlineData(99, false)]
+    [InlineData(120, true)]
+    public void StreakTile_ShowsAnyLength_AndShrinksTheNumberFromThreeDigits(int days, bool isLong)
+    {
+        var viewModel = CreateViewModel();
+        _diaryServiceMock.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(days, 0));
+
+        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(DocumentKind.Diary, Guid.NewGuid().ToString()));
+
+        viewModel.CurrentStreak.Should().Be(days, "the tile has no ceiling at 14 or anywhere else");
+        viewModel.IsStreakLong.Should().Be(isLong);
+    }
+
+    [Fact]
+    public void StreakTile_DrawsTheSeason()
+    {
+        var viewModel = CreateViewModel();
+
+        viewModel.StreakSeason.Should().Be(SeasonCalendar.Of(DateTime.Today));
+        viewModel.StreakIcon.Should().BeOfType<Microsoft.Maui.Controls.Shapes.PathGeometry>()
+            .Which.Figures.Should().NotBeEmpty();
+
+        var raised = new List<string>();
+        viewModel.PropertyChanged += (_, e) => raised.Add(e.PropertyName ?? string.Empty);
+        viewModel.StreakSeason = viewModel.StreakSeason == Season.Winter ? Season.Summer : Season.Winter;
+        raised.Should().Contain(nameof(MainViewModel.StreakIcon));
     }
 
     [Fact]

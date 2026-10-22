@@ -6,6 +6,7 @@
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
              x:Class="Diarion.Controls.HealthSection"
              x:Name="Root"
              x:DataType="vms:DiaryEntryViewModel">
@@ -15,22 +16,21 @@
             <!-- Header: the caption and, at the right while cycle tracking is on, a round button with a drop
                  that records a period. No caption on the button; it grows into a panel (CycleRecordContent
                  in an AnchoredPopover on the page), the same gesture as the hours chip on the mood card. -->
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,0,0,4">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" MinimumHeightRequest="32" Margin="0,0,0,2">
                 <Label Grid.Column="0" Text="{x:Static localization:AppResources.HealthLabel}" Style="{StaticResource SectionHeader}" VerticalOptions="Center" />
 
-                <Border x:Name="CycleChip" Grid.Column="1" StrokeShape="Ellipse" StrokeThickness="1" WidthRequest="32" HeightRequest="32"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent"
-                        VerticalOptions="Center"
-                        behaviors:PressFeedback.IsEnabled="True"
+                <Border x:Name="CycleChip" Grid.Column="1" Style="{StaticResource HeaderChip}" WidthRequest="32"
                         IsVisible="{Binding Source={x:Reference Root}, Path=IsCycleRecordAvailable, x:DataType=controls:HealthSection}"
                         SemanticProperties.Description="{x:Static localization:AppResources.CycleAddTitle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnCycleChipTapped" />
                     </Border.GestureRecognizers>
-                    <Path Data="M 12 3 C 12 3 6 10 6 14.5 A 6 6 0 0 0 18 14.5 C 18 10 12 3 12 3 Z" InputTransparent="True"
-                          Stroke="{DynamicResource Theme_Berry}" StrokeThickness="1.8" StrokeLineJoin="Round"
-                          WidthRequest="16" HeightRequest="16" Aspect="Uniform"
-                          HorizontalOptions="Center" VerticalOptions="Center" />
+                    <!-- The same chip as the mood card's clock: surface, size and line weight. Berry is the
+                         one difference, because Berry is what the palette reserves for the cycle. -->
+                    <Border Style="{StaticResource HeaderChipSurface}" Padding="0">
+                        <Path Data="{x:Static icons:AppIcons.Drop}" Style="{StaticResource HeaderChipIcon}"
+                              Stroke="{DynamicResource Theme_Berry}" />
+                    </Border>
                 </Border>
             </Grid>
             

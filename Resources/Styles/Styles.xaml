@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:behaviors="clr-namespace:Diarion.Behaviors">
 
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{DynamicResource Theme_Primary_White}" />
@@ -448,6 +449,45 @@
         <Setter Property="CharacterSpacing" Value="1.5" />
         <Setter Property="TextTransform" Value="Uppercase" />
         <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+    </Style>
+
+    <!-- The small button at the right of a card's header: the hours chip on the mood card, the drop on the
+         health block, the ✕ that leaves hour mode. One geometry for all of them (owner, 2026-10-23: the
+         clock and the drop sat at different sizes and heights). 32 high, round while it holds only an
+         icon, a pill once the hours chip adds its number. The outer element carries press feedback and
+         no colour — the touch behaviour writes the background of the element it is attached to — so the
+         surface lives on HeaderChipSurface one layer down. The popover header copies use the same styles,
+         which is what keeps a copy exactly over its button. -->
+    <Style TargetType="Border" x:Key="HeaderChip">
+        <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HeightRequest" Value="32" />
+        <Setter Property="MinimumWidthRequest" Value="32" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="behaviors:PressFeedback.IsEnabled" Value="True" />
+    </Style>
+    <Style TargetType="Border" x:Key="HeaderChipSurface">
+        <Setter Property="StrokeShape" Value="RoundRectangle 15" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="InputTransparent" Value="True" />
+        <Setter Property="HeightRequest" Value="30" />
+        <Setter Property="MinimumWidthRequest" Value="30" />
+        <Setter Property="Padding" Value="7,0" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Black}" />
+    </Style>
+    <Style TargetType="Path" x:Key="HeaderChipIcon">
+        <Setter Property="WidthRequest" Value="16" />
+        <Setter Property="HeightRequest" Value="16" />
+        <Setter Property="Aspect" Value="Uniform" />
+        <Setter Property="StrokeThickness" Value="1.7" />
+        <Setter Property="StrokeLineCap" Value="Round" />
+        <Setter Property="StrokeLineJoin" Value="Round" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="InputTransparent" Value="True" />
     </Style>
 
     <!-- The statistics card is the card. -->

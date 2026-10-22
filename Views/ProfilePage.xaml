@@ -729,6 +729,17 @@
                                             HeightRequest="44" />
                                 </Grid>
 
+                                <!-- The way back to the phone once copies were sent to a picked folder. -->
+                                <Button Text="{x:Static localization:AppResources.AutoBackupUseDevice}"
+                                        Command="{Binding UseDeviceFolderCommand}"
+                                        IsVisible="{Binding CanUseDeviceFolder}"
+                                        BackgroundColor="Transparent"
+                                        BorderColor="{DynamicResource Theme_Dust_Ocean}"
+                                        BorderWidth="1"
+                                        TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                        CornerRadius="12"
+                                        HeightRequest="44" />
+
                                 <Label Text="{x:Static localization:AppResources.AutoBackupKeepHint}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                             </VerticalStackLayout>
                         </VerticalStackLayout>
