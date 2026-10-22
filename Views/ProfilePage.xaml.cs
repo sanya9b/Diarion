@@ -28,10 +28,11 @@ public partial class ProfilePage : ContentPage
         set => SetValue(ThemeThumbAlignmentProperty, value);
     }
 
-    public ProfilePage(ProfileViewModel viewModel, SubscriptionSectionViewModel subscription)
+    public ProfilePage(ProfileViewModel viewModel, SubscriptionSectionViewModel subscription, MoodIconSetViewModel moodIconSets)
     {
         InitializeComponent();
         SubscriptionCard.BindingContext = subscription;
+        MoodIconSetRow.BindingContext = moodIconSets;
 
         _viewModel = viewModel;
         BindingContext = _viewModel;

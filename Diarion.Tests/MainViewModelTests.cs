@@ -27,6 +27,7 @@ public class MainViewModelTests
     private readonly Mock<IDialogService> _dialogServiceMock;
     private readonly Mock<ICalendarService> _calendarServiceMock;
     private readonly Mock<IMenuConfigurationService> _menuConfigServiceMock;
+    private readonly Mock<IMoodIconSetService> _moodIconSetsMock = new();
 
     private readonly CalendarSectionViewModel _calendarSection;
     private readonly PlannerSectionViewModel _plannerSection;
@@ -114,7 +115,8 @@ public class MainViewModelTests
             _quickMenuSection,
             _habitsSection,
             new Mock<CycleStatusViewModel>(_cycleLogServiceMock.Object, _profileServiceMock.Object).Object,
-            new TourViewModel(_profileServiceMock.Object, new TourService()));
+            new TourViewModel(_profileServiceMock.Object, new TourService()),
+            _moodIconSetsMock.Object);
     }
 
     [Fact]
@@ -234,6 +236,33 @@ public class MainViewModelTests
         await viewModel.FlushAutoSaveAsync();
 
         viewModel.CurrentEntry.CycleDay.Should().Be("1");
+        _diaryServiceMock.Verify(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task LoadEntries_DrawsTheFacesInTheSetChosenInSettings()
+    {
+        _moodIconSetsMock.Setup(s => s.Current).Returns(MoodIconSet.Plants);
+        var viewModel = CreateViewModel();
+
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+
+        viewModel.CurrentEntry!.IconSet.Should().Be(MoodIconSet.Plants);
+        viewModel.CurrentEntry.Quadrants.Should().OnlyContain(face => face.IconSet == MoodIconSet.Plants);
+    }
+
+    [Fact]
+    public async Task ChangingTheIconSet_RedrawsTheOpenDay_WithoutSavingIt()
+    {
+        // The set is how this phone shows the diary, not part of the day: switching it in settings
+        // must not write an untouched day, the way opening a bubble must not.
+        var viewModel = CreateViewModel();
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+
+        WeakReferenceMessenger.Default.Send(new MoodIconSetChangedMessage(MoodIconSet.Weather));
+        await viewModel.FlushAutoSaveAsync();
+
+        viewModel.CurrentEntry!.Quadrants.Should().OnlyContain(face => face.IconSet == MoodIconSet.Weather);
         _diaryServiceMock.Verify(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()), Times.Never);
     }
 

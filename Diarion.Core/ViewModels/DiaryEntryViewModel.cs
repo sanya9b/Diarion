@@ -279,8 +279,17 @@ public partial class DiaryEntryViewModel : ObservableObject
     /// </summary>
     public string CurrentEmoji => CurrentQuadrant.ToEmoji();
 
-    /// <summary>The chosen face's image, for the copy of it the refinement panel draws over the real one.</summary>
-    public string CurrentIconFile => CurrentQuadrant.ToIconFile();
+    /// <summary>
+    /// The picture set the five faces are drawn in (spec 18). Not part of the day: the main screen sets
+    /// it from the device preference when the day opens and when the preference changes.
+    /// </summary>
+    [ObservableProperty]
+    private MoodIconSet _iconSet;
+
+    partial void OnIconSetChanged(MoodIconSet value)
+    {
+        foreach (var face in Quadrants) face.IconSet = value;
+    }
 
     /// <summary>The one word on the row: the precise state chosen, shown under its face.</summary>
     public string CurrentMoodName => HasCurrentMood ? CurrentMood.ToLocalizedName() : string.Empty;
@@ -382,7 +391,6 @@ public partial class DiaryEntryViewModel : ObservableObject
         OnPropertyChanged(nameof(CurrentMoodName));
         OnPropertyChanged(nameof(CurrentColorKey));
         OnPropertyChanged(nameof(CurrentEmoji));
-        OnPropertyChanged(nameof(CurrentIconFile));
     }
 
     [ObservableProperty]

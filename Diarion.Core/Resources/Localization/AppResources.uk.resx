@@ -688,6 +688,18 @@
   <data name="SettingsAppearanceTitle" xml:space="preserve">
     <value>ВИГЛЯД І МОВА</value>
   </data>
+  <data name="MoodIconSetTitle" xml:space="preserve">
+    <value>Іконки настрою</value>
+  </data>
+  <data name="MoodIconSetEmoji" xml:space="preserve">
+    <value>Смайли</value>
+  </data>
+  <data name="MoodIconSetWeather" xml:space="preserve">
+    <value>Погода</value>
+  </data>
+  <data name="MoodIconSetPlants" xml:space="preserve">
+    <value>Рослини</value>
+  </data>
   <data name="BlockMoodLabel" xml:space="preserve">
     <value>Настрій</value>
   </data>
