@@ -54,20 +54,9 @@ public static class EmotionQuadrantExtensions
     };
 
     /// <summary>
-    /// The face drawn for the quadrant on the mood row: an image bundled with the app (Microsoft Fluent
-    /// Emoji, 3D), so the row looks the same on every phone. Empty for <see cref="EmotionQuadrant.None"/>.
+    /// The face in the default <see cref="MoodIconSet.Emoji"/> set — the glyph the representative emotion
+    /// has always worn, drawn by the phone's own emoji font as in version 1.0.
     /// </summary>
-    public static string ToIconFile(this EmotionQuadrant quadrant) => quadrant switch
-    {
-        EmotionQuadrant.PleasantEnergetic => "mood_pleasant_energetic.png",
-        EmotionQuadrant.PleasantCalm => "mood_pleasant_calm.png",
-        EmotionQuadrant.UnpleasantEnergetic => "mood_unpleasant_energetic.png",
-        EmotionQuadrant.UnpleasantCalm => "mood_unpleasant_calm.png",
-        EmotionQuadrant.Neutral => "mood_neutral.png",
-        _ => string.Empty
-    };
-
-    /// <summary>The glyph on the picker tile — the one the representative emotion has always worn.</summary>
     public static string ToEmoji(this EmotionQuadrant quadrant) => quadrant switch
     {
         EmotionQuadrant.PleasantEnergetic => "😊",

@@ -22,6 +22,15 @@ public static class Motion
     /// <summary>Sheets, overlays and dialogs — the ceiling for in-app UI motion.</summary>
     public const int OverlayMs = 320;
 
+    /// <summary>
+    /// One breath of a living picture — rain falling, a flower swaying (the mood faces' drawn sets).
+    /// Not a UI transition: an illustration's rhythm, played only on the chosen face.
+    /// </summary>
+    public const int GlyphLoopMs = 2400;
+
+    /// <summary>How many breaths the chosen face plays before it rests: delight on the choice, then quiet.</summary>
+    public const int GlyphLoops = 3;
+
     /// <summary>Entering, exiting, and the default when unsure: cubic-bezier(0.23, 1, 0.32, 1).</summary>
     public static readonly Easing EaseOut = new(t => CubicBezier.EaseOut.Solve(t));
 

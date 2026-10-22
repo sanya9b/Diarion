@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<INotificationService>(sp => new AccessAwareNotificationService(
             sp.GetRequiredService<LocalNotificationService>(), sp.GetRequiredService<IAccessGuard>()));
         services.AddSingleton<IMotionSettings, MotionSettings>();
+        services.AddSingleton<IMoodIconSetService, MoodIconSetService>();
         services.AddSingleton<ITodoService, TodoService>();
         services.AddSingleton<IHabitService, HabitService>();
         services.AddSingleton<IGuidedPromptService, GuidedPromptService>();
@@ -138,6 +139,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<PromptHistoryViewModel>();
         services.AddTransient<CycleViewModel>();
         services.AddTransient<CycleRecordViewModel>();
+        services.AddTransient<MoodIconSetViewModel>();
         services.AddTransient<SnapshotPreviewViewModel>();
 
         return services;

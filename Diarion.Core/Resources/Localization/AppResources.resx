@@ -700,6 +700,18 @@
   <data name="SettingsAppearanceTitle" xml:space="preserve">
     <value>APPEARANCE &amp; LANGUAGE</value>
   </data>
+  <data name="MoodIconSetTitle" xml:space="preserve">
+    <value>Mood icons</value>
+  </data>
+  <data name="MoodIconSetEmoji" xml:space="preserve">
+    <value>Smileys</value>
+  </data>
+  <data name="MoodIconSetWeather" xml:space="preserve">
+    <value>Weather</value>
+  </data>
+  <data name="MoodIconSetPlants" xml:space="preserve">
+    <value>Plants</value>
+  </data>
   <data name="BlockMoodLabel" xml:space="preserve">
     <value>Mood</value>
   </data>
