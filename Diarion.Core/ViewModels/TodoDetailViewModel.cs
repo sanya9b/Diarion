@@ -16,14 +16,16 @@ public partial class TodoDetailViewModel : BaseViewModel
     private readonly ITodoService _todoService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly ISpeechService _speech;
     private DateTime _targetDate = DateTime.Today;
     private TodoItem? _currentTodo;
 
-    public TodoDetailViewModel(ITodoService todoService, INavigationService navigationService, IDialogService dialogService)
+    public TodoDetailViewModel(ITodoService todoService, INavigationService navigationService, IDialogService dialogService, ISpeechService speech)
     {
         _todoService = todoService;
         _navigationService = navigationService;
         _dialogService = dialogService;
+        _speech = speech;
         Title = Diarion.Resources.Localization.AppResources.NewTaskTitle;
         PrioritiesList[1].IsSelected = true; // Medium is default
         UpdateTargetDateDisplay();
@@ -299,6 +301,7 @@ public partial class TodoDetailViewModel : BaseViewModel
         HasEndTime = HasEndTime,
         EndTime = EndTime,
         HasReminder = HasReminder,
+        IsVoiceReminder = IsVoiceReminder,
         TargetDate = _targetDate
     };
 
@@ -314,6 +317,7 @@ public partial class TodoDetailViewModel : BaseViewModel
         public bool HasEndTime { get; init; }
         public TimeSpan EndTime { get; init; }
         public bool HasReminder { get; init; }
+        public bool IsVoiceReminder { get; init; }
         public DateTime TargetDate { get; init; }
 
         public void RestoreTo(TodoDetailViewModel vm)
@@ -331,6 +335,7 @@ public partial class TodoDetailViewModel : BaseViewModel
             vm.EndTime = EndTime;
             vm.TimeRangeError = string.Empty;
             vm.HasReminder = HasReminder;
+            vm.IsVoiceReminder = IsVoiceReminder;
             vm._targetDate = TargetDate;
             vm.UpdateTargetDateDisplay();
         }
@@ -350,6 +355,45 @@ public partial class TodoDetailViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool _hasReminder;
+
+    /// <summary>A voice needs a reminder to speak through; switching the reminder off takes the voice with it.</summary>
+    partial void OnHasReminderChanged(bool value)
+    {
+        if (!value) IsVoiceReminder = false;
+    }
+
+    /// <summary>Whether the reminder is read aloud by the device when it arrives (spec 19). Off for every new task.</summary>
+    [ObservableProperty]
+    private bool _isVoiceReminder;
+
+    partial void OnIsVoiceReminderChanged(bool value)
+    {
+        if (value && !_loadingExisting) _ = WarnIfNoVoiceAsync();
+    }
+
+    // Once per run, not once per form: a device without the voice would otherwise be told so on every
+    // task, and the person can do nothing about it from inside the app.
+    private static bool _voiceWarningShown;
+
+    /// <summary>Forgets that the warning was shown. For tests, which share the process.</summary>
+    public static void ResetVoiceWarningForTests() => _voiceWarningShown = false;
+
+    private async Task WarnIfNoVoiceAsync()
+    {
+        try
+        {
+            if (_voiceWarningShown) return;
+            if (await _speech.HasVoiceForCurrentLanguageAsync()) return;
+            _voiceWarningShown = true;
+            await _dialogService.ShowAlertAsync(
+                Diarion.Resources.Localization.AppResources.VoiceMissingTitle,
+                Diarion.Resources.Localization.AppResources.VoiceMissingMessage);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Voice check failed: {ex.Message}");
+        }
+    }
 
     [ObservableProperty]
     private TodoPriority _selectedPriority = TodoPriority.Medium;
@@ -425,6 +469,7 @@ public partial class TodoDetailViewModel : BaseViewModel
             // stopped, and putting that on screen is how the next save wrote it straight back.
             if (IsRecurring) ApplyRecurrence(rule!);
             HasReminder = _currentTodo.HasReminder;
+            IsVoiceReminder = _currentTodo.IsVoiceReminder;
             
             foreach (var item in PrioritiesList)
             {
@@ -558,6 +603,7 @@ public partial class TodoDetailViewModel : BaseViewModel
             _currentTodo.IsCompleted = IsCompleted;
             _currentTodo.Priority = SelectedPriority;
             _currentTodo.HasReminder = HasReminder;
+            _currentTodo.IsVoiceReminder = HasReminder && IsVoiceReminder;
 
             if (!await WriteGate.TryAsync(() => _todoService.SaveTodoAsync(_currentTodo))) return;
             if (!await WriteGate.TryAsync(() => _todoService.SetRecurrenceAsync(_currentTodo.Id, BuildRecurrence()))) return;

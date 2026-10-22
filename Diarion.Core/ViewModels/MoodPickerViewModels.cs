@@ -5,7 +5,8 @@ namespace Diarion.ViewModels;
 
 /// <summary>
 /// One face of the mood row. <see cref="Column"/> places it left to right from unpleasant to pleasant;
-/// the face shows an emoji and no words — the quadrant's name is for screen readers and legends only.
+/// the face shows a picture from the chosen <see cref="MoodIconSet"/> and no words — the quadrant's
+/// name is for screen readers and legends only.
 /// </summary>
 /// <remarks>
 /// The chosen state is exposed as a plain value (<see cref="FillColorKey"/>) rather than left to XAML
@@ -32,8 +33,9 @@ public partial class MoodQuadrantViewModel : ObservableObject
 
     public string Emoji => Quadrant.ToEmoji();
 
-    /// <summary>The bundled face image the row shows (see <see cref="EmotionQuadrantExtensions.ToIconFile"/>).</summary>
-    public string IconFile => Quadrant.ToIconFile();
+    /// <summary>Which picture the face is drawn in; set by the day for all five faces at once.</summary>
+    [ObservableProperty]
+    private MoodIconSet _iconSet;
 
     /// <summary>The theme key of the quadrant's highlight hue.</summary>
     public string ColorKey { get; }

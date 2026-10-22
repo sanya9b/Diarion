@@ -120,13 +120,19 @@ public partial class QuickCaptureViewModel : BaseViewModel
         IDiaryService diaryService,
         IDiaryHabitSyncService habitSync,
         INavigationService navigation,
-        TimeProvider? clock = null)
+        TimeProvider? clock = null,
+        IMoodIconSetService? iconSets = null)
     {
         _diaryService = diaryService;
         _habitSync = habitSync;
         _navigation = navigation;
         _clock = clock ?? TimeProvider.System;
         Title = AppResources.QuickCaptureTitle;
+
+        // The faces in the picture set chosen in settings, as on the day screen. Read once: the sheet
+        // lives for seconds, and the setting cannot change while it is open.
+        var set = iconSets?.Current ?? MoodIconSet.Emoji;
+        foreach (var face in Quadrants) face.IconSet = set;
     }
 
     protected override void OnBusyStateChanged()

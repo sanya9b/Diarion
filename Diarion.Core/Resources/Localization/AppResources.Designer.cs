@@ -77,6 +77,10 @@ namespace Diarion.Resources.Localization {
         public static string SoulFoodPlaceholder => ResourceManager.GetString("SoulFoodPlaceholder", resourceCulture) ?? string.Empty;
         public static string HomeBlocksTitle => ResourceManager.GetString("HomeBlocksTitle", resourceCulture) ?? string.Empty;
         public static string SettingsAppearanceTitle => ResourceManager.GetString("SettingsAppearanceTitle", resourceCulture) ?? string.Empty;
+        public static string MoodIconSetTitle => ResourceManager.GetString("MoodIconSetTitle", resourceCulture) ?? string.Empty;
+        public static string MoodIconSetEmoji => ResourceManager.GetString("MoodIconSetEmoji", resourceCulture) ?? string.Empty;
+        public static string MoodIconSetWeather => ResourceManager.GetString("MoodIconSetWeather", resourceCulture) ?? string.Empty;
+        public static string MoodIconSetPlants => ResourceManager.GetString("MoodIconSetPlants", resourceCulture) ?? string.Empty;
         public static string BlockMoodLabel => ResourceManager.GetString("BlockMoodLabel", resourceCulture) ?? string.Empty;
         public static string BlockSleepLabel => ResourceManager.GetString("BlockSleepLabel", resourceCulture) ?? string.Empty;
         public static string BlockHealthLabel => ResourceManager.GetString("BlockHealthLabel", resourceCulture) ?? string.Empty;
@@ -2024,6 +2028,8 @@ public static string ClearAllDataSuccessMsg {
         public static string CycleSymptomsLabel {
             get { return ResourceManager.GetString("CycleSymptomsLabel", resourceCulture) ?? string.Empty; }
         }
+        public static string CycleSymptomsToday => ResourceManager.GetString("CycleSymptomsToday", resourceCulture) ?? string.Empty;
+        public static string CycleSymptomsOnDayFormat => ResourceManager.GetString("CycleSymptomsOnDayFormat", resourceCulture) ?? string.Empty;
 
         public static string PlannerUntimedLabel {
             get { return ResourceManager.GetString("PlannerUntimedLabel", resourceCulture) ?? string.Empty; }
@@ -2874,6 +2880,30 @@ public static string ClearAllDataSuccessMsg {
 
         public static string AutoBackupKeepHint {
             get { return ResourceManager.GetString("AutoBackupKeepHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SpokenReminderPhrase {
+            get { return ResourceManager.GetString("SpokenReminderPhrase", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string SpokenReminderEmpty {
+            get { return ResourceManager.GetString("SpokenReminderEmpty", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string VoiceReminderLabel {
+            get { return ResourceManager.GetString("VoiceReminderLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string VoiceReminderHint {
+            get { return ResourceManager.GetString("VoiceReminderHint", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string VoiceMissingTitle {
+            get { return ResourceManager.GetString("VoiceMissingTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string VoiceMissingMessage {
+            get { return ResourceManager.GetString("VoiceMissingMessage", resourceCulture) ?? string.Empty; }
         }
     }
 }

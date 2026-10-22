@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
   Recording a period, in the panel the health block's drop button grows into — the same gesture as the
-  hours chip on the mood card. Kept to one row: the first day, the last day, and a round button that
-  saves; under it one quiet line with how many days that is and the period already on record. No title
-  and no captions on the controls: the drop says what this is, and the spoken labels carry the rest.
+  hours chip on the mood card. One row: the first day, the last day, and a round button that saves;
+  under it one quiet line with how many days that is and the period already on record. No title and no
+  captions on the controls: the drop says what this is, and the spoken labels carry the rest. Below a
+  thin line, the symptoms of the day the home screen shows, as small chips centred line by line (owner,
+  2026-10-22: "не велике, не розтягнуте"); each saves as it is tapped.
 -->
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -12,6 +14,22 @@
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              x:Class="Diarion.Controls.CycleRecordContent"
              x:DataType="viewmodels:CycleRecordViewModel">
+
+    <ContentView.Resources>
+        <!-- A symptom: the mood chips' grammar one size down (12 pt, 28 high), so eight of them fit in three
+             short lines. Transparent and pressable outside, the fill one layer in (see MoodRefineContent);
+             FlexLayout.Shrink="0" so a long name wraps to the next line instead of being cut. -->
+        <Style x:Key="SymptomChip" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="3" />
+            <Setter Property="FlexLayout.Shrink" Value="0" />
+            <Setter Property="behaviors:PressFeedback.IsEnabled" Value="True" />
+        </Style>
+    </ContentView.Resources>
 
     <VerticalStackLayout Spacing="8">
         <!-- Each date is a frame behind a picker, not a picker inside a frame: as a Border's content the
@@ -64,5 +82,38 @@
             <Label Text="{Binding LastRecordedText}" IsVisible="{Binding HasLastRecorded}" FontSize="11"
                    TextColor="{DynamicResource Theme_Ocean_Dust}" />
         </HorizontalStackLayout>
+
+        <!-- Symptoms. Not for a day still to come: the section goes, the dates stay. -->
+        <VerticalStackLayout Spacing="6" IsVisible="{Binding CanLogSymptoms}">
+            <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Margin="0,2" />
+            <Label Text="{Binding SymptomsTitle}" FontSize="11" HorizontalOptions="Center"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            <FlexLayout Wrap="Wrap" JustifyContent="Center" AlignItems="Center" AlignContent="Center"
+                        BindableLayout.ItemsSource="{Binding Symptoms}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:SymptomToggleViewModel">
+                        <Border Style="{StaticResource SymptomChip}" SemanticProperties.Description="{Binding Label}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CycleRecordViewModel}}, Path=ToggleSymptomCommand}"
+                                                      CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Border StrokeShape="RoundRectangle 13" StrokeThickness="0" InputTransparent="True" Padding="10,5"
+                                    behaviors:ThemeColor.BackgroundKey="{Binding FillColorKey}"
+                                    behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
+                                <!-- Colour only, no bold: a chip whose text grows after layout gets cut. -->
+                                <Label Text="{Binding Label}" FontSize="12" LineBreakMode="NoWrap"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_OnAccent}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
+        </VerticalStackLayout>
     </VerticalStackLayout>
 </ContentView>

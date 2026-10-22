@@ -160,6 +160,20 @@ public class QuickCaptureViewModelTests
         _entry.HourlyMood.Should().ContainSingle(h => h.Hour == 10 && h.Mood == Emotion.Tired);
     }
 
+    [Theory]
+    [InlineData(MoodIconSet.Emoji)]
+    [InlineData(MoodIconSet.Weather)]
+    [InlineData(MoodIconSet.Plants)]
+    public void The_faces_use_the_picture_set_chosen_in_settings(MoodIconSet set)
+    {
+        var iconSets = new Mock<IMoodIconSetService>();
+        iconSets.SetupGet(s => s.Current).Returns(set);
+
+        var vm = new QuickCaptureViewModel(_diary.Object, _sync.Object, _navigation.Object, null, iconSets.Object);
+
+        vm.Quadrants.Should().OnlyContain(q => q.IconSet == set, "the sheet shows the same faces as the day screen");
+    }
+
     [Fact]
     public async Task The_neutral_face_has_nothing_to_refine()
     {

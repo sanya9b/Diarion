@@ -86,6 +86,17 @@ public class CycleLogChangedMessage
     }
 }
 
+/// <summary>Sent when the mood row's picture set is changed in settings, so the open day redraws its faces.</summary>
+public class MoodIconSetChangedMessage
+{
+    public MoodIconSet Set { get; }
+
+    public MoodIconSetChangedMessage(MoodIconSet set)
+    {
+        Set = set;
+    }
+}
+
 public enum PaywallReason
 {
     /// <summary>A write reached a service while the diary is read-only (spec 15, R5.2).</summary>

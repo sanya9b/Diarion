@@ -8,6 +8,7 @@
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              x:Class="Diarion.Views.ProfilePage"
              x:DataType="viewmodels:ProfileViewModel"
              Title="{Binding Title}"
@@ -136,6 +137,55 @@
                                 <Button BackgroundColor="Transparent" BorderWidth="0" Clicked="OnToggleThemeClicked" HorizontalOptions="Fill" VerticalOptions="Fill" ZIndex="10" />
                             </Grid>
                         </HorizontalStackLayout>
+
+                        <!-- Mood icons (spec 18): what the five faces on the home screen look like. Each icon is
+                             its own tap target, so one tap picks a set; no captions on the icons, the chosen
+                             set's name sits under the title instead. Its own view model, like the
+                             subscription card (ProfilePage.xaml.cs). -->
+                        <Grid x:Name="MoodIconSetRow" x:DataType="viewmodels:MoodIconSetViewModel"
+                              ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{x:Static localization:AppResources.MoodIconSetTitle}" FontSize="14" FontAttributes="Bold"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Label Text="{Binding CurrentName}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            </VerticalStackLayout>
+                            <Grid Grid.Column="1" HeightRequest="40" WidthRequest="132" VerticalOptions="Center">
+                                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" />
+                                <Grid ColumnDefinitions="*,*,*" Padding="4" InputTransparent="True">
+                                    <Border Grid.Column="{Binding SelectedIndex}" StrokeShape="RoundRectangle 16" StrokeThickness="0"
+                                            BackgroundColor="{DynamicResource Theme_Dust_Ocean}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,*,*">
+                                    <Grid Grid.Column="0" BackgroundColor="Transparent"
+                                          SemanticProperties.Description="{x:Static localization:AppResources.MoodIconSetEmoji}">
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding SelectCommand}" CommandParameter="{x:Static models:MoodIconSet.Emoji}" />
+                                        </Grid.GestureRecognizers>
+                                        <controls:MoodGlyph Quadrant="PleasantEnergetic" IconSet="Emoji" EmojiSize="18"
+                                                            WidthRequest="24" HeightRequest="24"
+                                                            HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Grid>
+                                    <Grid Grid.Column="1" BackgroundColor="Transparent"
+                                          SemanticProperties.Description="{x:Static localization:AppResources.MoodIconSetWeather}">
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding SelectCommand}" CommandParameter="{x:Static models:MoodIconSet.Weather}" />
+                                        </Grid.GestureRecognizers>
+                                        <controls:MoodGlyph Quadrant="PleasantEnergetic" IconSet="Weather" EmojiSize="18"
+                                                            WidthRequest="24" HeightRequest="24"
+                                                            HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Grid>
+                                    <Grid Grid.Column="2" BackgroundColor="Transparent"
+                                          SemanticProperties.Description="{x:Static localization:AppResources.MoodIconSetPlants}">
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding SelectCommand}" CommandParameter="{x:Static models:MoodIconSet.Plants}" />
+                                        </Grid.GestureRecognizers>
+                                        <controls:MoodGlyph Quadrant="PleasantEnergetic" IconSet="Plants" EmojiSize="18"
+                                                            WidthRequest="24" HeightRequest="24"
+                                                            HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
                     </VerticalStackLayout>
                 </Border>
 

@@ -77,6 +77,7 @@ public static class RecurringTaskPlanner
                 TargetTime = rule.TargetTime,
                 EndTime = rule.EndTime,
                 HasReminder = rule.HasReminder,
+                IsVoiceReminder = rule.IsVoiceReminder,
                 IsCompleted = false,
                 CreatedAt = DateTime.Now
             });

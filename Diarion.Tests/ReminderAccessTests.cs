@@ -202,7 +202,7 @@ public class AccessAwareNotificationServiceTests
 
         _inner.Verify(n => n.CancelDailyJournalReminder(), Times.Once);
         _inner.Verify(n => n.CancelHabitReminder(id), Times.Once);
-        _inner.Verify(n => n.ScheduleTodoReminder(id, "Call", "", It.IsAny<DateTime>()), Times.Once);
+        _inner.Verify(n => n.ScheduleTodoReminder(id, "Call", "", It.IsAny<DateTime>(), false), Times.Once);
         _inner.Verify(n => n.RequestPermissionsAsync(), Times.Once);
     }
 }

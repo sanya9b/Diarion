@@ -98,10 +98,14 @@
                                         </Border.GestureRecognizers>
                                         <Border Style="{StaticResource FaceDisc}" behaviors:SelectionEmphasis.IsActive="{Binding IsSelected}">
                                             <Border Style="{StaticResource Fill}" StrokeShape="Ellipse" behaviors:ThemeColor.BackgroundKey="{Binding FillColorKey}">
-                                                <Image Source="{Binding IconFile}" WidthRequest="38" HeightRequest="38"
-                                                       HorizontalOptions="Center" VerticalOptions="Center"
-                                                       Opacity="{x:Static behaviors:MoodIconMotion.RestOpacity}"
-                                                       behaviors:MoodIconMotion.IsActive="{Binding IsSelected}" />
+                                                <!-- The face in the set chosen in settings — the phone's emoji,
+                                                     weather or a plant — drawn by the day screen's own control. -->
+                                                <controls:MoodGlyph Quadrant="{Binding Quadrant}" IconSet="{Binding IconSet}"
+                                                                    IsActive="{Binding IsSelected}"
+                                                                    WidthRequest="38" HeightRequest="38"
+                                                                    HorizontalOptions="Center" VerticalOptions="Center"
+                                                                    Opacity="{x:Static behaviors:MoodIconMotion.RestOpacity}"
+                                                                    behaviors:MoodIconMotion.IsActive="{Binding IsSelected}" />
                                             </Border>
                                         </Border>
                                     </Border>

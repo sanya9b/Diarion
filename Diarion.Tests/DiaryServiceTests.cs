@@ -619,7 +619,7 @@ public class DiaryServiceTests : IDisposable
         await service.GetTodosForDateAsync(today.AddDays(1));
 
         notifications.Verify(
-            n => n.ScheduleTodoReminder(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()),
+            n => n.ScheduleTodoReminder(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<bool>()),
             Times.Once);
     }
 
@@ -650,7 +650,80 @@ public class DiaryServiceTests : IDisposable
 
         notifications.Verify(n => n.ScheduleRepeatingTaskReminder(
             It.IsAny<Guid>(), "Теніс", new TimeSpan(18, 0, 0),
-            It.Is<IReadOnlyList<int>>(d => d.Contains((int)DayOfWeek.Tuesday))), Times.Once);
+            It.Is<IReadOnlyList<int>>(d => d.Contains((int)DayOfWeek.Tuesday)), It.IsAny<bool>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task SaveTodoAsync_ASpokenReminderIsHandedOverAsSpoken()
+    {
+        // Spec 19: the flag has to reach the platform, or the checkbox is decoration.
+        var notifications = new Mock<INotificationService>();
+        var service = new TodoService(_dbContext, notifications.Object);
+
+        await service.SaveTodoAsync(new TodoItem
+        {
+            TaskDescription = "Сходити в магазин",
+            TargetDate = DateTime.Today.AddDays(1),
+            HasTime = true,
+            TargetTime = new TimeSpan(10, 0, 0),
+            HasReminder = true,
+            IsVoiceReminder = true
+        });
+
+        notifications.Verify(n => n.ScheduleTodoReminder(
+            It.IsAny<Guid>(), It.IsAny<string>(), "Сходити в магазин", It.IsAny<DateTime>(), true), Times.Once);
+    }
+
+    [Fact]
+    public async Task SetRecurrenceAsync_ASpokenRuleKeepsItsVoiceOnThePlatformRepeat()
+    {
+        var notifications = new Mock<INotificationService>();
+        var service = new TodoService(_dbContext, notifications.Object);
+        var todo = new TodoItem
+        {
+            TaskDescription = "Ліки",
+            TargetDate = DateTime.Today,
+            HasTime = true,
+            TargetTime = new TimeSpan(8, 0, 0),
+            HasReminder = true,
+            IsVoiceReminder = true
+        };
+        await service.SaveTodoAsync(todo);
+
+        await service.SetRecurrenceAsync(todo.Id, new RecurrenceRule { Kind = RecurrenceKind.Daily, Anchor = DateTime.Today });
+
+        var stored = await service.GetTodoByIdAsync(todo.Id);
+        var rule = await service.GetRecurringTaskAsync(stored!.RecurringTaskId!.Value);
+        rule!.IsVoiceReminder.Should().BeTrue();
+        notifications.Verify(n => n.ScheduleRepeatingTaskReminder(
+            rule.Id, "Ліки", new TimeSpan(8, 0, 0), null, true), Times.Once);
+    }
+
+    [Fact]
+    public async Task SaveTodoAsync_SwitchingTheVoiceOnOneOccurrenceCarriesToTheSeries()
+    {
+        var notifications = new Mock<INotificationService>();
+        var service = new TodoService(_dbContext, notifications.Object);
+        var todo = new TodoItem
+        {
+            TaskDescription = "Ліки",
+            TargetDate = DateTime.Today,
+            HasTime = true,
+            TargetTime = new TimeSpan(8, 0, 0),
+            HasReminder = true
+        };
+        await service.SaveTodoAsync(todo);
+        await service.SetRecurrenceAsync(todo.Id, new RecurrenceRule { Kind = RecurrenceKind.Daily, Anchor = DateTime.Today });
+        notifications.Invocations.Clear();
+
+        var occurrence = (await service.GetTodoByIdAsync(todo.Id))!;
+        occurrence.IsVoiceReminder = true;
+        await service.SaveTodoAsync(occurrence);
+
+        var rule = await service.GetRecurringTaskAsync(occurrence.RecurringTaskId!.Value);
+        rule!.IsVoiceReminder.Should().BeTrue();
+        notifications.Verify(n => n.ScheduleRepeatingTaskReminder(
+            rule.Id, "Ліки", new TimeSpan(8, 0, 0), null, true), Times.Once);
     }
 
     [Fact]
@@ -678,9 +751,9 @@ public class DiaryServiceTests : IDisposable
         });
 
         notifications.Verify(n => n.ScheduleRepeatingTaskReminder(
-            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<IReadOnlyList<int>>()), Times.Never);
+            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<IReadOnlyList<int>>(), It.IsAny<bool>()), Times.Never);
         notifications.Verify(n => n.ScheduleTaskOccurrenceReminders(
-            It.IsAny<Guid>(), "Курс", It.Is<IReadOnlyList<DateTime>>(m => m.Count > 0 && m.Count <= 15)), Times.Once);
+            It.IsAny<Guid>(), "Курс", It.Is<IReadOnlyList<DateTime>>(m => m.Count > 0 && m.Count <= 15), It.IsAny<bool>()), Times.Once);
     }
 
     [Fact]
@@ -695,7 +768,7 @@ public class DiaryServiceTests : IDisposable
         await service.SetRecurrenceAsync(todo.Id, new RecurrenceRule { Kind = RecurrenceKind.Daily, Anchor = DateTime.Today });
 
         notifications.Verify(n => n.ScheduleRepeatingTaskReminder(
-            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<IReadOnlyList<int>>()), Times.Never);
+            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<IReadOnlyList<int>>(), It.IsAny<bool>()), Times.Never);
         notifications.Verify(n => n.CancelRepeatingTaskReminder(It.IsAny<Guid>()), Times.Once);
     }
 
@@ -720,7 +793,7 @@ public class DiaryServiceTests : IDisposable
 
         notifications.Verify(n => n.CancelRepeatingTaskReminder(It.IsAny<Guid>()), Times.Once);
         notifications.Verify(n => n.ScheduleRepeatingTaskReminder(
-            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<IReadOnlyList<int>>()), Times.Never);
+            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<IReadOnlyList<int>>(), It.IsAny<bool>()), Times.Never);
     }
 
     /// <summary>A day only counts towards the streak if the user put something in it.</summary>

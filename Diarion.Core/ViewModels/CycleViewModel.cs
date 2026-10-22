@@ -32,7 +32,24 @@ public partial class SymptomToggleViewModel : ObservableObject
     public string Label { get; init; } = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FillColorKey))]
     private bool _isSelected;
+
+    /// <summary>
+    /// The chip's fill layer: the cycle's colour while chosen, null (the surface) otherwise. A binding for
+    /// the chips that carry press feedback, where a trigger on the background would not come back.
+    /// </summary>
+    public string? FillColorKey => IsSelected ? "Theme_Berry" : null;
+
+    /// <summary>A chip for <paramref name="key"/> (see <see cref="CycleSymptoms"/>) with its localized label.</summary>
+    public static SymptomToggleViewModel For(string key, bool selected) => new()
+    {
+        Key = key,
+        Label = Diarion.Resources.Localization.AppResources.ResourceManager
+                    .GetString(key, Diarion.Resources.Localization.AppResources.Culture
+                                    ?? System.Globalization.CultureInfo.CurrentUICulture) ?? key,
+        IsSelected = selected
+    };
 }
 
 public partial class CycleViewModel : BaseViewModel
@@ -119,14 +136,7 @@ public partial class CycleViewModel : BaseViewModel
         SymptomToggles.Clear();
         foreach (var key in CycleSymptoms.All)
         {
-            SymptomToggles.Add(new SymptomToggleViewModel
-            {
-                Key = key,
-                Label = Diarion.Resources.Localization.AppResources.ResourceManager
-                            .GetString(key, Diarion.Resources.Localization.AppResources.Culture
-                                            ?? System.Globalization.CultureInfo.CurrentUICulture) ?? key,
-                IsSelected = logged.Contains(key)
-            });
+            SymptomToggles.Add(SymptomToggleViewModel.For(key, logged.Contains(key)));
         }
     }
 

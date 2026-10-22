@@ -30,12 +30,18 @@ public partial class ProfilePage : ContentPage
 
     private readonly ScheduledBackupViewModel _autoBackup;
 
-    public ProfilePage(ProfileViewModel viewModel, SubscriptionSectionViewModel subscription, ScheduledBackupViewModel autoBackup)
+    public ProfilePage(
+        ProfileViewModel viewModel,
+        SubscriptionSectionViewModel subscription,
+        MoodIconSetViewModel moodIconSets,
+        ScheduledBackupViewModel autoBackup)
     {
         InitializeComponent();
         SubscriptionCard.BindingContext = subscription;
+        MoodIconSetRow.BindingContext = moodIconSets;
         _autoBackup = autoBackup;
         AutoBackupCard.BindingContext = autoBackup;
+
         _viewModel = viewModel;
         BindingContext = _viewModel;
         

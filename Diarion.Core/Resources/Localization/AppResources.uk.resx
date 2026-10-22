@@ -688,6 +688,18 @@
   <data name="SettingsAppearanceTitle" xml:space="preserve">
     <value>ВИГЛЯД І МОВА</value>
   </data>
+  <data name="MoodIconSetTitle" xml:space="preserve">
+    <value>Іконки настрою</value>
+  </data>
+  <data name="MoodIconSetEmoji" xml:space="preserve">
+    <value>Смайли</value>
+  </data>
+  <data name="MoodIconSetWeather" xml:space="preserve">
+    <value>Погода</value>
+  </data>
+  <data name="MoodIconSetPlants" xml:space="preserve">
+    <value>Рослини</value>
+  </data>
   <data name="BlockMoodLabel" xml:space="preserve">
     <value>Настрій</value>
   </data>
@@ -1864,6 +1876,12 @@
   <data name="CycleSymptomsLabel" xml:space="preserve">
     <value>Симптоми</value>
   </data>
+  <data name="CycleSymptomsToday" xml:space="preserve">
+    <value>Симптоми сьогодні</value>
+  </data>
+  <data name="CycleSymptomsOnDayFormat" xml:space="preserve">
+    <value>Симптоми · {0}</value>
+  </data>
   <data name="PlannerUntimedLabel" xml:space="preserve">
     <value>Без часу</value>
   </data>
@@ -2343,5 +2361,23 @@
   </data>
   <data name="AutoBackupKeepHint" xml:space="preserve">
     <value>У папці лишаються п'ять найновіших копій; старіші видаляються.</value>
+  </data>
+  <data name="SpokenReminderPhrase" xml:space="preserve">
+    <value>Нагадування: {0}</value>
+  </data>
+  <data name="SpokenReminderEmpty" xml:space="preserve">
+    <value>Нагадування</value>
+  </data>
+  <data name="VoiceReminderLabel" xml:space="preserve">
+    <value>Озвучити вголос</value>
+  </data>
+  <data name="VoiceReminderHint" xml:space="preserve">
+    <value>Пристрій прочитає завдання вголос, коли прийде нагадування. Нічого не покидає телефон.</value>
+  </data>
+  <data name="VoiceMissingTitle" xml:space="preserve">
+    <value>Немає голосу для цієї мови</value>
+  </data>
+  <data name="VoiceMissingMessage" xml:space="preserve">
+    <value>На цьому пристрої немає голосу для мови застосунку, тож нагадування прозвучить системним голосом. Голоси можна додати в налаштуваннях системи.</value>
   </data>
 </root>

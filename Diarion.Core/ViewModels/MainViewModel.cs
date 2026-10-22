@@ -25,6 +25,7 @@ public partial class MainViewModel : BaseViewModel
     private readonly IHealthDataService _healthDataService;
     private readonly IProfileService _profileService;
     private readonly IGuidedPromptService _guidedPromptService;
+    private readonly IMoodIconSetService _moodIconSets;
 
     // Read once and reused across day loads; the library only changes when the user edits it.
     private PromptLibrary? _promptLibrary;
@@ -90,7 +91,8 @@ public partial class MainViewModel : BaseViewModel
         QuickMenuViewModel quickMenuSection,
         HabitsSectionViewModel habitsSection,
         CycleStatusViewModel cycleStatusSection,
-        TourViewModel tour)
+        TourViewModel tour,
+        IMoodIconSetService moodIconSets)
     {
         using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
@@ -100,6 +102,7 @@ public partial class MainViewModel : BaseViewModel
         _healthDataService = healthDataService;
         _profileService = profileService;
         _guidedPromptService = guidedPromptService;
+        _moodIconSets = moodIconSets;
 
         CalendarSection = calendarSection;
         PlannerSection = plannerSection;
@@ -151,6 +154,12 @@ public partial class MainViewModel : BaseViewModel
             {
                 _ = LoadDayContentAsync(m.Date);
             }
+        });
+
+        // The faces' picture set was changed in settings: the day already open redraws them now.
+        WeakReferenceMessenger.Default.Register<MoodIconSetChangedMessage>(this, (r, m) =>
+        {
+            if (((MainViewModel)r).CurrentEntry is { } entry) entry.IconSet = m.Set;
         });
 
         CalendarSection.Initialize();
@@ -270,7 +279,7 @@ public partial class MainViewModel : BaseViewModel
         nameof(DiaryEntryViewModel.CurrentMoodName),
         nameof(DiaryEntryViewModel.CurrentColorKey),
         nameof(DiaryEntryViewModel.CurrentEmoji),
-        nameof(DiaryEntryViewModel.CurrentIconFile),
+        nameof(DiaryEntryViewModel.IconSet),
         nameof(DiaryEntryViewModel.IsHourPickerOpen),
         nameof(DiaryEntryViewModel.LoggedHourCount),
         nameof(DiaryEntryViewModel.HourChipText),
@@ -355,7 +364,10 @@ public partial class MainViewModel : BaseViewModel
         using var _ = StartupTrace.Measure("MainViewModel.LoadEntriesForDateAsync");
         var entry = await _diaryService.GetEntryForDateAsync(date.Date);
         await _diaryHabitSyncService.SyncHabitsForEntryAsync(entry);
-        CurrentEntry = new DiaryEntryViewModel(entry, await EnsurePromptLibraryAsync());
+        CurrentEntry = new DiaryEntryViewModel(entry, await EnsurePromptLibraryAsync())
+        {
+            IconSet = _moodIconSets.Current
+        };
     }
 
     private async Task<PromptLibrary> EnsurePromptLibraryAsync()

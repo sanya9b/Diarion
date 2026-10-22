@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,10 @@ namespace Diarion.Services;
 
 public class LocalNotificationService : INotificationService
 {
+    private readonly ISpeechService _speech;
+
+    public LocalNotificationService(ISpeechService speech) => _speech = speech;
+
     /// <summary>
     /// Every reminder in the app is scheduled inexactly but doze-aware.
     /// <para>
@@ -51,23 +56,23 @@ public class LocalNotificationService : INotificationService
         return schedule;
     }
 
-    public void ScheduleTodoReminder(Guid todoId, string title, string description, DateTime targetTime)
+    public void ScheduleTodoReminder(Guid todoId, string title, string description, DateTime targetTime, bool spoken = false)
     {
 #if ANDROID || IOS || MACCATALYST
-        int notificationId = todoId.GetHashCode();
-        LocalNotificationCenter.Current.Cancel(notificationId);
+        CancelTodoReminder(todoId);
 
         if (targetTime > DateTime.Now)
         {
             var request = new NotificationRequest
             {
-                NotificationId = notificationId,
+                NotificationId = todoId.GetHashCode(),
                 Title = title,
                 Description = description,
                 Schedule = At(targetTime)
             };
 
-            LocalNotificationCenter.Current.Show(request);
+            if (spoken) ShowSpoken(todoId, "todo", description, new[] { request });
+            else LocalNotificationCenter.Current.Show(request);
         }
 #endif
     }
@@ -76,8 +81,67 @@ public class LocalNotificationService : INotificationService
     {
 #if ANDROID || IOS || MACCATALYST
         LocalNotificationCenter.Current.Cancel(todoId.GetHashCode());
+        ForgetSpoken(todoId, "todo");
 #endif
     }
+
+#if ANDROID || IOS || MACCATALYST
+    // -- Spoken reminders (spec 19) --------------------------------------------------------------
+    //
+    // iOS will not run app code when a notification fires, so there the phrase is rendered to a sound
+    // file now and the notification names it; Android speaks at delivery, so there the render answers
+    // null and only the payload travels. Rendering is asynchronous, which makes a spoken reminder the
+    // one kind that is not on the platform's books the moment this method returns — hence the
+    // generation counter: a cancel that lands while the render is in flight must win, or a task the
+    // user just completed would still announce itself.
+
+    private readonly ConcurrentDictionary<Guid, int> _spokenGenerations = new();
+
+    private static string SpokenSoundFile(string kind, Guid owner) => $"spoken-{kind}-{owner:N}.caf";
+
+    private void ShowSpoken(Guid owner, string kind, string taskText, IReadOnlyList<NotificationRequest> requests)
+    {
+        var generation = _spokenGenerations.GetOrAdd(owner, 0);
+        var phrase = ReminderPhraseBuilder.Build(taskText);
+        var payload = SpokenReminderPayload.Encode(phrase);
+        var soundFile = SpokenSoundFile(kind, owner);
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var sound = await _speech.RenderToNotificationSoundAsync(phrase, soundFile).ConfigureAwait(false);
+
+                if (_spokenGenerations.GetOrAdd(owner, 0) != generation)
+                {
+                    if (sound != null) _speech.DeleteNotificationSound(sound);
+                    return;
+                }
+
+                foreach (var request in requests)
+                {
+                    request.ReturningData = payload;
+                    if (sound != null) request.Sound = sound;
+                    await LocalNotificationCenter.Current.Show(request).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Spoken reminder not scheduled: {ex.Message}");
+            }
+        });
+    }
+
+    private void ForgetSpoken(Guid owner, string kind)
+    {
+        // Only an owner that was ever spoken has a render to beat; the silent majority leaves no entry.
+        while (_spokenGenerations.TryGetValue(owner, out var generation)
+               && !_spokenGenerations.TryUpdate(owner, generation + 1, generation))
+        {
+        }
+        _speech.DeleteNotificationSound(SpokenSoundFile(kind, owner));
+    }
+#endif
 
     // Fixed, unusual id so the single daily reminder can be reliably updated/cancelled. Public
     // because a tap on this one notification opens the quick entry (App.OnNotificationActionTapped).
@@ -180,60 +244,81 @@ public class LocalNotificationService : INotificationService
     private static int TaskRuleReminderId(Guid ruleId, int slot)
         => unchecked(ruleId.GetHashCode() * 131 + 7919 + slot);
 
-    public void ScheduleRepeatingTaskReminder(Guid ruleId, string title, TimeSpan timeOfDay, IReadOnlyList<int>? weekdays)
+    public void ScheduleRepeatingTaskReminder(Guid ruleId, string title, TimeSpan timeOfDay, IReadOnlyList<int>? weekdays, bool spoken = false)
     {
 #if ANDROID || IOS || MACCATALYST
         CancelRepeatingTaskReminder(ruleId);
         var now = DateTime.Now;
+        var requests = new List<NotificationRequest>();
 
         if (weekdays == null || weekdays.Count == 0)
         {
             var next = now.Date.Add(timeOfDay);
             if (next <= now) next = next.AddDays(1);
 
-            LocalNotificationCenter.Current.Show(new NotificationRequest
+            requests.Add(new NotificationRequest
             {
                 NotificationId = TaskRuleReminderId(ruleId, 0),
                 Title = title,
                 Schedule = At(next, NotificationRepeat.Daily)
             });
-            return;
         }
-
-        foreach (var day in weekdays.Distinct())
+        else
         {
-            var next = now.Date.Add(timeOfDay);
-            int daysUntil = ((day - (int)next.DayOfWeek) + 7) % 7;
-            next = next.AddDays(daysUntil);
-            if (next <= now) next = next.AddDays(7);
-
-            LocalNotificationCenter.Current.Show(new NotificationRequest
+            foreach (var day in weekdays.Distinct())
             {
-                NotificationId = TaskRuleReminderId(ruleId, day + 1),
-                Title = title,
-                Schedule = At(next, NotificationRepeat.Weekly)
-            });
+                var next = now.Date.Add(timeOfDay);
+                int daysUntil = ((day - (int)next.DayOfWeek) + 7) % 7;
+                next = next.AddDays(daysUntil);
+                if (next <= now) next = next.AddDays(7);
+
+                requests.Add(new NotificationRequest
+                {
+                    NotificationId = TaskRuleReminderId(ruleId, day + 1),
+                    Title = title,
+                    Schedule = At(next, NotificationRepeat.Weekly)
+                });
+            }
         }
+
+        ShowAll(ruleId, title, requests, spoken);
 #endif
     }
 
-    public void ScheduleTaskOccurrenceReminders(Guid ruleId, string title, IReadOnlyList<DateTime> moments)
+    public void ScheduleTaskOccurrenceReminders(Guid ruleId, string title, IReadOnlyList<DateTime> moments, bool spoken = false)
     {
 #if ANDROID || IOS || MACCATALYST
         CancelRepeatingTaskReminder(ruleId);
 
         var slot = 8;
-        foreach (var moment in moments.Where(m => m > DateTime.Now).Take(TaskReminderSlots - 8))
-        {
-            LocalNotificationCenter.Current.Show(new NotificationRequest
+        var requests = moments
+            .Where(m => m > DateTime.Now)
+            .Take(TaskReminderSlots - 8)
+            .Select(moment => new NotificationRequest
             {
                 NotificationId = TaskRuleReminderId(ruleId, slot++),
                 Title = title,
                 Schedule = At(moment)
-            });
-        }
+            })
+            .ToList();
+
+        ShowAll(ruleId, title, requests, spoken);
 #endif
     }
+
+#if ANDROID || IOS || MACCATALYST
+    private void ShowAll(Guid ruleId, string title, List<NotificationRequest> requests, bool spoken)
+    {
+        if (requests.Count == 0) return;
+        if (spoken)
+        {
+            ShowSpoken(ruleId, "rule", title, requests);
+            return;
+        }
+
+        foreach (var request in requests) LocalNotificationCenter.Current.Show(request);
+    }
+#endif
 
     public void CancelRepeatingTaskReminder(Guid ruleId)
     {
@@ -242,6 +327,7 @@ public class LocalNotificationService : INotificationService
         {
             LocalNotificationCenter.Current.Cancel(TaskRuleReminderId(ruleId, slot));
         }
+        ForgetSpoken(ruleId, "rule");
 #endif
     }
 

@@ -700,6 +700,18 @@
   <data name="SettingsAppearanceTitle" xml:space="preserve">
     <value>APPEARANCE &amp; LANGUAGE</value>
   </data>
+  <data name="MoodIconSetTitle" xml:space="preserve">
+    <value>Mood icons</value>
+  </data>
+  <data name="MoodIconSetEmoji" xml:space="preserve">
+    <value>Smileys</value>
+  </data>
+  <data name="MoodIconSetWeather" xml:space="preserve">
+    <value>Weather</value>
+  </data>
+  <data name="MoodIconSetPlants" xml:space="preserve">
+    <value>Plants</value>
+  </data>
   <data name="BlockMoodLabel" xml:space="preserve">
     <value>Mood</value>
   </data>
@@ -1618,6 +1630,12 @@
   <data name="CycleSymptomsLabel" xml:space="preserve">
     <value>Symptoms</value>
   </data>
+  <data name="CycleSymptomsToday" xml:space="preserve">
+    <value>Symptoms today</value>
+  </data>
+  <data name="CycleSymptomsOnDayFormat" xml:space="preserve">
+    <value>Symptoms · {0}</value>
+  </data>
   <data name="PlannerUntimedLabel" xml:space="preserve">
     <value>No time set</value>
   </data>
@@ -2343,5 +2361,23 @@
   </data>
   <data name="AutoBackupKeepHint" xml:space="preserve">
     <value>The five newest copies stay in the folder; older ones are removed.</value>
+  </data>
+  <data name="SpokenReminderPhrase" xml:space="preserve">
+    <value>Reminder: {0}</value>
+  </data>
+  <data name="SpokenReminderEmpty" xml:space="preserve">
+    <value>Reminder</value>
+  </data>
+  <data name="VoiceReminderLabel" xml:space="preserve">
+    <value>Read aloud</value>
+  </data>
+  <data name="VoiceReminderHint" xml:space="preserve">
+    <value>The device reads the task out loud when the reminder arrives. Nothing leaves the phone.</value>
+  </data>
+  <data name="VoiceMissingTitle" xml:space="preserve">
+    <value>No voice for this language</value>
+  </data>
+  <data name="VoiceMissingMessage" xml:space="preserve">
+    <value>This device has no voice for the app's language, so the reminder will be read in the system voice. Voices can be added in the system settings.</value>
   </data>
 </root>

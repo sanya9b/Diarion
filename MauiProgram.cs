@@ -128,6 +128,9 @@ public static class MauiProgram
 		var app = builder.Build();
 		// Motion tokens read the reduce-motion preference through this one instance from here on.
 		Diarion.Resources.Styles.Motion.Configure(app.Services.GetRequiredService<Diarion.Services.IMotionSettings>());
+		// Spoken reminders are read aloud as their notification arrives (spec 19). Here and not in the
+		// window: on Android the alarm wakes the application without one.
+		app.Services.GetRequiredService<Diarion.Services.SpokenReminderDispatcher>().Start();
 		return app;
 	}
 }

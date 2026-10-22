@@ -14,12 +14,16 @@ namespace Diarion.Tests;
 public class TodoDetailViewModelTests
 {
     private readonly Mock<ITodoService> _todoServiceMock;
+    private readonly Mock<IDialogService> _dialogMock = new();
+    private readonly Mock<ISpeechService> _speechMock = new();
     private readonly TodoDetailViewModel _viewModel;
 
     public TodoDetailViewModelTests()
     {
         _todoServiceMock = new Mock<ITodoService>();
-        _viewModel = new TodoDetailViewModel(_todoServiceMock.Object, new Mock<INavigationService>().Object, new Mock<IDialogService>().Object);
+        _speechMock.Setup(s => s.HasVoiceForCurrentLanguageAsync()).ReturnsAsync(true);
+        TodoDetailViewModel.ResetVoiceWarningForTests();
+        _viewModel = new TodoDetailViewModel(_todoServiceMock.Object, new Mock<INavigationService>().Object, _dialogMock.Object, _speechMock.Object);
     }
 
     [Fact]
@@ -476,5 +480,81 @@ public class TodoDetailViewModelTests
         _viewModel.SelectedPriority.Should().Be(TodoPriority.High);
         highPriorityItem.IsSelected.Should().BeTrue();
         lowPriorityItem.IsSelected.Should().BeFalse();
+    }
+
+    // -- Spoken reminders (spec 19) --------------------------------------------------------------
+
+    [Fact]
+    public async Task SaveAsync_WithVoiceOn_PersistsTheVoiceFlag()
+    {
+        _viewModel.TaskDescription = "Сходити в магазин";
+        _viewModel.HasReminder = true;
+        _viewModel.IsVoiceReminder = true;
+
+        await _viewModel.SaveAsync();
+
+        _todoServiceMock.Verify(s => s.SaveTodoAsync(It.Is<TodoItem>(t => t.HasReminder && t.IsVoiceReminder)), Times.Once);
+    }
+
+    [Fact]
+    public async Task SaveAsync_ANewTaskIsSilentByDefault()
+    {
+        _viewModel.TaskDescription = "Тиша";
+        _viewModel.HasReminder = true;
+
+        await _viewModel.SaveAsync();
+
+        _todoServiceMock.Verify(s => s.SaveTodoAsync(It.Is<TodoItem>(t => !t.IsVoiceReminder)), Times.Once);
+    }
+
+    [Fact]
+    public void HasReminder_SwitchedOff_TakesTheVoiceWithIt()
+    {
+        _viewModel.HasReminder = true;
+        _viewModel.IsVoiceReminder = true;
+
+        _viewModel.HasReminder = false;
+
+        _viewModel.IsVoiceReminder.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task IsVoiceReminder_WithNoVoiceForTheLanguage_WarnsOncePerRun()
+    {
+        _speechMock.Setup(s => s.HasVoiceForCurrentLanguageAsync()).ReturnsAsync(false);
+        _viewModel.HasReminder = true;
+
+        _viewModel.IsVoiceReminder = true;
+        await Task.Delay(50);
+        _viewModel.IsVoiceReminder = false;
+        _viewModel.IsVoiceReminder = true;
+        await Task.Delay(50);
+
+        _dialogMock.Verify(d => d.ShowAlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task IsVoiceReminder_WithAVoiceInstalled_SaysNothing()
+    {
+        _viewModel.HasReminder = true;
+
+        _viewModel.IsVoiceReminder = true;
+        await Task.Delay(50);
+
+        _dialogMock.Verify(d => d.ShowAlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task LoadingASpokenTask_FillsTheCheckbox_WithoutWarning()
+    {
+        _speechMock.Setup(s => s.HasVoiceForCurrentLanguageAsync()).ReturnsAsync(false);
+        var todo = new TodoItem { Id = Guid.NewGuid(), TaskDescription = "Ліки", HasReminder = true, IsVoiceReminder = true };
+        _todoServiceMock.Setup(s => s.GetTodoByIdAsync(todo.Id)).ReturnsAsync(todo);
+
+        _viewModel.TodoId = todo.Id.ToString();
+        await Task.Delay(50);   // OnTodoIdChanged is async void, as the toolkit generates it
+
+        _viewModel.IsVoiceReminder.Should().BeTrue();
+        _dialogMock.Verify(d => d.ShowAlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 }
