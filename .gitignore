@@ -264,6 +264,9 @@ Generated_Code/
 # because we have git ;-)
 _UpgradeReport_Files/
 Backup*/
+# ...but not the scheduled-backup source folder, which the rule above silently swallowed
+# (the first TestFlight run from feature/capture-review-backup failed on it, 2026-10-23).
+!Diarion.Core/Services/Backup/
 UpgradeLog*.XML
 UpgradeLog*.htm
 ServiceFabricBackup/
