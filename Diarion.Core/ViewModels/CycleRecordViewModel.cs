@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,10 +15,11 @@ using Diarion.Services.Store;
 namespace Diarion.ViewModels;
 
 /// <summary>
-/// Recording a period from the settings screen, in a bubble that opens from the cycle card — the same
-/// gesture as the hour picker on the mood card. The first and the last day are both chosen, so a short
-/// or a long period is recorded as it was rather than stretched to the profile's default length; the
-/// last day follows the first until the user picks it.
+/// Recording a period from the home screen, in a bubble that opens from the health block's drop — the
+/// same gesture as the hour picker on the mood card. The first and the last day are both chosen, so a
+/// short or a long period is recorded as it was rather than stretched to the profile's default length;
+/// the last day follows the first until the user picks it. Under the dates, the symptoms of the day the
+/// home screen shows: the same eight as on the cycle page, each saved as it is tapped.
 /// </summary>
 public partial class CycleRecordViewModel : ObservableObject
 {
@@ -68,6 +70,23 @@ public partial class CycleRecordViewModel : ObservableObject
 
     public bool HasLastRecorded => !string.IsNullOrEmpty(LastRecordedText);
 
+    /// <summary>The symptom chips for <see cref="SymptomDay"/>, filled when the bubble opens.</summary>
+    public ObservableCollection<SymptomToggleViewModel> Symptoms { get; } = new();
+
+    /// <summary>The day the home screen shows; its symptoms are the ones the chips read and write.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SymptomsTitle), nameof(CanLogSymptoms))]
+    private DateTime _symptomDay = DateTime.Today;
+
+    /// <summary>"Symptoms today", or the date when the home screen shows another day.</summary>
+    public string SymptomsTitle => SymptomDay.Date == DateTime.Today
+        ? AppResources.CycleSymptomsToday
+        : string.Format(CultureInfo.CurrentCulture, AppResources.CycleSymptomsOnDayFormat,
+            SymptomDay.ToString("d MMM", CultureInfo.CurrentCulture));
+
+    /// <summary>A day that has not happened has no symptoms to note; the cycle page stops at today too.</summary>
+    public bool CanLogSymptoms => SymptomDay.Date <= DateTime.Today;
+
     partial void OnStartChanged(DateTime value)
     {
         if (!_endChosen || End.Date < value.Date)
@@ -81,9 +100,12 @@ public partial class CycleRecordViewModel : ObservableObject
         if (!_settingEnd) _endChosen = true;
     }
 
-    /// <summary>The cycle card's row: opens the bubble on today, or puts it away if it is out.</summary>
+    /// <summary>
+    /// The drop button: opens the bubble — the dates on today, the symptoms on <paramref name="day"/>, the
+    /// day the home screen shows (today when not given) — or puts it away if it is out.
+    /// </summary>
     [RelayCommand]
-    private async Task OpenAsync()
+    private async Task OpenAsync(DateTime? day)
     {
         if (IsOpen)
         {
@@ -99,7 +121,37 @@ public partial class CycleRecordViewModel : ObservableObject
         SetEndQuietly(DefaultEndFor(Start));
         await RefreshLastRecordedAsync();
 
+        SymptomDay = (day ?? DateTime.Today).Date;
+        await LoadSymptomsAsync();
+
         IsOpen = true;
+    }
+
+    /// <summary>A symptom chip: saved at once, like on the cycle page. The check button is for the dates only.</summary>
+    [RelayCommand]
+    private async Task ToggleSymptomAsync(SymptomToggleViewModel? toggle)
+    {
+        if (toggle == null || !CanLogSymptoms) return;
+
+        toggle.IsSelected = !toggle.IsSelected;
+        var written = await WriteGate.TryAsync(() => _cycleLogService.SetSymptomsAsync(
+            SymptomDay, Symptoms.Where(s => s.IsSelected).Select(s => s.Key)));
+
+        // Not written (the diary is read-only): the chip shows what is actually on record.
+        if (!written) toggle.IsSelected = !toggle.IsSelected;
+    }
+
+    private async Task LoadSymptomsAsync()
+    {
+        var day = SymptomDay.Date;
+        var logged = (await _cycleLogService.GetLogsAsync())
+            ?.FirstOrDefault(l => l.Date.Date == day)?.Symptoms ?? new System.Collections.Generic.List<string>();
+
+        Symptoms.Clear();
+        foreach (var key in CycleSymptoms.All)
+        {
+            Symptoms.Add(SymptomToggleViewModel.For(key, logged.Contains(key)));
+        }
     }
 
     /// <summary>A tap outside the bubble or a scroll: nothing is recorded.</summary>

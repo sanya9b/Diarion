@@ -21,7 +21,11 @@ public class CycleRecordViewModelTests
     {
         Profile(periodLength: 5);
         MarkedDates();
+        Logs();
     }
+
+    private void Logs(params CycleLog[] logs) =>
+        _cycleLogService.Setup(s => s.GetLogsAsync()).ReturnsAsync(logs.ToList());
 
     private void Profile(int periodLength) =>
         _profileService.Setup(s => s.GetUserProfileAsync())
@@ -44,6 +48,64 @@ public class CycleRecordViewModelTests
         vm.End.Should().Be(DateTime.Today, "the profile's five days would run into the future");
         vm.Days.Should().Be(1);
         vm.CanSave.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Open_OnTheDayTheHomeScreenShows_ShowsThatDaysSymptoms()
+    {
+        var day = DateTime.Today.AddDays(-2);
+        Logs(new CycleLog { Date = day, Symptoms = { CycleSymptoms.Cramps, CycleSymptoms.Fatigue }, IsSymptomOnly = true });
+        var vm = CreateVm();
+
+        await vm.OpenCommand.ExecuteAsync(day);
+
+        vm.SymptomDay.Should().Be(day);
+        vm.Symptoms.Select(s => s.Key).Should().Equal(CycleSymptoms.All);
+        vm.Symptoms.Where(s => s.IsSelected).Select(s => s.Key)
+            .Should().BeEquivalentTo(new[] { CycleSymptoms.Cramps, CycleSymptoms.Fatigue });
+        vm.CanLogSymptoms.Should().BeTrue();
+        vm.SymptomsTitle.Should().NotBe(Diarion.Resources.Localization.AppResources.CycleSymptomsToday, "it is not today");
+    }
+
+    [Fact]
+    public async Task Open_WithoutADay_ShowsTodaysSymptoms()
+    {
+        var vm = CreateVm();
+
+        await vm.OpenCommand.ExecuteAsync(null);
+
+        vm.SymptomDay.Should().Be(DateTime.Today);
+        vm.SymptomsTitle.Should().Be(Diarion.Resources.Localization.AppResources.CycleSymptomsToday);
+        vm.Symptoms.Should().HaveCount(CycleSymptoms.All.Length).And.OnlyContain(s => !s.IsSelected);
+    }
+
+    [Fact]
+    public async Task ToggleSymptom_SavesTheDaysSymptomsAtOnce()
+    {
+        var day = DateTime.Today.AddDays(-1);
+        Logs(new CycleLog { Date = day, Symptoms = { CycleSymptoms.Headache }, IsSymptomOnly = true });
+        var vm = CreateVm();
+        await vm.OpenCommand.ExecuteAsync(day);
+
+        await vm.ToggleSymptomCommand.ExecuteAsync(vm.Symptoms.Single(s => s.Key == CycleSymptoms.Cramps));
+
+        _cycleLogService.Verify(s => s.SetSymptomsAsync(day,
+            It.Is<IEnumerable<string>>(keys => keys.OrderBy(k => k).SequenceEqual(new[] { CycleSymptoms.Cramps, CycleSymptoms.Headache }.OrderBy(k => k)))),
+            Times.Once);
+        vm.Symptoms.Single(s => s.Key == CycleSymptoms.Cramps).FillColorKey.Should().Be("Theme_Berry");
+    }
+
+    [Fact]
+    public async Task ADayStillToCome_HasNoSymptomsToNote()
+    {
+        var vm = CreateVm();
+        await vm.OpenCommand.ExecuteAsync(DateTime.Today.AddDays(3));
+
+        await vm.ToggleSymptomCommand.ExecuteAsync(vm.Symptoms[0]);
+
+        vm.CanLogSymptoms.Should().BeFalse();
+        vm.Symptoms[0].IsSelected.Should().BeFalse();
+        _cycleLogService.Verify(s => s.SetSymptomsAsync(It.IsAny<DateTime>(), It.IsAny<IEnumerable<string>>()), Times.Never);
     }
 
     [Fact]

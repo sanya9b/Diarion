@@ -1618,6 +1618,12 @@
   <data name="CycleSymptomsLabel" xml:space="preserve">
     <value>Symptoms</value>
   </data>
+  <data name="CycleSymptomsToday" xml:space="preserve">
+    <value>Symptoms today</value>
+  </data>
+  <data name="CycleSymptomsOnDayFormat" xml:space="preserve">
+    <value>Symptoms · {0}</value>
+  </data>
   <data name="PlannerUntimedLabel" xml:space="preserve">
     <value>No time set</value>
   </data>

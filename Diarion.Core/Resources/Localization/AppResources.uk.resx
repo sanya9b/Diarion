@@ -1864,6 +1864,12 @@
   <data name="CycleSymptomsLabel" xml:space="preserve">
     <value>Симптоми</value>
   </data>
+  <data name="CycleSymptomsToday" xml:space="preserve">
+    <value>Симптоми сьогодні</value>
+  </data>
+  <data name="CycleSymptomsOnDayFormat" xml:space="preserve">
+    <value>Симптоми · {0}</value>
+  </data>
   <data name="PlannerUntimedLabel" xml:space="preserve">
     <value>Без часу</value>
   </data>

@@ -2024,6 +2024,8 @@ public static string ClearAllDataSuccessMsg {
         public static string CycleSymptomsLabel {
             get { return ResourceManager.GetString("CycleSymptomsLabel", resourceCulture) ?? string.Empty; }
         }
+        public static string CycleSymptomsToday => ResourceManager.GetString("CycleSymptomsToday", resourceCulture) ?? string.Empty;
+        public static string CycleSymptomsOnDayFormat => ResourceManager.GetString("CycleSymptomsOnDayFormat", resourceCulture) ?? string.Empty;
 
         public static string PlannerUntimedLabel {
             get { return ResourceManager.GetString("PlannerUntimedLabel", resourceCulture) ?? string.Empty; }
