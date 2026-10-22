@@ -44,7 +44,8 @@ public partial class MainPage : ContentPage
         _cycleRecord = cycleRecord;
         CyclePopover.BindingContext = cycleRecord;
         CyclePopover.AnchorResolver = HealthBlock.GetCycleChipAnchor;
-        HealthBlock.RecordCycleCommand = cycleRecord.OpenCommand;
+        // The panel's symptoms belong to the day this screen shows, not always to today.
+        HealthBlock.RecordCycleCommand = new Command(() => cycleRecord.OpenCommand.Execute(viewModel.CurrentEntry?.Date));
         DiaryContainer.Scrolled += (_, _) =>
         {
             if (_cycleRecord.IsOpen) _cycleRecord.CloseCommand.Execute(null);
