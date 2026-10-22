@@ -2197,4 +2197,22 @@
   <data name="EmptyStateSearchHint" xml:space="preserve">
     <value>Спробуйте інше слово або коротший запит.</value>
   </data>
+  <data name="SpokenReminderPhrase" xml:space="preserve">
+    <value>Нагадування: {0}</value>
+  </data>
+  <data name="SpokenReminderEmpty" xml:space="preserve">
+    <value>Нагадування</value>
+  </data>
+  <data name="VoiceReminderLabel" xml:space="preserve">
+    <value>Озвучити вголос</value>
+  </data>
+  <data name="VoiceReminderHint" xml:space="preserve">
+    <value>Пристрій прочитає завдання вголос, коли прийде нагадування. Нічого не покидає телефон.</value>
+  </data>
+  <data name="VoiceMissingTitle" xml:space="preserve">
+    <value>Немає голосу для цієї мови</value>
+  </data>
+  <data name="VoiceMissingMessage" xml:space="preserve">
+    <value>На цьому пристрої немає голосу для мови застосунку, тож нагадування прозвучить системним голосом. Голоси можна додати в налаштуваннях системи.</value>
+  </data>
 </root>

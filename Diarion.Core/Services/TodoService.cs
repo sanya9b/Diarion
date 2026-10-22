@@ -346,6 +346,7 @@ public class TodoService : ITodoService
                     TargetTime = todo.TargetTime,
                     EndTime = todo.EndTime,
                     HasReminder = todo.HasReminder,
+                    IsVoiceReminder = todo.IsVoiceReminder,
                     Recurrence = recurrence
                 };
                 if (rule.Recurrence.Anchor == default) rule.Recurrence.Anchor = todo.TargetDate;
@@ -402,7 +403,8 @@ public class TodoService : ITodoService
                 rule.Id,
                 rule.TaskDescription,
                 rule.TargetTime,
-                recurrence.Kind == RecurrenceKind.Weekly ? recurrence.DaysOfWeek : null);
+                recurrence.Kind == RecurrenceKind.Weekly ? recurrence.DaysOfWeek : null,
+                rule.IsVoiceReminder);
             return;
         }
 
@@ -413,7 +415,7 @@ public class TodoService : ITodoService
             .Where(moment => moment > DateTime.Now)
             .ToList();
 
-        _notificationService.ScheduleTaskOccurrenceReminders(rule.Id, rule.TaskDescription, moments);
+        _notificationService.ScheduleTaskOccurrenceReminders(rule.Id, rule.TaskDescription, moments, rule.IsVoiceReminder);
     }
 
     /// <summary>
@@ -435,6 +437,7 @@ public class TodoService : ITodoService
         if (existing.TargetTime != todo.TargetTime) { rule.TargetTime = todo.TargetTime; changed = true; }
         if (existing.EndTime != todo.EndTime) { rule.EndTime = todo.EndTime; changed = true; }
         if (existing.HasReminder != todo.HasReminder) { rule.HasReminder = todo.HasReminder; changed = true; }
+        if (existing.IsVoiceReminder != todo.IsVoiceReminder) { rule.IsVoiceReminder = todo.IsVoiceReminder; changed = true; }
 
         if (!changed) return;
         RecurringTasksCollection.Update(rule);
@@ -480,7 +483,7 @@ public class TodoService : ITodoService
 
         if (targetDateTime > DateTime.Now)
         {
-            _notificationService.ScheduleTodoReminder(todo.Id, "Diarion", todo.TaskDescription, targetDateTime);
+            _notificationService.ScheduleTodoReminder(todo.Id, "Diarion", todo.TaskDescription, targetDateTime, todo.IsVoiceReminder);
         }
     }
 }
