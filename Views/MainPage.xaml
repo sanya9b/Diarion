@@ -213,14 +213,6 @@
                             behaviors:ThemeColor.BackgroundKey="{Binding HourChipFillColorKey}"
                         behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
                         <HorizontalStackLayout Spacing="5" HorizontalOptions="Center" VerticalOptions="Center">
-                            <Path Data="{x:Static icons:AppIcons.Clock}" Style="{StaticResource HeaderChipIcon}"
-                                  Stroke="{DynamicResource Theme_Midnight_Snow}">
-                                <Path.Triggers>
-                                    <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
-                                    </DataTrigger>
-                                </Path.Triggers>
-                            </Path>
                             <Label Text="{Binding HourChipBadge}" IsVisible="{Binding HasHourChipBadge}"
                                    FontSize="12" FontAttributes="Bold" VerticalOptions="Center"
                                    TextColor="{DynamicResource Theme_Midnight_Snow}">
@@ -230,6 +222,14 @@
                                     </DataTrigger>
                                 </Label.Triggers>
                             </Label>
+                            <Path Data="{x:Static icons:AppIcons.Clock}" Style="{StaticResource HeaderChipIcon}"
+                                  Stroke="{DynamicResource Theme_Midnight_Snow}">
+                                <Path.Triggers>
+                                    <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
+                                    </DataTrigger>
+                                </Path.Triggers>
+                            </Path>
                         </HorizontalStackLayout>
                     </Border>
                 </Border>

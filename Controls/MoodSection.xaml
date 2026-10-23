@@ -54,26 +54,33 @@
                 <Label Grid.Column="0" Text="{x:Static localization:AppResources.EmotionLabel}"
                        Style="{StaticResource SectionHeader}" VerticalOptions="Center" />
 
-                <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                <!-- The clock stays where it is, at the card's right edge over the health block's drop: the ✕
+                     appears to its left and the chosen hour grows leftwards inside the chip. With the ✕ on
+                     the right and the hour after the icon, choosing an hour threw the clock a whole button's
+                     width to the left (owner, build 17, 2026-10-23). -->
+                <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center" HorizontalOptions="End">
+                <Border Style="{StaticResource HeaderChip}" WidthRequest="32" IsVisible="{Binding IsHourSelected}"
+                        SemanticProperties.Description="{x:Static localization:AppResources.MoodHourExit}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ExitHourModeCommand}" />
+                    </Border.GestureRecognizers>
+                    <Border Style="{StaticResource HeaderChipSurface}" Padding="0">
+                        <Path Data="M 7 7 L 17 17 M 17 7 L 7 17" Style="{StaticResource HeaderChipIcon}"
+                              WidthRequest="12" HeightRequest="12" Stroke="{DynamicResource Theme_Midnight_Snow}" />
+                    </Border>
+                </Border>
+
                 <Border x:Name="HourChip" Style="{StaticResource HeaderChip}"
                         SemanticProperties.Description="{Binding HourChipText}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenHourPickerCommand}" />
                     </Border.GestureRecognizers>
-                    <!-- A clock, and beside it only state: the chosen hour, or how many hours carry a mood. No
+                    <!-- A clock, and to its left only state: the chosen hour, or how many hours carry a mood. No
                          caption — the spoken label is the chip's description. Round while it is just the clock. -->
                     <Border Style="{StaticResource HeaderChipSurface}"
                             behaviors:ThemeColor.BackgroundKey="{Binding HourChipFillColorKey}"
                             behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
                         <HorizontalStackLayout Spacing="5" HorizontalOptions="Center" VerticalOptions="Center">
-                            <Path Data="{x:Static icons:AppIcons.Clock}" Style="{StaticResource HeaderChipIcon}"
-                                  Stroke="{DynamicResource Theme_Midnight_Snow}">
-                                <Path.Triggers>
-                                    <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
-                                    </DataTrigger>
-                                </Path.Triggers>
-                            </Path>
                             <Label Text="{Binding HourChipBadge}" IsVisible="{Binding HasHourChipBadge}"
                                    FontSize="12" FontAttributes="Bold" VerticalOptions="Center"
                                    TextColor="{DynamicResource Theme_Midnight_Snow}">
@@ -83,18 +90,15 @@
                                     </DataTrigger>
                                 </Label.Triggers>
                             </Label>
+                            <Path Data="{x:Static icons:AppIcons.Clock}" Style="{StaticResource HeaderChipIcon}"
+                                  Stroke="{DynamicResource Theme_Midnight_Snow}">
+                                <Path.Triggers>
+                                    <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
+                                        <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
+                                    </DataTrigger>
+                                </Path.Triggers>
+                            </Path>
                         </HorizontalStackLayout>
-                    </Border>
-                </Border>
-
-                <Border Style="{StaticResource HeaderChip}" WidthRequest="32" IsVisible="{Binding IsHourSelected}"
-                        SemanticProperties.Description="{x:Static localization:AppResources.MoodHourExit}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ExitHourModeCommand}" />
-                    </Border.GestureRecognizers>
-                    <Border Style="{StaticResource HeaderChipSurface}" Padding="0">
-                        <Path Data="M 7 7 L 17 17 M 17 7 L 7 17" Style="{StaticResource HeaderChipIcon}"
-                              WidthRequest="12" HeightRequest="12" Stroke="{DynamicResource Theme_Midnight_Snow}" />
                     </Border>
                 </Border>
                 </HorizontalStackLayout>
