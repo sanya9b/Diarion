@@ -58,38 +58,40 @@
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="viewModels:PromptAnswerItemViewModel">
-                        <Border behaviors:PressFeedback.IsEnabled="True" Padding="16,14"
-                                Margin="24,0"
-                                StrokeThickness="1"
-                                Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                                StrokeShape="RoundRectangle 16">
-                            <Border.GestureRecognizers>
+                        <ContentView behaviors:PressFeedback.IsEnabled="True" Margin="24,0">
+                            <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenDayCommand}"
                                                       CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
+                            </ContentView.GestureRecognizers>
+                            <Border Padding="16,14"
+                                    StrokeThickness="1"
+                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                    StrokeShape="RoundRectangle 16"
+                                    InputTransparent="True">
 
-                            <VerticalStackLayout Spacing="6">
-                                <Label Text="{Binding DateText}"
-                                       FontSize="11"
-                                       FontAttributes="Bold"
-                                       CharacterSpacing="1.5"
-                                       TextTransform="Uppercase"
-                                       TextColor="{DynamicResource Theme_Berry}" />
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="{Binding DateText}"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           CharacterSpacing="1.5"
+                                           TextTransform="Uppercase"
+                                           TextColor="{DynamicResource Theme_Berry}" />
 
-                                <Label Text="{Binding Question}"
-                                       IsVisible="{Binding HasQuestion}"
-                                       FontSize="13"
-                                       FontAttributes="Bold"
-                                       LineBreakMode="WordWrap"
-                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    <Label Text="{Binding Question}"
+                                           IsVisible="{Binding HasQuestion}"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="WordWrap"
+                                           TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
-                                <Label Text="{Binding Answer}"
-                                       FontSize="14"
-                                       LineBreakMode="WordWrap"
-                                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                            </VerticalStackLayout>
-                        </Border>
+                                    <Label Text="{Binding Answer}"
+                                           FontSize="14"
+                                           LineBreakMode="WordWrap"
+                                           TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </ContentView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
 

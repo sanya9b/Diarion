@@ -127,6 +127,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<QuickMenuViewModel>();
         services.AddTransient<HabitsSectionViewModel>();
         services.AddTransient<CycleStatusViewModel>();
+        services.AddTransient<QuickNoteViewModel>();
         services.AddTransient<MainViewModel>();
         services.AddTransient<LockViewModel>();
         services.AddTransient<PinSetupViewModel>();

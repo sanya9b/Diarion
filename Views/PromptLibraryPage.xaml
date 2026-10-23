@@ -40,18 +40,23 @@
                             <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Prompts}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="viewModels:PromptItemViewModel">
-                                        <Border behaviors:PressFeedback.IsEnabled="True" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                                BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                                                StrokeShape="RoundRectangle 14" Padding="14,12">
-                                            <Border.GestureRecognizers>
+                                        <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                            <ContentView.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.EditPromptCommand}"
                                                                       CommandParameter="{Binding .}" />
-                                            </Border.GestureRecognizers>
-                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                                                <Label Grid.Column="0" Text="{Binding Text}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                                <Label Grid.Column="1" Text="✎" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                                            </Grid>
-                                        </Border>
+                                            </ContentView.GestureRecognizers>
+                                            <Border StrokeThickness="1"
+                                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                                    StrokeShape="RoundRectangle 14"
+                                                    Padding="14,12"
+                                                    InputTransparent="True">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                                    <Label Grid.Column="0" Text="{Binding Text}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                                    <Label Grid.Column="1" Text="✎" FontSize="14" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                                </Grid>
+                                            </Border>
+                                        </ContentView>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </VerticalStackLayout>

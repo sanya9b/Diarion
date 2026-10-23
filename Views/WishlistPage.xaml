@@ -39,25 +39,26 @@
 
             <CollectionView.Header>
                 <!-- Кнопка додавання -->
-                <Border behaviors:PressFeedback.IsEnabled="True" Padding="16"
-                        Margin="24,10,24,12"
-                        StrokeThickness="1"
-                        Stroke="{DynamicResource Theme_Berry}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        StrokeShape="RoundRectangle 16"
-                        HorizontalOptions="Fill">
-                    <Border.GestureRecognizers>
+                <ContentView behaviors:PressFeedback.IsEnabled="True" Margin="24,10,24,12" HorizontalOptions="Fill">
+                    <ContentView.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenAddFormCommand}" />
-                    </Border.GestureRecognizers>
-                    <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Berry}" Offset="0,4" Radius="8" Opacity="0.15" />
-                    </Border.Shadow>
+                    </ContentView.GestureRecognizers>
+                    <Border Padding="16"
+                            StrokeThickness="1"
+                            Stroke="{DynamicResource Theme_Berry}"
+                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                            StrokeShape="RoundRectangle 16"
+                            InputTransparent="True">
+                        <Border.Shadow>
+                            <Shadow Brush="{DynamicResource Theme_Berry}" Offset="0,4" Radius="8" Opacity="0.15" />
+                        </Border.Shadow>
 
-                    <Grid ColumnDefinitions="Auto, *">
-                        <Label Grid.Column="0" Text="+" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource Theme_Berry}" VerticalOptions="Center" Margin="0,0,12,0"/>
-                        <Label Grid.Column="1" Text="{localization:Translate Key=AddTodoButton}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center"/>
-                    </Grid>
-                </Border>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="+" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource Theme_Berry}" VerticalOptions="Center" Margin="0,0,12,0"/>
+                            <Label Grid.Column="1" Text="{localization:Translate Key=AddTodoButton}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+                </ContentView>
             </CollectionView.Header>
 
             <CollectionView.ItemTemplate>

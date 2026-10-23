@@ -2877,5 +2877,57 @@ public static string ClearAllDataSuccessMsg {
         public static string AutoBackupUseDevice {
             get { return ResourceManager.GetString("AutoBackupUseDevice", resourceCulture) ?? string.Empty; }
         }
+
+        public static string ReviewMoodRough {
+            get { return ResourceManager.GetString("ReviewMoodRough", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewMoodLow {
+            get { return ResourceManager.GetString("ReviewMoodLow", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewMoodSteady {
+            get { return ResourceManager.GetString("ReviewMoodSteady", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewMoodGood {
+            get { return ResourceManager.GetString("ReviewMoodGood", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewMoodGreat {
+            get { return ResourceManager.GetString("ReviewMoodGreat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewMoodBetter {
+            get { return ResourceManager.GetString("ReviewMoodBetter", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewMoodSlightlyBetter {
+            get { return ResourceManager.GetString("ReviewMoodSlightlyBetter", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewMoodWorse {
+            get { return ResourceManager.GetString("ReviewMoodWorse", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReviewMoodSlightlyWorse {
+            get { return ResourceManager.GetString("ReviewMoodSlightlyWorse", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickNoteLabel {
+            get { return ResourceManager.GetString("QuickNoteLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickNotePlaceholder {
+            get { return ResourceManager.GetString("QuickNotePlaceholder", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickNoteSend {
+            get { return ResourceManager.GetString("QuickNoteSend", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string QuickNoteSaved {
+            get { return ResourceManager.GetString("QuickNoteSaved", resourceCulture) ?? string.Empty; }
+        }
     }
 }

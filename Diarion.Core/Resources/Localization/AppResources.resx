@@ -2359,4 +2359,43 @@
   <data name="AutoBackupUseDevice" xml:space="preserve">
     <value>Keep on the phone</value>
   </data>
+  <data name="ReviewMoodRough" xml:space="preserve">
+    <value>Rough</value>
+  </data>
+  <data name="ReviewMoodLow" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="ReviewMoodSteady" xml:space="preserve">
+    <value>Steady</value>
+  </data>
+  <data name="ReviewMoodGood" xml:space="preserve">
+    <value>Good</value>
+  </data>
+  <data name="ReviewMoodGreat" xml:space="preserve">
+    <value>Great</value>
+  </data>
+  <data name="ReviewMoodBetter" xml:space="preserve">
+    <value>▲ better</value>
+  </data>
+  <data name="ReviewMoodSlightlyBetter" xml:space="preserve">
+    <value>▲ a little better</value>
+  </data>
+  <data name="ReviewMoodWorse" xml:space="preserve">
+    <value>▼ worse</value>
+  </data>
+  <data name="ReviewMoodSlightlyWorse" xml:space="preserve">
+    <value>▼ a little worse</value>
+  </data>
+  <data name="QuickNoteLabel" xml:space="preserve">
+    <value>QUICK NOTE:</value>
+  </data>
+  <data name="QuickNotePlaceholder" xml:space="preserve">
+    <value>A thought, an idea, a list — it goes to Notes</value>
+  </data>
+  <data name="QuickNoteSend" xml:space="preserve">
+    <value>Send to Notes</value>
+  </data>
+  <data name="QuickNoteSaved" xml:space="preserve">
+    <value>Saved to Notes</value>
+  </data>
 </root>

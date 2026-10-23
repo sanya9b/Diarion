@@ -133,7 +133,7 @@ public partial class PeriodReviewViewModel : ObservableObject
             DaysWrittenValue = Of(review.DaysWritten.Current ?? 0, review.DayCount, culture);
             (DaysWrittenDelta, DaysWrittenTone) = Delta(review.DaysWritten, d => d.ToString("0", culture), higherIsBetter: true);
 
-            (MoodValue, MoodDelta, MoodTone) = Tile(review.Mood, v => v.ToString("+0.0;-0.0;0.0", culture), d => d.ToString("0.0", culture), higherIsBetter: true);
+            (MoodValue, MoodDelta, MoodTone) = MoodTile(review.Mood);
             TopEmotionText = TopEmotion(review.TopEmotion, culture);
 
             (SleepValue, SleepDelta, SleepTone) = Tile(review.SleepHours, Hours, Hours, higherIsBetter: true);
@@ -202,6 +202,51 @@ public partial class PeriodReviewViewModel : ObservableObject
         return h == 0
             ? $"{m} {AppResources.MinutesShort}"
             : $"{h} {AppResources.HoursShort} {m:00} {AppResources.MinutesShort}";
+    }
+
+    /// <summary>Below this the average mood has not moved in any way a person would notice.</summary>
+    public const double MoodNoticeableChange = 0.1;
+
+    /// <summary>From here a change is plainly "better", not "a little better".</summary>
+    public const double MoodClearChange = 0.5;
+
+    /// <summary>
+    /// The period's average valence (−2 unpleasant … +2 pleasant) in a word. A signed decimal such as
+    /// "+0.8" meant nothing to anyone who had not read the circumplex paper; "Good" does.
+    /// </summary>
+    public static string MoodWord(double valence) => valence switch
+    {
+        < -1.2 => AppResources.ReviewMoodRough,
+        < -0.4 => AppResources.ReviewMoodLow,
+        <= 0.4 => AppResources.ReviewMoodSteady,
+        <= 1.2 => AppResources.ReviewMoodGood,
+        _ => AppResources.ReviewMoodGreat
+    };
+
+    /// <summary>The mood tile: a word for the period and the change in words, the arrow kept.</summary>
+    public static (string Value, string Delta, ReviewTone Tone) MoodTile(ReviewMetric metric)
+    {
+        if (!metric.HasCurrent)
+        {
+            return (AppResources.ReviewNoValue, AppResources.ReviewNoData, ReviewTone.Neutral);
+        }
+
+        var value = MoodWord(metric.Current!.Value);
+        if (metric.Delta is not double delta)
+        {
+            return (value, AppResources.ReviewNoPrevious, ReviewTone.Neutral);
+        }
+
+        var size = Math.Abs(delta);
+        if (size < MoodNoticeableChange)
+        {
+            return (value, AppResources.ReviewNoChange, ReviewTone.Neutral);
+        }
+
+        var slight = size < MoodClearChange;
+        return delta > 0
+            ? (value, slight ? AppResources.ReviewMoodSlightlyBetter : AppResources.ReviewMoodBetter, ReviewTone.Better)
+            : (value, slight ? AppResources.ReviewMoodSlightlyWorse : AppResources.ReviewMoodWorse, ReviewTone.Worse);
     }
 
     private static (string Value, string Delta, ReviewTone Tone) Tile(

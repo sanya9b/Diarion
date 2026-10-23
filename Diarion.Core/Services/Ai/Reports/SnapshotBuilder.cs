@@ -271,11 +271,14 @@ public sealed class SnapshotBuilder : ISnapshotBuilder
     /// <summary>
     /// Days in the window the habit was actually due. Completed-out-of-seven would be wrong for
     /// anything not tracked daily: three ticks on a Monday-Wednesday-Friday habit is a perfect week,
-    /// and reporting it as 3/7 invites the model to call a perfect week a failure.
+    /// and reporting it as 3/7 invites the model to call a perfect week a failure. Days before the
+    /// habit was tracked (<see cref="HabitCompletionHistory.TrackedSince"/>) were not asked of anyone.
     /// </summary>
     private static int CountScheduled(HabitCompletionHistory habit, StatsRange range)
     {
-        var from = habit.CreatedAt.Date > range.Start ? habit.CreatedAt.Date : range.Start;
+        if (habit.TrackedSince is not DateTime since) return 0;
+
+        var from = since.Date > range.Start ? since.Date : range.Start;
         var count = 0;
 
         for (var day = from; day <= range.End; day = day.AddDays(1))

@@ -59,6 +59,9 @@
 
                 <controls:ReflectionSection BindingContext="{Binding}"
                                             IsVisible="{Binding BindingContext.Profile.IsReflectionBlockVisible, Source={x:Reference PageRoot}}" />
+
+                <!-- Not a block of the day: what is written here goes to Notes. -->
+                <controls:QuickNoteSection BindingContext="{Binding BindingContext.QuickNote, Source={x:Reference PageRoot}}" />
             </VerticalStackLayout>
         </ScrollView>
 

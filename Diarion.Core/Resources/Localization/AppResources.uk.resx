@@ -2359,4 +2359,43 @@
   <data name="AutoBackupUseDevice" xml:space="preserve">
     <value>Зберігати в телефоні</value>
   </data>
+  <data name="ReviewMoodRough" xml:space="preserve">
+    <value>Важко</value>
+  </data>
+  <data name="ReviewMoodLow" xml:space="preserve">
+    <value>Невесело</value>
+  </data>
+  <data name="ReviewMoodSteady" xml:space="preserve">
+    <value>Рівно</value>
+  </data>
+  <data name="ReviewMoodGood" xml:space="preserve">
+    <value>Добре</value>
+  </data>
+  <data name="ReviewMoodGreat" xml:space="preserve">
+    <value>Чудово</value>
+  </data>
+  <data name="ReviewMoodBetter" xml:space="preserve">
+    <value>▲ краще</value>
+  </data>
+  <data name="ReviewMoodSlightlyBetter" xml:space="preserve">
+    <value>▲ трохи краще</value>
+  </data>
+  <data name="ReviewMoodWorse" xml:space="preserve">
+    <value>▼ гірше</value>
+  </data>
+  <data name="ReviewMoodSlightlyWorse" xml:space="preserve">
+    <value>▼ трохи гірше</value>
+  </data>
+  <data name="QuickNoteLabel" xml:space="preserve">
+    <value>ШВИДКА НОТАТКА:</value>
+  </data>
+  <data name="QuickNotePlaceholder" xml:space="preserve">
+    <value>Думка, ідея, список — піде в нотатки</value>
+  </data>
+  <data name="QuickNoteSend" xml:space="preserve">
+    <value>Надіслати в нотатки</value>
+  </data>
+  <data name="QuickNoteSaved" xml:space="preserve">
+    <value>Збережено в нотатках</value>
+  </data>
 </root>

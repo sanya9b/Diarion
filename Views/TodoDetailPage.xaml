@@ -394,23 +394,26 @@
                 </Border>
             </ScrollView>
 
-                <Border behaviors:PressFeedback.IsEnabled="True" Grid.Row="1" StrokeShape="RoundRectangle 14"
-                        StrokeThickness="0"
-                        HeightRequest="48"
-                        BackgroundColor="{DynamicResource Theme_Ocean_Ocean}">
-                    <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="8" Opacity="0.2" />
-                    </Border.Shadow>
-                    <Border.GestureRecognizers>
+                <ContentView behaviors:PressFeedback.IsEnabled="True" Grid.Row="1">
+                    <ContentView.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding SaveCommand}" />
-                    </Border.GestureRecognizers>
-                    <Label Text="{x:Static localization:AppResources.SaveTaskButton}"
-                           InputTransparent="True"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center"
-                           TextColor="{DynamicResource Theme_Snow_Midnight}" />
-                </Border>
+                    </ContentView.GestureRecognizers>
+                    <Border StrokeShape="RoundRectangle 14"
+                            StrokeThickness="0"
+                            HeightRequest="48"
+                            BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
+                            InputTransparent="True">
+                        <Border.Shadow>
+                            <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="8" Opacity="0.2" />
+                        </Border.Shadow>
+                        <Label Text="{x:Static localization:AppResources.SaveTaskButton}"
+                               InputTransparent="True"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               TextColor="{DynamicResource Theme_Snow_Midnight}" />
+                    </Border>
+                </ContentView>
         </Grid>
     </Grid>
 </ContentPage>

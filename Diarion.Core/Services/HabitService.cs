@@ -99,7 +99,17 @@ public class HabitService : IHabitService
                 result.Add(hist);
             }
 
-            var entries = EntriesCollection.Find(x => x.Date >= startDate && x.Date <= endDate).ToList();
+            // A built-in habit has no creation day, so it starts counting on its first tick; finding that
+            // tick means reading the history before the window too, which only those habits need.
+            var undated = defs.Where(d => d.CreatedAt.Date == DateTime.MinValue.Date).Select(d => d.Id).ToHashSet();
+            foreach (var hist in result)
+            {
+                if (!undated.Contains(hist.HabitId)) hist.TrackedSince = hist.CreatedAt;
+            }
+
+            var entries = undated.Count > 0
+                ? EntriesCollection.Find(x => x.Date <= endDate).ToList()
+                : EntriesCollection.Find(x => x.Date >= startDate && x.Date <= endDate).ToList();
             foreach (var entry in entries)
             {
                 var day = entry.Date.Date;
@@ -107,7 +117,11 @@ public class HabitService : IHabitService
                 {
                     if (h.IsCompleted && byId.TryGetValue(h.HabitId, out var hist))
                     {
-                        hist.CompletedDates.Add(day);
+                        if (day >= startDate) hist.CompletedDates.Add(day);
+                        if (undated.Contains(h.HabitId) && (hist.TrackedSince is null || day < hist.TrackedSince))
+                        {
+                            hist.TrackedSince = day;
+                        }
                     }
                 }
             }

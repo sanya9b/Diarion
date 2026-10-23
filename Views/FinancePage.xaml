@@ -258,22 +258,35 @@
                             </HorizontalStackLayout>
 
                             <!-- Редагувати обраний -->
-                            <Border behaviors:PressFeedback.IsEnabled="True" StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                                    IsVisible="{Binding IsAllAccountsSelected, Converter={toolkit:InvertedBoolConverter}}">
-                                <Border.GestureRecognizers>
+                            <ContentView behaviors:PressFeedback.IsEnabled="True" IsVisible="{Binding IsAllAccountsSelected, Converter={toolkit:InvertedBoolConverter}}">
+                                <ContentView.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding EditSelectedAccountCommand}" />
-                                </Border.GestureRecognizers>
-                                <Label Text="✎" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                            </Border>
+                                </ContentView.GestureRecognizers>
+                                <Border StrokeShape="RoundRectangle 14"
+                                        Padding="12,6"
+                                        StrokeThickness="1"
+                                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                        InputTransparent="True">
+                                    <Label Text="✎" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                </Border>
+                            </ContentView>
 
                             <!-- Додати рахунок -->
-                            <Border behaviors:PressFeedback.IsEnabled="True" StrokeShape="RoundRectangle 14" Padding="12,6" StrokeThickness="1" Stroke="{DynamicResource Theme_Sage}" BackgroundColor="{DynamicResource Theme_Snow_Black}">
-                                <Border.GestureRecognizers>
+                            <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                <ContentView.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding ShowAccountFormCommand}" />
-                                </Border.GestureRecognizers>
-                                <Label Text="＋" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}"
-                                       SemanticProperties.Description="{x:Static localization:AppResources.AddAccountButton}" />
-                            </Border>
+                                </ContentView.GestureRecognizers>
+                                <Border StrokeShape="RoundRectangle 14"
+                                        Padding="12,6"
+                                        StrokeThickness="1"
+                                        Stroke="{DynamicResource Theme_Sage}"
+                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                        InputTransparent="True">
+                                    <Label Text="＋" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}"
+                                           SemanticProperties.Description="{x:Static localization:AppResources.AddAccountButton}" />
+                                </Border>
+                            </ContentView>
 
                             <!-- Показати архівні -->
                             <ContentView behaviors:PressFeedback.IsEnabled="True">
@@ -355,37 +368,45 @@
                             <HorizontalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Budgets}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="viewModels:BudgetItemViewModel">
-                                        <Border behaviors:PressFeedback.IsEnabled="True" WidthRequest="140" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}" StrokeShape="RoundRectangle 16" Padding="12,10">
-                                            <Border.GestureRecognizers>
+                                        <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                            <ContentView.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ShowCategoryDetailCommand}" CommandParameter="{Binding .}" />
-                                            </Border.GestureRecognizers>
-                                            <VerticalStackLayout Spacing="6">
-                                                <Label Text="{Binding Category}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
-                                                <ProgressBar Progress="{Binding Progress}">
-                                                    <ProgressBar.Triggers>
-                                                        <DataTrigger TargetType="ProgressBar" Binding="{Binding IsOverspent}" Value="True">
-                                                            <Setter Property="ProgressColor" Value="{DynamicResource Theme_Coral}" />
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="ProgressBar" Binding="{Binding IsOverspent}" Value="False">
-                                                            <Setter Property="ProgressColor" Value="{DynamicResource Theme_Sage}" />
-                                                        </DataTrigger>
-                                                    </ProgressBar.Triggers>
-                                                </ProgressBar>
-                                                <Grid ColumnDefinitions="Auto,*">
-                                                    <Label Grid.Column="0" Text="{Binding ProgressPercentText}" FontSize="12" FontAttributes="Bold">
-                                                        <Label.Triggers>
-                                                            <DataTrigger TargetType="Label" Binding="{Binding IsOverspent}" Value="True">
-                                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                            </ContentView.GestureRecognizers>
+                                            <Border WidthRequest="140"
+                                                    StrokeThickness="1"
+                                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                                    StrokeShape="RoundRectangle 16"
+                                                    Padding="12,10"
+                                                    InputTransparent="True">
+                                                <VerticalStackLayout Spacing="6">
+                                                    <Label Text="{Binding Category}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                                    <ProgressBar Progress="{Binding Progress}">
+                                                        <ProgressBar.Triggers>
+                                                            <DataTrigger TargetType="ProgressBar" Binding="{Binding IsOverspent}" Value="True">
+                                                                <Setter Property="ProgressColor" Value="{DynamicResource Theme_Coral}" />
                                                             </DataTrigger>
-                                                            <DataTrigger TargetType="Label" Binding="{Binding IsOverspent}" Value="False">
-                                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
+                                                            <DataTrigger TargetType="ProgressBar" Binding="{Binding IsOverspent}" Value="False">
+                                                                <Setter Property="ProgressColor" Value="{DynamicResource Theme_Sage}" />
                                                             </DataTrigger>
-                                                        </Label.Triggers>
-                                                    </Label>
-                                                    <Label Grid.Column="1" Text="{Binding AmountText}" FontSize="9" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" VerticalOptions="Center" LineBreakMode="TailTruncation" />
-                                                </Grid>
-                                            </VerticalStackLayout>
-                                        </Border>
+                                                        </ProgressBar.Triggers>
+                                                    </ProgressBar>
+                                                    <Grid ColumnDefinitions="Auto,*">
+                                                        <Label Grid.Column="0" Text="{Binding ProgressPercentText}" FontSize="12" FontAttributes="Bold">
+                                                            <Label.Triggers>
+                                                                <DataTrigger TargetType="Label" Binding="{Binding IsOverspent}" Value="True">
+                                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                                                </DataTrigger>
+                                                                <DataTrigger TargetType="Label" Binding="{Binding IsOverspent}" Value="False">
+                                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
+                                                                </DataTrigger>
+                                                            </Label.Triggers>
+                                                        </Label>
+                                                        <Label Grid.Column="1" Text="{Binding AmountText}" FontSize="9" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                                                    </Grid>
+                                                </VerticalStackLayout>
+                                            </Border>
+                                        </ContentView>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </HorizontalStackLayout>
@@ -534,16 +555,19 @@
                         <HorizontalStackLayout BindableLayout.ItemsSource="{Binding SuggestedCategories}" Spacing="8">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="x:String">
-                                    <Border behaviors:PressFeedback.IsEnabled="True" Padding="10,4" 
-                                            StrokeShape="RoundRectangle 8" 
-                                            StrokeThickness="1" 
-                                            Stroke="{DynamicResource Theme_Ocean_Dust}" 
-                                            BackgroundColor="{DynamicResource Theme_Dust_Ocean}">
-                                        <Border.GestureRecognizers>
+                                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                        <ContentView.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:FinanceViewModel}}, Path=SelectCategoryCommand}" CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <Label Text="{Binding .}" FontSize="11" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                    </Border>
+                                        </ContentView.GestureRecognizers>
+                                        <Border Padding="10,4"
+                                                StrokeShape="RoundRectangle 8"
+                                                StrokeThickness="1"
+                                                Stroke="{DynamicResource Theme_Ocean_Dust}"
+                                                BackgroundColor="{DynamicResource Theme_Dust_Ocean}"
+                                                InputTransparent="True">
+                                            <Label Text="{Binding .}" FontSize="11" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                        </Border>
+                                    </ContentView>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </HorizontalStackLayout>

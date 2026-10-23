@@ -53,6 +53,52 @@ public class HabitServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetHabitCompletionsAsync_BuiltInHabitIsTrackedFromItsFirstTick()
+    {
+        // Seeded habits carry CreatedAt = MinValue; the first tick, even before the window, is their start.
+        var today = DateTime.Today;
+        var ticked = Guid.NewGuid();
+        var neverTicked = Guid.NewGuid();
+        await _service.AddHabitDefinitionAsync(new HabitDefinition { Id = ticked, Name = "Water", CreatedAt = DateTime.MinValue });
+        await _service.AddHabitDefinitionAsync(new HabitDefinition { Id = neverTicked, Name = "Walk", CreatedAt = DateTime.MinValue });
+
+        var entries = _db.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
+        entries.Insert(new DiaryEntry
+        {
+            Date = today.AddDays(-30),
+            HabitsList = { new HabitItem { HabitId = ticked, Name = "Water", IsCompleted = true } }
+        });
+        entries.Insert(new DiaryEntry
+        {
+            Date = today.AddDays(-2),
+            HabitsList =
+            {
+                new HabitItem { HabitId = ticked, Name = "Water", IsCompleted = true },
+                new HabitItem { HabitId = neverTicked, Name = "Walk", IsCompleted = false }
+            }
+        });
+
+        var histories = await _service.GetHabitCompletionsAsync(today.AddDays(-7), today);
+
+        var water = histories.Single(x => x.HabitId == ticked);
+        water.TrackedSince.Should().Be(today.AddDays(-30));
+        water.CompletedDates.Should().Equal(today.AddDays(-2)); // the old tick only dates the start
+        histories.Single(x => x.HabitId == neverTicked).TrackedSince.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetHabitCompletionsAsync_UserHabitIsTrackedFromItsCreation()
+    {
+        var today = DateTime.Today;
+        var id = Guid.NewGuid();
+        await _service.AddHabitDefinitionAsync(new HabitDefinition { Id = id, Name = "Read", CreatedAt = today.AddDays(-3).AddHours(9) });
+
+        var histories = await _service.GetHabitCompletionsAsync(today.AddDays(-7), today);
+
+        histories.Single(x => x.HabitId == id).TrackedSince.Should().Be(today.AddDays(-3));
+    }
+
+    [Fact]
     public async Task GetHabitCompletionsAsync_ExcludesHabitsCreatedAfterWindow()
     {
         var today = DateTime.Today;

@@ -368,22 +368,25 @@
              pill in the top-right corner, the one spot on a phone a thumb cannot reach without moving the
              hand, for the action this screen exists for. Ink on the page colour rather than an accent:
              the accents mean priority here, and a coral button would read as a high-priority something. -->
-        <Border Grid.Row="1" WidthRequest="56" HeightRequest="56"
-                HorizontalOptions="End" VerticalOptions="End" Margin="0,0,6,6"
-                StrokeShape="RoundRectangle 28" StrokeThickness="0" Padding="0"
-                BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
-                behaviors:PressFeedback.IsEnabled="True"
-                SemanticProperties.Description="{x:Static localization:AppResources.NewTaskTitle}">
-            <Border.Shadow>
-                <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.25" />
-            </Border.Shadow>
-            <Border.GestureRecognizers>
+        <ContentView Grid.Row="1" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,6,6" behaviors:PressFeedback.IsEnabled="True" SemanticProperties.Description="{x:Static localization:AppResources.NewTaskTitle}">
+            <ContentView.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding BindingContext.GoToNewTodoCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />
-            </Border.GestureRecognizers>
-            <Path Data="M 12 5 V 19 M 5 12 H 19" Stroke="{DynamicResource Theme_Snow_Midnight}"
-                  StrokeThickness="2.5" StrokeLineCap="Round" Aspect="Uniform"
-                  WidthRequest="20" HeightRequest="20" InputTransparent="True"
-                  HorizontalOptions="Center" VerticalOptions="Center" />
-        </Border>
+            </ContentView.GestureRecognizers>
+            <Border WidthRequest="56"
+                    HeightRequest="56"
+                    StrokeShape="RoundRectangle 28"
+                    StrokeThickness="0"
+                    Padding="0"
+                    BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
+                    InputTransparent="True">
+                <Border.Shadow>
+                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="10" Opacity="0.25" />
+                </Border.Shadow>
+                <Path Data="M 12 5 V 19 M 5 12 H 19" Stroke="{DynamicResource Theme_Snow_Midnight}"
+                      StrokeThickness="2.5" StrokeLineCap="Round" Aspect="Uniform"
+                      WidthRequest="20" HeightRequest="20" InputTransparent="True"
+                      HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+        </ContentView>
     </Grid>
 </ContentView>

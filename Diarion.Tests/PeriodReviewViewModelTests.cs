@@ -91,7 +91,7 @@ public class PeriodReviewViewModelTests
 
         await vm.LoadDataAsync(Week);
 
-        vm.MoodValue.Should().Be(0.8.ToString("+0.0;-0.0;0.0", CultureInfo.CurrentCulture));
+        vm.MoodValue.Should().Be(AppResources.ReviewMoodGood);
         vm.MoodDelta.Should().Be(AppResources.ReviewNoPrevious);
         vm.MoodTone.Should().Be(ReviewTone.Neutral);
     }
@@ -119,6 +119,32 @@ public class PeriodReviewViewModelTests
         vm.MoodDelta.Should().Be(AppResources.ReviewNoChange);
         vm.MoodTone.Should().Be(ReviewTone.Neutral);
         vm.DaysWrittenDelta.Should().Be(AppResources.ReviewNoChange);
+    }
+
+    [Theory]
+    [InlineData(-1.8, nameof(AppResources.ReviewMoodRough))]
+    [InlineData(-0.8, nameof(AppResources.ReviewMoodLow))]
+    [InlineData(0.0, nameof(AppResources.ReviewMoodSteady))]
+    [InlineData(0.4, nameof(AppResources.ReviewMoodSteady))]
+    [InlineData(1.0, nameof(AppResources.ReviewMoodGood))]
+    [InlineData(1.6, nameof(AppResources.ReviewMoodGreat))]
+    public void The_mood_is_a_word_not_a_signed_decimal(double valence, string key)
+    {
+        PeriodReviewViewModel.MoodWord(valence).Should().Be(AppResources.ResourceManager.GetString(key, AppResources.Culture));
+    }
+
+    [Theory]
+    [InlineData(1.0, 0.8, nameof(AppResources.ReviewMoodSlightlyBetter), ReviewTone.Better)]
+    [InlineData(1.0, 0.2, nameof(AppResources.ReviewMoodBetter), ReviewTone.Better)]
+    [InlineData(0.0, 0.3, nameof(AppResources.ReviewMoodSlightlyWorse), ReviewTone.Worse)]
+    [InlineData(-1.0, 0.5, nameof(AppResources.ReviewMoodWorse), ReviewTone.Worse)]
+    [InlineData(0.55, 0.5, nameof(AppResources.ReviewNoChange), ReviewTone.Neutral)]
+    public void The_mood_change_is_said_in_words_with_the_arrow_kept(double now, double before, string key, ReviewTone tone)
+    {
+        var (_, delta, actualTone) = PeriodReviewViewModel.MoodTile(new ReviewMetric(now, before));
+
+        delta.Should().Be(AppResources.ResourceManager.GetString(key, AppResources.Culture));
+        actualTone.Should().Be(tone);
     }
 
     [Fact]

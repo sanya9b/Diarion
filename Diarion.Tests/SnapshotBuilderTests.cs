@@ -303,6 +303,7 @@ public class SnapshotBuilderTests
             {
                 Name = "Зарядка",
                 CreatedAt = new DateTime(2026, 1, 1),
+                TrackedSince = new DateTime(2026, 1, 1),
                 Schedule = monWedFri,
                 CompletedDates =
                 {
@@ -327,12 +328,49 @@ public class SnapshotBuilderTests
             {
                 Name = "Читання",
                 CreatedAt = new DateTime(2026, 8, 7),
+                TrackedSince = new DateTime(2026, 8, 7),
                 Schedule = new RecurrenceRule { Kind = RecurrenceKind.Daily },
                 CompletedDates = { new DateTime(2026, 8, 8) }
             }
         };
 
         (await BuildAsync()).Habits.Good[0].ScheduledDays.Should().Be(3);
+    }
+
+    [Fact]
+    public async Task A_built_in_habit_never_ticked_is_not_due_at_all()
+    {
+        // Seeded habits have no creation day; a new user who never ticked one has not been asked it.
+        _habitHistory = new List<HabitCompletionHistory>
+        {
+            new()
+            {
+                Name = "Вода",
+                CreatedAt = DateTime.MinValue,
+                TrackedSince = null,
+                Schedule = new RecurrenceRule { Kind = RecurrenceKind.Daily }
+            }
+        };
+
+        (await BuildAsync()).Habits.Good[0].ScheduledDays.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task A_built_in_habit_is_due_from_its_first_tick()
+    {
+        _habitHistory = new List<HabitCompletionHistory>
+        {
+            new()
+            {
+                Name = "Вода",
+                CreatedAt = DateTime.MinValue,
+                TrackedSince = new DateTime(2026, 8, 8),
+                Schedule = new RecurrenceRule { Kind = RecurrenceKind.Daily },
+                CompletedDates = { new DateTime(2026, 8, 8) }
+            }
+        };
+
+        (await BuildAsync()).Habits.Good[0].ScheduledDays.Should().Be(2);
     }
 
     [Fact]

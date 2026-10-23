@@ -92,6 +92,15 @@ public class HabitCompletionHistory
     public Guid HabitId { get; set; }
     public string Name { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// The first day the habit counts as asked of the user. Its creation day when that is known; for the
+    /// built-in habits, seeded with no date (<see cref="DateTime.MinValue"/>), the first day it was ever
+    /// ticked — counting them from the start of every window told a new user they had missed 21 of 21.
+    /// Null for a built-in habit never ticked: nothing has been asked yet.
+    /// </summary>
+    public DateTime? TrackedSince { get; set; }
+
     public RecurrenceRule Schedule { get; set; } = new();
     public CompletionTarget? Target { get; set; }
     public HashSet<DateTime> CompletedDates { get; set; } = new();

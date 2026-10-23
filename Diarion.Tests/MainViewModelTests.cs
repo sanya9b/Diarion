@@ -116,7 +116,8 @@ public class MainViewModelTests
             _habitsSection,
             new Mock<CycleStatusViewModel>(_cycleLogServiceMock.Object, _profileServiceMock.Object).Object,
             new TourViewModel(_profileServiceMock.Object, new TourService()),
-            _moodIconSetsMock.Object);
+            _moodIconSetsMock.Object,
+            new QuickNoteViewModel(new Mock<INoteService>().Object));
     }
 
     [Fact]

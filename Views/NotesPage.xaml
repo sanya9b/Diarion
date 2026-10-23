@@ -123,37 +123,40 @@
                                         </SwipeItemView>
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-                                <Border behaviors:PressFeedback.IsEnabled="True" StrokeThickness="1"
-                                        Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                                        StrokeShape="RoundRectangle 14"
-                                        Padding="14,10">
-                                    <Border.GestureRecognizers>
+                                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                    <ContentView.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenNoteCommand}" CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
+                                    </ContentView.GestureRecognizers>
+                                    <Border StrokeThickness="1"
+                                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                            StrokeShape="RoundRectangle 14"
+                                            Padding="14,10"
+                                            InputTransparent="True">
 
-                                    <VerticalStackLayout Spacing="3">
-                                        <!-- Title + date on one row -->
-                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                                            <Label Grid.Column="0" Text="{Binding Title}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" VerticalOptions="Center" />
-                                            <Label Grid.Column="1" Text="{Binding UpdatedAt, StringFormat='{0:dd.MM.yyyy}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                                        </Grid>
-                                        <Label Text="{Binding Preview}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="1" />
+                                        <VerticalStackLayout Spacing="3">
+                                            <!-- Title + date on one row -->
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                <Label Grid.Column="0" Text="{Binding Title}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" VerticalOptions="Center" />
+                                                <Label Grid.Column="1" Text="{Binding UpdatedAt, StringFormat='{0:dd.MM.yyyy}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                                            </Grid>
+                                            <Label Text="{Binding Preview}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="1" />
 
-                                        <!-- Tag chips -->
-                                        <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding Tags}">
-                                            <BindableLayout.ItemTemplate>
-                                                <DataTemplate x:DataType="x:String">
-                                                    <Border Margin="0,3,6,0" Padding="8,1" StrokeThickness="1"
-                                                            Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                                            BackgroundColor="Transparent" StrokeShape="RoundRectangle 10">
-                                                        <Label Text="{Binding ., StringFormat='#{0}'}" FontSize="11" TextColor="{DynamicResource Theme_Amber}" />
-                                                    </Border>
-                                                </DataTemplate>
-                                            </BindableLayout.ItemTemplate>
-                                        </FlexLayout>
-                                    </VerticalStackLayout>
-                                </Border>
+                                            <!-- Tag chips -->
+                                            <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding Tags}">
+                                                <BindableLayout.ItemTemplate>
+                                                    <DataTemplate x:DataType="x:String">
+                                                        <Border Margin="0,3,6,0" Padding="8,1" StrokeThickness="1"
+                                                                Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                                                BackgroundColor="Transparent" StrokeShape="RoundRectangle 10">
+                                                            <Label Text="{Binding ., StringFormat='#{0}'}" FontSize="11" TextColor="{DynamicResource Theme_Amber}" />
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </BindableLayout.ItemTemplate>
+                                            </FlexLayout>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </ContentView>
                             </SwipeView>
                         </ContentView>
                     </DataTemplate>
@@ -161,28 +164,27 @@
             </CollectionView>
             
             <!-- Floating Action Button (iOS Style Compose) -->
-            <Border behaviors:PressFeedback.IsEnabled="True" Grid.Row="1"
-                    WidthRequest="56"
-                    HeightRequest="56"
-                    StrokeShape="RoundRectangle 28"
-                    HorizontalOptions="End"
-                    VerticalOptions="End"
-                    Margin="0,0,24,16"
-                    BackgroundColor="{DynamicResource Theme_Amber}"
-                    StrokeThickness="0">
-                <Border.Shadow>
-                    <Shadow Brush="{DynamicResource Theme_Amber}" Offset="0,4" Radius="8" Opacity="0.3" />
-                </Border.Shadow>
-                <Border.GestureRecognizers>
+            <ContentView behaviors:PressFeedback.IsEnabled="True" Grid.Row="1" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,24,16">
+                <ContentView.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding CreateNewNoteCommand}" />
-                </Border.GestureRecognizers>
-                <!-- Compose Icon (Pencil) -->
-                <Path Fill="{DynamicResource Theme_Snow}"
-                      Data="M 4,20 L 4,24 L 8,24 L 21.5,10.5 L 17.5,6.5 L 4,20 Z M 23.7,8.3 C 24.1,7.9 24.1,7.3 23.7,6.9 L 21.1,4.3 C 20.7,3.9 20.1,3.9 19.7,4.3 L 18.5,5.5 L 22.5,9.5 L 23.7,8.3 Z"
-                      HorizontalOptions="Center" VerticalOptions="Center"
-                      WidthRequest="24" HeightRequest="24"
-                      Aspect="Uniform" />
-            </Border>
+                </ContentView.GestureRecognizers>
+                <Border WidthRequest="56"
+                        HeightRequest="56"
+                        StrokeShape="RoundRectangle 28"
+                        BackgroundColor="{DynamicResource Theme_Amber}"
+                        StrokeThickness="0"
+                        InputTransparent="True">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Amber}" Offset="0,4" Radius="8" Opacity="0.3" />
+                    </Border.Shadow>
+                    <!-- Compose Icon (Pencil) -->
+                    <Path Fill="{DynamicResource Theme_Snow}"
+                          Data="M 4,20 L 4,24 L 8,24 L 21.5,10.5 L 17.5,6.5 L 4,20 Z M 23.7,8.3 C 24.1,7.9 24.1,7.3 23.7,6.9 L 21.1,4.3 C 20.7,3.9 20.1,3.9 19.7,4.3 L 18.5,5.5 L 22.5,9.5 L 23.7,8.3 Z"
+                          HorizontalOptions="Center" VerticalOptions="Center"
+                          WidthRequest="24" HeightRequest="24"
+                          Aspect="Uniform" />
+                </Border>
+            </ContentView>
 
             <!-- Quick-capture inbox bar -->
             <Border Grid.Row="2" Margin="24,8,24,20" StrokeThickness="1"
@@ -199,19 +201,24 @@
                            ReturnCommand="{Binding QuickCaptureCommand}"
                            VerticalOptions="Center"
                            Margin="10,0,0,0" />
-                    <Border behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" WidthRequest="40" HeightRequest="40"
-                            StrokeThickness="0" BackgroundColor="{DynamicResource Theme_Amber}"
-                            StrokeShape="RoundRectangle 20" VerticalOptions="Center">
-                        <Border.GestureRecognizers>
+                    <ContentView behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" VerticalOptions="Center">
+                        <ContentView.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding QuickCaptureCommand}" />
-                        </Border.GestureRecognizers>
-                        <!-- Send (up arrow) -->
-                        <Path Data="M 12 5 L 12 19 M 12 5 L 6 11 M 12 5 L 18 11"
-                              Stroke="{DynamicResource Theme_Snow}" StrokeThickness="2"
-                              StrokeLineCap="Round" StrokeLineJoin="Round"
-                              WidthRequest="20" HeightRequest="20" Aspect="Uniform"
-                              HorizontalOptions="Center" VerticalOptions="Center" />
-                    </Border>
+                        </ContentView.GestureRecognizers>
+                        <Border WidthRequest="40"
+                                HeightRequest="40"
+                                StrokeThickness="0"
+                                BackgroundColor="{DynamicResource Theme_Amber}"
+                                StrokeShape="RoundRectangle 20"
+                                InputTransparent="True">
+                            <!-- Send (up arrow) -->
+                            <Path Data="M 12 5 L 12 19 M 12 5 L 6 11 M 12 5 L 18 11"
+                                  Stroke="{DynamicResource Theme_Snow}" StrokeThickness="2"
+                                  StrokeLineCap="Round" StrokeLineJoin="Round"
+                                  WidthRequest="20" HeightRequest="20" Aspect="Uniform"
+                                  HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                    </ContentView>
                 </Grid>
             </Border>
         </Grid>

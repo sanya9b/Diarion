@@ -71,7 +71,10 @@ public partial class HabitStatsViewModel : ObservableObject
             Habits.Clear();
             foreach (var h in histories)
             {
-                var from = h.CreatedAt > strengthStart ? h.CreatedAt : strengthStart;
+                // From the first tick for a built-in habit, so a new user's strength is not diluted by
+                // weeks before they installed the app; a habit never ticked stays at zero either way.
+                var since = h.TrackedSince ?? h.CreatedAt;
+                var from = since > strengthStart ? since : strengthStart;
                 var strength = HabitStrengthCalculator.Strength(h.CompletedDates, from, today, h.Schedule, h.Target);
                 var streak = HabitStrengthCalculator.CurrentStreak(h.CompletedDates, today, h.Schedule, h.Target, grace);
 

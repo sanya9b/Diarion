@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Controls.QuickNoteSection"
+             x:DataType="viewmodels:QuickNoteViewModel">
+
+    <!-- The last block of the day, dressed like the triggers field, but not part of the day: the arrow
+         files the text in Notes (the inbox) and empties the field. -->
+    <Border Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="6">
+            <Label Text="{x:Static localization:AppResources.QuickNoteLabel}" Style="{StaticResource SectionHeader}" />
+
+            <Border Style="{StaticResource Field}" Padding="12,4,6,4">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                    <Editor Grid.Column="0" Text="{Binding Text}"
+                            Placeholder="{x:Static localization:AppResources.QuickNotePlaceholder}"
+                            PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" BackgroundColor="Transparent"
+                            TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13"
+                            MinimumHeightRequest="40" AutoSize="TextChanges" VerticalOptions="Center" />
+
+                    <!-- Sits on the last line, so a long note grows upwards away from it. Dimmed while there
+                         is nothing to send; the command ignores an empty field either way. -->
+                    <Border Grid.Column="1" Style="{StaticResource HeaderChip}" WidthRequest="32"
+                            VerticalOptions="End" Margin="0,0,0,4"
+                            SemanticProperties.Description="{x:Static localization:AppResources.QuickNoteSend}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SendCommand}" />
+                        </Border.GestureRecognizers>
+                        <!-- The dimming lives on the surface: press feedback writes the chip's own opacity
+                             back to 1 on release. -->
+                        <Border Style="{StaticResource HeaderChipSurface}" Padding="0">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding CanSend}" Value="False">
+                                    <Setter Property="Opacity" Value="0.4" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Path Data="M 12 19 L 12 5 M 6 11 L 12 5 L 18 11" Style="{StaticResource HeaderChipIcon}"
+                                  Stroke="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Label Text="{x:Static localization:AppResources.QuickNoteSaved}" IsVisible="{Binding JustSaved}"
+                   FontSize="12" TextColor="{DynamicResource Theme_Sage}" />
+        </VerticalStackLayout>
+    </Border>
+
+</ContentView>

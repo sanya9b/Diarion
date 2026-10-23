@@ -234,17 +234,22 @@
                     <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Backlinks}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:Note">
-                                <Border behaviors:PressFeedback.IsEnabled="True" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                                        StrokeShape="RoundRectangle 12" Padding="12">
-                                    <Border.GestureRecognizers>
+                                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                    <ContentView.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenBacklinkCommand}" CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
-                                    <VerticalStackLayout Spacing="2">
-                                        <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
-                                        <Label Text="{Binding Preview}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="1" />
-                                    </VerticalStackLayout>
-                                </Border>
+                                    </ContentView.GestureRecognizers>
+                                    <Border StrokeThickness="1"
+                                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                            StrokeShape="RoundRectangle 12"
+                                            Padding="12"
+                                            InputTransparent="True">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding Preview}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="1" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </ContentView>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>

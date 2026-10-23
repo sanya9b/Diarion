@@ -39,6 +39,9 @@ public partial class MainViewModel : BaseViewModel
     /// <summary>The first-run coach marks over this screen. Idle until the page starts it.</summary>
     public TourViewModel Tour { get; }
 
+    /// <summary>The note field at the foot of the day; what it takes goes to Notes, not to the day.</summary>
+    public QuickNoteViewModel QuickNote { get; }
+
     [ObservableProperty]
     private DiaryEntryViewModel? _currentEntry;
 
@@ -117,7 +120,8 @@ public partial class MainViewModel : BaseViewModel
         HabitsSectionViewModel habitsSection,
         CycleStatusViewModel cycleStatusSection,
         TourViewModel tour,
-        IMoodIconSetService moodIconSets)
+        IMoodIconSetService moodIconSets,
+        QuickNoteViewModel quickNote)
     {
         using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
@@ -135,6 +139,7 @@ public partial class MainViewModel : BaseViewModel
         HabitsSection = habitsSection;
         CycleStatusSection = cycleStatusSection;
         Tour = tour;
+        QuickNote = quickNote;
 
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
 

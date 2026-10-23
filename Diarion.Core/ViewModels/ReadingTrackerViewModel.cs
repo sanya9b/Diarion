@@ -14,7 +14,11 @@ namespace Diarion.ViewModels;
 
 public partial class ReadingTrackerViewModel : BaseViewModel
 {
-    private const int TotalSlots = 12;
+    /// <summary>The shelf a new reader sees: four rows of three.</summary>
+    public const int MinimumSlots = 12;
+
+    /// <summary>Books per row on the page (the grid's span); the shelf grows by whole rows.</summary>
+    public const int SlotsPerRow = 3;
     private readonly IAuxiliaryService _auxiliaryService;
 
     public ObservableCollection<ReadingTrackerSlotItemViewModel> Slots { get; } = new();
@@ -56,7 +60,8 @@ public partial class ReadingTrackerViewModel : BaseViewModel
                 .ToDictionary(x => x.SlotNumber, x => x);
 
             Slots.Clear();
-            for (var slotNumber = 1; slotNumber <= TotalSlots; slotNumber++)
+            var totalSlots = SlotCount(booksBySlot.Count == 0 ? 0 : booksBySlot.Keys.Max());
+            for (var slotNumber = 1; slotNumber <= totalSlots; slotNumber++)
             {
                 booksBySlot.TryGetValue(slotNumber, out var book);
                 Slots.Add(new ReadingTrackerSlotItemViewModel(slotNumber, book));
@@ -72,6 +77,17 @@ public partial class ReadingTrackerViewModel : BaseViewModel
         {
             IsBusy = false;
         }
+    }
+
+    /// <summary>
+    /// How many places the shelf shows. Never fewer than <see cref="MinimumSlots"/>, and always a
+    /// free row under the last book: with the twelfth book in, a thirteenth place has to exist or the
+    /// shelf simply stops.
+    /// </summary>
+    public static int SlotCount(int highestFilledSlot)
+    {
+        var rows = highestFilledSlot / SlotsPerRow + 1;
+        return Math.Max(MinimumSlots, rows * SlotsPerRow);
     }
 
     [RelayCommand]
