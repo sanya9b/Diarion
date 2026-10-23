@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Reflection;
+using Diarion.Models;
 using Diarion.Resources.Icons;
 using FluentAssertions;
 using Microsoft.Maui.Controls.Shapes;
@@ -46,5 +47,18 @@ public class AppIconsTests
 
         vm.Tabs.Should().NotBeEmpty();
         vm.Tabs.Should().OnlyContain(t => t.IconGeometry is PathGeometry);
+    }
+
+    [Theory]
+    [InlineData(Season.Winter, AppIcons.SnowflakePath)]
+    [InlineData(Season.Spring, AppIcons.SproutPath)]
+    [InlineData(Season.Summer, AppIcons.SunPath)]
+    [InlineData(Season.Autumn, AppIcons.LeafPath)]
+    public void EverySeason_HasItsOwnSign(Season season, string path)
+    {
+        var expected = (PathGeometry)AppIcons.Parse(path);
+        var actual = AppIcons.ForSeason(season).Should().BeOfType<PathGeometry>().Subject;
+        actual.Figures.Count.Should().Be(expected.Figures.Count);
+        actual.Figures[0].StartPoint.Should().Be(expected.Figures[0].StartPoint);
     }
 }

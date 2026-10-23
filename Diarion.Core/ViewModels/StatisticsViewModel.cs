@@ -67,6 +67,14 @@ public partial class StatisticsViewModel : BaseViewModel
 
     public bool IsStreakVisible => CurrentStreak > 0;
 
+    /// <summary>The season's sign in the pill, as on the home tile; read when the streak is counted.</summary>
+    [ObservableProperty]
+    private Season _streakSeason = SeasonCalendar.Of(DateTime.Today);
+
+    public Microsoft.Maui.Controls.Shapes.Geometry StreakIcon => AppIcons.ForSeason(StreakSeason);
+
+    partial void OnStreakSeasonChanged(Season value) => OnPropertyChanged(nameof(StreakIcon));
+
     /// <summary>
     /// The run only survives because a missed day was forgiven. Worth saying: an unmarked number implies
     /// an unbroken run, and the quota is finite — the next miss ends it.
@@ -422,6 +430,7 @@ public partial class StatisticsViewModel : BaseViewModel
             var streak = await _diaryService.GetCurrentStreakAsync();
             CurrentStreak = streak.Length;
             IsStreakHeldByGrace = streak.HeldByGrace;
+            StreakSeason = SeasonCalendar.Of(DateTime.Today);
             OnPropertyChanged(nameof(IsStreakVisible));
 
             var range = CurrentRange;

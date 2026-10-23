@@ -80,13 +80,7 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private Season _streakSeason = SeasonCalendar.Of(DateTime.Today);
 
-    public Microsoft.Maui.Controls.Shapes.Geometry StreakIcon => StreakSeason switch
-    {
-        Season.Winter => Diarion.Resources.Icons.AppIcons.Snowflake,
-        Season.Spring => Diarion.Resources.Icons.AppIcons.Sprout,
-        Season.Summer => Diarion.Resources.Icons.AppIcons.Sun,
-        _ => Diarion.Resources.Icons.AppIcons.Leaf
-    };
+    public Microsoft.Maui.Controls.Shapes.Geometry StreakIcon => Diarion.Resources.Icons.AppIcons.ForSeason(StreakSeason);
 
     partial void OnStreakSeasonChanged(Season value) => OnPropertyChanged(nameof(StreakIcon));
 

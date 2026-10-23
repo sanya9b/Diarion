@@ -181,6 +181,21 @@ public class StatisticsRangeTests
 
     // --- The screen ---
 
+    [Fact]
+    public void StreakPill_DrawsTheSeason_AsTheHomeTileDoes()
+    {
+        var vm = BuildViewModel(out _);
+
+        vm.StreakSeason.Should().Be(SeasonCalendar.Of(DateTime.Today));
+        vm.StreakIcon.Should().BeOfType<Microsoft.Maui.Controls.Shapes.PathGeometry>()
+            .Which.Figures.Should().NotBeEmpty();
+
+        var raised = new List<string>();
+        vm.PropertyChanged += (_, e) => raised.Add(e.PropertyName ?? string.Empty);
+        vm.StreakSeason = vm.StreakSeason == Season.Winter ? Season.Summer : Season.Winter;
+        raised.Should().Contain(nameof(StatisticsViewModel.StreakIcon));
+    }
+
     internal static StatisticsViewModel BuildViewModel(out Mock<IStatisticsService> stats)
         => BuildViewModel(out stats, out _);
 

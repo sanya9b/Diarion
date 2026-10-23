@@ -25,12 +25,23 @@
                 <Label Grid.Column="0" Text="{Binding Title}" FontSize="26" FontAttributes="Bold"
                        VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
+                <!-- The same sign as the home tile: the season over the count, the ring neutral so the
+                     season's colour is the only accent (owner, 2026-10-23). -->
                 <Border Grid.Column="1" IsVisible="{Binding IsStreakVisible}" VerticalOptions="Center"
-                        StrokeThickness="1.5" Stroke="{DynamicResource Theme_Coral}"
-                        BackgroundColor="Transparent" StrokeShape="RoundRectangle 18" Padding="12,6">
+                        StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}" StrokeShape="RoundRectangle 18" Padding="12,6">
                     <HorizontalStackLayout Spacing="6" VerticalOptions="Center"
                                            SemanticProperties.Description="{x:Static localization:AppResources.StreakHeldByGraceHint}">
-                        <Path Data="{x:Static icons:AppIcons.Flame}" WidthRequest="16" HeightRequest="16" Stroke="{DynamicResource Theme_Coral}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" VerticalOptions="Center" />
+                        <Path Data="{Binding StreakIcon}" WidthRequest="16" HeightRequest="16" Stroke="{DynamicResource Theme_Amber}" StrokeThickness="1.7" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" VerticalOptions="Center">
+                            <Path.Triggers>
+                                <DataTrigger TargetType="Path" Binding="{Binding StreakSeason}" Value="{x:Static models:Season.Spring}">
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Path" Binding="{Binding StreakSeason}" Value="{x:Static models:Season.Winter}">
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                                </DataTrigger>
+                            </Path.Triggers>
+                        </Path>
                         <Label Text="{Binding CurrentStreak}" FontSize="15" FontAttributes="Bold"
                                TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
                         <!-- A caveat mark, not a colour: the palette is not distinguishable by hue alone,

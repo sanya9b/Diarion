@@ -1,3 +1,4 @@
+using Diarion.Models;
 using Microsoft.Maui.Controls.Shapes;
 
 namespace Diarion.Resources.Icons;
@@ -70,6 +71,15 @@ public static class AppIcons
         "M 14.4 19.6 L 12 17.2 L 9.6 19.6 M 6.6 17.9 L 7.5 14.6 L 4.2 13.7 M 4.2 10.3 L 7.5 9.4 L 6.6 6.1";
 
     public static Geometry Leaf => Parse(LeafPath);
+
+    /// <summary>The season's sign over a streak count: sprout, sun, leaf, snowflake (owner, 2026-10-23).</summary>
+    public static Geometry ForSeason(Season season) => season switch
+    {
+        Season.Winter => Snowflake,
+        Season.Spring => Sprout,
+        Season.Summer => Sun,
+        _ => Leaf
+    };
     public static Geometry Snowflake => Parse(SnowflakePath);
     public static Geometry Smile => Parse(SmilePath);
     public static Geometry Moon => Parse(MoonPath);
