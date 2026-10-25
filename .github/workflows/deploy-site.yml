@@ -1,0 +1,55 @@
+name: Deploy site
+
+# diarion.org is a static folder on Cloudflare Pages. Until this file existed the folder was uploaded
+# by hand, and the live site fell a month and a half behind the repository (2026-10-25: no /terms page,
+# "coming soon" over the App Store button). Now every push to main that touches site/ uploads the
+# folder with Wrangler; nothing is built, there is nothing to build.
+#
+# Needs, in the repository settings (never in the repository itself — it is public):
+#   Secrets  CLOUDFLARE_API_TOKEN     an API token with "Account → Cloudflare Pages → Edit"
+#            CLOUDFLARE_ACCOUNT_ID    Workers & Pages → Overview → Account ID (right-hand column)
+#   Variable CLOUDFLARE_PAGES_PROJECT the Pages project name as shown in Workers & Pages
+on:
+  push:
+    branches: [main]
+    paths: ['site/**', '.github/workflows/deploy-site.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-site
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Upload site/ to Cloudflare Pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Refuse to run without the project name
+        env:
+          PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+        run: |
+          if [ -z "$PROJECT" ]; then
+            echo "::error::Set the repository variable CLOUDFLARE_PAGES_PROJECT to the Pages project name."
+            exit 1
+          fi
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }} --branch=main --commit-dirty=true
+
+      - name: Check the live pages
+        run: |
+          sleep 20
+          for path in / /terms /en/terms /privacy; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://diarion.org$path")
+            echo "$path -> $code"
+            [ "$code" = "200" ] || exit 1
+          done
