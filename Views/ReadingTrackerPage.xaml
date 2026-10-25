@@ -192,37 +192,20 @@
                            TextColor="{DynamicResource Theme_Coral}" />
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
-                        <Button Grid.Column="0"
+                        <Button Style="{StaticResource DangerButton}" Grid.Column="0"
                                 Text="{localization:Translate Key=DeleteButton}"
                                 Command="{Binding DeleteBookCommand}"
-                                IsVisible="{Binding SelectedSlot.IsFilled}"
-                                CornerRadius="18"
-                                Padding="18,12"
-                                BackgroundColor="Transparent"
-                                BorderColor="{DynamicResource Theme_Coral}"
-                                BorderWidth="1"
-                                TextColor="{DynamicResource Theme_Coral}"
-                                FontAttributes="Bold" />
+                                IsVisible="{Binding SelectedSlot.IsFilled}" />
                                 
-                        <Button Grid.Column="1"
+                        <Button Style="{StaticResource PrimaryButton}" Grid.Column="1"
                                 Text="{localization:Translate Key=ReadingTrackerSaveBookButton}"
                                 Command="{Binding SaveBookCommand}"
-                                IsVisible="{Binding SelectedSlot.IsFilled}"
-                                CornerRadius="18"
-                                Padding="18,12"
-                                BackgroundColor="{DynamicResource Theme_Sage}"
-                                TextColor="{DynamicResource Theme_Snow}"
-                                FontAttributes="Bold" />
+                                IsVisible="{Binding SelectedSlot.IsFilled}" />
 
-                        <Button Grid.Column="0" Grid.ColumnSpan="2"
+                        <Button Style="{StaticResource PrimaryButton}" Grid.Column="0" Grid.ColumnSpan="2"
                                 Text="{localization:Translate Key=ReadingTrackerSaveBookButton}"
                                 Command="{Binding SaveBookCommand}"
-                                IsVisible="{Binding SelectedSlot.IsEmpty}"
-                                CornerRadius="18"
-                                Padding="18,12"
-                                BackgroundColor="{DynamicResource Theme_Sage}"
-                                TextColor="{DynamicResource Theme_Snow}"
-                                FontAttributes="Bold" />
+                                IsVisible="{Binding SelectedSlot.IsEmpty}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>

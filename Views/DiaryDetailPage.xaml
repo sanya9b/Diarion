@@ -80,47 +80,14 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <ContentView behaviors:PressFeedback.IsEnabled="True" Grid.Row="1">
-                    <ContentView.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding SaveCommand}" />
-                    </ContentView.GestureRecognizers>
-                    <Border StrokeShape="RoundRectangle 14"
-                            StrokeThickness="0"
-                            HeightRequest="48"
-                            BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
-                            InputTransparent="True">
-                        <Border.Shadow>
-                            <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="8" Opacity="0.2" />
-                        </Border.Shadow>
-                        <Label Text="{x:Static localization:AppResources.SaveButton}"
-                               InputTransparent="True"
-                               FontAttributes="Bold"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               TextColor="{DynamicResource Theme_Snow_Midnight}" />
-                    </Border>
-                </ContentView>
+                <Button Grid.Row="1" Style="{StaticResource PrimaryButton}"
+                        Text="{x:Static localization:AppResources.SaveButton}"
+                        Command="{Binding SaveCommand}" />
 
-                <ContentView behaviors:PressFeedback.IsEnabled="True" Grid.Row="2" IsVisible="{Binding IsExistingEntry}">
-                    <ContentView.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding DeleteCommand}" />
-                    </ContentView.GestureRecognizers>
-                    <Border StrokeShape="RoundRectangle 14"
-                            StrokeThickness="0"
-                            HeightRequest="48"
-                            BackgroundColor="{DynamicResource Theme_Midnight_Dust}"
-                            InputTransparent="True">
-                        <Border.Shadow>
-                            <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,4" Radius="8" Opacity="0.2" />
-                        </Border.Shadow>
-                        <Label Text="{x:Static localization:AppResources.DeleteButton}"
-                               InputTransparent="True"
-                               FontAttributes="Bold"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               TextColor="{DynamicResource Theme_Snow_Midnight}" />
-                    </Border>
-                </ContentView>
+                <Button Grid.Row="2" Style="{StaticResource DangerButton}"
+                        Text="{x:Static localization:AppResources.DeleteButton}"
+                        Command="{Binding DeleteCommand}"
+                        IsVisible="{Binding IsExistingEntry}" />
         </Grid>
     </Grid>
 </ContentPage>

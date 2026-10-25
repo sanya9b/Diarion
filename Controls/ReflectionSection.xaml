@@ -31,6 +31,15 @@
                 </Border>
             </VerticalStackLayout>
 
+            <!-- Support for others. The model, export, search and the period snapshot had the field all
+                 along; only the screen was missing it. -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="{x:Static localization:AppResources.SupportForOthersLabel}" Style="{StaticResource SectionHeader}" />
+                <Border Style="{StaticResource Field}" Padding="12,8">
+                    <Editor Text="{Binding SupportForOthers}" Placeholder="{x:Static localization:AppResources.SupportForOthersPlaceholder}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="13" MinimumHeightRequest="40" AutoSize="TextChanges" />
+                </Border>
+            </VerticalStackLayout>
+
         </VerticalStackLayout>
     </Border>
 

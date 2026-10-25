@@ -32,15 +32,8 @@
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="24,10,24,32" Spacing="14">
-                <Button Text="{localization:Translate Key=HabitTrackerAddButton}"
-                        Command="{Binding ShowAddTrackerFormCommand}"
-                        CornerRadius="24"
-                        Padding="18,14"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        TextColor="{DynamicResource Theme_Coral}"
-                        BorderColor="{DynamicResource Theme_Dust_Ocean}"
-                        BorderWidth="1"
-                        FontAttributes="Bold" />
+                <Button Style="{StaticResource PrimaryButton}" Text="{localization:Translate Key=HabitTrackerAddButton}"
+                        Command="{Binding ShowAddTrackerFormCommand}" />
 
                 <controls:EmptyStateView IsVisible="{Binding HasNoTrackers}" Scene="Habits"
                                          Title="{x:Static localization:AppResources.EmptyStateHabitsTitle}"
@@ -327,14 +320,9 @@
                            FontSize="12"
                            TextColor="{DynamicResource Theme_Coral}" />
 
-                    <Button Text="{Binding FormButtonText}"
+                    <Button Style="{StaticResource PrimaryButton}" Text="{Binding FormButtonText}"
                             Command="{Binding AddTrackerCommand}"
-                            CornerRadius="18"
-                            Padding="18,12"
-                            Margin="0,8,0,0"
-                            BackgroundColor="{DynamicResource Theme_Coral}"
-                            TextColor="{DynamicResource Theme_Snow}"
-                            FontAttributes="Bold" />
+                            Margin="0,8,0,0" />
                 </VerticalStackLayout>
             </Border>
         </Grid>

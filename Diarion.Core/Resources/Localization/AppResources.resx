@@ -694,6 +694,12 @@
   <data name="SoulFoodPlaceholder" xml:space="preserve">
     <value>For example: read a book, listened to music...</value>
   </data>
+  <data name="SupportForOthersLabel" xml:space="preserve">
+    <value>FOR OTHERS:</value>
+  </data>
+  <data name="SupportForOthersPlaceholder" xml:space="preserve">
+    <value>For example: helped a colleague, called my parents...</value>
+  </data>
   <data name="HomeBlocksTitle" xml:space="preserve">
     <value>HOME SCREEN BLOCKS</value>
   </data>
@@ -1847,7 +1853,7 @@
     <value>The two blocks that ask you something instead of recording an answer.</value>
   </data>
   <data name="SettingsReflectionHint" xml:space="preserve">
-    <value>Three fields at the end of the day: triggers, gratitude, something for yourself.</value>
+    <value>Four fields at the end of the day: triggers, gratitude, something for yourself, something for others.</value>
   </data>
   <data name="SettingsFinanceTitle" xml:space="preserve">
     <value>FINANCES</value>

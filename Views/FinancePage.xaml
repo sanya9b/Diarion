@@ -345,13 +345,8 @@
                     </Border>
 
                     <!-- Кнопка додавання -->
-                    <Button Text="{localization:Translate Key=AddTransactionButton}"
-                            Command="{Binding ToggleAddTransactionCommand}"
-                            CornerRadius="12"
-                            Padding="16,12"
-                            BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
-                            TextColor="{DynamicResource Theme_Snow_Midnight}"
-                            FontAttributes="Bold" />
+                    <Button Style="{StaticResource PrimaryButton}" Text="{localization:Translate Key=AddTransactionButton}"
+                            Command="{Binding ToggleAddTransactionCommand}" />
 
                     <!-- Бюджети (горизонтальна смуга віджетів) -->
                     <VerticalStackLayout Spacing="10" IsVisible="{Binding ShowBudgets}">
@@ -612,14 +607,8 @@
                         </HorizontalStackLayout>
                     </ScrollView>
 
-                    <Button Command="{Binding SaveTransactionCommand}"
-                            CornerRadius="12"
-                            Padding="16,10"
-                            Margin="0,4,0,0"
-                            BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
-                            TextColor="{DynamicResource Theme_Snow_Midnight}"
-                            FontAttributes="Bold"
-                            FontSize="14">
+                    <Button Style="{StaticResource PrimaryButton}" Command="{Binding SaveTransactionCommand}"
+                            Margin="0,4,0,0">
                         <Button.Triggers>
                             <DataTrigger TargetType="Button" Binding="{Binding IsEditing}" Value="True">
                                 <Setter Property="Text" Value="{localization:Translate Key=SaveButton}" />
@@ -671,14 +660,9 @@
                     <BoxView HeightRequest="1" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" />
                     <Entry Text="{Binding NewBudgetLimitText}" Keyboard="Numeric" Placeholder="{localization:Translate Key=BudgetLimitPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
-                    <Button Text="{localization:Translate Key=AddBudgetButton}"
+                    <Button Style="{StaticResource PrimaryButton}" Text="{localization:Translate Key=AddBudgetButton}"
                             Command="{Binding SaveBudgetCommand}"
-                            CornerRadius="12"
-                            Padding="16,10"
-                            Margin="0,4,0,0"
-                            BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
-                            TextColor="{DynamicResource Theme_Snow_Midnight}"
-                            FontAttributes="Bold" />
+                            Margin="0,4,0,0" />
                 </VerticalStackLayout>
             </Border>
         </Grid>
@@ -741,14 +725,10 @@
                     </ScrollView>
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,4,0,0">
-                        <Button Grid.Column="0" Text="{localization:Translate Key=BudgetEditButton}"
-                                Command="{Binding EditBudgetCommand}" CommandParameter="{Binding SelectedBudget}"
-                                BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                BorderColor="{DynamicResource Theme_Dust_Ocean}" BorderWidth="1" CornerRadius="12" FontSize="13" />
-                        <Button Grid.Column="1" Text="{localization:Translate Key=BudgetDeleteButton}"
-                                Command="{Binding DeleteBudgetCommand}" CommandParameter="{Binding SelectedBudget}"
-                                BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Coral}"
-                                BorderColor="{DynamicResource Theme_Coral}" BorderWidth="1" CornerRadius="12" FontSize="13" />
+                        <Button Style="{StaticResource SecondaryButton}" FontSize="13" Grid.Column="0" Text="{localization:Translate Key=BudgetEditButton}"
+                                Command="{Binding EditBudgetCommand}" CommandParameter="{Binding SelectedBudget}" />
+                        <Button Style="{StaticResource DangerButton}" FontSize="13" Grid.Column="1" Text="{localization:Translate Key=BudgetDeleteButton}"
+                                Command="{Binding DeleteBudgetCommand}" CommandParameter="{Binding SelectedBudget}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -878,20 +858,13 @@
                         </ScrollView>
                     </VerticalStackLayout>
 
-                    <Button Text="{localization:Translate Key=SaveButton}"
+                    <Button Style="{StaticResource PrimaryButton}" Text="{localization:Translate Key=SaveButton}"
                             Command="{Binding SaveAccountCommand}"
-                            CornerRadius="12"
-                            Padding="16,10"
-                            Margin="0,4,0,0"
-                            BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
-                            TextColor="{DynamicResource Theme_Snow_Midnight}"
-                            FontAttributes="Bold" />
+                            Margin="0,4,0,0" />
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding IsEditingAccount}">
-                        <Button Grid.Column="0"
-                                Command="{Binding ToggleArchiveAccountCommand}"
-                                BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                BorderColor="{DynamicResource Theme_Dust_Ocean}" BorderWidth="1" CornerRadius="12" FontSize="13">
+                        <Button Style="{StaticResource SecondaryButton}" FontSize="13" Grid.Column="0"
+                                Command="{Binding ToggleArchiveAccountCommand}">
                             <Button.Triggers>
                                 <DataTrigger TargetType="Button" Binding="{Binding IsEditingArchivedAccount}" Value="True">
                                     <Setter Property="Text" Value="{localization:Translate Key=UnarchiveAccountButton}" />
@@ -901,10 +874,8 @@
                                 </DataTrigger>
                             </Button.Triggers>
                         </Button>
-                        <Button Grid.Column="1" Text="{localization:Translate Key=DeleteAccountButton}"
-                                Command="{Binding DeleteAccountCommand}"
-                                BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Coral}"
-                                BorderColor="{DynamicResource Theme_Coral}" BorderWidth="1" CornerRadius="12" FontSize="13" />
+                        <Button Style="{StaticResource DangerButton}" FontSize="13" Grid.Column="1" Text="{localization:Translate Key=DeleteAccountButton}"
+                                Command="{Binding DeleteAccountCommand}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -1026,14 +997,9 @@
 
                     <Label Text="{Binding TransferError}" IsVisible="{Binding HasTransferError}" FontSize="12" TextColor="{DynamicResource Theme_Coral}" />
 
-                    <Button Text="{localization:Translate Key=SaveButton}"
+                    <Button Style="{StaticResource PrimaryButton}" Text="{localization:Translate Key=SaveButton}"
                             Command="{Binding SaveTransferCommand}"
-                            CornerRadius="12"
-                            Padding="16,10"
-                            Margin="0,4,0,0"
-                            BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
-                            TextColor="{DynamicResource Theme_Snow_Midnight}"
-                            FontAttributes="Bold" />
+                            Margin="0,4,0,0" />
                 </VerticalStackLayout>
             </Border>
         </Grid>
@@ -1158,14 +1124,9 @@
 
                     <Label Text="{Binding RecurringError}" IsVisible="{Binding HasRecurringError}" FontSize="12" TextColor="{DynamicResource Theme_Coral}" />
 
-                    <Button Text="{localization:Translate Key=SaveButton}"
+                    <Button Style="{StaticResource PrimaryButton}" Text="{localization:Translate Key=SaveButton}"
                             Command="{Binding SaveRecurringRuleCommand}"
-                            CornerRadius="12"
-                            Padding="16,10"
-                            Margin="0,4,0,0"
-                            BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
-                            TextColor="{DynamicResource Theme_Snow_Midnight}"
-                            FontAttributes="Bold" />
+                            Margin="0,4,0,0" />
                 </VerticalStackLayout>
             </Border>
         </Grid>

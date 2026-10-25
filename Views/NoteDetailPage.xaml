@@ -102,10 +102,10 @@
 
             <DataTemplate x:Key="NoteChecklistBlock" x:DataType="viewModels:NoteBlockViewModel">
                 <Grid ColumnDefinitions="32,*">
-                    <!-- Round, and it ticks on tap. The control writes its own state back to the block. -->
+                    <!-- The same square box as every other list in the app; it ticks on tap and writes
+                         its own state back to the block. -->
                     <controls:RoundedCheckBox Grid.Column="0"
                                               IsChecked="{Binding IsChecked}"
-                                              CornerRadius="9"
                                               Color="{DynamicResource Theme_Coral}"
                                               VerticalOptions="Start"
                                               Margin="0,2,0,0" />

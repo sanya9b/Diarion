@@ -22,12 +22,8 @@
                 <Label Text="{Binding BannerText}"
                        FontSize="13" VerticalOptions="Center"
                        TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                <Button Grid.Column="1" Text="{Binding BannerButtonText}"
-                        Command="{Binding RenewCommand}"
-                        BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
-                        TextColor="{DynamicResource Theme_Snow_Black}"
-                        FontAttributes="Bold" CornerRadius="12"
-                        HeightRequest="36" Padding="16,0" VerticalOptions="Center" />
+                <Button Style="{StaticResource PrimaryButton}" HeightRequest="36" Padding="16,0" Grid.Column="1" Text="{Binding BannerButtonText}"
+                        Command="{Binding RenewCommand}" VerticalOptions="Center" />
             </Grid>
         </Border>
 
@@ -43,13 +39,9 @@
                 <Label Text="{x:Static localization:AppResources.LegacyWelcomeText}"
                        FontSize="13" LineHeight="1.15"
                        TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Button Text="{x:Static localization:AppResources.LegacyWelcomeDismiss}"
+                <Button Style="{StaticResource SecondaryButton}" HeightRequest="36" Padding="16,0" Text="{x:Static localization:AppResources.LegacyWelcomeDismiss}"
                         Command="{Binding DismissLegacyCardCommand}"
-                        HorizontalOptions="End"
-                        BackgroundColor="Transparent"
-                        BorderColor="{DynamicResource Theme_Ocean_Ocean}" BorderWidth="1"
-                        TextColor="{DynamicResource Theme_Midnight_Snow}"
-                        CornerRadius="12" HeightRequest="36" Padding="16,0" />
+                        HorizontalOptions="End" />
             </VerticalStackLayout>
         </Border>
     </VerticalStackLayout>

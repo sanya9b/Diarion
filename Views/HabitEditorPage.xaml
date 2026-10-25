@@ -186,13 +186,9 @@
                        FontSize="13" TextColor="{DynamicResource Theme_Coral}" />
 
                 <!-- Delete (existing only) -->
-                <Button Text="{localization:Translate Key=HabitEditorDelete}"
+                <Button Style="{StaticResource DangerButton}" Text="{localization:Translate Key=HabitEditorDelete}"
                         Command="{Binding DeleteCommand}"
                         IsVisible="{Binding IsExisting}"
-                        BackgroundColor="Transparent"
-                        TextColor="{DynamicResource Theme_Coral}"
-                        BorderColor="{DynamicResource Theme_Coral}"
-                        BorderWidth="1"
                         Margin="0,8,0,0" />
             </VerticalStackLayout>
         </ScrollView>
