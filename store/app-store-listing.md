@@ -247,8 +247,7 @@ Privacy Policy: https://diarion.org/en/privacy
 ```
 
 **«Що нового» у версії 1.1.** Перший абзац — прямо про підписку (R6.4). Список «Також» звірено зі
-збіркою 3 (2026-10-20): настрій на площині (spec 18), шлях до першої гіпотези (spec 17) і дрібні
-зміни дня.
+збіркою 21 (2026-10-25) — тією, що подається.
 
 Українська:
 ```
@@ -257,14 +256,16 @@ Diarion став платним: підписка Diarion Base на місяць
 Якщо ви встановили версію 1.0 — наступні три місяці все лишається для вас безкоштовним, дату видно на картці на головній. Нічого робити не треба.
 
 Також:
-• настрій можна назвати точніше: п'ять облич, а під кожним — до семи станів на вибір
-• настрій по годинах — у кутку картки, і видно, коли ви відмічаєте годину, а коли весь день
-• у статистиці з'явилась енергія за годинами
+• настрій можна назвати точніше: п'ять облич, під кожним — до семи станів; обличчя на вибір — смайли, погода або рослини
+• настрій по годинах — годинник у кутку картки
+• вкладка «Огляд» у статистиці: що змінилось проти попереднього періоду, словами
+• пошук по щоденнику
+• озвучені нагадування: задача читається вголос у потрібний час
+• швидка нотатка внизу дня — одразу в Нотатки
+• автоматичні резервні копії просто в телефон
+• симптоми в панелі місячних, день циклу поруч з інтимним життям
 • стрічка під датою показує, скільки днів лишилось до першої гіпотези
-• поля здоров'я, сну й харчування ростуть разом із текстом
-• день циклу — поруч з інтимним життям
-• утримання задачі в планувальнику змінює її важливість
-• нотатка видаляється свайпом уліво
+• серії прощають пропущений день, а на плитці серії — знак пори року
 ```
 
 English:
@@ -274,14 +275,16 @@ Diarion is now paid: a Diarion Base subscription — monthly, every three months
 If you installed version 1.0, everything stays free for you for the next three months; the date is on the card on the home screen. There is nothing to do.
 
 Also:
-• name your mood more precisely: five faces, each with up to seven feelings to choose from
-• mood by the hour now lives in the corner of the card, and it is always clear whether you are marking an hour or the whole day
-• statistics now show your energy by the hour
+• name your mood more precisely: five faces, each with up to seven feelings; pick the faces you like — emoji, weather or plants
+• mood by the hour, from the clock in the corner of the card
+• a Review tab in statistics: what changed against the previous period, in words
+• search across the diary
+• spoken reminders: a task is read aloud at its time
+• a quick note at the foot of the day goes straight to Notes
+• automatic backups right on the phone
+• symptoms in the period panel, the cycle day next to intimate life
 • a strip under the date shows how many days are left until your first hypothesis
-• health, sleep and food fields grow with the text
-• the cycle day now sits next to intimate life
-• press and hold a task in the planner to change its priority
-• swipe a note left to delete it
+• streaks forgive a missed day, and the streak tile wears the season
 ```
 
 **Поля App Store Connect, які не міняються:** ціна застосунку `Free`; Privacy Policy URL ті самі;
