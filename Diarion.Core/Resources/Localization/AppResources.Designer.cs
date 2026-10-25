@@ -75,6 +75,8 @@ namespace Diarion.Resources.Localization {
         public static string TriggersPlaceholder => ResourceManager.GetString("TriggersPlaceholder", resourceCulture) ?? string.Empty;
         public static string GratitudePlaceholder => ResourceManager.GetString("GratitudePlaceholder", resourceCulture) ?? string.Empty;
         public static string SoulFoodPlaceholder => ResourceManager.GetString("SoulFoodPlaceholder", resourceCulture) ?? string.Empty;
+        public static string SupportForOthersLabel => ResourceManager.GetString("SupportForOthersLabel", resourceCulture) ?? string.Empty;
+        public static string SupportForOthersPlaceholder => ResourceManager.GetString("SupportForOthersPlaceholder", resourceCulture) ?? string.Empty;
         public static string HomeBlocksTitle => ResourceManager.GetString("HomeBlocksTitle", resourceCulture) ?? string.Empty;
         public static string SettingsAppearanceTitle => ResourceManager.GetString("SettingsAppearanceTitle", resourceCulture) ?? string.Empty;
         public static string MoodIconSetTitle => ResourceManager.GetString("MoodIconSetTitle", resourceCulture) ?? string.Empty;

@@ -682,6 +682,12 @@
   <data name="SoulFoodPlaceholder" xml:space="preserve">
     <value>Наприклад: почитав книгу, послухав музику...</value>
   </data>
+  <data name="SupportForOthersLabel" xml:space="preserve">
+    <value>ДЛЯ ІНШИХ:</value>
+  </data>
+  <data name="SupportForOthersPlaceholder" xml:space="preserve">
+    <value>Наприклад: допоміг колезі, подзвонив батькам...</value>
+  </data>
   <data name="HomeBlocksTitle" xml:space="preserve">
     <value>БЛОКИ ГОЛОВНОГО ЕКРАНА</value>
   </data>
@@ -1724,7 +1730,7 @@
     <value>Два блоки, які ставлять запитання, а не записують відповідь.</value>
   </data>
   <data name="SettingsReflectionHint" xml:space="preserve">
-    <value>Три поля наприкінці дня: тригери, вдячність і щось для себе.</value>
+    <value>Чотири поля наприкінці дня: тригери, вдячність, щось для себе і щось для інших.</value>
   </data>
   <data name="SettingsFinanceTitle" xml:space="preserve">
     <value>ФІНАНСИ</value>
