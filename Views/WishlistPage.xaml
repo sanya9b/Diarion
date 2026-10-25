@@ -79,11 +79,8 @@
                         </Border.Triggers>
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
                             <!-- Checkbox for completion -->
-                            <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Scale="0.8" Margin="-8,0,-4,0">
-                                <CheckBox.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleCompletedCommand}" CommandParameter="{Binding .}" />
-                                </CheckBox.GestureRecognizers>
-                            </CheckBox>
+                            <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}"
+                                                      Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleCompletedCommand}" CommandParameter="{Binding .}" />
 
                             <!-- Want Text -->
                             <Label Grid.Column="1" Text="{Binding WantText}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" LineBreakMode="TailTruncation" IsVisible="{Binding WantText, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}">
@@ -145,37 +142,20 @@
                     <Editor Text="{Binding NewWantText}" AutoSize="TextChanges" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" MinimumHeightRequest="40" Placeholder="{localization:Translate Key=WantLabel}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" />
 
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="12" Margin="0,8,0,0">
-                        <Button Grid.Column="0"
+                        <Button Style="{StaticResource DangerButton}" Grid.Column="0"
                                 Text="{localization:Translate Key=DeleteButton}"
                                 Command="{Binding DeleteCurrentEntryCommand}"
-                                IsVisible="{Binding IsEditing}"
-                                CornerRadius="12"
-                                Padding="16,12"
-                                BackgroundColor="Transparent"
-                                BorderColor="{DynamicResource Theme_Coral}"
-                                BorderWidth="1"
-                                TextColor="{DynamicResource Theme_Coral}"
-                                FontAttributes="Bold" />
+                                IsVisible="{Binding IsEditing}" />
 
-                        <Button Grid.Column="1"
+                        <Button Style="{StaticResource PrimaryButton}" Grid.Column="1"
                                 Text="{localization:Translate Key=SaveButton}"
                                 Command="{Binding SaveEntryCommand}"
-                                IsVisible="{Binding IsEditing}"
-                                CornerRadius="12"
-                                Padding="16,12"
-                                BackgroundColor="{DynamicResource Theme_Berry}"
-                                TextColor="{DynamicResource Theme_Snow}"
-                                FontAttributes="Bold" />
+                                IsVisible="{Binding IsEditing}" />
 
-                        <Button Grid.Column="0" Grid.ColumnSpan="2"
+                        <Button Style="{StaticResource PrimaryButton}" Grid.Column="0" Grid.ColumnSpan="2"
                                 Text="{localization:Translate Key=SaveButton}"
                                 Command="{Binding SaveEntryCommand}"
-                                IsVisible="{Binding IsEditing, Converter={toolkit:InvertedBoolConverter}}"
-                                CornerRadius="12"
-                                Padding="16,12"
-                                BackgroundColor="{DynamicResource Theme_Berry}"
-                                TextColor="{DynamicResource Theme_Snow}"
-                                FontAttributes="Bold" />
+                                IsVisible="{Binding IsEditing, Converter={toolkit:InvertedBoolConverter}}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>

@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
@@ -47,46 +48,24 @@
                          Ticking a task off is the most frequent thing done here and it was the second
                          smallest target on the screen. The row's own left padding is spent on this
                          instead, so the text beside it barely moves. Vertical reach is free — the row is
-                         28px and nothing else is competing for it. -->
-                    <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" BackgroundColor="Transparent" Padding="6,0" VerticalOptions="Fill">
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.ToggleTodoCompletionCommand, Source={x:Reference PlannerViewRoot}}" CommandParameter="{Binding .}" />
-                        </Grid.GestureRecognizers>
-                    <Border WidthRequest="20" HeightRequest="20" StrokeShape="RoundRectangle 6"
-                            StrokeThickness="1.5" VerticalOptions="Center" InputTransparent="True">
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="False">
-                                <Setter Property="BackgroundColor" Value="Transparent" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
+                         28px and nothing else is competing for it. The box is the shared control, coloured
+                         by priority once ticked; the command runs inside it. -->
+                    <controls:RoundedCheckBox Grid.Column="0" VerticalOptions="Fill" MinimumHeightRequest="0"
+                                              IsChecked="{Binding IsCompleted}"
+                                              Command="{Binding BindingContext.ToggleTodoCompletionCommand, Source={x:Reference PlannerViewRoot}}"
+                                              CommandParameter="{Binding .}">
+                        <controls:RoundedCheckBox.Triggers>
+                            <DataTrigger TargetType="controls:RoundedCheckBox" Binding="{Binding Priority}" Value="Low">
+                                <Setter Property="Color" Value="{DynamicResource Theme_Sage}" />
                             </DataTrigger>
-                            <MultiTrigger TargetType="Border">
-                                <MultiTrigger.Conditions>
-                                    <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
-                                    <BindingCondition Binding="{Binding Priority}" Value="Low" />
-                                </MultiTrigger.Conditions>
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                            </MultiTrigger>
-                            <MultiTrigger TargetType="Border">
-                                <MultiTrigger.Conditions>
-                                    <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
-                                    <BindingCondition Binding="{Binding Priority}" Value="Medium" />
-                                </MultiTrigger.Conditions>
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
-                            </MultiTrigger>
-                            <MultiTrigger TargetType="Border">
-                                <MultiTrigger.Conditions>
-                                    <BindingCondition Binding="{Binding IsCompleted}" Value="True" />
-                                    <BindingCondition Binding="{Binding Priority}" Value="High" />
-                                </MultiTrigger.Conditions>
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                            </MultiTrigger>
-                        </Border.Triggers>
-                        <Label Text="✓" InputTransparent="True" TextColor="{DynamicResource Theme_Snow_Midnight}" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsCompleted}" />
-                    </Border>
-                    </Grid>
+                            <DataTrigger TargetType="controls:RoundedCheckBox" Binding="{Binding Priority}" Value="Medium">
+                                <Setter Property="Color" Value="{DynamicResource Theme_Amber}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="controls:RoundedCheckBox" Binding="{Binding Priority}" Value="High">
+                                <Setter Property="Color" Value="{DynamicResource Theme_Coral}" />
+                            </DataTrigger>
+                        </controls:RoundedCheckBox.Triggers>
+                    </controls:RoundedCheckBox>
 
                     <!-- Tap opens the task, press and hold opens the priority colours. One TouchBehavior
                          owns both, because it is what tells them apart: it drops the tap that ends a long

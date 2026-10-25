@@ -223,10 +223,10 @@
                             <Label Grid.Column="0" Text="{x:Static localization:AppResources.BirthDateLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.BirthDateNotSet}" IsVisible="{Binding HasBirthDate, Converter={toolkit:InvertedBoolConverter}}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                            <Button Grid.Column="2" Text="{x:Static localization:AppResources.BirthDateSetAction}" Command="{Binding SetBirthDateCommand}" IsVisible="{Binding HasBirthDate, Converter={toolkit:InvertedBoolConverter}}" FontSize="13" HeightRequest="36" Padding="14,0" CornerRadius="18" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            <Button Style="{StaticResource SecondaryButton}" FontSize="13" HeightRequest="36" Padding="14,0" Grid.Column="2" Text="{x:Static localization:AppResources.BirthDateSetAction}" Command="{Binding SetBirthDateCommand}" IsVisible="{Binding HasBirthDate, Converter={toolkit:InvertedBoolConverter}}" />
 
                             <DatePicker Grid.Column="1" Date="{Binding BirthDateInput}" MinimumDate="{Binding MinimumBirthDate}" MaximumDate="{Binding MaximumBirthDate}" IsVisible="{Binding HasBirthDate}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                            <Button Grid.Column="2" Text="×" Command="{Binding ClearBirthDateCommand}" IsVisible="{Binding HasBirthDate}" SemanticProperties.Description="{x:Static localization:AppResources.BirthDateClearAction}" FontSize="18" WidthRequest="36" HeightRequest="36" Padding="0" CornerRadius="18" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Button Style="{StaticResource GhostButton}" FontSize="18" HeightRequest="36" Padding="0" Grid.Column="2" Text="×" Command="{Binding ClearBirthDateCommand}" IsVisible="{Binding HasBirthDate}" SemanticProperties.Description="{x:Static localization:AppResources.BirthDateClearAction}" WidthRequest="36" />
                         </Grid>
                         <Label Text="{x:Static localization:AppResources.BirthDatePrivacyHint}" FontSize="11" LineBreakMode="WordWrap" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,-4,0,0" />
 
@@ -548,33 +548,19 @@
 
                         <Label Text="{Binding StatusText}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
-                        <Button Text="{x:Static localization:AppResources.SubscriptionManageButton}"
-                                Command="{Binding ManageCommand}" IsVisible="{Binding CanManage}"
-                                BackgroundColor="Transparent"
-                                BorderColor="{DynamicResource Theme_Ocean_Ocean}" BorderWidth="1"
-                                TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                CornerRadius="12" HeightRequest="44" />
+                        <Button Style="{StaticResource SecondaryButton}" Text="{x:Static localization:AppResources.SubscriptionManageButton}"
+                                Command="{Binding ManageCommand}" IsVisible="{Binding CanManage}" />
 
-                        <Button Text="{x:Static localization:AppResources.PaywallSubscribeButton}"
-                                Command="{Binding SubscribeCommand}" IsVisible="{Binding CanSubscribe}"
-                                BackgroundColor="{DynamicResource Theme_Midnight_Snow}"
-                                TextColor="{DynamicResource Theme_Snow_Black}"
-                                FontAttributes="Bold" CornerRadius="12" HeightRequest="44" />
+                        <Button Style="{StaticResource PrimaryButton}" Text="{x:Static localization:AppResources.PaywallSubscribeButton}"
+                                Command="{Binding SubscribeCommand}" IsVisible="{Binding CanSubscribe}" />
 
-                        <Button Text="{x:Static localization:AppResources.SubscriptionSupportButton}"
-                                Command="{Binding SubscribeCommand}" IsVisible="{Binding CanSupport}"
-                                BackgroundColor="Transparent"
-                                BorderColor="{DynamicResource Theme_Ocean_Ocean}" BorderWidth="1"
-                                TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                CornerRadius="12" HeightRequest="44" />
+                        <Button Style="{StaticResource SecondaryButton}" Text="{x:Static localization:AppResources.SubscriptionSupportButton}"
+                                Command="{Binding SubscribeCommand}" IsVisible="{Binding CanSupport}" />
 
                         <!-- Quiet on purpose: a text button under the main action, for the new phone or
                              the reinstall, not a second call to pay. -->
-                        <Button Text="{x:Static localization:AppResources.PaywallRestoreButton}"
-                                Command="{Binding RestoreCommand}" IsVisible="{Binding CanRestore}"
-                                BackgroundColor="Transparent" BorderWidth="0"
-                                TextColor="{DynamicResource Theme_Ocean_Dust}"
-                                FontSize="13" HeightRequest="40" HorizontalOptions="Center" />
+                        <Button Style="{StaticResource GhostButton}" FontSize="13" Text="{x:Static localization:AppResources.PaywallRestoreButton}"
+                                Command="{Binding RestoreCommand}" IsVisible="{Binding CanRestore}" HorizontalOptions="Center" />
 
                         <Label Text="{Binding RestoreMessage}" IsVisible="{Binding HasRestoreMessage}"
                                FontSize="12" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"
@@ -595,35 +581,17 @@
                         <Label Text="{x:Static localization:AppResources.SecurityLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
 
                         <!-- No PIN set yet: offer to enable the app lock -->
-                        <Button Text="{x:Static localization:AppResources.SetPinButton}"
+                        <Button Style="{StaticResource SecondaryButton}" Text="{x:Static localization:AppResources.SetPinButton}"
                                 Command="{Binding SetPinCommand}"
-                                IsVisible="{Binding IsLockDisabled}"
-                                BackgroundColor="Transparent"
-                                BorderColor="{DynamicResource Theme_Ocean_Ocean}"
-                                BorderWidth="1"
-                                TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                CornerRadius="12"
-                                HeightRequest="44" />
+                                IsVisible="{Binding IsLockDisabled}" />
 
                         <!-- PIN set: manage the lock -->
                         <VerticalStackLayout Spacing="10" IsVisible="{Binding IsLockEnabled}">
                             <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
-                                <Button Grid.Column="0" Text="{x:Static localization:AppResources.ChangePinButton}"
-                                        Command="{Binding SetPinCommand}"
-                                        BackgroundColor="Transparent"
-                                        BorderColor="{DynamicResource Theme_Ocean_Ocean}"
-                                        BorderWidth="1"
-                                        TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                        CornerRadius="12"
-                                        HeightRequest="44" />
-                                <Button Grid.Column="1" Text="{x:Static localization:AppResources.RemovePinButton}"
-                                        Command="{Binding RemovePinCommand}"
-                                        BackgroundColor="Transparent"
-                                        BorderColor="{DynamicResource Theme_Coral}"
-                                        BorderWidth="1"
-                                        TextColor="{DynamicResource Theme_Coral}"
-                                        CornerRadius="12"
-                                        HeightRequest="44" />
+                                <Button Style="{StaticResource SecondaryButton}" Grid.Column="0" Text="{x:Static localization:AppResources.ChangePinButton}"
+                                        Command="{Binding SetPinCommand}" />
+                                <Button Style="{StaticResource DangerButton}" Grid.Column="1" Text="{x:Static localization:AppResources.RemovePinButton}"
+                                        Command="{Binding RemovePinCommand}" />
                             </Grid>
 
                             <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
@@ -649,23 +617,11 @@
                         <Label Text="{x:Static localization:AppResources.BackupDescription}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,0,0,8" />
 
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
-                            <Button Grid.Column="0" Text="{x:Static localization:AppResources.BackupExportButton}"
-                                    Command="{Binding ExportBackupCommand}"
-                                    BackgroundColor="Transparent"
-                                    BorderColor="{DynamicResource Theme_Ocean_Ocean}"
-                                    BorderWidth="1"
-                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                    CornerRadius="12"
-                                    HeightRequest="44" />
+                            <Button Style="{StaticResource SecondaryButton}" Grid.Column="0" Text="{x:Static localization:AppResources.BackupExportButton}"
+                                    Command="{Binding ExportBackupCommand}" />
 
-                            <Button Grid.Column="1" Text="{x:Static localization:AppResources.BackupImportButton}"
-                                    Command="{Binding ImportBackupCommand}"
-                                    BackgroundColor="Transparent"
-                                    BorderColor="{DynamicResource Theme_Amber}"
-                                    BorderWidth="1"
-                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                    CornerRadius="12"
-                                    HeightRequest="44" />
+                            <Button Style="{StaticResource SecondaryButton}" Grid.Column="1" Text="{x:Static localization:AppResources.BackupImportButton}"
+                                    Command="{Binding ImportBackupCommand}" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
@@ -709,36 +665,18 @@
                                 <Label Text="{Binding StatusText}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
                                 <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
-                                    <Button Grid.Column="0" Text="{x:Static localization:AppResources.AutoBackupRunNow}"
+                                    <Button Style="{StaticResource SecondaryButton}" Grid.Column="0" Text="{x:Static localization:AppResources.AutoBackupRunNow}"
                                             Command="{Binding RunNowCommand}"
-                                            IsEnabled="{Binding IsNotBusy}"
-                                            BackgroundColor="Transparent"
-                                            BorderColor="{DynamicResource Theme_Ocean_Ocean}"
-                                            BorderWidth="1"
-                                            TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                            CornerRadius="12"
-                                            HeightRequest="44" />
+                                            IsEnabled="{Binding IsNotBusy}" />
 
-                                    <Button Grid.Column="1" Text="{x:Static localization:AppResources.AutoBackupChangeFolder}"
-                                            Command="{Binding ChangeFolderCommand}"
-                                            BackgroundColor="Transparent"
-                                            BorderColor="{DynamicResource Theme_Amber}"
-                                            BorderWidth="1"
-                                            TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                            CornerRadius="12"
-                                            HeightRequest="44" />
+                                    <Button Style="{StaticResource SecondaryButton}" Grid.Column="1" Text="{x:Static localization:AppResources.AutoBackupChangeFolder}"
+                                            Command="{Binding ChangeFolderCommand}" />
                                 </Grid>
 
                                 <!-- The way back to the phone once copies were sent to a picked folder. -->
-                                <Button Text="{x:Static localization:AppResources.AutoBackupUseDevice}"
+                                <Button Style="{StaticResource SecondaryButton}" Text="{x:Static localization:AppResources.AutoBackupUseDevice}"
                                         Command="{Binding UseDeviceFolderCommand}"
-                                        IsVisible="{Binding CanUseDeviceFolder}"
-                                        BackgroundColor="Transparent"
-                                        BorderColor="{DynamicResource Theme_Dust_Ocean}"
-                                        BorderWidth="1"
-                                        TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                        CornerRadius="12"
-                                        HeightRequest="44" />
+                                        IsVisible="{Binding CanUseDeviceFolder}" />
 
                                 <Label Text="{x:Static localization:AppResources.AutoBackupKeepHint}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                             </VerticalStackLayout>
@@ -771,23 +709,11 @@
                         </Border>
 
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
-                            <Button Grid.Column="0" Text="{x:Static localization:AppResources.CrashReportShareButton}"
-                                    Command="{Binding ShareCrashReportCommand}"
-                                    BackgroundColor="Transparent"
-                                    BorderColor="{DynamicResource Theme_Ocean_Ocean}"
-                                    BorderWidth="1"
-                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                    CornerRadius="12"
-                                    HeightRequest="44" />
+                            <Button Style="{StaticResource SecondaryButton}" Grid.Column="0" Text="{x:Static localization:AppResources.CrashReportShareButton}"
+                                    Command="{Binding ShareCrashReportCommand}" />
 
-                            <Button Grid.Column="1" Text="{x:Static localization:AppResources.CrashReportClearButton}"
-                                    Command="{Binding ClearCrashReportCommand}"
-                                    BackgroundColor="Transparent"
-                                    BorderColor="{DynamicResource Theme_Coral}"
-                                    BorderWidth="1"
-                                    TextColor="{DynamicResource Theme_Midnight_Snow}"
-                                    CornerRadius="12"
-                                    HeightRequest="44" />
+                            <Button Style="{StaticResource DangerButton}" Grid.Column="1" Text="{x:Static localization:AppResources.CrashReportClearButton}"
+                                    Command="{Binding ClearCrashReportCommand}" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
@@ -806,42 +732,26 @@
                         <Label Text="{x:Static localization:AppResources.ExportDataDescription}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,0,0,8" />
 
                         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
-                            <Button Grid.Column="0" Text="{x:Static localization:AppResources.ExportJsonButton}"
-                                    Command="{Binding ExportDataCommand}" CommandParameter="json"
-                                    BackgroundColor="Transparent" BorderColor="{DynamicResource Theme_Ocean_Ocean}" BorderWidth="1"
-                                    TextColor="{DynamicResource Theme_Midnight_Snow}" CornerRadius="12" HeightRequest="44" />
-                            <Button Grid.Column="1" Text="{x:Static localization:AppResources.ExportCsvButton}"
-                                    Command="{Binding ExportDataCommand}" CommandParameter="csv"
-                                    BackgroundColor="Transparent" BorderColor="{DynamicResource Theme_Ocean_Ocean}" BorderWidth="1"
-                                    TextColor="{DynamicResource Theme_Midnight_Snow}" CornerRadius="12" HeightRequest="44" />
-                            <Button Grid.Column="2" Text="{x:Static localization:AppResources.ExportMarkdownButton}"
-                                    Command="{Binding ExportDataCommand}" CommandParameter="markdown"
-                                    BackgroundColor="Transparent" BorderColor="{DynamicResource Theme_Ocean_Ocean}" BorderWidth="1"
-                                    TextColor="{DynamicResource Theme_Midnight_Snow}" CornerRadius="12" HeightRequest="44" />
+                            <Button Style="{StaticResource SecondaryButton}" Grid.Column="0" Text="{x:Static localization:AppResources.ExportJsonButton}"
+                                    Command="{Binding ExportDataCommand}" CommandParameter="json" />
+                            <Button Style="{StaticResource SecondaryButton}" Grid.Column="1" Text="{x:Static localization:AppResources.ExportCsvButton}"
+                                    Command="{Binding ExportDataCommand}" CommandParameter="csv" />
+                            <Button Style="{StaticResource SecondaryButton}" Grid.Column="2" Text="{x:Static localization:AppResources.ExportMarkdownButton}"
+                                    Command="{Binding ExportDataCommand}" CommandParameter="markdown" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
 
                 <!-- Delete All Data Button -->
-                <Button Text="{x:Static localization:AppResources.ClearAllDataButton}"
+                <Button Style="{StaticResource DangerButton}" Text="{x:Static localization:AppResources.ClearAllDataButton}"
                         Command="{Binding ClearAllDataCommand}"
-                        BackgroundColor="Transparent"
-                        BorderColor="{DynamicResource Theme_Coral}"
-                        BorderWidth="1"
-                        TextColor="{DynamicResource Theme_Coral}"
-                        CornerRadius="12"
-                        HeightRequest="48"
                         Margin="0,0,0,4" />
             </VerticalStackLayout>
 
             <!-- Save Button (applies to all tabs) -->
-            <Button x:Name="SaveAnchor"
+            <Button Style="{StaticResource PrimaryButton}" x:Name="SaveAnchor"
                     Text="{x:Static localization:AppResources.SaveProfileButton}"
                     Command="{Binding SaveProfileCommand}"
-                    BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
-                    TextColor="{DynamicResource Theme_Snow}"
-                    CornerRadius="12"
-                    HeightRequest="48"
                     Margin="0,10,0,10" />
         </VerticalStackLayout>
     </ScrollView>

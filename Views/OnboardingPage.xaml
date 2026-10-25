@@ -41,8 +41,8 @@
 
         <DataTemplate x:Key="ModuleRow" x:DataType="viewmodels:OnboardingModule">
             <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"
-                          Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"
+                                          Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
                 <Label Grid.Column="1" Text="{Binding Title}" VerticalOptions="Center"
                        FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
             </Grid>
@@ -74,14 +74,9 @@
             <!-- A Button rather than the tapped Label used elsewhere: this is the one control on the
                  screen a person may be reaching for in a hurry, and it has to be announced as a
                  button and have a finger-sized target without either being arranged by hand. -->
-            <Button Grid.Column="1" Text="{x:Static localization:AppResources.OnboardingSkipButton}"
+            <Button Style="{StaticResource GhostButton}" Grid.Column="1" Text="{x:Static localization:AppResources.OnboardingSkipButton}"
                     Command="{Binding SkipCommand}"
                     IsVisible="{Binding CanSkip}"
-                    BackgroundColor="Transparent"
-                    TextColor="{DynamicResource Theme_Ocean_Dust}"
-                    FontSize="14"
-                    Padding="12,6"
-                    MinimumHeightRequest="44"
                     VerticalOptions="Center" />
         </Grid>
 
@@ -181,35 +176,20 @@
         </ScrollView>
 
         <Grid Grid.Row="2" ColumnDefinitions="Auto, *" ColumnSpacing="12">
-            <Button Grid.Column="0"
+            <Button Style="{StaticResource SecondaryButton}" Grid.Column="0"
                     Text="{x:Static localization:AppResources.OnboardingBackButton}"
                     Command="{Binding BackCommand}"
-                    IsVisible="{Binding CanGoBack}"
-                    BackgroundColor="Transparent"
-                    TextColor="{DynamicResource Theme_Ocean_Dust}"
-                    BorderColor="{DynamicResource Theme_Dust_Ocean}"
-                    BorderWidth="1"
-                    CornerRadius="12"
-                    HeightRequest="50"
-                    Padding="20,0" />
+                    IsVisible="{Binding CanGoBack}" />
 
-            <Button Grid.Column="1"
+            <Button Style="{StaticResource PrimaryButton}" Grid.Column="1"
                     Text="{x:Static localization:AppResources.OnboardingNextButton}"
                     Command="{Binding NextCommand}"
-                    IsVisible="{Binding CanGoNext}"
-                    BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
-                    TextColor="{DynamicResource Theme_Snow}"
-                    CornerRadius="12"
-                    HeightRequest="50" />
+                    IsVisible="{Binding CanGoNext}" />
 
-            <Button Grid.Column="1"
+            <Button Style="{StaticResource PrimaryButton}" Grid.Column="1"
                     Text="{x:Static localization:AppResources.OnboardingGetStartedButton}"
                     Command="{Binding CompleteCommand}"
-                    IsVisible="{Binding IsReminderStep}"
-                    BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
-                    TextColor="{DynamicResource Theme_Snow}"
-                    CornerRadius="12"
-                    HeightRequest="50" />
+                    IsVisible="{Binding IsReminderStep}" />
         </Grid>
     </Grid>
 </ContentPage>

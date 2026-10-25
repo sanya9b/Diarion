@@ -207,37 +207,20 @@
                            TextColor="{DynamicResource Theme_Coral}" />
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
-                        <Button Grid.Column="0"
+                        <Button Style="{StaticResource DangerButton}" Grid.Column="0"
                                 Text="{localization:Translate Key=DeleteButton}"
                                 Command="{Binding DeleteSelectedMomentCommand}"
-                                IsVisible="{Binding SelectedEmptySlot.IsFilled}"
-                                CornerRadius="18"
-                                Padding="18,12"
-                                BackgroundColor="Transparent"
-                                BorderColor="{DynamicResource Theme_Coral}"
-                                BorderWidth="1"
-                                TextColor="{DynamicResource Theme_Coral}"
-                                FontAttributes="Bold" />
+                                IsVisible="{Binding SelectedEmptySlot.IsFilled}" />
                                 
-                        <Button Grid.Column="1"
+                        <Button Style="{StaticResource PrimaryButton}" Grid.Column="1"
                                 Text="{localization:Translate Key=HappyMomentsSaveButton}"
                                 Command="{Binding SaveSelectedMomentCommand}"
-                                IsVisible="{Binding SelectedEmptySlot.IsFilled}"
-                                CornerRadius="18"
-                                Padding="18,12"
-                                BackgroundColor="{DynamicResource Theme_Berry}"
-                                TextColor="{DynamicResource Theme_Snow}"
-                                FontAttributes="Bold" />
+                                IsVisible="{Binding SelectedEmptySlot.IsFilled}" />
 
-                        <Button Grid.Column="0" Grid.ColumnSpan="2"
+                        <Button Style="{StaticResource PrimaryButton}" Grid.Column="0" Grid.ColumnSpan="2"
                                 Text="{localization:Translate Key=HappyMomentsSaveButton}"
                                 Command="{Binding SaveSelectedMomentCommand}"
-                                IsVisible="{Binding SelectedEmptySlot.IsEmpty}"
-                                CornerRadius="18"
-                                Padding="18,12"
-                                BackgroundColor="{DynamicResource Theme_Berry}"
-                                TextColor="{DynamicResource Theme_Snow}"
-                                FontAttributes="Bold" />
+                                IsVisible="{Binding SelectedEmptySlot.IsEmpty}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
