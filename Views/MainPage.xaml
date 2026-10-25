@@ -218,25 +218,35 @@
                     <Border Style="{StaticResource HeaderChipSurface}"
                             behaviors:ThemeColor.BackgroundKey="{Binding HourChipFillColorKey}"
                         behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
-                        <HorizontalStackLayout Spacing="5" HorizontalOptions="Center" VerticalOptions="Center">
-                            <Label Text="{Binding HourChipBadge}" IsVisible="{Binding HasHourChipBadge}"
-                                   FontSize="12" FontAttributes="Bold" VerticalOptions="Center"
-                                   TextColor="{DynamicResource Theme_Midnight_Snow}">
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsHourChipFilled}" Value="True">
-                                        <Setter Property="TextColor" Value="{DynamicResource Theme_OnAccent}" />
-                                    </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
+                        <!-- Two layers over each other, not one row with a hidden member: the clock alone while there is
+                             no hour, the hour and the clock once there is one. In a row the hidden hour still left its place
+                             behind on iPhone the first time the bubble's copy was laid out, and the clock in the copy sat six
+                             points right of the clock in the chip (owner, build 18, 2026-10-25). Layered, nothing can push it. -->
+                        <Grid>
                             <Path Data="{x:Static icons:AppIcons.Clock}" Style="{StaticResource HeaderChipIcon}"
-                                  Stroke="{DynamicResource Theme_Midnight_Snow}">
-                                <Path.Triggers>
-                                    <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
-                                    </DataTrigger>
-                                </Path.Triggers>
-                            </Path>
-                        </HorizontalStackLayout>
+                                  Stroke="{DynamicResource Theme_Midnight_Snow}"
+                                  IsVisible="{Binding HasHourChipBadge, Converter={toolkit:InvertedBoolConverter}}" />
+                            <HorizontalStackLayout Spacing="5" HorizontalOptions="Center" VerticalOptions="Center"
+                                                   IsVisible="{Binding HasHourChipBadge}">
+                                <Label Text="{Binding HourChipBadge}"
+                                       FontSize="12" FontAttributes="Bold" VerticalOptions="Center"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsHourChipFilled}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_OnAccent}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                <Path Data="{x:Static icons:AppIcons.Clock}" Style="{StaticResource HeaderChipIcon}"
+                                      Stroke="{DynamicResource Theme_Midnight_Snow}">
+                                    <Path.Triggers>
+                                        <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
+                                        </DataTrigger>
+                                    </Path.Triggers>
+                                </Path>
+                            </HorizontalStackLayout>
+                        </Grid>
                     </Border>
                 </Border>
             </controls:AnchoredPopover.HeaderContent>
