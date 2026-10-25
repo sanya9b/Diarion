@@ -99,6 +99,18 @@ public partial class MoodSection : ContentView
         {
             Dispatcher.Dispatch(() => PlaceCaption(animated: true));
         }
+
+        // The hours chip changes width when an hour is chosen (the hour joins the clock) and the ✕ beside
+        // it appears. iPhone did not always re-measure the header row for a change that deep, so the
+        // chip kept its old width and its clock slid sideways (owner, build 18, 2026-10-25). Asked for
+        // explicitly, from the chip up to the row.
+        if (e.PropertyName is nameof(DiaryEntryViewModel.HasHourChipBadge)
+            or nameof(DiaryEntryViewModel.HourChipBadge)
+            or nameof(DiaryEntryViewModel.IsHourSelected))
+        {
+            ((IView)HourChip).InvalidateMeasure();
+            ((IView)Header).InvalidateMeasure();
+        }
     }
 
     /// <summary>

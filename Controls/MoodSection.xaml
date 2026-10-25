@@ -48,18 +48,21 @@
             <!-- Header: the caption and, at the right, the hours chip. The row below speaks for the
                  day until an hour is chosen in the chip's bubble; then the chip reads the hour and the
                  ✕ beside it returns the row to the day, so the switch is never silent. -->
-            <!-- Two columns, the chips in one row: a third column for the ✕ kept its spacing while the ✕ was
-                 hidden, and the clock sat 6 points left of the health block's drop (owner, 2026-10-23). -->
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+            <!-- The clock stays where it is, at the card's right edge over the health block's drop: the ✕
+                 appears to its left and the chosen hour grows leftwards inside the chip. With the ✕ on the
+                 right and the hour after the icon, choosing an hour threw the clock a whole button's width
+                 to the left (owner, build 17, 2026-10-23).
+                 The ✕ has a column of its own width whether it is shown or not, and the clock is pinned to
+                 the right edge of the last column: a stack that grew when the ✕ appeared needed the row
+                 re-measured, which iPhone did not always do, and the clock slid right over the card's edge
+                 (owner, build 18, 2026-10-25). Nothing here moves on a re-measure now; the empty column sits
+                 behind the caption's free space, where it shows as nothing. -->
+            <Grid x:Name="Header" ColumnDefinitions="*,38,Auto" ColumnSpacing="0">
                 <Label Grid.Column="0" Text="{x:Static localization:AppResources.EmotionLabel}"
                        Style="{StaticResource SectionHeader}" VerticalOptions="Center" />
 
-                <!-- The clock stays where it is, at the card's right edge over the health block's drop: the ✕
-                     appears to its left and the chosen hour grows leftwards inside the chip. With the ✕ on
-                     the right and the hour after the icon, choosing an hour threw the clock a whole button's
-                     width to the left (owner, build 17, 2026-10-23). -->
-                <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center" HorizontalOptions="End">
-                <Border Style="{StaticResource HeaderChip}" WidthRequest="32" IsVisible="{Binding IsHourSelected}"
+                <Border Grid.Column="1" Style="{StaticResource HeaderChip}" WidthRequest="32" HorizontalOptions="Start"
+                        IsVisible="{Binding IsHourSelected}"
                         SemanticProperties.Description="{x:Static localization:AppResources.MoodHourExit}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ExitHourModeCommand}" />
@@ -70,7 +73,7 @@
                     </Border>
                 </Border>
 
-                <Border x:Name="HourChip" Style="{StaticResource HeaderChip}"
+                <Border x:Name="HourChip" Grid.Column="2" Style="{StaticResource HeaderChip}" HorizontalOptions="End"
                         SemanticProperties.Description="{Binding HourChipText}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenHourPickerCommand}" />
@@ -101,7 +104,6 @@
                         </HorizontalStackLayout>
                     </Border>
                 </Border>
-                </HorizontalStackLayout>
             </Grid>
 
             <!-- The row: five faces from unpleasant to pleasant, no words until one is chosen. A tap

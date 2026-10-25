@@ -208,8 +208,11 @@
                                   IsOpen="{Binding IsHourPickerOpen}"
                                   CloseCommand="{Binding CloseHourPickerCommand}">
             <controls:AnchoredPopover.HeaderContent>
-                <!-- The hours chip, as on the mood card: the same shared styles, so the copy sits exactly over it. -->
-                <Border Style="{StaticResource HeaderChip}" behaviors:PressFeedback.IsEnabled="False">
+                <!-- The hours chip, as on the mood card: the same shared styles, so the copy sits exactly over it.
+                     Pinned to the right of its slot, like the chip to the right of its row: when the hour joins
+                     the clock while the bubble is out, both grow leftwards and the clock stays put even for the
+                     frame before the slot is re-sized to the chip. -->
+                <Border Style="{StaticResource HeaderChip}" behaviors:PressFeedback.IsEnabled="False" HorizontalOptions="End">
                     <!-- A clock, and beside it only state: the chosen hour, or how many hours carry a mood. No
                          caption — the spoken label is the chip's description. Round while it is just the clock. -->
                     <Border Style="{StaticResource HeaderChipSurface}"
