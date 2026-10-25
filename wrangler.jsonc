@@ -1,0 +1,16 @@
+// diarion.org is a Cloudflare Worker that serves nothing but the static files in site/ (the owner
+// created it by uploading the folder in the dashboard; "diarion" is that Worker's name, and the
+// custom domain is attached to it there). This file lets .github/workflows/deploy-site.yml upload
+// the same folder with Wrangler on every push to main. There is no code and no build.
+{
+  "$schema": "https://unpkg.com/wrangler/config-schema.json",
+  "name": "diarion",
+  "compatibility_date": "2026-10-25",
+  "assets": {
+    "directory": "./site",
+    // /privacy serves privacy.html, as the dashboard upload did (site/README.md relies on it).
+    "html_handling": "auto-trailing-slash",
+    // Any unknown path gets site/404.html with a 404 status.
+    "not_found_handling": "404-page"
+  }
+}
