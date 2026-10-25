@@ -1,3 +1,5 @@
+using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Diarion.Services.Store;
 using FluentAssertions;
@@ -12,12 +14,15 @@ namespace Diarion.Tests;
 public class LegacyAccessDetectorTests
 {
     private const string LegacyFreeKey = "access.legacyFree";
+    private const string LegacyUntilKey = "access.legacyUntil";
+    private static readonly DateTime Now = new(2026, 10, 25, 9, 0, 0, DateTimeKind.Utc);
 
     private readonly InMemoryEntitlementStore _store = new();
     private readonly FakeStoreClient _client = new();
     private readonly FakeInstallEvidence _evidence = new();
+    private readonly FakeTimeProvider _clock = new(Now);
 
-    private LegacyAccessDetector Create() => new(_store, _client, _evidence);
+    private LegacyAccessDetector Create() => new(_store, _client, _evidence, _clock);
 
     private static AppTransactionInfo Transaction(string originalAppVersion, StoreEnvironment environment) =>
         new(originalAppVersion, environment, null);
@@ -43,6 +48,51 @@ public class LegacyAccessDetectorTests
 
         _store.Values.Should().Contain(LegacyFreeKey, "1");
         _client.AppTransactionCalls.Should().Be(0);
+    }
+
+    [Fact]
+    public void Recognition_starts_the_free_months_from_that_very_launch()
+    {
+        _evidence.IsFirstLaunchOfPaidEra = true;
+        _evidence.OnboardingCompletedBeforeThisLaunch = true;
+        var detector = Create();
+
+        detector.ResolveLocally().Should().BeTrue();
+
+        detector.LegacyUntil.Should().Be(Now.AddDays(StoreCatalog.LegacyFreeDays));
+        DateTime.Parse(_store.Values[LegacyUntilKey], CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind)
+            .Should().Be(Now.AddDays(StoreCatalog.LegacyFreeDays));
+    }
+
+    [Fact]
+    public void The_date_is_fixed_once_and_does_not_move_with_the_clock()
+    {
+        _evidence.IsFirstLaunchOfPaidEra = true;
+        _evidence.OnboardingCompletedBeforeThisLaunch = true;
+        var detector = Create();
+        detector.ResolveLocally();
+        var first = detector.LegacyUntil;
+
+        _clock.Advance(TimeSpan.FromDays(10));
+
+        Create().LegacyUntil.Should().Be(first);
+    }
+
+    [Fact]
+    public void A_user_recognised_by_a_build_that_promised_for_ever_gets_their_months_from_now()
+    {
+        // TestFlight builds 3–20 wrote only the flag; the first build that counts months starts them.
+        _store.Set(LegacyFreeKey, "1");
+
+        Create().LegacyUntil.Should().Be(Now.AddDays(StoreCatalog.LegacyFreeDays));
+        _store.Values.Should().ContainKey(LegacyUntilKey);
+    }
+
+    [Fact]
+    public void Nobody_else_has_a_date()
+    {
+        Create().LegacyUntil.Should().BeNull();
+        _store.Values.Should().NotContainKey(LegacyUntilKey);
     }
 
     [Fact]

@@ -52,7 +52,7 @@ internal static class DebugStoreOverrides
     private sealed class DebugStoreClient : IStoreClient
     {
         private static readonly StoreIntroOffer Trial =
-            new(StoreIntroOfferKind.FreeTrial, new SubscriptionPeriod(SubscriptionPeriodUnit.Week, 2), 1, 0m, "0 ₴");
+            new(StoreIntroOfferKind.FreeTrial, new SubscriptionPeriod(SubscriptionPeriodUnit.Day, 3), 1, 0m, "$0.00");
 
         private readonly List<StoreEntitlement> _owned = new();
         private bool _trialUsed;
@@ -66,9 +66,11 @@ internal static class DebugStoreOverrides
             await Task.Delay(400, cancellationToken); // long enough to see the spinner
             var all = new[]
             {
-                new StoreProduct(StoreCatalog.BaseMonthly, "Diarion Base", "89,00 ₴", 89m, "UAH",
+                new StoreProduct(StoreCatalog.BaseMonthly, "Diarion Base", "$1.99", 1.99m, "USD",
                     new SubscriptionPeriod(SubscriptionPeriodUnit.Month, 1), Trial, !_trialUsed),
-                new StoreProduct(StoreCatalog.BaseYearly, "Diarion Base", "499,00 ₴", 499m, "UAH",
+                new StoreProduct(StoreCatalog.BaseQuarterly, "Diarion Base", "$4.99", 4.99m, "USD",
+                    new SubscriptionPeriod(SubscriptionPeriodUnit.Month, 3), Trial, !_trialUsed),
+                new StoreProduct(StoreCatalog.BaseYearly, "Diarion Base", "$11.99", 11.99m, "USD",
                     new SubscriptionPeriod(SubscriptionPeriodUnit.Year, 1), Trial, !_trialUsed)
             };
             return all.Where(p => productIds.Contains(p.Id)).ToList();
@@ -77,7 +79,7 @@ internal static class DebugStoreOverrides
         public async Task<PurchaseOutcome> PurchaseAsync(string productId, CancellationToken cancellationToken = default)
         {
             await Task.Delay(600, cancellationToken);
-            var entitlement = new StoreEntitlement(productId, DateTime.UtcNow.AddDays(14),
+            var entitlement = new StoreEntitlement(productId, DateTime.UtcNow.AddDays(_trialUsed ? 30 : 3),
                 _trialUsed ? StoreOfferType.None : StoreOfferType.Introductory, StoreEnvironment.Xcode, null);
             _trialUsed = true;
             _owned.Clear();

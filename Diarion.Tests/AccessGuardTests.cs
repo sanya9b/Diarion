@@ -33,7 +33,7 @@ public class AccessGuardTests
 
     public static IEnumerable<object[]> WritableStates()
     {
-        yield return new object[] { AccessState.Legacy };
+        yield return new object[] { AccessState.LegacyUntil(DateTime.MaxValue) };
         yield return new object[] { AccessState.StoreUnavailable };
         yield return new object[] { new AccessState(true, AccessTier.Base, AccessSource.Trial, DateTime.UtcNow.AddDays(14), true) };
         yield return new object[] { new AccessState(true, AccessTier.Base, AccessSource.GracePeriod, DateTime.UtcNow.AddDays(3), true) };
@@ -45,7 +45,7 @@ public class AccessGuardTests
         var entitlements = new FixedEntitlementService(AccessState.ReadOnly);
         var guard = new AccessGuard(entitlements);
 
-        entitlements.Set(AccessState.Legacy);
+        entitlements.Set(AccessState.LegacyUntil(DateTime.MaxValue));
         guard.CanWrite.Should().BeTrue();
 
         entitlements.Set(AccessState.ReadOnly);

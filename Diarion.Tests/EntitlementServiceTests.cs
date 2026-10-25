@@ -15,6 +15,7 @@ namespace Diarion.Tests;
 public class EntitlementServiceTests
 {
     private static readonly DateTime Now = new(2026, 10, 10, 12, 0, 0, DateTimeKind.Utc);
+    private static readonly AccessState LegacyOpenEnded = AccessState.LegacyUntil(DateTime.MaxValue);
     private const string CacheKey = "access.entitlement";
 
     private readonly FakeStoreClient _client = new();
@@ -81,10 +82,10 @@ public class EntitlementServiceTests
         _legacy.IsKnownLegacy = true;
         var service = Create();
 
-        service.Current.Should().Be(AccessState.Legacy);
+        service.Current.Should().Be(LegacyOpenEnded);
         await service.RefreshAsync();
 
-        service.Current.Should().Be(AccessState.Legacy);
+        service.Current.Should().Be(LegacyOpenEnded);
         _client.EntitlementCalls.Should().Be(0);
     }
 
@@ -93,9 +94,9 @@ public class EntitlementServiceTests
     {
         // The real detector, not the fake: this is the path from install evidence to the first frame.
         var evidence = new FakeInstallEvidence { IsFirstLaunchOfPaidEra = true, OnboardingCompletedBeforeThisLaunch = true };
-        var service = new EntitlementService(_client, _store, new LegacyAccessDetector(_store, _client, evidence), _clock);
+        var service = new EntitlementService(_client, _store, new LegacyAccessDetector(_store, _client, evidence, _clock), _clock);
 
-        service.Current.Should().Be(AccessState.Legacy);
+        service.Current.Should().Be(AccessState.LegacyUntil(Now.AddDays(StoreCatalog.LegacyFreeDays)));
         _client.AppTransactionCalls.Should().Be(0);
     }
 
@@ -108,8 +109,50 @@ public class EntitlementServiceTests
 
         await service.RefreshAsync();
 
-        service.Current.Should().Be(AccessState.Legacy);
+        service.Current.Should().Be(LegacyOpenEnded);
         _client.EntitlementCalls.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task The_free_months_of_a_legacy_user_end_on_their_date_and_the_store_takes_over()
+    {
+        // Owner, 2026-10-25: 1.0 users write for free for three months, then like everyone else.
+        var until = Now.AddDays(StoreCatalog.LegacyFreeDays);
+        _legacy.IsKnownLegacy = true;
+        _legacy.LegacyUntilOverride = until;
+        var service = Create();
+
+        service.Current.Should().Be(AccessState.LegacyUntil(until));
+
+        _clock.Advance(TimeSpan.FromDays(StoreCatalog.LegacyFreeDays).Add(TimeSpan.FromMinutes(1)));
+        await service.RefreshAsync();
+
+        service.Current.Should().Be(AccessState.ReadOnly, "nothing was bought");
+        _client.EntitlementCalls.Should().Be(1, "after the free months the store is the authority");
+    }
+
+    [Fact]
+    public async Task A_legacy_user_who_subscribed_is_a_subscriber_once_the_free_months_are_over()
+    {
+        _legacy.IsKnownLegacy = true;
+        _legacy.LegacyUntilOverride = Now.AddDays(-1);
+        _client.Entitlements.Add(Entitlement(Now.AddDays(30), StoreCatalog.BaseQuarterly));
+        _client.Statuses.Add(Status(SubscriptionRenewalState.Subscribed, productId: StoreCatalog.BaseQuarterly));
+        var service = Create();
+
+        await service.RefreshAsync();
+
+        service.Current.Source.Should().Be(AccessSource.Subscription);
+        service.Current.Tier.Should().Be(AccessTier.Base);
+    }
+
+    [Fact]
+    public void A_legacy_user_past_their_date_is_read_only_from_construction_not_legacy()
+    {
+        _legacy.IsKnownLegacy = true;
+        _legacy.LegacyUntilOverride = Now.AddDays(-1);
+
+        Create().Current.Should().Be(AccessState.ReadOnly);
     }
 
     [Fact]
@@ -274,7 +317,7 @@ public class EntitlementServiceTests
     [Fact]
     public void Only_plus_has_ai()
     {
-        AccessState.Legacy.HasAi.Should().BeFalse("1.0 users keep 1.0, not the AI tier");
+        AccessState.LegacyUntil(Now).HasAi.Should().BeFalse("1.0 users keep 1.0, not the AI tier");
         new AccessState(true, AccessTier.Base, AccessSource.Subscription, null, true).HasAi.Should().BeFalse();
         new AccessState(true, AccessTier.Plus, AccessSource.Subscription, null, true).HasAi.Should().BeTrue();
     }

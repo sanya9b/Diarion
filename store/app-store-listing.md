@@ -226,9 +226,9 @@ Three themes, Ukrainian and English, and a daily reminder at a time that suits y
 ```
 ПІДПИСКА
 
-Писати в Diarion можна з підпискою Diarion Base — на місяць або на рік, перші 14 днів безкоштовно. Ціна показується в застосунку перед оформленням; для української вітрини App Store показує її в доларах США. Підписка поновлюється автоматично, якщо не вимкнути автопоновлення щонайменше за 24 години до кінця періоду, — у налаштуваннях Apple ID. Коли підписка закінчується, усе написане лишається доступним для читання, резервної копії та експорту.
+Писати в Diarion можна з підпискою Diarion Base — на місяць, на три місяці або на рік, перші 3 дні безкоштовно. Ціна показується в застосунку перед оформленням; для української вітрини App Store показує її в доларах США. Підписка поновлюється автоматично, якщо не вимкнути автопоновлення щонайменше за 24 години до кінця періоду, — у налаштуваннях Apple ID. Коли підписка закінчується, усе написане лишається доступним для читання, резервної копії та експорту.
 
-Якщо ви встановили Diarion 1.0, усе, що в ньому було, лишається для вас безкоштовним назавжди.
+Якщо ви встановили Diarion 1.0, перші три місяці після оновлення все лишається для вас безкоштовним.
 
 Умови використання: https://diarion.org/terms
 Політика приватності: https://diarion.org/privacy
@@ -238,9 +238,9 @@ English:
 ```
 SUBSCRIPTION
 
-Writing in Diarion takes a Diarion Base subscription — monthly or yearly, with the first 14 days free. The price is shown in the app before you subscribe. The subscription renews automatically unless auto-renew is turned off at least 24 hours before the end of the period, in your Apple ID settings. When a subscription ends, everything you wrote stays available to read, back up and export.
+Writing in Diarion takes a Diarion Base subscription — monthly, every three months or yearly, with the first 3 days free. The price is shown in the app before you subscribe. The subscription renews automatically unless auto-renew is turned off at least 24 hours before the end of the period, in your Apple ID settings. When a subscription ends, everything you wrote stays available to read, back up and export.
 
-If you installed Diarion 1.0, everything it had stays free for you for ever.
+If you installed Diarion 1.0, everything stays free for you for the first three months after the update.
 
 Terms of Use: https://diarion.org/en/terms
 Privacy Policy: https://diarion.org/en/privacy
@@ -252,9 +252,9 @@ Privacy Policy: https://diarion.org/en/privacy
 
 Українська:
 ```
-Diarion став платним для нових користувачів: підписка Diarion Base на місяць або на рік, перші 14 днів безкоштовно. Без підписки записи лишаються доступними для читання, резервної копії та експорту.
+Diarion став платним: підписка Diarion Base на місяць, три місяці або рік, перші 3 дні безкоштовно. Без підписки записи лишаються доступними для читання, резервної копії та експорту.
 
-Якщо ви встановили версію 1.0 — усе, що в ній було, лишається для вас безкоштовним назавжди. Нічого робити не треба.
+Якщо ви встановили версію 1.0 — наступні три місяці все лишається для вас безкоштовним, дату видно на картці на головній. Нічого робити не треба.
 
 Також:
 • настрій можна назвати точніше: п'ять облич, а під кожним — до семи станів на вибір
@@ -269,9 +269,9 @@ Diarion став платним для нових користувачів: пі
 
 English:
 ```
-Diarion is now paid for new users: a Diarion Base subscription, monthly or yearly, with the first 14 days free. Without a subscription your entries stay available to read, back up and export.
+Diarion is now paid: a Diarion Base subscription — monthly, every three months or yearly — with the first 3 days free. Without a subscription your entries stay available to read, back up and export.
 
-If you installed version 1.0, everything it had stays free for you for ever. There is nothing to do.
+If you installed version 1.0, everything stays free for you for the next three months; the date is on the card on the home screen. There is nothing to do.
 
 Also:
 • name your mood more precisely: five faces, each with up to seven feelings to choose from

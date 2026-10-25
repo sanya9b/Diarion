@@ -10,6 +10,7 @@ public static class StoreCatalog
     public const string SubscriptionGroup = "diarion.base";
 
     public const string BaseMonthly = "diarion.base.monthly";
+    public const string BaseQuarterly = "diarion.base.quarterly";
     public const string BaseYearly = "diarion.base.yearly";
 
     // Reserved for the AI tier. Not created in App Store Connect yet; listed so the tier mapping
@@ -23,14 +24,22 @@ public static class StoreCatalog
     /// </summary>
     public const int LastFreeBuild = 2;
 
-    public static IReadOnlyList<string> BaseProductIds { get; } = [BaseMonthly, BaseYearly];
+    /// <summary>
+    /// How long a 1.0 user writes for free after their first launch of a paid build, before the
+    /// paywall applies to them like to everyone (owner, 2026-10-25; it replaced "free for ever").
+    /// Counted from that launch, not from the release: whoever updates in spring gets their three
+    /// months in spring.
+    /// </summary>
+    public const int LegacyFreeDays = 90;
 
-    public static IReadOnlyList<string> AllProductIds { get; } = [BaseMonthly, BaseYearly, PlusMonthly, PlusYearly];
+    public static IReadOnlyList<string> BaseProductIds { get; } = [BaseMonthly, BaseQuarterly, BaseYearly];
+
+    public static IReadOnlyList<string> AllProductIds { get; } = [BaseMonthly, BaseQuarterly, BaseYearly, PlusMonthly, PlusYearly];
 
     public static AccessTier TierOf(string productId) => productId switch
     {
         PlusMonthly or PlusYearly => AccessTier.Plus,
-        BaseMonthly or BaseYearly => AccessTier.Base,
+        BaseMonthly or BaseQuarterly or BaseYearly => AccessTier.Base,
         _ => AccessTier.None
     };
 }

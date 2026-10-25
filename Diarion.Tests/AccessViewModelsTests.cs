@@ -43,11 +43,13 @@ public class SubscriptionSectionViewModelTests
     }
 
     [Fact]
-    public void A_legacy_user_reads_the_promise_and_may_support_but_has_nothing_to_manage()
+    public void A_legacy_user_reads_the_promise_with_its_date_and_may_support_but_has_nothing_to_manage()
     {
-        var vm = Create(AccessState.Legacy, out _);
+        var vm = Create(AccessState.LegacyUntil(Until), out _);
 
-        vm.StatusText.Should().Be(AppResources.SubscriptionStatusLegacy);
+        vm.StatusText.Should().Be(SubscriptionSectionViewModel.Describe(AccessState.LegacyUntil(Until)));
+        vm.StatusText.Should().Contain(Until.ToLocalTime().Year.ToString());
+        vm.StatusText.Should().NotBe(AppResources.SubscriptionStatusLegacy, "the format must have been filled in");
         vm.CanSupport.Should().BeTrue();
         vm.CanManage.Should().BeFalse();
         vm.CanSubscribe.Should().BeFalse();
@@ -161,7 +163,7 @@ public class SubscriptionSectionViewModelTests
         var store = new Mock<IStoreClient>();
         store.SetupGet(s => s.IsAvailable).Returns(true);
         store.Setup(s => s.ShowManageSubscriptionsAsync(default)).ThrowsAsync(new StoreException("no scene"));
-        var vm = new SubscriptionSectionViewModel(new FixedEntitlementService(AccessState.Legacy), store.Object, new InlineDispatcher());
+        var vm = new SubscriptionSectionViewModel(new FixedEntitlementService(AccessState.LegacyUntil(Until)), store.Object, new InlineDispatcher());
 
         await vm.Invoking(v => v.ManageCommand.ExecuteAsync(null)).Should().NotThrowAsync();
     }
@@ -169,6 +171,8 @@ public class SubscriptionSectionViewModelTests
 
 public class AccessBannerViewModelTests
 {
+    private static readonly DateTime Until = new(2027, 1, 23, 12, 0, 0, DateTimeKind.Utc);
+
     private readonly InMemoryEntitlementStore _keychain = new();
 
     private AccessBannerViewModel Create(AccessState state, out FixedEntitlementService entitlements)
@@ -189,14 +193,28 @@ public class AccessBannerViewModelTests
     [Fact]
     public void A_legacy_user_sees_the_card_until_dismissing_it_and_never_again()
     {
-        var vm = Create(AccessState.Legacy, out _);
+        var vm = Create(AccessState.LegacyUntil(Until), out _);
         vm.IsReadOnly.Should().BeFalse();
         vm.ShowLegacyCard.Should().BeTrue();
+        vm.LegacyCardText.Should().Contain(Until.ToLocalTime().Year.ToString(), "the card names the day the free months end");
 
         vm.DismissLegacyCardCommand.Execute(null);
 
         vm.ShowLegacyCard.Should().BeFalse();
-        Create(AccessState.Legacy, out _).ShowLegacyCard.Should().BeFalse("the dismissal is persisted");
+        Create(AccessState.LegacyUntil(Until), out _).ShowLegacyCard.Should().BeFalse("the dismissal is persisted");
+    }
+
+    [Fact]
+    public void A_legacy_user_whose_free_months_ended_is_told_so_not_that_a_subscription_lapsed()
+    {
+        _keychain.Set("access.legacyFree", "1");
+
+        var vm = Create(AccessState.ReadOnly, out _);
+
+        vm.IsReadOnly.Should().BeTrue();
+        vm.ShowLegacyCard.Should().BeFalse();
+        vm.BannerText.Should().Be(AppResources.ReadOnlyBannerLegacyEndedText);
+        vm.BannerButtonText.Should().Be(AppResources.ReadOnlyBannerNewButton);
     }
 
     [Fact]

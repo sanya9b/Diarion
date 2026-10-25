@@ -125,7 +125,7 @@ public partial class SubscriptionSectionViewModel : ObservableObject, IDisposabl
 
     public static string Describe(AccessState state) => state.Source switch
     {
-        AccessSource.Legacy => AppResources.SubscriptionStatusLegacy,
+        AccessSource.Legacy => Format(AppResources.SubscriptionStatusLegacy, state.ExpiresAt),
         AccessSource.StoreUnavailable => AppResources.SubscriptionStatusUnavailable,
         AccessSource.Trial => Format(AppResources.SubscriptionStatusTrialFormat, state.ExpiresAt),
         AccessSource.GracePeriod => Format(AppResources.SubscriptionStatusGraceFormat, state.ExpiresAt),

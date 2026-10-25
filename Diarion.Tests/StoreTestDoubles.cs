@@ -122,6 +122,11 @@ public sealed class FakeLegacyAccessDetector : ILegacyAccessDetector
     public bool EvaluateResult { get; set; }
     public int EvaluateCalls { get; private set; }
 
+    /// <summary>Set by the test; a recognised user with no date set is inside their free months.</summary>
+    public DateTime? LegacyUntilOverride { get; set; }
+
+    public DateTime? LegacyUntil => LegacyUntilOverride ?? (IsKnownLegacy || EvaluateResult ? DateTime.MaxValue : null);
+
     public bool ResolveLocally() => IsKnownLegacy;
 
     public Task<bool> EvaluateAsync(CancellationToken cancellationToken = default)

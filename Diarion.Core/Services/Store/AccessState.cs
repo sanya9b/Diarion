@@ -14,7 +14,8 @@ public enum AccessTier
 public enum AccessSource
 {
     None,
-    /// <summary>Installed build 2 or earlier: everything from 1.0 stays free forever.</summary>
+    /// <summary>Installed build 2 or earlier: writes for free until <see cref="AccessState.ExpiresAt"/>,
+    /// ninety days from the first paid launch (<see cref="StoreCatalog.LegacyFreeDays"/>).</summary>
     Legacy,
     Subscription,
     /// <summary>A subscription inside its introductory offer; same entitlement, different wording.</summary>
@@ -43,7 +44,8 @@ public sealed record AccessState(
 
     public static AccessState ReadOnly { get; } = new(false, AccessTier.None, AccessSource.None, null, false);
 
-    public static AccessState Legacy { get; } = new(true, AccessTier.None, AccessSource.Legacy, null, false);
+    /// <summary>A 1.0 user inside their free months; <paramref name="until"/> is when the paywall starts to apply.</summary>
+    public static AccessState LegacyUntil(DateTime until) => new(true, AccessTier.None, AccessSource.Legacy, until, false);
 
     public static AccessState StoreUnavailable { get; } = new(true, AccessTier.None, AccessSource.StoreUnavailable, null, false);
 }

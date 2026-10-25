@@ -181,7 +181,7 @@ public class AccessAwareNotificationServiceTests
     [Fact]
     public void Writable_passes_them_through()
     {
-        _entitlements.Set(AccessState.Legacy);
+        _entitlements.Set(AccessState.LegacyUntil(DateTime.MaxValue));
         var service = Create();
 
         service.ScheduleDailyJournalReminder(new TimeSpan(20, 0, 0));

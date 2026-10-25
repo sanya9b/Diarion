@@ -29,11 +29,11 @@ public partial class PaywallPlan : ObservableObject
     /// <summary>"$11.99 / year" — the store's own formatted price plus the period.</summary>
     public string PriceText { get; }
 
-    /// <summary>"Save 53%" on the yearly card; computed from the two prices, never typed in.</summary>
+    /// <summary>"Save 50%" on the yearly card, "Save 16%" on the three-month one; computed from the prices, never typed in.</summary>
     public string? Badge { get; }
     public bool HasBadge => Badge is not null;
 
-    /// <summary>"14 days free, then $11.99 / year"; null when this Apple ID has used its trial.</summary>
+    /// <summary>"3 days free, then $11.99 / year"; null when this Apple ID has used its trial.</summary>
     public string? TrialText { get; }
     public bool HasTrial => TrialText is not null;
 
@@ -219,11 +219,14 @@ public partial class PaywallViewModel : BaseViewModel
     {
         Plans.Clear();
         var monthly = products.FirstOrDefault(p => p.Id == StoreCatalog.BaseMonthly);
+        var quarterly = products.FirstOrDefault(p => p.Id == StoreCatalog.BaseQuarterly);
         var yearly = products.FirstOrDefault(p => p.Id == StoreCatalog.BaseYearly);
 
-        // Yearly first and preselected: the plan most people should take is the one already chosen.
+        // Longest first and preselected: the plan most people should take is the one already chosen.
         if (yearly is not null)
-            Plans.Add(Plan(yearly, AppResources.PaywallYearlyTitle, AppResources.PaywallPricePerYearFormat, DiscountBadge(monthly, yearly)));
+            Plans.Add(Plan(yearly, AppResources.PaywallYearlyTitle, AppResources.PaywallPricePerYearFormat, DiscountBadge(monthly, yearly, 12)));
+        if (quarterly is not null)
+            Plans.Add(Plan(quarterly, AppResources.PaywallQuarterlyTitle, AppResources.PaywallPricePerQuarterFormat, DiscountBadge(monthly, quarterly, 3)));
         if (monthly is not null)
             Plans.Add(Plan(monthly, AppResources.PaywallMonthlyTitle, AppResources.PaywallPricePerMonthFormat, null));
 
@@ -240,12 +243,13 @@ public partial class PaywallViewModel : BaseViewModel
         return new PaywallPlan(product.Id, title, priceText, badge, trial);
     }
 
-    /// <summary>"Save 53%": 12 months against a year, in the storefront's own prices. Absent when
-    /// either price is missing or the year is not actually cheaper — no invented discounts (2.3.1).</summary>
-    public static string? DiscountBadge(StoreProduct? monthly, StoreProduct? yearly)
+    /// <summary>"Save 50%": <paramref name="months"/> monthly payments against the longer plan, in the
+    /// storefront's own prices. Absent when either price is missing or the longer plan is not actually
+    /// cheaper — no invented discounts (2.3.1).</summary>
+    public static string? DiscountBadge(StoreProduct? monthly, StoreProduct? longer, int months)
     {
-        if (monthly is null || yearly is null || monthly.Price <= 0) return null;
-        var percent = (int)Math.Round((1m - yearly.Price / (monthly.Price * 12m)) * 100m, MidpointRounding.AwayFromZero);
+        if (monthly is null || longer is null || monthly.Price <= 0) return null;
+        var percent = (int)Math.Round((1m - longer.Price / (monthly.Price * months)) * 100m, MidpointRounding.AwayFromZero);
         return percent > 0 ? string.Format(Culture, AppResources.PaywallDiscountFormat, percent) : null;
     }
 

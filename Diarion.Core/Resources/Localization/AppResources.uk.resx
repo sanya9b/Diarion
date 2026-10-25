@@ -2126,7 +2126,7 @@
     <value>Підписка</value>
   </data>
   <data name="SubscriptionStatusLegacy" xml:space="preserve">
-    <value>Ви з нами з першої версії: усе, що в ній було, для вас безкоштовне назавжди.</value>
+    <value>Ви з нами з першої версії: безкоштовно до {0}, далі — підписка.</value>
   </data>
   <data name="SubscriptionStatusTrialFormat" xml:space="preserve">
     <value>Пробний період до {0}</value>
@@ -2168,7 +2168,7 @@
     <value>Дякуємо, що ви з нами з першої версії</value>
   </data>
   <data name="LegacyWelcomeText" xml:space="preserve">
-    <value>Diarion став платним для нових користувачів. Для вас усе, що було в першій версії, лишається безкоштовним назавжди, разом з усіма оновленнями цих функцій.</value>
+    <value>Diarion став платним. Для вас, як для користувача першої версії, усе лишається безкоштовним ще три місяці — до {0}. Далі писати можна буде з підпискою; читання, бекап та експорт відкриті завжди.</value>
   </data>
   <data name="LegacyWelcomeDismiss" xml:space="preserve">
     <value>Зрозуміло</value>
@@ -2403,5 +2403,14 @@
   </data>
   <data name="QuickNoteSaved" xml:space="preserve">
     <value>Збережено в нотатках</value>
+  </data>
+  <data name="PaywallQuarterlyTitle" xml:space="preserve">
+    <value>3 місяці</value>
+  </data>
+  <data name="PaywallPricePerQuarterFormat" xml:space="preserve">
+    <value>{0} / 3 міс</value>
+  </data>
+  <data name="ReadOnlyBannerLegacyEndedText" xml:space="preserve">
+    <value>Три безкоштовні місяці для користувачів першої версії скінчились: записи доступні лише для читання.</value>
   </data>
 </root>

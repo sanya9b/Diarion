@@ -403,10 +403,10 @@ Not applicable. The app is not a medical device and makes no medical claims: the
 
 ```
 WHAT IS NEW IN 1.1: AN AUTO-RENEWABLE SUBSCRIPTION
-Writing now requires the "Diarion Base" auto-renewable subscription: monthly (diarion.base.monthly) or yearly (diarion.base.yearly), each with a 2-week free introductory offer. Purchases use StoreKit 2 directly; there is no third-party billing SDK and no server.
+Writing now requires the "Diarion Base" auto-renewable subscription: monthly (diarion.base.monthly), every three months (diarion.base.quarterly) or yearly (diarion.base.yearly), each with a 3-day free introductory offer. Purchases use StoreKit 2 directly; there is no third-party billing SDK and no server.
 - The paywall appears once, right after onboarding. It shows the price per period, the free-trial terms, the auto-renewal notice, Restore Purchases, and links to the Terms of Use (https://diarion.org/en/terms) and the Privacy Policy. "Later" closes it.
 - Without a subscription the app is read-only, not locked: every entry can be read, and backup, export, import, the app lock, theme and language keep working. A banner at the top of the home screen, and any attempt to write, open the paywall again. Settings > Data > Subscription shows the state and offers Subscribe, Manage Subscription and Restore Purchases.
-- Users who installed version 1.0 keep everything 1.0 had, free, for ever. The app recognises them when the device already had a 1.0 diary at the first launch of 1.1, or when AppTransaction.originalAppVersion is 2 or lower (1.0 shipped as build 2) in the Production environment. In the sandbox originalAppVersion is always "1.0", so a reviewer on a fresh install sees the regular new-user path with the paywall. This is expected.
+- Users who installed version 1.0 keep writing for free for 90 days after their first launch of 1.1, then see the same paywall as everyone (no in-app purchase is involved in those 90 days; the app simply does not gate them yet). The app recognises them when the device already had a 1.0 diary at the first launch of 1.1, or when AppTransaction.originalAppVersion is 2 or lower (1.0 shipped as build 2) in the Production environment. In the sandbox originalAppVersion is always "1.0", so a reviewer on a fresh install sees the regular new-user path with the paywall. This is expected.
 ```
 
 **Правки в повному тексті:**

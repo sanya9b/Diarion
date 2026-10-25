@@ -2,7 +2,7 @@
 <!--
   At most one of two things at the top of the home screen (spec 15, R2.4, R5.1): the read-only
   banner with its single "Renew" button, or — once, after the update — the card that tells a 1.0
-  user the app stays free for them. Monochrome, like every panel; neither is an alert.
+  user until when the app stays free for them. Monochrome, like every panel; neither is an alert.
 -->
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -36,7 +36,7 @@
                 <Label Text="{x:Static localization:AppResources.LegacyWelcomeTitle}"
                        FontSize="15" FontAttributes="Bold"
                        TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                <Label Text="{x:Static localization:AppResources.LegacyWelcomeText}"
+                <Label Text="{Binding LegacyCardText}"
                        FontSize="13" LineHeight="1.15"
                        TextColor="{DynamicResource Theme_Ocean_Dust}" />
                 <Button Style="{StaticResource SecondaryButton}" HeightRequest="36" Padding="16,0" Text="{x:Static localization:AppResources.LegacyWelcomeDismiss}"

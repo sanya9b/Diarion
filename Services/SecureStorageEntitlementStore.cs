@@ -6,7 +6,7 @@ namespace Diarion.Services;
 
 /// <summary>
 /// Access state in the platform keychain: on iOS it outlives a reinstall, which is what makes
-/// "free forever" for 1.0 users survive a new phone restored from backup. Same best-effort
+/// "free months" for 1.0 users survive a new phone restored from backup. Same best-effort
 /// sync-over-async shape as <see cref="AppLockService"/>, for the same reason — it is read before
 /// the first frame.
 /// </summary>

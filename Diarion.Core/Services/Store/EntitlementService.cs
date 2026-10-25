@@ -18,8 +18,9 @@ public interface IEntitlementService
 
 /// <summary>
 /// Turns what the store says into one <see cref="AccessState"/>, in the order spec 15 R1.3 fixes:
-/// legacy first, then live entitlements, then the renewal state, else read-only. The last live
-/// answer is cached so a cold start offline reaches the same conclusion the store would.
+/// legacy first (while its free months last), then live entitlements, then the renewal state, else
+/// read-only. The last live answer is cached so a cold start offline reaches the same conclusion
+/// the store would.
 /// </summary>
 public sealed class EntitlementService : IEntitlementService, IDisposable
 {
@@ -70,9 +71,9 @@ public sealed class EntitlementService : IEntitlementService, IDisposable
         await _refreshGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            if (await _legacy.EvaluateAsync(cancellationToken).ConfigureAwait(false))
+            if (await _legacy.EvaluateAsync(cancellationToken).ConfigureAwait(false) && LegacyState() is { } legacy)
             {
-                Publish(AccessState.Legacy);
+                Publish(legacy);
                 return;
             }
 
@@ -125,10 +126,17 @@ public sealed class EntitlementService : IEntitlementService, IDisposable
 
     private AccessState Restore()
     {
-        if (_legacy.ResolveLocally()) return AccessState.Legacy;
+        if (_legacy.ResolveLocally() && LegacyState() is { } legacy) return legacy;
         if (!_storeClient.IsAvailable) return AccessState.StoreUnavailable;
         return Evaluate(ReadCache(), Now);
     }
+
+    /// <summary>
+    /// The legacy state while the free months last; null once they are over, and the user is read
+    /// from the store like anyone else — they may well have subscribed by then.
+    /// </summary>
+    private AccessState? LegacyState() =>
+        _legacy.LegacyUntil is DateTime until && until > Now ? AccessState.LegacyUntil(until) : null;
 
     private CachedEntitlement? ReadCache()
     {

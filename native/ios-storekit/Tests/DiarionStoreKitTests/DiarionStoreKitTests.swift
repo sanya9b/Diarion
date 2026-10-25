@@ -30,15 +30,21 @@ final class DiarionStoreKitTests: XCTestCase {
         try await super.tearDown()
     }
 
-    func testLoadProductsReportsBothPlansWithTheFreeTrial() async throws {
-        let products = try await call(json: #"["diarion.base.monthly","diarion.base.yearly"]"#) { json, ctx, cb in
+    func testLoadProductsReportsAllThreePlansWithTheFreeTrial() async throws {
+        let products = try await call(json: #"["diarion.base.monthly","diarion.base.quarterly","diarion.base.yearly"]"#) { json, ctx, cb in
             dsk_load_products(json, ctx, cb)
         }
         let array = try XCTUnwrap(products as? [[String: Any]])
-        XCTAssertEqual(array.count, 2)
+        XCTAssertEqual(array.count, 3)
+
+        let quarterly = try XCTUnwrap(array.first { $0["id"] as? String == "diarion.base.quarterly" })
+        XCTAssertEqual(quarterly["price"] as? String, "4.99")
+        let quarter = try XCTUnwrap(quarterly["period"] as? [String: Any])
+        XCTAssertEqual(quarter["unit"] as? String, "month")
+        XCTAssertEqual(quarter["count"] as? Int, 3)
 
         let monthly = try XCTUnwrap(array.first { $0["id"] as? String == "diarion.base.monthly" })
-        XCTAssertEqual(monthly["price"] as? String, "2.49")
+        XCTAssertEqual(monthly["price"] as? String, "1.99")
         XCTAssertEqual(monthly["currencyCode"] as? String, "USD")
         XCTAssertEqual(monthly["isEligibleForIntroOffer"] as? Bool, true)
         let period = try XCTUnwrap(monthly["period"] as? [String: Any])
@@ -47,8 +53,8 @@ final class DiarionStoreKitTests: XCTestCase {
         let intro = try XCTUnwrap(monthly["introOffer"] as? [String: Any])
         XCTAssertEqual(intro["kind"] as? String, "freeTrial")
         let introPeriod = try XCTUnwrap(intro["period"] as? [String: Any])
-        XCTAssertEqual(introPeriod["unit"] as? String, "week")
-        XCTAssertEqual(introPeriod["count"] as? Int, 2)
+        XCTAssertEqual(introPeriod["unit"] as? String, "day")
+        XCTAssertEqual(introPeriod["count"] as? Int, 3)
     }
 
     func testNothingIsOwnedOnAFreshSession() async throws {
@@ -57,7 +63,7 @@ final class DiarionStoreKitTests: XCTestCase {
     }
 
     func testRenewalStatusesOnAFreshSessionAreEmpty() async throws {
-        let statuses = try await call(json: #"["diarion.base.monthly","diarion.base.yearly"]"#) { json, ctx, cb in
+        let statuses = try await call(json: #"["diarion.base.monthly","diarion.base.quarterly","diarion.base.yearly"]"#) { json, ctx, cb in
             dsk_subscription_statuses(json, ctx, cb)
         }
         XCTAssertEqual((statuses as? [Any])?.count, 0)

@@ -1,11 +1,7 @@
 {
   "identifier" : "DiarionLocalStore",
-  "nonRenewingSubscriptions" : [
-
-  ],
-  "products" : [
-
-  ],
+  "nonRenewingSubscriptions" : [],
+  "products" : [],
   "settings" : {
     "_applicationInternalID" : "6814251806",
     "_developerTeamID" : "9XZ2FQC6B7",
@@ -13,33 +9,25 @@
     "_lastSynchronizedDate" : 0,
     "_locale" : "en_US",
     "_storefront" : "USA",
-    "_storeKitErrors" : [
-
-    ]
+    "_storeKitErrors" : []
   },
   "subscriptionGroups" : [
     {
       "id" : "21700001",
-      "localizations" : [
-
-      ],
+      "localizations" : [],
       "name" : "diarion.base",
       "subscriptions" : [
         {
-          "adHocOffers" : [
-
-          ],
-          "codeOffers" : [
-
-          ],
-          "displayPrice" : "2.49",
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "1.99",
           "familyShareable" : false,
           "groupNumber" : 2,
           "internalID" : "6814300001",
           "introductoryOffer" : {
             "internalID" : "6814300011",
             "paymentMode" : "free",
-            "subscriptionPeriod" : "P2W"
+            "subscriptionPeriod" : "P3D"
           },
           "localizations" : [
             {
@@ -55,12 +43,33 @@
           "type" : "RecurringSubscription"
         },
         {
-          "adHocOffers" : [
-
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6814300003",
+          "introductoryOffer" : {
+            "internalID" : "6814300013",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P3D"
+          },
+          "localizations" : [
+            {
+              "description" : "Diarion Base, billed every three months",
+              "displayName" : "Diarion Base (3 months)",
+              "locale" : "en_US"
+            }
           ],
-          "codeOffers" : [
-
-          ],
+          "productID" : "diarion.base.quarterly",
+          "recurringSubscriptionPeriod" : "P3M",
+          "referenceName" : "Base Quarterly",
+          "subscriptionGroupID" : "21700001",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
           "displayPrice" : "11.99",
           "familyShareable" : false,
           "groupNumber" : 2,
@@ -68,7 +77,7 @@
           "introductoryOffer" : {
             "internalID" : "6814300012",
             "paymentMode" : "free",
-            "subscriptionPeriod" : "P2W"
+            "subscriptionPeriod" : "P3D"
           },
           "localizations" : [
             {

@@ -8,6 +8,13 @@ public interface ILegacyAccessDetector
     bool IsKnownLegacy { get; }
 
     /// <summary>
+    /// When the free months of a recognised 1.0 user end (UTC); null for anyone not recognised.
+    /// Fixed the moment the user is recognised and never moved, so the date on the welcome card is
+    /// the date the paywall arrives.
+    /// </summary>
+    DateTime? LegacyUntil { get; }
+
+    /// <summary>
     /// The offline rule alone, synchronously: a 1.0 user who had finished onboarding is recognised
     /// before the first frame of the first paid launch, not a moment later when the store answers
     /// (which would flash the read-only banner at exactly the people promised it never applies).
@@ -25,26 +32,48 @@ public interface ILegacyAccessDetector
 
 /// <summary>
 /// Decides whether this user installed Diarion before it had a paywall. Two independent rules,
-/// either one is enough; see the interface for how answers are remembered.
+/// either one is enough; see the interface for how answers are remembered. Recognition also starts
+/// the clock: the free months run from the day the user was recognised, which on the local rule is
+/// their first launch of a paid build.
 /// </summary>
 public sealed class LegacyAccessDetector : ILegacyAccessDetector
 {
     internal const string LegacyFreeKey = "access.legacyFree";
+    internal const string LegacyUntilKey = "access.legacyUntil";
     internal const string StoreRuleResolvedKey = "access.legacyStoreResolved";
     private const string True = "1";
 
     private readonly IEntitlementStore _store;
     private readonly IStoreClient _storeClient;
     private readonly IInstallEvidence _evidence;
+    private readonly TimeProvider _clock;
 
-    public LegacyAccessDetector(IEntitlementStore store, IStoreClient storeClient, IInstallEvidence evidence)
+    public LegacyAccessDetector(IEntitlementStore store, IStoreClient storeClient, IInstallEvidence evidence, TimeProvider clock)
     {
         _store = store;
         _storeClient = storeClient;
         _evidence = evidence;
+        _clock = clock;
     }
 
     public bool IsKnownLegacy => _store.Get(LegacyFreeKey) == True;
+
+    public DateTime? LegacyUntil
+    {
+        get
+        {
+            if (!IsKnownLegacy) return null;
+
+            var raw = _store.Get(LegacyUntilKey);
+            if (raw is not null
+                && DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var until))
+                return until;
+
+            // Recognised by a build that still said "for ever" (TestFlight builds 3–20) and so wrote no
+            // date: the three months start now, the first time a build that counts them runs.
+            return Grant();
+        }
+    }
 
     public bool ResolveLocally()
     {
@@ -54,11 +83,20 @@ public sealed class LegacyAccessDetector : ILegacyAccessDetector
         // launch, otherwise a new user's own onboarding would count on their second launch.
         if (_evidence.IsFirstLaunchOfPaidEra && _evidence.OnboardingCompletedBeforeThisLaunch)
         {
-            _store.Set(LegacyFreeKey, True);
+            Grant();
             return true;
         }
 
         return false;
+    }
+
+    /// <summary>Writes the recognition and, with it, the day the free months end.</summary>
+    private DateTime Grant()
+    {
+        var until = _clock.GetUtcNow().UtcDateTime.AddDays(StoreCatalog.LegacyFreeDays);
+        _store.Set(LegacyFreeKey, True);
+        _store.Set(LegacyUntilKey, until.ToString("o", CultureInfo.InvariantCulture));
+        return until;
     }
 
     public async Task<bool> EvaluateAsync(CancellationToken cancellationToken = default)
@@ -82,7 +120,7 @@ public sealed class LegacyAccessDetector : ILegacyAccessDetector
 
         if (IsLegacyInstall(transaction))
         {
-            _store.Set(LegacyFreeKey, True);
+            Grant();
             return true;
         }
 

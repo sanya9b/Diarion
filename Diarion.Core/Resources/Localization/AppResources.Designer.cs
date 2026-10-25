@@ -2931,5 +2931,17 @@ public static string ClearAllDataSuccessMsg {
         public static string QuickNoteSaved {
             get { return ResourceManager.GetString("QuickNoteSaved", resourceCulture) ?? string.Empty; }
         }
+
+        public static string PaywallQuarterlyTitle {
+            get { return ResourceManager.GetString("PaywallQuarterlyTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string PaywallPricePerQuarterFormat {
+            get { return ResourceManager.GetString("PaywallPricePerQuarterFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ReadOnlyBannerLegacyEndedText {
+            get { return ResourceManager.GetString("ReadOnlyBannerLegacyEndedText", resourceCulture) ?? string.Empty; }
+        }
     }
 }

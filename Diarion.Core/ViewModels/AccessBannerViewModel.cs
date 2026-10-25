@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -12,7 +13,7 @@ namespace Diarion.ViewModels;
 /// <summary>
 /// The two things the home screen says about access, at most one at a time: the read-only banner
 /// with its single "Renew" button (spec 15, R5.1), or — once, after the update — the card telling
-/// a 1.0 user the app stays free for them (R2.4).
+/// a 1.0 user until when the app stays free for them (R2.4, three months since 2026-10-25).
 /// </summary>
 public partial class AccessBannerViewModel : ObservableObject, IDisposable
 {
@@ -48,6 +49,10 @@ public partial class AccessBannerViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _showLegacyCard;
 
+    /// <summary>The welcome card's text with the day the free months end written in.</summary>
+    [ObservableProperty]
+    private string _legacyCardText = string.Empty;
+
     [RelayCommand]
     private void Renew() =>
         WeakReferenceMessenger.Default.Send(new PaywallRequestedMessage(PaywallReason.UserRequested));
@@ -67,8 +72,23 @@ public partial class AccessBannerViewModel : ObservableObject, IDisposable
     {
         IsReadOnly = state.IsReadOnly;
         var hadSubscription = _store.Get(EntitlementService.HadSubscriptionKey) == "1";
-        BannerText = hadSubscription ? AppResources.ReadOnlyBannerText : AppResources.ReadOnlyBannerNewText;
+        var wasLegacy = _store.Get(LegacyAccessDetector.LegacyFreeKey) == "1";
+
+        // Three wordings for one banner: a lapsed subscriber lost something, a 1.0 user's free months
+        // ran out, a new user who chose "Later" never had anything to lose.
+        BannerText = hadSubscription ? AppResources.ReadOnlyBannerText
+            : wasLegacy ? AppResources.ReadOnlyBannerLegacyEndedText
+            : AppResources.ReadOnlyBannerNewText;
         BannerButtonText = hadSubscription ? AppResources.ReadOnlyBannerButton : AppResources.ReadOnlyBannerNewButton;
+
         ShowLegacyCard = state.Source == AccessSource.Legacy && _store.Get(LegacyCardDismissedKey) != "1";
+        LegacyCardText = state.Source == AccessSource.Legacy
+            ? string.Format(Culture, AppResources.LegacyWelcomeText, LocalDate(state.ExpiresAt))
+            : string.Empty;
     }
+
+    private static CultureInfo Culture => AppResources.Culture ?? CultureInfo.CurrentUICulture;
+
+    private static string LocalDate(DateTime? utc) =>
+        utc is null ? "—" : utc.Value.ToLocalTime().ToString("d MMMM yyyy", Culture);
 }

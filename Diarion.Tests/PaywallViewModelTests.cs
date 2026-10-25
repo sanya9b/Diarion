@@ -37,75 +37,94 @@ public class PaywallViewModelTests
     private static StoreProduct Product(string id, decimal price, SubscriptionPeriodUnit unit, bool eligible = true, bool trial = true) =>
         new(id, id, "$" + price.ToString(CultureInfo.InvariantCulture), price, "USD",
             new SubscriptionPeriod(unit, 1),
-            trial ? new StoreIntroOffer(StoreIntroOfferKind.FreeTrial, new SubscriptionPeriod(SubscriptionPeriodUnit.Week, 2), 1, 0m, "$0") : null,
+            trial ? new StoreIntroOffer(StoreIntroOfferKind.FreeTrial, new SubscriptionPeriod(SubscriptionPeriodUnit.Day, 3), 1, 0m, "$0") : null,
             eligible);
 
-    private void OfferBothPlans(bool eligible = true)
+    /// <summary>The three durations as the owner priced them on 2026-10-25.</summary>
+    private void OfferAllPlans(bool eligible = true)
     {
-        _store.Products.Add(Product(StoreCatalog.BaseMonthly, 2.49m, SubscriptionPeriodUnit.Month, eligible));
+        _store.Products.Add(Product(StoreCatalog.BaseMonthly, 1.99m, SubscriptionPeriodUnit.Month, eligible));
+        _store.Products.Add(Product(StoreCatalog.BaseQuarterly, 4.99m, SubscriptionPeriodUnit.Month, eligible));
         _store.Products.Add(Product(StoreCatalog.BaseYearly, 11.99m, SubscriptionPeriodUnit.Year, eligible));
     }
 
     private void GrantOnPurchase()
     {
-        _store.Entitlements.Add(new StoreEntitlement(StoreCatalog.BaseYearly, Now.AddDays(14), StoreOfferType.Introductory, StoreEnvironment.Sandbox, null));
+        _store.Entitlements.Add(new StoreEntitlement(StoreCatalog.BaseYearly, Now.AddDays(3), StoreOfferType.Introductory, StoreEnvironment.Sandbox, null));
         _store.Statuses.Add(new SubscriptionStatus(StoreCatalog.BaseYearly, SubscriptionRenewalState.Subscribed, true, null));
     }
 
     [Fact]
-    public async Task Yearly_comes_first_and_is_preselected()
+    public async Task The_year_comes_first_and_is_preselected_then_three_months_then_the_month()
     {
-        OfferBothPlans();
+        OfferAllPlans();
         var vm = Create();
 
         await vm.LoadCommand.ExecuteAsync(null);
 
-        vm.Plans.Select(p => p.ProductId).Should().Equal(StoreCatalog.BaseYearly, StoreCatalog.BaseMonthly);
+        vm.Plans.Select(p => p.ProductId).Should().Equal(StoreCatalog.BaseYearly, StoreCatalog.BaseQuarterly, StoreCatalog.BaseMonthly);
         vm.SelectedPlan!.ProductId.Should().Be(StoreCatalog.BaseYearly);
         vm.Plans[0].IsSelected.Should().BeTrue();
         vm.Plans[1].IsSelected.Should().BeFalse();
+        vm.Plans[2].IsSelected.Should().BeFalse();
         vm.HasPlans.Should().BeTrue();
     }
 
     [Fact]
     public async Task Prices_come_from_the_store_with_the_period_appended()
     {
-        OfferBothPlans();
+        OfferAllPlans();
         var vm = Create();
 
         await vm.LoadCommand.ExecuteAsync(null);
 
         vm.Plans[0].PriceText.Should().Be(string.Format(AppResources.PaywallPricePerYearFormat, "$11.99"));
-        vm.Plans[1].PriceText.Should().Be(string.Format(AppResources.PaywallPricePerMonthFormat, "$2.49"));
+        vm.Plans[1].PriceText.Should().Be(string.Format(AppResources.PaywallPricePerQuarterFormat, "$4.99"));
+        vm.Plans[2].PriceText.Should().Be(string.Format(AppResources.PaywallPricePerMonthFormat, "$1.99"));
+    }
+
+    [Fact]
+    public async Task The_year_and_the_three_months_carry_their_discounts_and_the_month_none()
+    {
+        OfferAllPlans();
+        var vm = Create();
+
+        await vm.LoadCommand.ExecuteAsync(null);
+
+        vm.Plans[0].Badge.Should().Be(string.Format(AppResources.PaywallDiscountFormat, 50));
+        vm.Plans[1].Badge.Should().Be(string.Format(AppResources.PaywallDiscountFormat, 16));
+        vm.Plans[2].HasBadge.Should().BeFalse();
     }
 
     [Theory]
-    [InlineData(89, 499, 53)]
-    [InlineData(2.49, 11.99, 60)]
-    public void The_discount_is_computed_from_the_two_prices(decimal monthly, decimal yearly, int expectedPercent)
+    [InlineData(89, 499, 12, 53)]
+    [InlineData(1.99, 11.99, 12, 50)]
+    [InlineData(1.99, 4.99, 3, 16)]
+    public void The_discount_is_computed_from_the_prices(decimal monthly, decimal longer, int months, int expectedPercent)
     {
         var badge = PaywallViewModel.DiscountBadge(
             Product(StoreCatalog.BaseMonthly, monthly, SubscriptionPeriodUnit.Month),
-            Product(StoreCatalog.BaseYearly, yearly, SubscriptionPeriodUnit.Year));
+            Product(StoreCatalog.BaseYearly, longer, SubscriptionPeriodUnit.Year),
+            months);
 
         badge.Should().Be(string.Format(AppResources.PaywallDiscountFormat, expectedPercent));
     }
 
     [Fact]
-    public void No_discount_is_shown_when_the_year_is_not_cheaper_or_a_price_is_missing()
+    public void No_discount_is_shown_when_the_longer_plan_is_not_cheaper_or_a_price_is_missing()
     {
         var monthly = Product(StoreCatalog.BaseMonthly, 1m, SubscriptionPeriodUnit.Month);
         var expensiveYear = Product(StoreCatalog.BaseYearly, 12m, SubscriptionPeriodUnit.Year);
 
-        PaywallViewModel.DiscountBadge(monthly, expensiveYear).Should().BeNull();
-        PaywallViewModel.DiscountBadge(null, expensiveYear).Should().BeNull();
-        PaywallViewModel.DiscountBadge(monthly, null).Should().BeNull();
+        PaywallViewModel.DiscountBadge(monthly, expensiveYear, 12).Should().BeNull();
+        PaywallViewModel.DiscountBadge(null, expensiveYear, 12).Should().BeNull();
+        PaywallViewModel.DiscountBadge(monthly, null, 12).Should().BeNull();
     }
 
     [Fact]
     public async Task An_eligible_user_sees_the_trial_and_the_start_trial_button()
     {
-        OfferBothPlans();
+        OfferAllPlans();
         var vm = Create();
 
         await vm.LoadCommand.ExecuteAsync(null);
@@ -113,7 +132,7 @@ public class PaywallViewModelTests
         vm.Plans.Should().OnlyContain(p => p.HasTrial);
         vm.Plans[0].TrialText.Should().Be(string.Format(
             AppResources.PaywallTrialFormat,
-            PaywallViewModel.Duration(new SubscriptionPeriod(SubscriptionPeriodUnit.Week, 2), 1),
+            PaywallViewModel.Duration(new SubscriptionPeriod(SubscriptionPeriodUnit.Day, 3), 1),
             vm.Plans[0].PriceText));
         vm.PurchaseButtonText.Should().Be(AppResources.PaywallStartTrialButton);
     }
@@ -121,7 +140,7 @@ public class PaywallViewModelTests
     [Fact]
     public async Task A_user_who_used_the_trial_is_never_told_it_is_free()
     {
-        OfferBothPlans(eligible: false);
+        OfferAllPlans(eligible: false);
         var vm = Create();
 
         await vm.LoadCommand.ExecuteAsync(null);
@@ -156,21 +175,22 @@ public class PaywallViewModelTests
     [Fact]
     public async Task Selecting_a_plan_moves_the_selection()
     {
-        OfferBothPlans();
+        OfferAllPlans();
         var vm = Create();
         await vm.LoadCommand.ExecuteAsync(null);
 
-        vm.SelectPlanCommand.Execute(vm.Plans[1]);
+        vm.SelectPlanCommand.Execute(vm.Plans[2]);
 
         vm.SelectedPlan!.ProductId.Should().Be(StoreCatalog.BaseMonthly);
         vm.Plans[0].IsSelected.Should().BeFalse();
-        vm.Plans[1].IsSelected.Should().BeTrue();
+        vm.Plans[1].IsSelected.Should().BeFalse();
+        vm.Plans[2].IsSelected.Should().BeTrue();
     }
 
     [Fact]
     public async Task A_completed_purchase_refreshes_access_and_closes()
     {
-        OfferBothPlans();
+        OfferAllPlans();
         var vm = Create();
         var closed = 0;
         vm.Closed = () => closed++;
@@ -188,7 +208,7 @@ public class PaywallViewModelTests
     [Fact]
     public async Task A_pending_purchase_stays_open_and_says_so()
     {
-        OfferBothPlans();
+        OfferAllPlans();
         var vm = Create();
         var closed = false;
         vm.Closed = () => closed = true;
@@ -205,7 +225,7 @@ public class PaywallViewModelTests
     [Fact]
     public async Task A_cancelled_purchase_changes_nothing()
     {
-        OfferBothPlans();
+        OfferAllPlans();
         var vm = Create();
         await vm.LoadCommand.ExecuteAsync(null);
 
@@ -219,7 +239,7 @@ public class PaywallViewModelTests
     [Fact]
     public async Task A_failed_purchase_names_the_reason()
     {
-        OfferBothPlans();
+        OfferAllPlans();
         var vm = Create();
         await vm.LoadCommand.ExecuteAsync(null);
 
@@ -288,7 +308,7 @@ public class PaywallViewModelTests
     [Fact]
     public async Task Access_granted_elsewhere_closes_the_sheet()
     {
-        OfferBothPlans();
+        OfferAllPlans();
         var vm = Create();
         var closed = false;
         vm.Closed = () => closed = true;

@@ -2126,7 +2126,7 @@
     <value>Subscription</value>
   </data>
   <data name="SubscriptionStatusLegacy" xml:space="preserve">
-    <value>You have been with us since the first version: everything from it stays free for you, forever.</value>
+    <value>You have been with us since the first version: free until {0}, then a subscription.</value>
   </data>
   <data name="SubscriptionStatusTrialFormat" xml:space="preserve">
     <value>Free trial until {0}</value>
@@ -2168,7 +2168,7 @@
     <value>Thank you for being with us since the first version</value>
   </data>
   <data name="LegacyWelcomeText" xml:space="preserve">
-    <value>Diarion is now paid for new users. For you, everything that was in the first version stays free forever, along with every update to it.</value>
+    <value>Diarion is now paid. As a first-version user you keep everything free for three more months — until {0}. After that, writing takes a subscription; reading, backup and export stay open always.</value>
   </data>
   <data name="LegacyWelcomeDismiss" xml:space="preserve">
     <value>Got it</value>
@@ -2403,5 +2403,14 @@
   </data>
   <data name="QuickNoteSaved" xml:space="preserve">
     <value>Saved to Notes</value>
+  </data>
+  <data name="PaywallQuarterlyTitle" xml:space="preserve">
+    <value>3 months</value>
+  </data>
+  <data name="PaywallPricePerQuarterFormat" xml:space="preserve">
+    <value>{0} / 3 months</value>
+  </data>
+  <data name="ReadOnlyBannerLegacyEndedText" xml:space="preserve">
+    <value>The three free months for first-version users have ended: your entries are read-only now.</value>
   </data>
 </root>
