@@ -43,7 +43,19 @@ Workers & Pages → Create → Pages → *Upload assets* → назва проє
 папку `site` цілком (не її вміст окремо) → Deploy. Отримаєте `diarion.pages.dev`.
 Кожне наступне оновлення — знову перетягнути папку.
 
-**Варіант Б — з GitHub (оновлюється саме при пуші в `main`).**
+**Варіант В — воркфлоу `.github/workflows/deploy-site.yml` (чинний з 2026-10-25).** Кожен пуш у
+`main`, що зачіпає `site/`, викладає теку Wrangler-ом у наявний проєкт Pages; збірки немає. Потрібно
+один раз у GitHub → Settings → Secrets and variables → Actions:
+- секрет `CLOUDFLARE_API_TOKEN` — API-токен Cloudflare з правом *Account → Cloudflare Pages → Edit*
+  (створюється в Cloudflare: My Profile → API Tokens → Create Token → Custom token);
+- секрет `CLOUDFLARE_ACCOUNT_ID` — Workers & Pages → Overview, права колонка *Account ID*;
+- змінна (вкладка *Variables*) `CLOUDFLARE_PAGES_PROJECT` — назва проєкту Pages, як у списку
+  Workers & Pages.
+Токен ніколи не потрапляє в репозиторій — він публічний. Запустити вручну: Actions → Deploy site →
+Run workflow. Після заливки воркфлоу сам перевіряє, що `/`, `/terms`, `/en/terms` і `/privacy`
+відповідають 200.
+
+**Варіант Б — з GitHub через Cloudflare (оновлюється саме при пуші в `main`).**
 Workers & Pages → Create → Pages → *Connect to Git* → репозиторій `sanya9b/Diarion` →
 Production branch `main` → Framework preset **None** → Build command *порожньо* →
 Build output directory `site` → Save and Deploy. Пуші в інші гілки дають preview-адреси й на
