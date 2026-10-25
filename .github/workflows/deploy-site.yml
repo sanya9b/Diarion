@@ -1,18 +1,18 @@
 name: Deploy site
 
-# diarion.org is a static folder on Cloudflare Pages. Until this file existed the folder was uploaded
-# by hand, and the live site fell a month and a half behind the repository (2026-10-25: no /terms page,
-# "coming soon" over the App Store button). Now every push to main that touches site/ uploads the
-# folder with Wrangler; nothing is built, there is nothing to build.
+# diarion.org is a Cloudflare Worker that serves the static folder site/ (wrangler.jsonc at the repo
+# root names it). Until this file existed the folder was uploaded by hand, and the live site fell a
+# month and a half behind the repository (2026-10-25: no /terms page, "coming soon" over the App
+# Store button). Now every push to main that touches site/ uploads the folder with Wrangler; nothing
+# is built, there is nothing to build.
 #
 # Needs, in the repository settings (never in the repository itself — it is public):
-#   Secrets  CLOUDFLARE_API_TOKEN     an API token with "Account → Cloudflare Pages → Edit"
-#            CLOUDFLARE_ACCOUNT_ID    Workers & Pages → Overview → Account ID (right-hand column)
-#   Variable CLOUDFLARE_PAGES_PROJECT the Pages project name as shown in Workers & Pages
+#   Secrets  CLOUDFLARE_API_TOKEN   an API token with "Account → Workers Scripts → Edit"
+#            CLOUDFLARE_ACCOUNT_ID  Workers & Pages → Overview → Account ID (right-hand column)
 on:
   push:
     branches: [main]
-    paths: ['site/**', '.github/workflows/deploy-site.yml']
+    paths: ['site/**', 'wrangler.jsonc', '.github/workflows/deploy-site.yml']
   workflow_dispatch:
 
 permissions:
@@ -24,26 +24,17 @@ concurrency:
 
 jobs:
   deploy:
-    name: Upload site/ to Cloudflare Pages
+    name: Upload site/ to the diarion Worker
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Refuse to run without the project name
-        env:
-          PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
-        run: |
-          if [ -z "$PROJECT" ]; then
-            echo "::error::Set the repository variable CLOUDFLARE_PAGES_PROJECT to the Pages project name."
-            exit 1
-          fi
 
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy site --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }} --branch=main --commit-dirty=true
+          command: deploy
 
       - name: Check the live pages
         run: |
