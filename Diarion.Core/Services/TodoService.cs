@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Diarion.Diagnostics;
 using Diarion.Models;
 using Diarion.Services.Database;
+using Diarion.Services.Store;
 using LiteDB;
 
 namespace Diarion.Services;
@@ -14,9 +15,11 @@ public class TodoService : ITodoService
 {
     private readonly IDatabaseContext _dbContext;
     private readonly INotificationService? _notificationService;
+    private readonly IAccessGuard _accessGuard;
 
-    public TodoService(IDatabaseContext dbContext, INotificationService? notificationService = null)
+    public TodoService(IDatabaseContext dbContext, INotificationService? notificationService = null, IAccessGuard? accessGuard = null)
     {
+        _accessGuard = accessGuard ?? AccessGuard.Unrestricted;
         _dbContext = dbContext;
         _notificationService = notificationService;
     }
@@ -81,12 +84,17 @@ public class TodoService : ITodoService
             var profile = ProfileCollection.FindAll().FirstOrDefault();
             bool autoMigrate = profile?.AutoMigrateUncompletedTasksEnabled ?? true;
 
-            if (autoMigrate && dateOnly == DateTime.Today)
+            // Both derive new rows from the user's own rules; while the diary is read-only the
+            // planner is read as it stands and the rules wait (spec 15, R1.4).
+            if (_accessGuard.CanWrite)
             {
-                AutoMigratePastTasks(dateOnly, items);
-            }
+                if (autoMigrate && dateOnly == DateTime.Today)
+                {
+                    AutoMigratePastTasks(dateOnly, items);
+                }
 
-            GenerateRepeatingTasks(dateOnly, items);
+                GenerateRepeatingTasks(dateOnly, items);
+            }
 
             var todos = items
                 .OrderBy(x => x.IsCompleted)
@@ -186,6 +194,7 @@ public class TodoService : ITodoService
 
     public Task SaveTodoAsync(TodoItem todo)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var existing = TodosCollection.FindById(todo.Id);
@@ -202,6 +211,7 @@ public class TodoService : ITodoService
 
     public Task DeleteTodoAsync(Guid todoId)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var todo = TodosCollection.FindById(todoId);
@@ -229,6 +239,7 @@ public class TodoService : ITodoService
 
     public Task DeleteRecurringTaskAsync(Guid ruleId)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             _notificationService?.CancelRepeatingTaskReminder(ruleId);
@@ -282,6 +293,7 @@ public class TodoService : ITodoService
 
     public Task SetRecurrenceAsync(Guid todoId, RecurrenceRule? recurrence)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var todo = TodosCollection.FindById(todoId);
@@ -334,6 +346,7 @@ public class TodoService : ITodoService
                     TargetTime = todo.TargetTime,
                     EndTime = todo.EndTime,
                     HasReminder = todo.HasReminder,
+                    IsVoiceReminder = todo.IsVoiceReminder,
                     Recurrence = recurrence
                 };
                 if (rule.Recurrence.Anchor == default) rule.Recurrence.Anchor = todo.TargetDate;
@@ -390,7 +403,8 @@ public class TodoService : ITodoService
                 rule.Id,
                 rule.TaskDescription,
                 rule.TargetTime,
-                recurrence.Kind == RecurrenceKind.Weekly ? recurrence.DaysOfWeek : null);
+                recurrence.Kind == RecurrenceKind.Weekly ? recurrence.DaysOfWeek : null,
+                rule.IsVoiceReminder);
             return;
         }
 
@@ -401,7 +415,7 @@ public class TodoService : ITodoService
             .Where(moment => moment > DateTime.Now)
             .ToList();
 
-        _notificationService.ScheduleTaskOccurrenceReminders(rule.Id, rule.TaskDescription, moments);
+        _notificationService.ScheduleTaskOccurrenceReminders(rule.Id, rule.TaskDescription, moments, rule.IsVoiceReminder);
     }
 
     /// <summary>
@@ -423,6 +437,7 @@ public class TodoService : ITodoService
         if (existing.TargetTime != todo.TargetTime) { rule.TargetTime = todo.TargetTime; changed = true; }
         if (existing.EndTime != todo.EndTime) { rule.EndTime = todo.EndTime; changed = true; }
         if (existing.HasReminder != todo.HasReminder) { rule.HasReminder = todo.HasReminder; changed = true; }
+        if (existing.IsVoiceReminder != todo.IsVoiceReminder) { rule.IsVoiceReminder = todo.IsVoiceReminder; changed = true; }
 
         if (!changed) return;
         RecurringTasksCollection.Update(rule);
@@ -431,6 +446,7 @@ public class TodoService : ITodoService
 
     public Task DeleteTodosByDiaryEntryAsync(Guid diaryEntryId)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var todos = TodosCollection.Find(x => x.DiaryEntryId == diaryEntryId).ToList();
@@ -467,7 +483,7 @@ public class TodoService : ITodoService
 
         if (targetDateTime > DateTime.Now)
         {
-            _notificationService.ScheduleTodoReminder(todo.Id, "Diarion", todo.TaskDescription, targetDateTime);
+            _notificationService.ScheduleTodoReminder(todo.Id, "Diarion", todo.TaskDescription, targetDateTime, todo.IsVoiceReminder);
         }
     }
 }

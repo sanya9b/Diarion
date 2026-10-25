@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Services.Store;
 using Diarion.ViewModels;
 using FluentAssertions;
 using Moq;
@@ -500,5 +501,120 @@ public class PlannerSectionViewModelTests
         await viewModel.AddAtHourCommand.ExecuteAsync(viewModel.HourSlots.Single(s => s.Hour == 14));
 
         navigation.Verify(n => n.NavigateToAsync(It.Is<string>(r => r.Contains("Hour=14"))), Times.Once);
+    }
+
+    // Long press: the row's priority colours (owner request 2026-10-12).
+
+    private static TodoItem Prioritised(string text, TodoPriority priority, int? hour = null)
+    {
+        var todo = Task(text, hour);
+        todo.Priority = priority;
+        return todo;
+    }
+
+    [Fact]
+    public async Task LongPress_OpensTheColoursOnOneRowAtATime_AndAgainClosesThem()
+    {
+        var viewModel = NewViewModel(Task("A"), Task("B"));
+        await viewModel.LoadTodosForDateAsync(Day);
+        var a = viewModel.Todos.Single(t => t.TaskDescription == "A");
+        var b = viewModel.Todos.Single(t => t.TaskDescription == "B");
+
+        viewModel.TogglePriorityPickerCommand.Execute(a);
+        viewModel.TogglePriorityPickerCommand.Execute(b);
+
+        a.IsPickingPriority.Should().BeFalse();
+        b.IsPickingPriority.Should().BeTrue();
+
+        viewModel.TogglePriorityPickerCommand.Execute(b);
+        b.IsPickingPriority.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ChoosingAColour_SavesItAsThePriority_AndClosesThePicker()
+    {
+        var (viewModel, service, _) = NewViewModelWithDialog(Prioritised("Звіт", TodoPriority.Medium));
+        await viewModel.LoadTodosForDateAsync(Day);
+        var row = viewModel.Todos.Single();
+        viewModel.TogglePriorityPickerCommand.Execute(row);
+
+        row.ChoosePriorityCommand.Execute(TodoPriority.Low);
+        await viewModel.ChoosePriorityCommand.ExecutionTask!;
+
+        service.Verify(s => s.SaveTodoAsync(It.Is<TodoItem>(t => t.TaskDescription == "Звіт" && t.Priority == TodoPriority.Low)), Times.Once);
+        row.IsPickingPriority.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ChoosingTheColourItAlreadyHas_SavesNothing()
+    {
+        var (viewModel, service, _) = NewViewModelWithDialog(Prioritised("Звіт", TodoPriority.High));
+        await viewModel.LoadTodosForDateAsync(Day);
+
+        await viewModel.ChoosePriorityCommand.ExecuteAsync(new PriorityChoice(viewModel.Todos.Single(), TodoPriority.High));
+
+        service.Verify(s => s.SaveTodoAsync(It.IsAny<TodoItem>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task High_KeepsTheTaskFormsDailyLimit()
+    {
+        var (viewModel, service, dialog) = NewViewModelWithDialog(
+            Prioritised("1", TodoPriority.High), Prioritised("2", TodoPriority.High), Prioritised("3", TodoPriority.High),
+            Prioritised("4", TodoPriority.Low));
+        await viewModel.LoadTodosForDateAsync(Day);
+        var fourth = viewModel.Todos.Single(t => t.TaskDescription == "4");
+
+        await viewModel.ChoosePriorityCommand.ExecuteAsync(new PriorityChoice(fourth, TodoPriority.High));
+
+        dialog.Verify(d => d.ShowAlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        service.Verify(s => s.SaveTodoAsync(It.IsAny<TodoItem>()), Times.Never);
+        fourth.Priority.Should().Be(TodoPriority.Low);
+    }
+
+    [Fact]
+    public async Task ARefusedSave_PutsTheOldColourBack()
+    {
+        var (viewModel, service, _) = NewViewModelWithDialog(Prioritised("Звіт", TodoPriority.Medium));
+        service.Setup(s => s.SaveTodoAsync(It.IsAny<TodoItem>())).ThrowsAsync(new ReadOnlyAccessException());
+        await viewModel.LoadTodosForDateAsync(Day);
+        var row = viewModel.Todos.Single();
+
+        await viewModel.ChoosePriorityCommand.ExecuteAsync(new PriorityChoice(row, TodoPriority.Low));
+
+        row.Priority.Should().Be(TodoPriority.Medium);
+        row.Model.Priority.Should().Be(TodoPriority.Medium);
+    }
+
+    [Fact]
+    public async Task ATapOnARowWithItsColoursOpen_ClosesThem_InsteadOfOpeningTheTask()
+    {
+        var navigation = new Mock<INavigationService>();
+        var service = new Mock<ITodoService>();
+        service.Setup(s => s.GetTodosForDateAsync(It.IsAny<DateTime>())).ReturnsAsync(new List<TodoItem> { Task("A") });
+        service.Setup(s => s.GetRecurringTasksAsync()).ReturnsAsync(new List<RecurringTask>());
+        var viewModel = new PlannerSectionViewModel(service.Object, navigation.Object, new Mock<IDialogService>().Object);
+        await viewModel.LoadTodosForDateAsync(Day);
+        var row = viewModel.Todos.Single();
+        viewModel.TogglePriorityPickerCommand.Execute(row);
+
+        await viewModel.GoToTodoDetailsCommand.ExecuteAsync(row);
+
+        row.IsPickingPriority.Should().BeFalse();
+        navigation.Verify(n => n.NavigateToAsync(It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ARefusedTick_LeavesTheBoxUnticked()
+    {
+        var (viewModel, service, _) = NewViewModelWithDialog(Task("A"));
+        service.Setup(s => s.SaveTodoAsync(It.IsAny<TodoItem>())).ThrowsAsync(new ReadOnlyAccessException());
+        await viewModel.LoadTodosForDateAsync(Day);
+        var row = viewModel.Todos.Single();
+
+        await viewModel.ToggleTodoCompletionCommand.ExecuteAsync(row);
+
+        row.IsCompleted.Should().BeFalse();
+        row.Model.IsCompleted.Should().BeFalse();
     }
 }

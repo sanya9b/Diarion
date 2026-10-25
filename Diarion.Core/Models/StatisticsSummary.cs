@@ -25,8 +25,14 @@ public class MoodTrendPoint
     public double Valence { get; set; }
     public bool HasData { get; set; }
 
-    /// <summary>The day's representative emotion (mode of that day's entries), used to color the heatmap.</summary>
+    /// <summary>Daily average energy (-2 calm .. +2 energetic), the circumplex's second axis; 0 when nothing logged.</summary>
+    public double Energy { get; set; }
+
+    /// <summary>The day's representative emotion (mode of that day's entries), named in AI snapshots.</summary>
     public Emotion DominantEmotion { get; set; } = Emotion.None;
+
+    /// <summary>The day's representative quadrant (mode at quadrant grain), what the heatmap colours by.</summary>
+    public EmotionQuadrant DominantQuadrant { get; set; } = EmotionQuadrant.None;
 }
 
 /// <summary>One hour slot of the day on the hour-of-day mood profile. <see cref="HasData"/> is false for
@@ -38,6 +44,9 @@ public class MoodHourPoint
 
     /// <summary>Mean valence (-2..+2) of every observation logged at this hour; 0 when there are none.</summary>
     public double Valence { get; set; }
+
+    /// <summary>Mean energy (-2 calm .. +2 energetic) of the same observations; 0 when there are none.</summary>
+    public double Energy { get; set; }
 
     /// <summary>Observations at this hour across the whole window, not days.</summary>
     public int Count { get; set; }
@@ -83,6 +92,15 @@ public class HabitCompletionHistory
     public Guid HabitId { get; set; }
     public string Name { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// The first day the habit counts as asked of the user. Its creation day when that is known; for the
+    /// built-in habits, seeded with no date (<see cref="DateTime.MinValue"/>), the first day it was ever
+    /// ticked — counting them from the start of every window told a new user they had missed 21 of 21.
+    /// Null for a built-in habit never ticked: nothing has been asked yet.
+    /// </summary>
+    public DateTime? TrackedSince { get; set; }
+
     public RecurrenceRule Schedule { get; set; } = new();
     public CompletionTarget? Target { get; set; }
     public HashSet<DateTime> CompletedDates { get; set; } = new();

@@ -28,9 +28,20 @@ public partial class ProfilePage : ContentPage
         set => SetValue(ThemeThumbAlignmentProperty, value);
     }
 
-    public ProfilePage(ProfileViewModel viewModel)
+    private readonly ScheduledBackupViewModel _autoBackup;
+
+    public ProfilePage(
+        ProfileViewModel viewModel,
+        SubscriptionSectionViewModel subscription,
+        MoodIconSetViewModel moodIconSets,
+        ScheduledBackupViewModel autoBackup)
     {
         InitializeComponent();
+        SubscriptionCard.BindingContext = subscription;
+        MoodIconSetRow.BindingContext = moodIconSets;
+        _autoBackup = autoBackup;
+        AutoBackupCard.BindingContext = autoBackup;
+
         _viewModel = viewModel;
         BindingContext = _viewModel;
         
@@ -55,20 +66,13 @@ public partial class ProfilePage : ContentPage
     {
         base.OnAppearing();
         await _viewModel.LoadProfileAsync();
+        // The card reads device-local settings, not the profile; a run that happened at launch
+        // shows up here on the next visit.
+        _autoBackup.Load();
 
         // After the profile: the guide is about the switches on this screen, and until it is loaded
         // they are showing defaults.
         await _viewModel.Tour.StartAsync(TourId.Settings);
-    }
-
-    protected override void OnDisappearing()
-    {
-        base.OnDisappearing();
-
-        // This page is transient and the AI services are singletons, so its rows have to let go of
-        // them on the way out or every visit leaves another set of listeners behind. A download in
-        // flight is unaffected — the service owns it, and OnAppearing reattaches to it.
-        _viewModel.Ai.Unload();
     }
 
     // --- Settings guide (onboarding stage 3) ------------------------------------------------------

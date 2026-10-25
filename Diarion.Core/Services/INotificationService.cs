@@ -6,7 +6,12 @@ namespace Diarion.Services;
 
 public interface INotificationService
 {
-    void ScheduleTodoReminder(Guid todoId, string title, string description, DateTime targetTime);
+    /// <summary>
+    /// A one-shot reminder for a task. With <paramref name="spoken"/> the task is also read aloud by the
+    /// device's own synthesizer when the reminder fires (spec 19); the platform decides how — a
+    /// pre-rendered sound on the notification, or speech at the moment it arrives.
+    /// </summary>
+    void ScheduleTodoReminder(Guid todoId, string title, string description, DateTime targetTime, bool spoken = false);
     void CancelTodoReminder(Guid todoId);
 
     /// <summary>
@@ -22,13 +27,13 @@ public interface INotificationService
     /// not the app has been opened. Null or empty <paramref name="weekdays"/> repeats daily; otherwise
     /// weekly on each listed weekday (<c>(int)DayOfWeek</c>). Replaces any existing one for the rule.
     /// </summary>
-    void ScheduleRepeatingTaskReminder(Guid ruleId, string title, TimeSpan timeOfDay, IReadOnlyList<int>? weekdays);
+    void ScheduleRepeatingTaskReminder(Guid ruleId, string title, TimeSpan timeOfDay, IReadOnlyList<int>? weekdays, bool spoken = false);
 
     /// <summary>
     /// One reminder per listed moment, for the rules no platform repeat can express — every N days, or a
     /// day of the month, or anything that stops on a date. Replaces any existing ones for the rule.
     /// </summary>
-    void ScheduleTaskOccurrenceReminders(Guid ruleId, string title, IReadOnlyList<DateTime> moments);
+    void ScheduleTaskOccurrenceReminders(Guid ruleId, string title, IReadOnlyList<DateTime> moments, bool spoken = false);
 
     void CancelRepeatingTaskReminder(Guid ruleId);
 

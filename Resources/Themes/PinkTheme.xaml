@@ -56,11 +56,19 @@
     <Color x:Key="Theme_Amber">#F080A8</Color>
     <Color x:Key="Theme_Sage">#FFB6C1</Color>
     <Color x:Key="Theme_Berry">#C76A96</Color>
+    <!-- Mood row highlights (spec 18): pinks, as every highlight in this theme, with dark plum text on them. -->
+    <Color x:Key="Theme_MoodPleasantEnergetic">#E05A88</Color>
+    <Color x:Key="Theme_MoodPleasantCalm">#F7A8C0</Color>
+    <Color x:Key="Theme_MoodUnpleasantEnergetic">#F080A8</Color>
+    <Color x:Key="Theme_MoodUnpleasantCalm">#D98BA6</Color>
+    <Color x:Key="Theme_MoodNeutral">#C9A0B0</Color>
+    <Color x:Key="Theme_OnAccent">#5A2C3A</Color>
     <Color x:Key="Theme_BerryTransparent">#33C76A96</Color>
     
     <!-- Base Colors mapped for Semantic Use -->
     <Color x:Key="Theme_Snow">#FFF7F9</Color>
     <Color x:Key="Theme_Midnight">#5A2C3A</Color>
+    <Color x:Key="Theme_Shadow">#5A2C3A</Color>
     
     <!-- Reading Tracker Book Colors -->
     <Color x:Key="Theme_BookSpineLeft">#7A3249</Color>

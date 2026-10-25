@@ -3,53 +3,84 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Diarion.Controls.FoodTrackerSection">
     
-    <Border StrokeShape="RoundRectangle 16"
-            StrokeThickness="1"
-            Stroke="{DynamicResource Theme_Dust_Ocean}"
-            BackgroundColor="{DynamicResource Theme_Snow_Black}"
-            Padding="16">
+    <Border Style="{StaticResource Card}">
+        <!-- Five empty note fields on every day, most of them for meals that never happened, made the
+             block the longest and emptiest card on the screen. A field now opens when its meal is ticked,
+             and stays while it holds text, so nothing written is ever hidden. Unticked, a row is just the
+             box and the name. -->
         <VerticalStackLayout Spacing="7">
-            <Label Text="{x:Static localization:AppResources.FoodLabel}" FontAttributes="Bold" FontSize="11" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Midnight_Snow}" Margin="0,0,0,4" />
+            <Label Text="{x:Static localization:AppResources.FoodLabel}" Style="{StaticResource SectionHeader}" Margin="0,0,0,4" />
 
             <Grid ColumnDefinitions="Auto, 100, *" ColumnSpacing="12">
                 <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsBreakfastDone}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                 <Label Grid.Column="1" Text="{x:Static localization:AppResources.BreakfastLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Border Grid.Column="2" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0">
-                    <Entry Text="{Binding BreakfastFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" VerticalTextAlignment="Center" />
+                <Border Grid.Column="2" Style="{StaticResource Field}" MinimumHeightRequest="36" Padding="12,4">
+                    <Border.IsVisible>
+                        <MultiBinding Converter="{toolkit:VariableMultiValueConverter ConditionType=Any}">
+                            <Binding Path="IsBreakfastDone" />
+                            <Binding Path="BreakfastFood" Converter="{toolkit:IsStringNotNullOrEmptyConverter}" />
+                        </MultiBinding>
+                    </Border.IsVisible>
+                    <Editor Text="{Binding BreakfastFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" AutoSize="TextChanges" MinimumHeightRequest="0" />
                 </Border>
             </Grid>
 
             <Grid ColumnDefinitions="Auto, 100, *" ColumnSpacing="12">
                 <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsSecondBreakfastDone}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                 <Label Grid.Column="1" Text="{x:Static localization:AppResources.SecondBreakfastLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Border Grid.Column="2" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0">
-                    <Entry Text="{Binding SecondBreakfastFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" VerticalTextAlignment="Center" />
+                <Border Grid.Column="2" Style="{StaticResource Field}" MinimumHeightRequest="36" Padding="12,4">
+                    <Border.IsVisible>
+                        <MultiBinding Converter="{toolkit:VariableMultiValueConverter ConditionType=Any}">
+                            <Binding Path="IsSecondBreakfastDone" />
+                            <Binding Path="SecondBreakfastFood" Converter="{toolkit:IsStringNotNullOrEmptyConverter}" />
+                        </MultiBinding>
+                    </Border.IsVisible>
+                    <Editor Text="{Binding SecondBreakfastFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" AutoSize="TextChanges" MinimumHeightRequest="0" />
                 </Border>
             </Grid>
 
             <Grid ColumnDefinitions="Auto, 100, *" ColumnSpacing="12">
                 <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsLunchDone}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                 <Label Grid.Column="1" Text="{x:Static localization:AppResources.LunchLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Border Grid.Column="2" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0">
-                    <Entry Text="{Binding LunchFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" VerticalTextAlignment="Center" />
+                <Border Grid.Column="2" Style="{StaticResource Field}" MinimumHeightRequest="36" Padding="12,4">
+                    <Border.IsVisible>
+                        <MultiBinding Converter="{toolkit:VariableMultiValueConverter ConditionType=Any}">
+                            <Binding Path="IsLunchDone" />
+                            <Binding Path="LunchFood" Converter="{toolkit:IsStringNotNullOrEmptyConverter}" />
+                        </MultiBinding>
+                    </Border.IsVisible>
+                    <Editor Text="{Binding LunchFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" AutoSize="TextChanges" MinimumHeightRequest="0" />
                 </Border>
             </Grid>
 
             <Grid ColumnDefinitions="Auto, 100, *" ColumnSpacing="12">
                 <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsSnackDone}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                 <Label Grid.Column="1" Text="{x:Static localization:AppResources.SnackLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Border Grid.Column="2" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0">
-                    <Entry Text="{Binding SnackFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" VerticalTextAlignment="Center" />
+                <Border Grid.Column="2" Style="{StaticResource Field}" MinimumHeightRequest="36" Padding="12,4">
+                    <Border.IsVisible>
+                        <MultiBinding Converter="{toolkit:VariableMultiValueConverter ConditionType=Any}">
+                            <Binding Path="IsSnackDone" />
+                            <Binding Path="SnackFood" Converter="{toolkit:IsStringNotNullOrEmptyConverter}" />
+                        </MultiBinding>
+                    </Border.IsVisible>
+                    <Editor Text="{Binding SnackFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" AutoSize="TextChanges" MinimumHeightRequest="0" />
                 </Border>
             </Grid>
 
             <Grid ColumnDefinitions="Auto, 100, *" ColumnSpacing="12">
                 <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsDinnerDone}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                 <Label Grid.Column="1" Text="{x:Static localization:AppResources.DinnerLabel}" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                <Border Grid.Column="2" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent" StrokeShape="RoundRectangle 12" HeightRequest="36" Padding="12,0">
-                    <Entry Text="{Binding DinnerFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" VerticalTextAlignment="Center" />
+                <Border Grid.Column="2" Style="{StaticResource Field}" MinimumHeightRequest="36" Padding="12,4">
+                    <Border.IsVisible>
+                        <MultiBinding Converter="{toolkit:VariableMultiValueConverter ConditionType=Any}">
+                            <Binding Path="IsDinnerDone" />
+                            <Binding Path="DinnerFood" Converter="{toolkit:IsStringNotNullOrEmptyConverter}" />
+                        </MultiBinding>
+                    </Border.IsVisible>
+                    <Editor Text="{Binding DinnerFood}" Placeholder="{x:Static localization:AppResources.FoodPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" PlaceholderColor="{DynamicResource Theme_Ocean_Dust}" FontSize="12" VerticalOptions="Center" AutoSize="TextChanges" MinimumHeightRequest="0" />
                 </Border>
             </Grid>
         </VerticalStackLayout>

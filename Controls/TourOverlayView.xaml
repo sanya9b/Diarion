@@ -55,24 +55,18 @@
                        TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
                 <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                    <Button Grid.Column="0"
+                    <Button Style="{StaticResource GhostButton}" Grid.Column="0"
                             Text="{x:Static localization:AppResources.OnboardingSkipButton}"
                             Command="{Binding SkipCommand}"
-                            IsVisible="{Binding HasMoreSteps}"
-                            BackgroundColor="Transparent"
-                            TextColor="{DynamicResource Theme_Ocean_Dust}"
-                            FontSize="14" Padding="12,6" MinimumHeightRequest="44" />
+                            IsVisible="{Binding HasMoreSteps}" />
 
                     <!-- One button all the way through: NextAsync finishes by itself on the last
                          step, and it only renames itself. Two buttons in this one cell, swapped by
                          IsVisible, cost a step — the tap that hid "Далі" was caught by the "Готово"
                          that appeared under the pointer. -->
-                    <Button Grid.Column="1"
+                    <Button Style="{StaticResource PrimaryButton}" Grid.Column="1"
                             Text="{Binding PrimaryButtonText}"
-                            Command="{Binding NextCommand}"
-                            BackgroundColor="{DynamicResource Theme_Ocean_Ocean}"
-                            TextColor="{DynamicResource Theme_Snow}"
-                            CornerRadius="12" HeightRequest="46" />
+                            Command="{Binding NextCommand}" />
                 </Grid>
             </VerticalStackLayout>
         </Border>

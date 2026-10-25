@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
+using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Services;
 using Diarion.Core.Services;
@@ -25,6 +27,7 @@ public class MainViewModelTests
     private readonly Mock<IDialogService> _dialogServiceMock;
     private readonly Mock<ICalendarService> _calendarServiceMock;
     private readonly Mock<IMenuConfigurationService> _menuConfigServiceMock;
+    private readonly Mock<IMoodIconSetService> _moodIconSetsMock = new();
 
     private readonly CalendarSectionViewModel _calendarSection;
     private readonly PlannerSectionViewModel _plannerSection;
@@ -88,8 +91,7 @@ public class MainViewModelTests
         _quickMenuSection = new QuickMenuViewModel(
             _menuConfigServiceMock.Object,
             _profileServiceMock.Object,
-            _navigationServiceMock.Object,
-            new FakeAiAvailability());
+            _navigationServiceMock.Object);
 
         _habitsSection = new HabitsSectionViewModel(
             _habitServiceMock.Object,
@@ -113,7 +115,76 @@ public class MainViewModelTests
             _quickMenuSection,
             _habitsSection,
             new Mock<CycleStatusViewModel>(_cycleLogServiceMock.Object, _profileServiceMock.Object).Object,
-            new TourViewModel(_profileServiceMock.Object, new TourService()));
+            new TourViewModel(_profileServiceMock.Object, new TourService()),
+            _moodIconSetsMock.Object,
+            new QuickNoteViewModel(new Mock<INoteService>().Object));
+    }
+
+    [Fact]
+    public void StreakTile_FollowsTheDiarySave()
+    {
+        // The autosave announces the write; the tile must move then, not on the next visit to the screen.
+        var viewModel = CreateViewModel();
+        _diaryServiceMock.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(5, 1));
+
+        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(DocumentKind.Diary, Guid.NewGuid().ToString()));
+
+        viewModel.CurrentStreak.Should().Be(5);
+        viewModel.IsStreakVisible.Should().BeTrue();
+        viewModel.IsStreakHeldByGrace.Should().BeTrue("one of the five days was forgiven");
+        viewModel.StreakAccessibleText.Should().Contain("5");
+    }
+
+    [Theory]
+    [InlineData(15, false)]
+    [InlineData(99, false)]
+    [InlineData(120, true)]
+    public void StreakTile_ShowsAnyLength_AndShrinksTheNumberFromThreeDigits(int days, bool isLong)
+    {
+        var viewModel = CreateViewModel();
+        _diaryServiceMock.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(days, 0));
+
+        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(DocumentKind.Diary, Guid.NewGuid().ToString()));
+
+        viewModel.CurrentStreak.Should().Be(days, "the tile has no ceiling at 14 or anywhere else");
+        viewModel.IsStreakLong.Should().Be(isLong);
+    }
+
+    [Fact]
+    public void StreakTile_DrawsTheSeason()
+    {
+        var viewModel = CreateViewModel();
+
+        viewModel.StreakSeason.Should().Be(SeasonCalendar.Of(DateTime.Today));
+        viewModel.StreakIcon.Should().BeOfType<Microsoft.Maui.Controls.Shapes.PathGeometry>()
+            .Which.Figures.Should().NotBeEmpty();
+
+        var raised = new List<string>();
+        viewModel.PropertyChanged += (_, e) => raised.Add(e.PropertyName ?? string.Empty);
+        viewModel.StreakSeason = viewModel.StreakSeason == Season.Winter ? Season.Summer : Season.Winter;
+        raised.Should().Contain(nameof(MainViewModel.StreakIcon));
+    }
+
+    [Fact]
+    public void StreakTile_IgnoresNotes()
+    {
+        // Notes never count toward the streak, so saving one has nothing to recount.
+        var viewModel = CreateViewModel();
+        _diaryServiceMock.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(9, 0));
+
+        WeakReferenceMessenger.Default.Send(new DocumentChangedMessage(DocumentKind.Note, Guid.NewGuid().ToString()));
+
+        viewModel.CurrentStreak.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task StreakTile_OpensStatistics()
+    {
+        var viewModel = CreateViewModel();
+
+        await viewModel.OpenStatisticsCommand.ExecuteAsync(null);
+
+        _navigationServiceMock.Verify(n => n.NavigateToAsync("//StatisticsPage", null), Times.Once);
     }
 
     [Fact]
@@ -175,6 +246,55 @@ public class MainViewModelTests
 
         viewModel.CurrentEntry!.CycleDay.Should().Be("15");
         viewModel.CurrentEntry.HasCycleDay.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task RefreshCycleDay_AfterRecordingOnThisScreen_UpdatesTheDayWithoutSavingIt()
+    {
+        // Recording a period moved from its own page to a panel on this screen, so nothing reloads the
+        // day afterwards: the recount has to happen in place, and must not write an untouched day.
+        _profileServiceMock
+            .Setup(s => s.GetUserProfileAsync())
+            .ReturnsAsync(new UserProfile { Gender = GenderType.Female, IsMenstrualTrackingEnabled = true, BirthDate = new DateTime(1990, 1, 1) });
+        var viewModel = CreateViewModel();
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+        viewModel.CurrentEntry!.HasCycleDay.Should().BeFalse("nothing is recorded yet");
+
+        _cycleLogServiceMock
+            .Setup(s => s.GetMarkedDatesAsync())
+            .ReturnsAsync(new List<DateTime> { DateTime.Today });
+        await viewModel.RefreshCycleDayAsync();
+        await viewModel.FlushAutoSaveAsync();
+
+        viewModel.CurrentEntry.CycleDay.Should().Be("1");
+        _diaryServiceMock.Verify(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task LoadEntries_DrawsTheFacesInTheSetChosenInSettings()
+    {
+        _moodIconSetsMock.Setup(s => s.Current).Returns(MoodIconSet.Plants);
+        var viewModel = CreateViewModel();
+
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+
+        viewModel.CurrentEntry!.IconSet.Should().Be(MoodIconSet.Plants);
+        viewModel.CurrentEntry.Quadrants.Should().OnlyContain(face => face.IconSet == MoodIconSet.Plants);
+    }
+
+    [Fact]
+    public async Task ChangingTheIconSet_RedrawsTheOpenDay_WithoutSavingIt()
+    {
+        // The set is how this phone shows the diary, not part of the day: switching it in settings
+        // must not write an untouched day, the way opening a bubble must not.
+        var viewModel = CreateViewModel();
+        await viewModel.LoadEntriesCommand.ExecuteAsync(null);
+
+        WeakReferenceMessenger.Default.Send(new MoodIconSetChangedMessage(MoodIconSet.Weather));
+        await viewModel.FlushAutoSaveAsync();
+
+        viewModel.CurrentEntry!.Quadrants.Should().OnlyContain(face => face.IconSet == MoodIconSet.Weather);
+        _diaryServiceMock.Verify(s => s.SaveEntryAsync(It.IsAny<DiaryEntry>()), Times.Never);
     }
 
     [Fact]

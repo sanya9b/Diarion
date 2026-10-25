@@ -1,213 +1,272 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
              x:Class="Diarion.Controls.QuickMenuView"
              x:Name="QuickMenuViewRoot">
 
-    <ScrollView Orientation="Horizontal"
-                HorizontalScrollBarVisibility="Never"
-                VerticalScrollBarVisibility="Never">
-        <HorizontalStackLayout Spacing="8" Padding="6,0,0,0">
-            <Grid Margin="0,0,2,0" WidthRequest="50" HeightRequest="50">
-                <Border StrokeShape="RoundRectangle 16"
-                        StrokeThickness="1"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        Padding="0">
-                    <Border.Triggers>
-                        <DataTrigger TargetType="Border" Binding="{Binding CalendarSection.IsCalendarExpanded}" Value="True">
-                            <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Border" Binding="{Binding CalendarSection.IsCalendarExpanded}" Value="False">
-                            <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
-                        </DataTrigger>
-                    </Border.Triggers>
-                    <Grid RowDefinitions="Auto,*">
-                        <Border Grid.Row="0"
-                                StrokeThickness="0"
-                                StrokeShape="RoundRectangle 16,16,0,0"
-                                BackgroundColor="{DynamicResource Theme_Ocean_Dust}"
-                                Padding="0,2">
-                            <Label Text="{Binding CalendarSection.TodayMonthShort}"
-                                   InputTransparent="True"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"
-                                   FontSize="9"
-                                   FontAttributes="Bold"
-                                   CharacterSpacing="1.2"
-                                   TextColor="{DynamicResource Theme_Snow_Midnight}" />
-                        </Border>
-                        <Label Grid.Row="1"
-                                Text="{Binding CalendarSection.TodayDayNumber}"
-                                InputTransparent="True"
+    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+        <!-- Pinned at the left, outside the scroll, like the streak tile at the right: the date is how the
+             calendar opens, and it must not slide away with the section tiles (owner, 2026-10-21). -->
+        <!-- The tile itself takes the tap and the press, not a transparent box laid over it: press
+             feedback scales the element it sits on, and a scaled invisible box shows nothing.
+             Transparent, not unset, so the grid is hit-testable once its children are not. -->
+        <Grid Grid.Column="0" Margin="6,0,0,0" WidthRequest="50" HeightRequest="50" BackgroundColor="Transparent"
+              behaviors:PressFeedback.IsEnabled="True"
+              SemanticProperties.Description="{x:Static localization:AppResources.ToggleCalendarAccessibility}">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CalendarSection.ToggleCalendarCommand}" />
+            </Grid.GestureRecognizers>
+            <Border StrokeShape="RoundRectangle 16"
+                    StrokeThickness="1"
+                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    Padding="0">
+                <Border.Triggers>
+                    <DataTrigger TargetType="Border" Binding="{Binding CalendarSection.IsCalendarExpanded}" Value="True">
+                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Border" Binding="{Binding CalendarSection.IsCalendarExpanded}" Value="False">
+                        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+                    </DataTrigger>
+                </Border.Triggers>
+                <Grid RowDefinitions="Auto,*">
+                    <Border Grid.Row="0"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 16,16,0,0"
+                            BackgroundColor="{DynamicResource Theme_Ocean_Dust}"
+                            Padding="0,2">
+                        <Label Text="{Binding CalendarSection.TodayMonthShort}"
+                               InputTransparent="True"
                                HorizontalOptions="Center"
                                VerticalOptions="Center"
-                               FontSize="18"
+                               FontSize="9"
                                FontAttributes="Bold"
-                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                               CharacterSpacing="1.2"
+                               TextColor="{DynamicResource Theme_Snow_Midnight}" />
+                    </Border>
+                    <Label Grid.Row="1"
+                            Text="{Binding CalendarSection.TodayDayNumber}"
+                            InputTransparent="True"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
-                        <BoxView Grid.RowSpan="2" BackgroundColor="Transparent">
-                            <BoxView.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding CalendarSection.ToggleCalendarCommand}" />
-                            </BoxView.GestureRecognizers>
-                        </BoxView>
-                    </Grid>
-                </Border>
-                
-                <controls:ProgressBorder Progress="{Binding CalendarSection.TodayTaskCompletionPercentage}" 
-                                         StrokeColor="{DynamicResource Theme_Coral}"
-                                         CornerRadius="16"
-                                         InputTransparent="True" />
-            </Grid>
-
-            <HorizontalStackLayout BindableLayout.ItemsSource="{Binding QuickMenuSection.QuickMenuItems}" Spacing="8">
-                <HorizontalStackLayout.Behaviors>
-                    <behaviors:DragAndDropReorderBehavior ShiftDistance="66" />
-                </HorizontalStackLayout.Behaviors>
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="viewmodels:QuickMenuItem">
-                        <ContentView SemanticProperties.Description="{Binding Id}">
-                            <ContentView.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding Command}" />
-                                <DragGestureRecognizer DragStartingCommand="{Binding BindingContext.QuickMenuSection.DragMenuStartingCommand, Source={x:Reference QuickMenuViewRoot}}"
-                                                       DragStartingCommandParameter="{Binding .}"
-                                                       DropCompletedCommand="{Binding BindingContext.QuickMenuSection.DropMenuCompletedCommand, Source={x:Reference QuickMenuViewRoot}}" />
-                                <DropGestureRecognizer DropCommand="{Binding BindingContext.QuickMenuSection.ReorderMenuCommand, Source={x:Reference QuickMenuViewRoot}}"
-                                                       DropCommandParameter="{Binding .}" />
-                            </ContentView.GestureRecognizers>
+                </Grid>
+            </Border>
+        
+            <controls:ProgressBorder Progress="{Binding CalendarSection.TodayTaskCompletionPercentage}" 
+                                     StrokeColor="{DynamicResource Theme_Coral}"
+                                     CornerRadius="16"
+                                     InputTransparent="True" />
+        </Grid>
+        <ScrollView Grid.Column="1" Orientation="Horizontal"
+                    HorizontalScrollBarVisibility="Never"
+                    VerticalScrollBarVisibility="Never">
+            <HorizontalStackLayout Spacing="8">
+                <HorizontalStackLayout BindableLayout.ItemsSource="{Binding QuickMenuSection.QuickMenuItems}" Spacing="8">
+                    <HorizontalStackLayout.Behaviors>
+                        <behaviors:DragAndDropReorderBehavior ShiftDistance="66" />
+                    </HorizontalStackLayout.Behaviors>
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:QuickMenuItem">
+                            <ContentView SemanticProperties.Description="{Binding Id}">
+                                <ContentView.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Command}" />
+                                    <DragGestureRecognizer DragStartingCommand="{Binding BindingContext.QuickMenuSection.DragMenuStartingCommand, Source={x:Reference QuickMenuViewRoot}}"
+                                                           DragStartingCommandParameter="{Binding .}"
+                                                           DropCompletedCommand="{Binding BindingContext.QuickMenuSection.DropMenuCompletedCommand, Source={x:Reference QuickMenuViewRoot}}" />
+                                    <DropGestureRecognizer DropCommand="{Binding BindingContext.QuickMenuSection.ReorderMenuCommand, Source={x:Reference QuickMenuViewRoot}}"
+                                                           DropCommandParameter="{Binding .}" />
+                                </ContentView.GestureRecognizers>
                             
-                            <Border StrokeShape="RoundRectangle 16"
-                                    StrokeThickness="1"
-                                    BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                                    Padding="0"
-                                    Margin="0,0,8,0"
-                                    WidthRequest="50"
-                                    HeightRequest="50">
-                                <Border.Triggers>
-                                    <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Sage">
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Berry">
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Berry}" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Amber">
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Coral">
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                                    </DataTrigger>
-                                </Border.Triggers>
+                                <Border StrokeShape="RoundRectangle 16"
+                                        StrokeThickness="1"
+                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                        Padding="0"
+                                        Margin="0,0,8,0"
+                                        WidthRequest="50"
+                                        HeightRequest="50">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Sage">
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Berry">
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Berry}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Amber">
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding StrokeColorKey}" Value="Theme_Coral">
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
 
-                                <Grid BackgroundColor="Transparent">
-                                    <Path StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
-                                          WidthRequest="24" HeightRequest="24"
-                                          HorizontalOptions="Center" VerticalOptions="Center" 
-                                          InputTransparent="True"
-                                          Data="{Binding IconGeometry}">
-                                        <Path.Triggers>
-                                            <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Sage">
-                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Berry">
-                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Berry}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Amber">
-                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Coral">
-                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                                            </DataTrigger>
+                                    <Grid BackgroundColor="Transparent">
+                                        <Path StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
+                                              WidthRequest="24" HeightRequest="24"
+                                              HorizontalOptions="Center" VerticalOptions="Center" 
+                                              InputTransparent="True"
+                                              Data="{Binding IconGeometry}">
+                                            <Path.Triggers>
+                                                <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Sage">
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Berry">
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Berry}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Amber">
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Path" Binding="{Binding StrokeColorKey}" Value="Theme_Coral">
+                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                                                </DataTrigger>
 
-                                            <DataTrigger TargetType="Path" Binding="{Binding FillColorKey}" Value="Theme_Amber">
-                                                <Setter Property="Fill" Value="{DynamicResource Theme_Amber}" />
-                                                <Setter Property="StrokeThickness" Value="0" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Path" Binding="{Binding FillColorKey}" Value="">
-                                                <Setter Property="Fill" Value="Transparent" />
-                                            </DataTrigger>
+                                                <DataTrigger TargetType="Path" Binding="{Binding FillColorKey}" Value="Theme_Amber">
+                                                    <Setter Property="Fill" Value="{DynamicResource Theme_Amber}" />
+                                                    <Setter Property="StrokeThickness" Value="0" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Path" Binding="{Binding FillColorKey}" Value="">
+                                                    <Setter Property="Fill" Value="Transparent" />
+                                                </DataTrigger>
 
-                                            <DataTrigger TargetType="Path" Binding="{Binding UsesUniformAspect}" Value="True">
-                                                <Setter Property="Aspect" Value="Uniform" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Path" Binding="{Binding UsesUniformAspect}" Value="False">
-                                                <Setter Property="Aspect" Value="None" />
-                                            </DataTrigger>
+                                                <DataTrigger TargetType="Path" Binding="{Binding UsesUniformAspect}" Value="True">
+                                                    <Setter Property="Aspect" Value="Uniform" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Path" Binding="{Binding UsesUniformAspect}" Value="False">
+                                                    <Setter Property="Aspect" Value="None" />
+                                                </DataTrigger>
 
-                                            <!-- Hide default path for Moments -->
-                                            <DataTrigger TargetType="Path" Binding="{Binding Id}" Value="Moments">
-                                                <Setter Property="IsVisible" Value="False" />
-                                            </DataTrigger>
-                                        </Path.Triggers>
-                                    </Path>
+                                                <!-- Hide default path for Moments -->
+                                                <DataTrigger TargetType="Path" Binding="{Binding Id}" Value="Moments">
+                                                    <Setter Property="IsVisible" Value="False" />
+                                                </DataTrigger>
+                                            </Path.Triggers>
+                                        </Path>
 
-                                    <!-- Moments Custom Multi-Path Icon -->
-                                    <Grid WidthRequest="120" HeightRequest="160" Scale="0.25" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" IsVisible="False">
-                                        <Grid.Triggers>
-                                            <DataTrigger TargetType="Grid" Binding="{Binding Id}" Value="Moments">
-                                                <Setter Property="IsVisible" Value="True" />
-                                            </DataTrigger>
-                                        </Grid.Triggers>
+                                        <!-- Moments Custom Multi-Path Icon -->
+                                        <Grid WidthRequest="120" HeightRequest="160" Scale="0.25" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" IsVisible="False">
+                                            <Grid.Triggers>
+                                                <DataTrigger TargetType="Grid" Binding="{Binding Id}" Value="Moments">
+                                                    <Setter Property="IsVisible" Value="True" />
+                                                </DataTrigger>
+                                            </Grid.Triggers>
 
-                                        <!-- String -->
-                                        <Path Stroke="#7A3249" StrokeThickness="2" Data="M 0,15 Q 60,25 120,15" />
+                                            <!-- String -->
+                                            <Path Stroke="#7A3249" StrokeThickness="2" Data="M 0,15 Q 60,25 120,15" />
                                         
-                                        <!-- Peg Shadow -->
-                                        <Path Fill="#000000" Opacity="0.15" Data="M 53,15 L 67,15 L 65,38 L 51,38 Z" />
+                                            <!-- Peg Shadow -->
+                                            <Path Fill="#000000" Opacity="0.15" Data="M 53,15 L 67,15 L 65,38 L 51,38 Z" />
                                         
-                                        <!-- Polaroid Shadow -->
-                                        <Path Fill="#000000" Opacity="0.1" Data="M 23,33 L 103,33 L 103,133 L 23,133 Z" />
+                                            <!-- Polaroid Shadow -->
+                                            <Path Fill="#000000" Opacity="0.1" Data="M 23,33 L 103,33 L 103,133 L 23,133 Z" />
                                         
-                                        <!-- 3D Top/Right Bevels -->
-                                        <Path Fill="#F3E5EB" Data="M 20,30 L 25,25 L 105,25 L 100,30 Z" />
-                                        <Path Fill="#E2C1CE" Data="M 100,30 L 105,25 L 105,125 L 100,130 Z" />
+                                            <!-- 3D Top/Right Bevels -->
+                                            <Path Fill="#F3E5EB" Data="M 20,30 L 25,25 L 105,25 L 100,30 Z" />
+                                            <Path Fill="#E2C1CE" Data="M 100,30 L 105,25 L 105,125 L 100,130 Z" />
                                         
-                                        <!-- Front Face (White Polaroid Frame) -->
-                                        <Path Fill="White" Data="M 20,30 L 100,30 L 100,130 L 20,130 Z" />
+                                            <!-- Front Face (White Polaroid Frame) -->
+                                            <Path Fill="White" Data="M 20,30 L 100,30 L 100,130 L 20,130 Z" />
                                         
-                                        <!-- Photo Container -->
-                                        <Path Fill="#FFF0F5" Data="M 28,38 L 92,38 L 92,98 L 28,98 Z" />
+                                            <!-- Photo Container -->
+                                            <Path Fill="#FFF0F5" Data="M 28,38 L 92,38 L 92,98 L 28,98 Z" />
                                         
-                                        <!-- Sky -->
-                                        <Path Fill="#F8B3C3" Data="M 28,38 L 92,38 L 92,80 L 28,80 Z" />
+                                            <!-- Sky -->
+                                            <Path Fill="#F8B3C3" Data="M 28,38 L 92,38 L 92,80 L 28,80 Z" />
                                         
-                                        <!-- Mountains -->
-                                        <Path Fill="#D589A6" Data="M 28,80 L 45,70 L 65,85 L 92,68 L 92,98 L 28,98 Z" />
-                                        <Path Fill="#C27290" Data="M 45,70 L 60,60 L 75,75 L 92,58 L 92,68 L 45,70 Z" />
+                                            <!-- Mountains -->
+                                            <Path Fill="#D589A6" Data="M 28,80 L 45,70 L 65,85 L 92,68 L 92,98 L 28,98 Z" />
+                                            <Path Fill="#C27290" Data="M 45,70 L 60,60 L 75,75 L 92,58 L 92,68 L 45,70 Z" />
                                         
-                                        <!-- Sun -->
-                                        <Ellipse Fill="#E6A822" Margin="72,42,0,0" WidthRequest="12" HeightRequest="12" HorizontalOptions="Start" VerticalOptions="Start" />
+                                            <!-- Sun -->
+                                            <Ellipse Fill="#E6A822" Margin="72,42,0,0" WidthRequest="12" HeightRequest="12" HorizontalOptions="Start" VerticalOptions="Start" />
                                         
-                                        <!-- Hot Air Balloon -->
-                                        <Path Fill="#F57291" Data="M 52,43 C 52,38 55,35 60,35 C 65,35 68,38 68,43 C 68,48 64,51 63,53 L 57,53 C 56,51 52,48 52,43 Z" />
-                                        <Path Fill="White" Data="M 59,35 H 61 V 53 H 59 Z" />
-                                        <Path Fill="White" Data="M 55.5,37.5 C 57.5,39 58.5,45 58.5,53 L 57.5,53 C 57.5,47 55.5,41 53.5,39 Z" />
-                                        <Path Fill="White" Data="M 64.5,37.5 C 62.5,39 61.5,45 61.5,53 L 62.5,53 C 62.5,47 64.5,41 66.5,39 Z" />
-                                        <Path Fill="#D97706" Data="M 58.5,58 H 61.5 V 61 H 58.5 Z" />
-                                        <Path Stroke="#7A3249" StrokeThickness="1" Data="M 57.5,53 L 59,58 M 62.5,53 L 61,58" />
+                                            <!-- Hot Air Balloon -->
+                                            <Path Fill="#F57291" Data="M 52,43 C 52,38 55,35 60,35 C 65,35 68,38 68,43 C 68,48 64,51 63,53 L 57,53 C 56,51 52,48 52,43 Z" />
+                                            <Path Fill="White" Data="M 59,35 H 61 V 53 H 59 Z" />
+                                            <Path Fill="White" Data="M 55.5,37.5 C 57.5,39 58.5,45 58.5,53 L 57.5,53 C 57.5,47 55.5,41 53.5,39 Z" />
+                                            <Path Fill="White" Data="M 64.5,37.5 C 62.5,39 61.5,45 61.5,53 L 62.5,53 C 62.5,47 64.5,41 66.5,39 Z" />
+                                            <Path Fill="#D97706" Data="M 58.5,58 H 61.5 V 61 H 58.5 Z" />
+                                            <Path Stroke="#7A3249" StrokeThickness="1" Data="M 57.5,53 L 59,58 M 62.5,53 L 61,58" />
                                         
-                                        <!-- Photo Inner Border -->
-                                        <Path Stroke="#E2C1CE" StrokeThickness="1.5" Data="M 28,38 H 92 V 98 H 28 Z" />
+                                            <!-- Photo Inner Border -->
+                                            <Path Stroke="#E2C1CE" StrokeThickness="1.5" Data="M 28,38 H 92 V 98 H 28 Z" />
                                         
-                                        <!-- Birds in sky -->
-                                        <Path Fill="#7A3249" Data="M 34,44 Q 37,42 40,44 Q 37,45 34,44 Z" />
-                                        <Path Fill="#7A3249" Data="M 43,42 Q 45,40 47,42 Q 45,43 43,42 Z" />
+                                            <!-- Birds in sky -->
+                                            <Path Fill="#7A3249" Data="M 34,44 Q 37,42 40,44 Q 37,45 34,44 Z" />
+                                            <Path Fill="#7A3249" Data="M 43,42 Q 45,40 47,42 Q 45,43 43,42 Z" />
                                         
-                                        <!-- Wooden Peg -->
-                                        <Path Fill="#D97706" Data="M 56,10 L 64,10 L 64,33 L 56,33 Z" />
-                                        <Path Fill="#B45309" Data="M 64,11.5 L 67,8.5 L 67,28.5 L 64,31.5 Z" />
-                                        <Path Fill="#FBBF24" Data="M 56,11.5 L 59,8.5 L 67,8.5 L 64,11.5 Z" />
-                                        <Path Fill="#9CA3AF" Data="M 55.5,20 L 64.5,20 L 64.5,22 L 55.5,22 Z" />
-                                        <Path Fill="#4B5563" Data="M 64.5,20 L 67.5,17 L 67.5,19 L 64.5,22 Z" />
+                                            <!-- Wooden Peg -->
+                                            <Path Fill="#D97706" Data="M 56,10 L 64,10 L 64,33 L 56,33 Z" />
+                                            <Path Fill="#B45309" Data="M 64,11.5 L 67,8.5 L 67,28.5 L 64,31.5 Z" />
+                                            <Path Fill="#FBBF24" Data="M 56,11.5 L 59,8.5 L 67,8.5 L 64,11.5 Z" />
+                                            <Path Fill="#9CA3AF" Data="M 55.5,20 L 64.5,20 L 64.5,22 L 55.5,22 Z" />
+                                            <Path Fill="#4B5563" Data="M 64.5,20 L 67.5,17 L 67.5,19 L 64.5,22 Z" />
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </Border>
-                        </ContentView>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
+                                </Border>
+                            </ContentView>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </HorizontalStackLayout>
             </HorizontalStackLayout>
-        </HorizontalStackLayout>
-    </ScrollView>
+        </ScrollView>
+
+        <!-- The streak: days in a row with something written, the same count the statistics show. Pinned at the
+             right of the row, outside the scroll, so it never slides away with the tiles; tapping it opens the
+             statistics, where the days themselves are drawn. It took the place of the strip under the date,
+             which counted a path to a first hypothesis rather than the owner's own days (2026-10-21). A run
+             kept alive by forgiven days carries an asterisk, as in statistics: a mark rather than a colour,
+             because the palette cannot be told apart by hue alone. -->
+        <Grid Grid.Column="2" WidthRequest="50" HeightRequest="50" Margin="0,0,2,0" BackgroundColor="Transparent"
+              behaviors:PressFeedback.IsEnabled="True"
+              SemanticProperties.Description="{Binding StreakAccessibleText}">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding OpenStatisticsCommand}" />
+            </Grid.GestureRecognizers>
+            <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="0"
+                    Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                    InputTransparent="True">
+                <VerticalStackLayout Spacing="0" HorizontalOptions="Center" VerticalOptions="Center">
+                    <!-- The season over the count, drawn in the line of the other icons: a sprout (Sage) in
+                         spring, a sun (Amber) in summer, a yellow leaf (Amber) in autumn, a snowflake (Ocean)
+                         in winter. Grey while there is no run yet. The zero trigger is last so it wins. -->
+                    <Path Data="{Binding StreakIcon}" WidthRequest="17" HeightRequest="17" Aspect="Uniform"
+                          StrokeThickness="1.7" StrokeLineCap="Round" StrokeLineJoin="Round"
+                          Stroke="{DynamicResource Theme_Amber}" HorizontalOptions="Center">
+                        <Path.Triggers>
+                            <DataTrigger TargetType="Path" Binding="{Binding StreakSeason}" Value="{x:Static models:Season.Spring}">
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Path" Binding="{Binding StreakSeason}" Value="{x:Static models:Season.Winter}">
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Path" Binding="{Binding IsStreakVisible}" Value="False">
+                                <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
+                            </DataTrigger>
+                        </Path.Triggers>
+                    </Path>
+                    <HorizontalStackLayout Spacing="0" HorizontalOptions="Center">
+                        <!-- No upper limit on the count; from three digits it drops a size instead of being cut. -->
+                        <Label Text="{Binding CurrentStreak}" FontSize="15" FontAttributes="Bold" LineBreakMode="NoWrap"
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsStreakLong}" Value="True">
+                                    <Setter Property="FontSize" Value="12" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label Text="*" FontSize="13" FontAttributes="Bold" VerticalOptions="Start"
+                               IsVisible="{Binding IsStreakHeldByGrace}" TextColor="{DynamicResource Theme_Amber}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
 </ContentView>

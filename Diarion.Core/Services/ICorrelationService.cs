@@ -12,8 +12,12 @@ namespace Diarion.Services;
 /// mood were both recorded. It is deliberately the best rather than an average: the first insight
 /// appears as soon as one factor clears the bar, so that is what the user is waiting on.
 /// </para>
+/// <para>
+/// <paramref name="BestFactorKey"/> names that factor, so a screen can say what to log today for
+/// the day to count, not only how many days are left. Null while nothing has paired at all.
+/// </para>
 /// </summary>
-public readonly record struct CorrelationReadiness(int PairedDays, int RequiredDays)
+public readonly record struct CorrelationReadiness(int PairedDays, int RequiredDays, string? BestFactorKey = null)
 {
     public bool IsReady => PairedDays >= RequiredDays;
 

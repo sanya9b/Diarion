@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -70,7 +71,7 @@ public partial class HabitsSectionViewModel : ObservableObject
         Entry.Habits.Move(oldIndex, newIndex);
 
         var orderedIds = Entry.Habits.Select(h => h.HabitId).ToList();
-        await _habitService.UpdateHabitDefinitionsOrderAsync(orderedIds);
+        if (!await WriteGate.TryAsync(() => _habitService.UpdateHabitDefinitionsOrderAsync(orderedIds))) return;
     }
 
     [RelayCommand]
@@ -105,7 +106,7 @@ public partial class HabitsSectionViewModel : ObservableObject
             
         if (!confirm) return;
 
-        await _habitService.DeleteHabitDefinitionAsync(item.HabitId, _calendarSection.GetSelectedDate());
+        if (!await WriteGate.TryAsync(() => _habitService.DeleteHabitDefinitionAsync(item.HabitId, _calendarSection.GetSelectedDate()))) return;
         Entry.Habits.Remove(item);
     }
 }

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              xmlns:controls="clr-namespace:Diarion.Controls"
@@ -23,12 +25,23 @@
                 <Label Grid.Column="0" Text="{Binding Title}" FontSize="26" FontAttributes="Bold"
                        VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
 
+                <!-- The same sign as the home tile: the season over the count, the ring neutral so the
+                     season's colour is the only accent (owner, 2026-10-23). -->
                 <Border Grid.Column="1" IsVisible="{Binding IsStreakVisible}" VerticalOptions="Center"
-                        StrokeThickness="1.5" Stroke="{DynamicResource Theme_Coral}"
-                        BackgroundColor="Transparent" StrokeShape="RoundRectangle 18" Padding="12,6">
+                        StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}" StrokeShape="RoundRectangle 18" Padding="12,6">
                     <HorizontalStackLayout Spacing="6" VerticalOptions="Center"
                                            SemanticProperties.Description="{x:Static localization:AppResources.StreakHeldByGraceHint}">
-                        <Label Text="🔥" FontSize="16" VerticalOptions="Center" />
+                        <Path Data="{Binding StreakIcon}" WidthRequest="16" HeightRequest="16" Stroke="{DynamicResource Theme_Amber}" StrokeThickness="1.7" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" VerticalOptions="Center">
+                            <Path.Triggers>
+                                <DataTrigger TargetType="Path" Binding="{Binding StreakSeason}" Value="{x:Static models:Season.Spring}">
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Path" Binding="{Binding StreakSeason}" Value="{x:Static models:Season.Winter}">
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Ocean}" />
+                                </DataTrigger>
+                            </Path.Triggers>
+                        </Path>
                         <Label Text="{Binding CurrentStreak}" FontSize="15" FontAttributes="Bold"
                                TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
                         <!-- A caveat mark, not a colour: the palette is not distinguishable by hue alone,
@@ -62,7 +75,18 @@
                                     <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:StatisticsViewModel}}, Path=SelectTabCommand}" CommandParameter="{Binding .}" />
                                 </Border.GestureRecognizers>
                                 <HorizontalStackLayout Spacing="6" VerticalOptions="Center" HorizontalOptions="Center">
-                                    <Label Text="{Binding Icon}" FontSize="15" VerticalOptions="Center" />
+                                    <Path Data="{Binding IconGeometry}" WidthRequest="16" HeightRequest="16" Aspect="Uniform"
+                                          StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round"
+                                          VerticalOptions="Center" InputTransparent="True">
+                                        <Path.Triggers>
+                                            <DataTrigger TargetType="Path" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Snow}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Path" Binding="{Binding IsSelected}" Value="False">
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                            </DataTrigger>
+                                        </Path.Triggers>
+                                    </Path>
                                     <Label Text="{Binding DisplayName}" VerticalOptions="Center" FontSize="14" FontAttributes="Bold">
                                         <Label.Triggers>
                                             <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
@@ -97,7 +121,7 @@
                             </DataTrigger>
                         </Border.Triggers>
                         <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
-                            <Label Text="📅" FontSize="12" VerticalOptions="Center" InputTransparent="True" />
+                            <Path Data="{x:Static icons:AppIcons.Calendar}" WidthRequest="13" HeightRequest="13" Stroke="{DynamicResource Theme_Ocean_Dust}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" VerticalOptions="Center" />
                             <DatePicker Date="{Binding RangeStart}"
                                         MinimumDate="{Binding MinSelectableDate}"
                                         MaximumDate="{Binding MaxSelectableDate}"
@@ -121,29 +145,31 @@
                                            BindableLayout.ItemsSource="{Binding TimeRanges}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:TimeRangeItem">
-                                <Border Padding="12,0" Margin="0,0,6,0" HeightRequest="32" StrokeThickness="1"
-                                        StrokeShape="RoundRectangle 16" Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                        BackgroundColor="Transparent">
-                                    <Border.Triggers>
-                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                                        </DataTrigger>
-                                    </Border.Triggers>
-                                    <Border.GestureRecognizers>
+                                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                    <ContentView.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:StatisticsViewModel}}, Path=SelectTimeRangeCommand}" CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
-                                    <Label Text="{Binding DisplayName}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
-                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                    </ContentView.GestureRecognizers>
+                                    <Border Padding="12,0" Margin="0,0,6,0" HeightRequest="32" StrokeThickness="1"
+                                            StrokeShape="RoundRectangle 16" Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                            BackgroundColor="Transparent">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
                                             </DataTrigger>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
-                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
-                                </Border>
+                                        </Border.Triggers>
+                                        <Label Text="{Binding DisplayName}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Border>
+                                </ContentView>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </HorizontalStackLayout>
@@ -153,74 +179,136 @@
 
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{DynamicResource Theme_Ocean_Dust}" />
 
+            <!-- ================= REVIEW TAB ================= -->
+            <!-- The period against the period of the same length before it. Six tiles, always the
+                 same six, so the eye learns where each number lives; a tile with nothing logged says
+                 so rather than disappearing and shifting the rest. Every change carries an arrow
+                 and a magnitude — the palette is not distinguishable by hue alone, so colour is only
+                 ever added on top of text, never instead of it. -->
+            <VerticalStackLayout Spacing="16" IsVisible="{Binding IsReviewTabVisible}">
+
+                <controls:EmptyStateView IsVisible="{Binding Review.IsEmpty}" Scene="Productivity"
+                                         Title="{x:Static localization:AppResources.EmptyStateReviewTitle}"
+                                         Hint="{x:Static localization:AppResources.EmptyStateReviewHint}" />
+
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding Review.IsNotEmpty}">
+
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="{Binding Review.PeriodText}" FontSize="16" FontAttributes="Bold"
+                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        <Label Text="{Binding Review.PreviousPeriodText}" FontSize="12"
+                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                        <controls:StatTile Grid.Row="0" Grid.Column="0"
+                                           Label="{x:Static localization:AppResources.ReviewDaysWritten}"
+                                           Value="{Binding Review.DaysWrittenValue}"
+                                           Caption="{Binding Review.DaysWrittenDelta}"
+                                           AccentColor="{DynamicResource Theme_Coral}" />
+                        <controls:StatTile Grid.Row="0" Grid.Column="1"
+                                           Label="{x:Static localization:AppResources.ReviewMood}"
+                                           Value="{Binding Review.MoodValue}"
+                                           Caption="{Binding Review.MoodDelta}"
+                                           AccentColor="{DynamicResource Theme_Coral}" />
+                        <controls:StatTile Grid.Row="1" Grid.Column="0"
+                                           Label="{x:Static localization:AppResources.ReviewSleep}"
+                                           Value="{Binding Review.SleepValue}"
+                                           Caption="{Binding Review.SleepDelta}"
+                                           AccentColor="{DynamicResource Theme_Amber}" />
+                        <controls:StatTile Grid.Row="1" Grid.Column="1"
+                                           Label="{x:Static localization:AppResources.ReviewHabits}"
+                                           Value="{Binding Review.HabitsValue}"
+                                           Caption="{Binding Review.HabitsDelta}"
+                                           AccentColor="{DynamicResource Theme_Sage}" />
+                        <controls:StatTile Grid.Row="2" Grid.Column="0"
+                                           Label="{x:Static localization:AppResources.ReviewTasks}"
+                                           Value="{Binding Review.TasksValue}"
+                                           Caption="{Binding Review.TasksDelta}"
+                                           AccentColor="{DynamicResource Theme_Sage}" />
+                        <controls:StatTile Grid.Row="2" Grid.Column="1"
+                                           Label="{x:Static localization:AppResources.ReviewExpense}"
+                                           Value="{Binding Review.ExpenseValue}"
+                                           Caption="{Binding Review.ExpenseDelta}"
+                                           AccentColor="{DynamicResource Theme_Amber}" />
+                    </Grid>
+
+                    <Label Text="{Binding Review.TopEmotionText}" IsVisible="{Binding Review.HasTopEmotion}"
+                           FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                    <Border Style="{StaticResource StatCard}" IsVisible="{Binding Review.HasHabitRows}">
+                        <Border.Shadow>
+                            <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="{x:Static localization:AppResources.ReviewHabitsHeader}"
+                                   FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5"
+                                   TextColor="{DynamicResource Theme_Sage}" />
+
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Review.HabitRows}" Spacing="8">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="stats:ReviewHabitRow">
+                                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                                            <Label Grid.Column="0" Text="{Binding Name}" FontSize="14" LineBreakMode="TailTruncation"
+                                                   VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Label Grid.Column="1" Text="{Binding ValueText}" FontSize="14" FontAttributes="Bold"
+                                                   VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Label Grid.Column="2" Text="{Binding DeltaText}" FontSize="12" VerticalOptions="Center"
+                                                   MinimumWidthRequest="72" HorizontalTextAlignment="End"
+                                                   TextColor="{DynamicResource Theme_Ocean_Dust}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding Tone}" Value="{x:Static stats:ReviewTone.Better}">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Sage}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding Tone}" Value="{x:Static stats:ReviewTone.Worse}">
+                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </Grid>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Label Text="{x:Static localization:AppResources.ReviewHint}"
+                           FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
             <!-- ================= GENERAL TAB (Mood) ================= -->
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsGeneralTabVisible}">
 
-                <!-- Recurring themes. Labels are the user's own leading sentences, so this needs
-                     only the encoder; day counts, not passage counts, because one long evening
-                     about a subject is one day of it. -->
-                <Border x:Name="ThemesAnchor"
-                        IsVisible="{Binding HasThemes}"
-                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        Padding="16">
+                <!-- Days with entries: every day of the window, filled where something was written. The days
+                     the streak tile on the home screen counts, drawn out, so a gap is visible here rather than
+                     only as a number that went back to zero. The same squares as the habit cards: a week
+                     per column, a day per square, filled where something was written (owner, 2026-10-21). -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding HasActivityDays}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="{x:Static localization:AppResources.StatsThemesHeader}"
-                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <Label Text="{x:Static localization:AppResources.StatsActivityHeader}" FontAttributes="Bold" FontSize="12"
+                                   CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{Binding ActivityCountText}" FontSize="13" FontAttributes="Bold"
+                                   TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                        </Grid>
+                        <controls:ContributionGrid HeightRequest="110"
+                                                   CompletedDates="{Binding ActivityDates}"
+                                                   StartDate="{Binding RangeStart}"
+                                                   EndDate="{Binding RangeEnd}"
+                                                   AccentColor="{DynamicResource Theme_Coral}"
+                                                   SemanticProperties.Description="{Binding ActivityCountText}" />
+                        <Label Text="{x:Static localization:AppResources.StatsActivityHint}" FontSize="11"
                                TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Themes}" Spacing="10">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="viewmodels:ThemeItem">
-                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
-                                        <Label Grid.Column="0" Text="{Binding Label}" FontSize="14"
-                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Label Grid.Column="1" Text="{Binding DaysLabel}" FontSize="12"
-                                               VerticalOptions="Center"
-                                               TextColor="{DynamicResource Theme_Sage}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Digest. Extractive by design: these are the user's own sentences, chosen by
-                     closeness to the period's centroid, so the card works with no generative model
-                     and cannot misrepresent what was written. -->
-                <Border IsVisible="{Binding HasDigest}"
-                        StrokeShape="RoundRectangle 20" StrokeThickness="1"
-                        Stroke="{DynamicResource Theme_Dust_Ocean}"
-                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                        Padding="16">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="{x:Static localization:AppResources.StatsDigestHeader}"
-                               FontSize="12" FontAttributes="Bold" CharacterSpacing="1.5"
-                               TextColor="{DynamicResource Theme_Ocean_Dust}" />
-
-                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding DigestExcerpts}" Spacing="12">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="viewmodels:DigestExcerptItem">
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Text="{Binding DateLabel}" FontSize="11"
-                                               TextColor="{DynamicResource Theme_Coral}" />
-                                        <Label Text="{Binding Text}" FontSize="14"
-                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                    </VerticalStackLayout>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
-
-                        <Label Text="{x:Static localization:AppResources.StatsDigestHint}"
-                               FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                    </VerticalStackLayout>
-                </Border>
-
-                <VerticalStackLayout IsVisible="{Binding MoodStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
-                    <Label Text="😶" FontSize="48" HorizontalOptions="Center" />
-                    <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
-                </VerticalStackLayout>
+                <controls:EmptyStateView IsVisible="{Binding MoodStats.IsEmpty}" Scene="Mood"
+                                         Title="{x:Static localization:AppResources.EmptyStateMoodTitle}"
+                                         Hint="{x:Static localization:AppResources.EmptyStateMoodHint}" />
 
                 <!-- KPI row -->
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding MoodStats.IsNotEmpty}">
@@ -239,7 +327,7 @@
                 <!-- Mood trend over time -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasMoodTrend}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsMoodTrend}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -256,7 +344,7 @@
                 <!-- Mood by hour of day -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasHourlyMood}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsMoodByHour}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -294,10 +382,51 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Energy by hour of day: the second axis of the circumplex (spec 18), the same control
+                     reading the same hours. Warm for energetic, cool for calm; neither side is "good". -->
+                <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasHourlyMood}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.StatsEnergyByHour}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
+                        <Label Text="{x:Static localization:AppResources.StatsEnergyByHourSubtitle}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Grid HeightRequest="170">
+                            <controls:MoodHourBarChart Items="{Binding MoodStats.HourlyMoodProfile}"
+                                                       Axis="Energy"
+                                                       PositiveColor="{DynamicResource Theme_Amber}"
+                                                       NegativeColor="{DynamicResource Theme_Ocean_Ocean}"
+                                                       SurfaceColor="{DynamicResource Theme_Snow_Black}"
+                                                       TextColor="{DynamicResource Theme_Midnight_Snow}"
+                                                       MutedColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </Grid>
+
+                        <FlexLayout Wrap="Wrap" Direction="Row" AlignItems="Center">
+                            <HorizontalStackLayout Spacing="6" Margin="0,0,16,4">
+                                <Border BackgroundColor="{DynamicResource Theme_Amber}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                                <Label Text="{x:Static localization:AppResources.StatsEnergyByHourHigh}" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="6" Margin="0,0,16,4">
+                                <Border BackgroundColor="{DynamicResource Theme_Ocean_Ocean}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                                <Label Text="{x:Static localization:AppResources.StatsEnergyByHourLow}" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="6" Margin="0,0,16,4">
+                                <Border BackgroundColor="{DynamicResource Theme_Ocean_Dust}" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                                <Label Text="{x:Static localization:AppResources.StatsEnergyByHourBalanced}" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="6" Margin="0,0,16,4">
+                                <Border BackgroundColor="{DynamicResource Theme_Amber}" Opacity="0.35" StrokeThickness="0" StrokeShape="Ellipse" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                                <Label Text="{x:Static localization:AppResources.StatsMoodByHourSparse}" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Mood logged, but only ever day-level: point at the hourly grid instead of an empty chart. -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.ShowHourlyMoodHint}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsMoodByHour}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -308,7 +437,7 @@
                 <!-- Mood distribution card -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.IsNotEmpty}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="16">
                         <Label Text="{x:Static localization:AppResources.EmotionLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -343,7 +472,7 @@
                 <!-- Year in Pixels (mood heatmap) -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasMoodCalendar}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsYearInPixels}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -358,7 +487,7 @@
                      on. Not a list of what the diary "found". -->
                 <Border x:Name="InfluencesAnchor" Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasCorrelations}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsMoodInfluencesTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -398,10 +527,9 @@
             <!-- ================= SLEEP TAB ================= -->
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsSleepTabVisible}">
 
-                <VerticalStackLayout IsVisible="{Binding SleepStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
-                    <Label Text="😴" FontSize="48" HorizontalOptions="Center" />
-                    <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
-                </VerticalStackLayout>
+                <controls:EmptyStateView IsVisible="{Binding SleepStats.IsEmpty}" Scene="Sleep"
+                                         Title="{x:Static localization:AppResources.EmptyStateSleepTitle}"
+                                         Hint="{x:Static localization:AppResources.EmptyStateSleepHint}" />
 
                 <!-- KPI row -->
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding SleepStats.IsNotEmpty}">
@@ -420,7 +548,7 @@
                 <!-- Sleep chart card -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding SleepStats.IsNotEmpty}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.SleepLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Amber}" />
@@ -437,10 +565,9 @@
             <!-- ================= PRODUCTIVITY TAB ================= -->
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsProductivityTabVisible}">
 
-                <VerticalStackLayout IsVisible="{Binding ProductivityStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
-                    <Label Text="✅" FontSize="48" HorizontalOptions="Center" />
-                    <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
-                </VerticalStackLayout>
+                <controls:EmptyStateView IsVisible="{Binding ProductivityStats.IsEmpty}" Scene="Productivity"
+                                         Title="{x:Static localization:AppResources.EmptyStateProductivityTitle}"
+                                         Hint="{x:Static localization:AppResources.EmptyStateProductivityHint}" />
 
                 <!-- KPI row -->
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding ProductivityStats.IsNotEmpty}">
@@ -457,7 +584,7 @@
                 <!-- Productivity chart card -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding ProductivityStats.IsNotEmpty}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="16">
                         <Label Text="{x:Static localization:AppResources.StatsProductivity}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Sage}" />
@@ -477,7 +604,7 @@
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsFinanceTabVisible}">
 
                 <VerticalStackLayout IsVisible="{Binding FinanceStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
-                    <Label Text="💸" FontSize="48" HorizontalOptions="Center" />
+                    <Path Data="{x:Static icons:AppIcons.Banknote}" WidthRequest="40" HeightRequest="40" Stroke="{DynamicResource Theme_Ocean_Dust}" StrokeThickness="1.4" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" />
                     <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
 
@@ -485,35 +612,39 @@
                      shared by every tab and an account means nothing to sleep or habits. -->
                 <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" BackgroundColor="Transparent" IsVisible="{Binding HasStatsAccounts}">
                     <HorizontalStackLayout Spacing="8">
-                        <Border StrokeShape="RoundRectangle 17" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="14,6" HeightRequest="34">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding IsAllStatsAccountsSelected}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Border.GestureRecognizers>
+                        <ContentView behaviors:PressFeedback.IsEnabled="True">
+                            <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding SelectAllStatsAccountsCommand}" />
-                            </Border.GestureRecognizers>
-                            <Label Text="{x:Static localization:AppResources.AllAccounts}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                        </Border>
+                            </ContentView.GestureRecognizers>
+                            <Border StrokeShape="RoundRectangle 17" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="14,6" HeightRequest="34">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsAllStatsAccountsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label Text="{x:Static localization:AppResources.AllAccounts}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                            </Border>
+                        </ContentView>
 
                         <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding StatsAccounts}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="viewmodels:AccountItemViewModel">
-                                    <Border StrokeShape="RoundRectangle 17" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="14,6" HeightRequest="34">
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                        <Border.GestureRecognizers>
+                                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                        <ContentView.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:StatisticsViewModel}}, Path=SelectStatsAccountCommand}" CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                                            <Label Text="{Binding Icon}" FontSize="13" VerticalOptions="Center" />
-                                            <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        </HorizontalStackLayout>
-                                    </Border>
+                                        </ContentView.GestureRecognizers>
+                                        <Border StrokeShape="RoundRectangle 17" StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}" Padding="14,6" HeightRequest="34">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                                <Label Text="{Binding Icon}" FontSize="13" VerticalOptions="Center" />
+                                                <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </ContentView>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </HorizontalStackLayout>
@@ -539,7 +670,7 @@
                 <!-- Expenses breakdown card -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding FinanceStats.IsNotEmpty}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="16">
                         <Label Text="{x:Static localization:AppResources.ExpenseLabel}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
@@ -580,7 +711,7 @@
                 <!-- Trend: income above the line, expense below -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding FinanceStats.HasTrend}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{Binding FinanceStats.TrendTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Amber}" />
@@ -613,7 +744,7 @@
                 <!-- Comparison with the preceding equal-length window -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding FinanceStats.IsNotEmpty}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.StatsComparisonTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Amber}" />
@@ -672,7 +803,7 @@
                 <!-- Per-account flow. Hidden when a single account is already selected. -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding FinanceStats.HasAccountBreakdown}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="14">
                         <Label Text="{x:Static localization:AppResources.StatsAccountBreakdown}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextTransform="Uppercase" TextColor="{DynamicResource Theme_Amber}" />
@@ -713,7 +844,7 @@
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsHabitsTabVisible}">
 
                 <VerticalStackLayout IsVisible="{Binding HabitStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
-                    <Label Text="🌱" FontSize="48" HorizontalOptions="Center" />
+                    <Path Data="{x:Static icons:AppIcons.Sprout}" WidthRequest="40" HeightRequest="40" Stroke="{DynamicResource Theme_Ocean_Dust}" StrokeThickness="1.4" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" />
                     <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
 
@@ -722,14 +853,17 @@
                         <DataTemplate x:DataType="stats:HabitCardViewModel">
                             <Border Style="{StaticResource StatCard}">
                                 <Border.Shadow>
-                                    <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                                    <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                                 </Border.Shadow>
                                 <VerticalStackLayout Spacing="12">
                                     <Grid ColumnDefinitions="*,Auto">
                                         <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
                                             <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
                                             <Label Text="{Binding ScheduleText}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" />
-                                            <Label Text="{Binding StreakText, StringFormat='🔥 {0}'}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                            <HorizontalStackLayout Spacing="4">
+                                                <Path Data="{x:Static icons:AppIcons.Flame}" WidthRequest="12" HeightRequest="12" Stroke="{DynamicResource Theme_Ocean_Dust}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" VerticalOptions="Center" />
+                                                <Label Text="{Binding StreakText}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
+                                            </HorizontalStackLayout>
                                         </VerticalStackLayout>
                                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
                                             <Label Text="{Binding StrengthText}" FontSize="22" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}" HorizontalOptions="End" />
@@ -752,7 +886,7 @@
             <VerticalStackLayout Spacing="16" IsVisible="{Binding IsCycleTabVisible}">
 
                 <VerticalStackLayout IsVisible="{Binding CycleStats.IsEmpty}" Spacing="12" HorizontalOptions="Center" Margin="0,40,0,0">
-                    <Label Text="🩸" FontSize="48" HorizontalOptions="Center" />
+                    <Path Data="{x:Static icons:AppIcons.Drop}" WidthRequest="40" HeightRequest="40" Stroke="{DynamicResource Theme_Ocean_Dust}" StrokeThickness="1.4" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" />
                     <Label Text="{x:Static localization:AppResources.EmptyDataMessage}" FontSize="16" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
 
@@ -799,7 +933,7 @@
                 <!-- Cycle length chart -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding CycleStats.HasCycles}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.CycleStatsLengthChart}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Berry}" />
@@ -815,7 +949,7 @@
                 <!-- Logged days heatmap -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding CycleStats.HasCalendar}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.CycleStatsCalendar}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Berry}" />
@@ -830,7 +964,7 @@
                 <!-- Most frequent symptoms -->
                 <Border Style="{StaticResource StatCard}" IsVisible="{Binding CycleStats.HasSymptoms}">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.15" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="{x:Static localization:AppResources.CycleStatsSymptoms}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Berry}" />

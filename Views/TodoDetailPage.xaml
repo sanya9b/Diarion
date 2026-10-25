@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.TodoDetailPage"
@@ -11,12 +13,7 @@
 
     <Grid RowDefinitions="Auto,*">
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
-                <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding CloseCommand}" />
-                </Grid.GestureRecognizers>
-                <Label Text="✕" FontSize="22" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.CloseButtonLabel}" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-            </Grid>
+            <controls:CloseButton Grid.Column="0" Command="{Binding CloseCommand}" />
 
             <VerticalStackLayout Grid.Column="1" Spacing="2">
                 <Label Text="{Binding Title}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
@@ -39,13 +36,13 @@
         <Grid Grid.Row="1" Padding="24,10,24,24" RowSpacing="14" RowDefinitions="*, Auto"
               MaximumWidthRequest="640">
             <ScrollView Grid.Row="0" VerticalScrollBarVisibility="Never">
-            <Border StrokeShape="RoundRectangle 24"
+            <Border StrokeShape="RoundRectangle 20"
                     StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"
                         BackgroundColor="{DynamicResource Theme_Snow_Black}"
                         Padding="18,18">
                     <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="14">
                         <VerticalStackLayout Spacing="8">
@@ -68,7 +65,7 @@
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasParseHint}">
                                 <Label Grid.Column="0" Text="{Binding ParseHint}" FontSize="12" VerticalOptions="Center"
                                        LineBreakMode="TailTruncation" TextColor="{DynamicResource Theme_Sage}" />
-                                <Label Grid.Column="1" Text="{x:Static localization:AppResources.ParseUndoLabel}" FontSize="12"
+                                <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" Text="{x:Static localization:AppResources.ParseUndoLabel}" FontSize="12"
                                        FontAttributes="Bold" VerticalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding DismissParseCommand}" />
@@ -80,20 +77,19 @@
                         <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                            <CheckBox IsChecked="{Binding IsCompleted}"
-                                      VerticalOptions="Center">
-                                <CheckBox.Triggers>
-                                    <DataTrigger TargetType="CheckBox" Binding="{Binding SelectedPriority}" Value="Low">
+                            <controls:RoundedCheckBox IsChecked="{Binding IsCompleted}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}">
+                                <controls:RoundedCheckBox.Triggers>
+                                    <DataTrigger TargetType="controls:RoundedCheckBox" Binding="{Binding SelectedPriority}" Value="Low">
                                         <Setter Property="Color" Value="{DynamicResource Theme_Sage}" />
                                     </DataTrigger>
-                                    <DataTrigger TargetType="CheckBox" Binding="{Binding SelectedPriority}" Value="Medium">
+                                    <DataTrigger TargetType="controls:RoundedCheckBox" Binding="{Binding SelectedPriority}" Value="Medium">
                                         <Setter Property="Color" Value="{DynamicResource Theme_Amber}" />
                                     </DataTrigger>
-                                    <DataTrigger TargetType="CheckBox" Binding="{Binding SelectedPriority}" Value="High">
+                                    <DataTrigger TargetType="controls:RoundedCheckBox" Binding="{Binding SelectedPriority}" Value="High">
                                         <Setter Property="Color" Value="{DynamicResource Theme_Coral}" />
                                     </DataTrigger>
-                                </CheckBox.Triggers>
-                            </CheckBox>
+                                </controls:RoundedCheckBox.Triggers>
+                            </controls:RoundedCheckBox>
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskCompletedLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
 
@@ -106,7 +102,7 @@
                                CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                            <CheckBox IsChecked="{Binding HasTime}" VerticalOptions="Center" />
+                            <controls:RoundedCheckBox IsChecked="{Binding HasTime}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.AddTimeLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
                         <!-- The time is drawn as a label and the picker sits invisibly on top of it as the
@@ -136,7 +132,7 @@
                              the time rather than beside it: a block needs a point to start from, so this
                              disappears with the hour it depends on. -->
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" IsVisible="{Binding HasTime}">
-                            <CheckBox IsChecked="{Binding HasEndTime}" VerticalOptions="Center" />
+                            <controls:RoundedCheckBox IsChecked="{Binding HasEndTime}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskDurationLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
                         <!-- Same invisible-picker-over-a-drawn-label idiom as the start time above, and for
@@ -156,7 +152,7 @@
                                FontSize="12" TextColor="{DynamicResource Theme_Coral}" />
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                            <CheckBox IsChecked="{Binding IsRecurring}" VerticalOptions="Center" />
+                            <controls:RoundedCheckBox IsChecked="{Binding IsRecurring}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.TaskRepeatLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Grid>
 
@@ -164,64 +160,72 @@
                             <!-- Kind. Four chips in the priority idiom above, one bound bool each: DataTrigger
                                  cannot compare an enum to a parameter, so the ViewModel exposes the comparison. -->
                             <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Center">
-                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
-                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                                    <Border.Triggers>
-                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceDaily}" Value="True">
-                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                                        </DataTrigger>
-                                    </Border.Triggers>
-                                    <Border.GestureRecognizers>
+                                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                    <ContentView.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="Daily" />
-                                    </Border.GestureRecognizers>
-                                    <Label Text="{x:Static localization:AppResources.RecurrenceDailyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                </Border>
+                                    </ContentView.GestureRecognizers>
+                                    <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                            Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceDaily}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Label Text="{x:Static localization:AppResources.RecurrenceDailyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    </Border>
+                                </ContentView>
 
-                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
-                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                                    <Border.Triggers>
-                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceWeekly}" Value="True">
-                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                                        </DataTrigger>
-                                    </Border.Triggers>
-                                    <Border.GestureRecognizers>
+                                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                    <ContentView.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="Weekly" />
-                                    </Border.GestureRecognizers>
-                                    <Label Text="{x:Static localization:AppResources.RecurrenceWeeklyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                </Border>
+                                    </ContentView.GestureRecognizers>
+                                    <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                            Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceWeekly}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Label Text="{x:Static localization:AppResources.RecurrenceWeeklyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    </Border>
+                                </ContentView>
 
-                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
-                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                                    <Border.Triggers>
-                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceInterval}" Value="True">
-                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                                        </DataTrigger>
-                                    </Border.Triggers>
-                                    <Border.GestureRecognizers>
+                                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                    <ContentView.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="IntervalDays" />
-                                    </Border.GestureRecognizers>
-                                    <!-- Names the kind, not a number. With the current value baked in it
-                                         read as a ready-made "every 2 days" rather than as the choice
-                                         whose count the stepper below sets. -->
-                                    <Label Text="{x:Static localization:AppResources.RecurrenceIntervalChip}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                </Border>
+                                    </ContentView.GestureRecognizers>
+                                    <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                            Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceInterval}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <!-- Names the kind, not a number. With the current value baked in it
+                                             read as a ready-made "every 2 days" rather than as the choice
+                                             whose count the stepper below sets. -->
+                                        <Label Text="{x:Static localization:AppResources.RecurrenceIntervalChip}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    </Border>
+                                </ContentView>
 
-                                <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
-                                        Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                                    <Border.Triggers>
-                                        <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceMonthly}" Value="True">
-                                            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                                        </DataTrigger>
-                                    </Border.Triggers>
-                                    <Border.GestureRecognizers>
+                                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                    <ContentView.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding SetRecurrenceKindCommand}" CommandParameter="MonthlyByDay" />
-                                    </Border.GestureRecognizers>
-                                    <Label Text="{x:Static localization:AppResources.RecurrenceMonthlyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                </Border>
+                                    </ContentView.GestureRecognizers>
+                                    <Border StrokeShape="RoundRectangle 16" StrokeThickness="1" Padding="14,0" HeightRequest="32" Margin="0,0,8,8"
+                                            Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsRecurrenceMonthly}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Label Text="{x:Static localization:AppResources.RecurrenceMonthlyLabel}" InputTransparent="True" VerticalOptions="Center" FontSize="12" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                    </Border>
+                                </ContentView>
                             </FlexLayout>
 
                             <!-- Weekdays, only for the weekly kind. Monday first, named by the culture. -->
@@ -229,32 +233,34 @@
                                         BindableLayout.ItemsSource="{Binding Weekdays}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="viewmodels:WeekdayToggle">
-                                        <Border StrokeShape="RoundRectangle 15" StrokeThickness="1" WidthRequest="38" HeightRequest="30" Margin="0,0,6,6"
-                                                Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
-                                            <Border.Triggers>
-                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                                                </DataTrigger>
-                                            </Border.Triggers>
-                                            <Border.GestureRecognizers>
+                                        <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                            <ContentView.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TodoDetailViewModel}}, Path=ToggleWeekdayCommand}" CommandParameter="{Binding .}" />
-                                            </Border.GestureRecognizers>
-                                            <Label Text="{Binding ShortName}" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" FontSize="11" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                        </Border>
+                                            </ContentView.GestureRecognizers>
+                                            <Border StrokeShape="RoundRectangle 15" StrokeThickness="1" WidthRequest="38" HeightRequest="30" Margin="0,0,6,6"
+                                                    Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                                                <Border.Triggers>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                                    </DataTrigger>
+                                                </Border.Triggers>
+                                                <Label Text="{Binding ShortName}" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" FontSize="11" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            </Border>
+                                        </ContentView>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </FlexLayout>
 
                             <!-- Every N days -->
                             <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10" IsVisible="{Binding IsRecurrenceInterval}">
-                                <Label Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding DecrementEveryNCommand}" />
                                     </Label.GestureRecognizers>
                                 </Label>
                                 <Label Grid.Column="1" Text="{Binding EveryNDays}" FontSize="15" WidthRequest="34" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                <Label Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding IncrementEveryNCommand}" />
                                     </Label.GestureRecognizers>
@@ -266,13 +272,13 @@
 
                             <!-- Day of month -->
                             <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10" IsVisible="{Binding IsRecurrenceMonthly}">
-                                <Label Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Text="−" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding DecrementDayOfMonthCommand}" />
                                     </Label.GestureRecognizers>
                                 </Label>
                                 <Label Grid.Column="1" Text="{Binding DayOfMonth}" FontSize="15" WidthRequest="34" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}" />
-                                <Label Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="2" Text="+" FontSize="20" WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{DynamicResource Theme_Midnight_Snow}">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding IncrementDayOfMonthCommand}" />
                                     </Label.GestureRecognizers>
@@ -280,7 +286,7 @@
                             </Grid>
 
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                                <CheckBox IsChecked="{Binding HasRecurrenceEnd}" VerticalOptions="Center" />
+                                <controls:RoundedCheckBox IsChecked="{Binding HasRecurrenceEnd}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                                 <Label Grid.Column="1" Text="{x:Static localization:AppResources.RecurrenceEndDateLabel}" VerticalOptions="Center" FontSize="13" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                             </Grid>
                             <DatePicker Date="{Binding RecurrenceEndDate}" IsVisible="{Binding HasRecurrenceEnd}" Format="dd.MM.yyyy"
@@ -293,8 +299,18 @@
                         </VerticalStackLayout>
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                            <CheckBox IsChecked="{Binding HasReminder}" VerticalOptions="Center" />
+                            <controls:RoundedCheckBox IsChecked="{Binding HasReminder}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
                             <Label Grid.Column="1" Text="{x:Static localization:AppResources.ReminderLabel}" VerticalOptions="Center" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Grid>
+
+                        <!-- Read aloud by the device when the reminder arrives (spec 19). Nested under the
+                             reminder: there is nothing for a voice to do without one. -->
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" IsVisible="{Binding HasReminder}">
+                            <controls:RoundedCheckBox IsChecked="{Binding IsVoiceReminder}" VerticalOptions="Center" Color="{DynamicResource Theme_Coral}" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{x:Static localization:AppResources.VoiceReminderLabel}" FontSize="15" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Label Text="{x:Static localization:AppResources.VoiceReminderHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                            </VerticalStackLayout>
                         </Grid>
 
                         <BoxView HeightRequest="1" Color="{DynamicResource Theme_Dust_Ocean}" Opacity="0.5" />
@@ -312,62 +328,63 @@
                                     <DataTemplate x:DataType="viewmodels:PriorityItem">
                                         <!-- 20 of padding each put the three chips past the width of a
                                              phone card, so "Високий" was cut off the end. -->
-                                        <Border StrokeShape="RoundRectangle 20"
-                                                StrokeThickness="1"
-                                                Padding="12,0"
-                                                VerticalOptions="Center"
-                                                HeightRequest="40"
-                                                BackgroundColor="Transparent">
-                                            
-                                            <Border.Triggers>
-                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
-                                                    <Setter Property="BackgroundColor" Value="Transparent" />
-                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
-                                                </DataTrigger>
-                                                
-                                                <MultiTrigger TargetType="Border">
-                                                    <MultiTrigger.Conditions>
-                                                        <BindingCondition Binding="{Binding IsSelected}" Value="True" />
-                                                        <BindingCondition Binding="{Binding Value}" Value="Low" />
-                                                    </MultiTrigger.Conditions>
-                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
-                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
-                                                </MultiTrigger>
-                                                
-                                                <MultiTrigger TargetType="Border">
-                                                    <MultiTrigger.Conditions>
-                                                        <BindingCondition Binding="{Binding IsSelected}" Value="True" />
-                                                        <BindingCondition Binding="{Binding Value}" Value="Medium" />
-                                                    </MultiTrigger.Conditions>
-                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
-                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
-                                                </MultiTrigger>
-                                                
-                                                <MultiTrigger TargetType="Border">
-                                                    <MultiTrigger.Conditions>
-                                                        <BindingCondition Binding="{Binding IsSelected}" Value="True" />
-                                                        <BindingCondition Binding="{Binding Value}" Value="High" />
-                                                    </MultiTrigger.Conditions>
-                                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                                                </MultiTrigger>
-                                            </Border.Triggers>
-                                            
-                                            <Border.GestureRecognizers>
+                                        <ContentView VerticalOptions="Center" behaviors:PressFeedback.IsEnabled="True">
+                                            <ContentView.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TodoDetailViewModel}}, Path=SelectPriorityCommand}" CommandParameter="{Binding .}" />
-                                            </Border.GestureRecognizers>
+                                            </ContentView.GestureRecognizers>
+                                            <Border StrokeShape="RoundRectangle 20"
+                                                    StrokeThickness="1"
+                                                    Padding="12,0"
+                                                    HeightRequest="40"
+                                                    BackgroundColor="Transparent">
                                             
-                                            <Label Text="{Binding DisplayName}" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" FontSize="13" FontAttributes="Bold">
-                                                <Label.Triggers>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
-                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                <Border.Triggers>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
+                                                        <Setter Property="BackgroundColor" Value="Transparent" />
+                                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
                                                     </DataTrigger>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
-                                                        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                                    </DataTrigger>
-                                                </Label.Triggers>
-                                            </Label>
-                                        </Border>
+                                                
+                                                    <MultiTrigger TargetType="Border">
+                                                        <MultiTrigger.Conditions>
+                                                            <BindingCondition Binding="{Binding IsSelected}" Value="True" />
+                                                            <BindingCondition Binding="{Binding Value}" Value="Low" />
+                                                        </MultiTrigger.Conditions>
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                                    </MultiTrigger>
+                                                
+                                                    <MultiTrigger TargetType="Border">
+                                                        <MultiTrigger.Conditions>
+                                                            <BindingCondition Binding="{Binding IsSelected}" Value="True" />
+                                                            <BindingCondition Binding="{Binding Value}" Value="Medium" />
+                                                        </MultiTrigger.Conditions>
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Amber}" />
+                                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Amber}" />
+                                                    </MultiTrigger>
+                                                
+                                                    <MultiTrigger TargetType="Border">
+                                                        <MultiTrigger.Conditions>
+                                                            <BindingCondition Binding="{Binding IsSelected}" Value="True" />
+                                                            <BindingCondition Binding="{Binding Value}" Value="High" />
+                                                        </MultiTrigger.Conditions>
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
+                                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
+                                                    </MultiTrigger>
+                                                </Border.Triggers>
+                                            
+                                            
+                                                <Label Text="{Binding DisplayName}" InputTransparent="True" HorizontalOptions="Center" VerticalOptions="Center" FontSize="13" FontAttributes="Bold">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Border>
+                                        </ContentView>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
                             </CollectionView>
@@ -376,23 +393,9 @@
                 </Border>
             </ScrollView>
 
-                <Border Grid.Row="1" StrokeShape="RoundRectangle 14"
-                        StrokeThickness="0"
-                        HeightRequest="48"
-                        BackgroundColor="{DynamicResource Theme_Ocean_Ocean}">
-                    <Border.Shadow>
-                        <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,4" Radius="8" Opacity="0.2" />
-                    </Border.Shadow>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding SaveCommand}" />
-                    </Border.GestureRecognizers>
-                    <Label Text="{x:Static localization:AppResources.SaveTaskButton}"
-                           InputTransparent="True"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center"
-                           TextColor="{DynamicResource Theme_Snow_Midnight}" />
-                </Border>
+                <Button Grid.Row="1" Style="{StaticResource PrimaryButton}"
+                        Text="{x:Static localization:AppResources.SaveTaskButton}"
+                        Command="{Binding SaveCommand}" />
         </Grid>
     </Grid>
 </ContentPage>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             x:Class="Diarion.Controls.AnchoredPopover"
+             InputTransparent="True"
+             CascadeInputTransparent="False">
+
+    <Grid.Resources>
+        <!-- What the scrim and the body's hit area are painted with: one step above transparent. MAUI
+             does not treat a transparent background as hit-testable on every platform, and a scrim that
+             lets a tap through is no scrim. Alpha 1 of 255 is invisible and settles it everywhere. -->
+        <Color x:Key="ScrimHit">#01000000</Color>
+    </Grid.Resources>
+
+    <!-- The root is a Grid, not a ContentView, on purpose. It is input-transparent with
+         CascadeInputTransparent off, so it takes no taps itself while the pieces inside do — and MAUI
+         honours that pair only on layouts. On a ContentView the transparency reached every child:
+         taps went straight through to the page, so the scrim never folded the panel, the chips inside
+         did nothing on Windows, and switching to the planner left the panel hanging over it (owner's
+         feedback on build 6, 2026-10-21). -->
+
+    <!-- This layer spans the page. The scrim is see-through and only exists to catch the tap that folds
+         the panel back. The panel is one shape with the button (BubbleSurface): a bump around the button
+         flowing into the body through smooth fillets, the body growing out of the bump. A copy of the
+         button (HeaderSlot) sits exactly over the real one, so the button never moves. Everything is
+         placed from code-behind in this layer's coordinates. The layer itself takes no taps: a layout
+         catches every tap inside its bounds unless it is input-transparent, and this one spans the
+         page — it would swallow the hole below. Only the pieces inside answer.
+         The layer itself stays visible and laid out from the start; only this panel inside it is hidden
+         while the bubble is folded. The layer's own place on screen is the origin everything inside is
+         placed from, and a hidden layer has no place: collapsed, it is never laid out, so its first
+         opening after launch had to borrow an origin — its own tree position (build 11) or its parent's
+         platform position (build 12) — and each was off by the page's inset under the status bar on
+         iPhone (owner, TestFlight builds 11 and 12, 2026-10-21). A laid-out layer asks the platform
+         where it is, like the button does, and the two agree. -->
+    <Grid x:Name="Panel" IsVisible="False" InputTransparent="True" CascadeInputTransparent="False">
+        <!-- The scrim in four pieces around an optional hole (PassThroughResolver): the mood row stays
+             live under it, so another face can be chosen while the panel is out, in one tap. -->
+        <Grid x:Name="ScrimTop" BackgroundColor="{StaticResource ScrimHit}" HorizontalOptions="Start" VerticalOptions="Start">
+            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnScrimTapped" /></Grid.GestureRecognizers>
+        </Grid>
+        <Grid x:Name="ScrimBottom" BackgroundColor="{StaticResource ScrimHit}" HorizontalOptions="Start" VerticalOptions="Start">
+            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnScrimTapped" /></Grid.GestureRecognizers>
+        </Grid>
+        <Grid x:Name="ScrimLeft" BackgroundColor="{StaticResource ScrimHit}" HorizontalOptions="Start" VerticalOptions="Start">
+            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnScrimTapped" /></Grid.GestureRecognizers>
+        </Grid>
+        <Grid x:Name="ScrimRight" BackgroundColor="{StaticResource ScrimHit}" HorizontalOptions="Start" VerticalOptions="Start">
+            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnScrimTapped" /></Grid.GestureRecognizers>
+        </Grid>
+
+        <controls:BubbleSurface x:Name="Surface" Opacity="0"
+                                SurfaceColor="{DynamicResource Theme_Snow_Black}"
+                                StrokeColor="{DynamicResource Theme_Dust_Ocean}"
+                                ShadowColor="{DynamicResource Theme_Shadow}" />
+
+        <!-- Keeps a tap on the body's own padding from falling through to the scrim and folding it. -->
+        <BoxView x:Name="BodyHit" Color="{StaticResource ScrimHit}" HorizontalOptions="Start" VerticalOptions="Start">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+
+        <!-- The copy of the button, over the button. Tapping it folds the panel back, like tapping the
+             button again. -->
+        <ContentView x:Name="HeaderSlot" HorizontalOptions="Start" VerticalOptions="Start">
+            <ContentView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnHeaderTapped" />
+            </ContentView.GestureRecognizers>
+        </ContentView>
+
+        <!-- At its final place from the first frame; fades in once the body has grown round it. -->
+        <ContentView x:Name="Body" HorizontalOptions="Start" VerticalOptions="Start" Opacity="0" />
+    </Grid>
+</Grid>

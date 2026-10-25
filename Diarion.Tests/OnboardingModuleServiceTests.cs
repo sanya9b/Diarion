@@ -28,14 +28,13 @@ public class OnboardingModuleServiceTests
     }
 
     [Fact]
-    public void GetModules_DoesNotOfferCycleOrAiChat()
+    public void GetModules_DoesNotOfferCycle()
     {
-        // Both are deliberate omissions, not oversights - see the remarks on GetModules. If either
-        // is ever added, that is a product decision and this test is the place it gets noticed.
+        // A deliberate omission, not an oversight - see the remarks on GetModules. If it is ever
+        // added, that is a product decision and this test is the place it gets noticed.
         var ids = CreateService().GetModules().Select(m => m.Id);
 
         ids.Should().NotContain("Cycle");
-        ids.Should().NotContain(MenuConfigurationService.AiChatId);
     }
 
     [Fact]
@@ -120,9 +119,10 @@ public class OnboardingModuleServiceTests
         service.Apply(profile, service.GetModules());
 
         // Habits sits in the daily-entry group and so is listed before the tile-only modules; the
-        // rest follow the menu catalogue.
+        // rest follow the menu catalogue. Search is not a module anyone picks — it is a utility —
+        // so it lands after everything that was chosen.
         profile.QuickMenuOrder!.Should().Equal(
             "Habits", "Notes", "Reading", "Moments", "Deeds", "Wishlist", "Finance",
-            MenuConfigurationService.AiChatId);
+            MenuConfigurationService.SearchId);
     }
 }

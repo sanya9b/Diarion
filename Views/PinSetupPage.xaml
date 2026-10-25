@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
+             xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
              x:Class="Diarion.Views.PinSetupPage"
@@ -12,17 +14,12 @@
     <Grid RowDefinitions="Auto, *, Auto, Auto, *" Padding="32">
 
         <!-- Close / cancel -->
-        <Button Grid.Row="0" Text="✕"
-                HorizontalOptions="Start" VerticalOptions="Start"
-                BackgroundColor="Transparent" BorderWidth="0"
-                FontSize="22" Padding="0" HeightRequest="44" WidthRequest="44"
-                TextColor="{DynamicResource Theme_Midnight_Snow}"
-                Command="{Binding CancelCommand}"
-                SemanticProperties.Description="{x:Static localization:AppResources.DeleteConfirmNo}" />
+        <controls:CloseButton Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start"
+                              Command="{Binding CancelCommand}" />
 
         <!-- Header + PIN dots -->
         <VerticalStackLayout Grid.Row="2" Spacing="18" VerticalOptions="End" HorizontalOptions="Center">
-            <Label Text="🔒" FontSize="52" HorizontalOptions="Center" />
+            <Path Data="{x:Static icons:AppIcons.Lock}" WidthRequest="44" HeightRequest="44" Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6" StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform" InputTransparent="True" HorizontalOptions="Center" />
             <Label Text="{Binding Prompt}"
                    FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"
                    TextColor="{DynamicResource Theme_Midnight_Snow}" />

@@ -8,21 +8,21 @@ namespace Diarion.Services;
 public class MenuConfigurationService : IMenuConfigurationService
 {
     /// <summary>Ids that are conditional, so the filters and the catalogue cannot drift apart.</summary>
-    public const string AiChatId = "AiChat";
-
     public const string SearchId = "Search";
 
     /// <summary>
-    /// Whether the search screen is reachable. Retired: its distinctive half was searching the diary
-    /// by meaning, which went with the generative model, and what is left is a keyword box that the
-    /// notes and reading screens each already have over their own contents.
+    /// Whether the search screen is reachable. Retired on 2026-08-16 together with the generative
+    /// model, on the grounds that the notes and reading screens each had a keyword box of their own.
+    /// Brought back on 2026-10-14: the diary itself had no keyword box anywhere, so a sentence
+    /// written in gratitude or sleep notes three months ago could not be found at all, and that is
+    /// the one half of this screen that never depended on a model.
     /// </summary>
     /// <remarks>
     /// The tile is the only way in — no other screen navigates to the route — so this one flag is the
-    /// whole switch. <c>SearchPage</c>, <c>SearchViewModel</c> and their tests stay where they are;
-    /// flip this to <c>true</c> and the tile comes back in its old place, first in the strip.
+    /// whole switch. With the encoder off the screen is keyword search over the diary and the notes,
+    /// and says so on a single line; with it on, the same box also searches by meaning.
     /// </remarks>
-    public static bool SearchOffered { get; } = false;
+    public static bool SearchOffered { get; } = true;
 
     public List<QuickMenuItem> GetDefaultMenuItems()
     {
@@ -52,7 +52,11 @@ public class MenuConfigurationService : IMenuConfigurationService
                 Id = "Reading", 
                 StrokeColorKey = "Theme_Sage", 
                 UsesUniformAspect = true,
-                PathData = "M 19,36 H 50 C 50.5,36 51,36.5 51,37 V 44 C 51,44.5 50.5,45 50,45 H 19 C 17.5,45 16,43.5 16,42 V 38 C 16,36.5 17.5,36 19,36 Z M 22,36 V 45 M 45,28 H 15 C 14.5,28 14,28.5 14,29 V 36 C 14,36.5 14.5,37 15,37 H 45 C 46.5,37 48,35.5 48,34 V 30 C 48,28.5 46.5,28 45,28 Z M 42,28 V 37 M 20,20 H 46 C 46.5,20 47,20.5 47,21 V 28 C 47,28.5 46.5,29 46,29 H 20 C 18.5,29 17,27.5 17,26 V 22 C 17,20.5 18.5,20 20,20 Z M 23,20 V 29 M 47,39 H 51 M 47,42 H 51 M 18,31 H 14 M 18,34 H 14 M 43,23 H 47 M 43,26 H 47 M 29,20 V 32 L 32,29 L 35,32 V 20 Z"
+                // An open book with a ribbon in the right page: reading, and the brand's bookmark. It
+                // replaced a stack of three books whose spines, page lines and ribbon ran into one lump
+                // at 24 px (owner, 2026-10-21: "не гарна і не зрозуміла"). A closed book was passed
+                // over: beside Notes' notepad the two silhouettes were the same rectangle.
+                PathData = "M 12 6.5 C 10 5 6 4.5 3 5 V 18.5 C 6 18 10 18.5 12 20 C 14 18.5 18 18 21 18.5 V 5 C 18 4.5 14 5 12 6.5 Z M 12 6.5 V 20 M 15.5 5.3 V 11.5 L 17 10.2 L 18.5 11.5 V 4.9"
             },
             new QuickMenuItem 
             { 
@@ -86,18 +90,6 @@ public class MenuConfigurationService : IMenuConfigurationService
                 StrokeColorKey = "Theme_Sage", 
                 UsesUniformAspect = true,
                 PathData = "M 18 26 C 18 21 21 21 22 21 H 42 C 43 21 46 21 46 26 V 42 C 46 47 43 47 42 47 H 22 C 21 47 18 47 18 42 V 26 Z M 18 26 H 46 M 38 31 H 46 V 39 H 38 C 35 39 35 31 38 31 Z M 41.5 33.5 A 1.5 1.5 0 1 1 41.5 36.5 A 1.5 1.5 0 1 1 41.5 33.5 Z"
-            },
-            new QuickMenuItem
-            {
-                // Listed here like the rest, but shown only when a generative model is installed —
-                // QuickMenuViewModel filters it. A permanent tile would promise an answer that a
-                // low-tier phone is never offered a model for.
-                Id = AiChatId,
-                StrokeColorKey = "Theme_Coral",
-                UsesUniformAspect = true,
-                // Two sparkles, not a speech bubble: Habits is already a coral speech bubble two
-                // tiles away, and at 24 px the pair was indistinguishable.
-                PathData = "M 28,14 C 29.5,22 34,26.5 42,28 C 34,29.5 29.5,34 28,42 C 26.5,34 22,29.5 14,28 C 22,26.5 26.5,22 28,14 Z M 44,37 C 44.8,41 47,43.2 51,44 C 47,44.8 44.8,47 44,51 C 43.2,47 41,44.8 37,44 C 41,43.2 43.2,41 44,37 Z"
             }
         };
 

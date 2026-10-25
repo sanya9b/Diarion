@@ -7,6 +7,7 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:controls="clr-namespace:Diarion.Controls"
              xmlns:selectors="clr-namespace:Diarion.Selectors"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              x:Class="Diarion.Views.NoteDetailPage"
              x:Name="RootPage"
              x:DataType="viewModels:NoteDetailViewModel"
@@ -101,10 +102,10 @@
 
             <DataTemplate x:Key="NoteChecklistBlock" x:DataType="viewModels:NoteBlockViewModel">
                 <Grid ColumnDefinitions="32,*">
-                    <!-- Round, and it ticks on tap. The control writes its own state back to the block. -->
+                    <!-- The same square box as every other list in the app; it ticks on tap and writes
+                         its own state back to the block. -->
                     <controls:RoundedCheckBox Grid.Column="0"
                                               IsChecked="{Binding IsChecked}"
-                                              CornerRadius="9"
                                               Color="{DynamicResource Theme_Coral}"
                                               VerticalOptions="Start"
                                               Margin="0,2,0,0" />
@@ -139,7 +140,7 @@
     <Grid RowDefinitions="Auto,*,Auto">
         <!-- Top Custom Bar -->
         <Grid Padding="24,18,24,6" ColumnDefinitions="Auto,*,Auto">
-            <Grid Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
+            <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Padding="10" BackgroundColor="Transparent" VerticalOptions="Center">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding SaveNoteCommand}" />
                 </Grid.GestureRecognizers>
@@ -167,6 +168,7 @@
                 <!-- Tapping the empty space below the text puts the caret at the end of the note. -->
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding Blocks}"
                                      BindableLayout.ItemTemplateSelector="{StaticResource NoteBlockSelector}"
+                                     behaviors:ReadOnlyAccess.DisableWhenReadOnly="True"
                                      Spacing="2"
                                      BackgroundColor="Transparent"
                                      MinimumHeightRequest="240">
@@ -197,28 +199,30 @@
                     <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding OutgoingLinks}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:NoteLinkItem">
-                                <Border Margin="0,0,8,8" Padding="12,5" StrokeThickness="1"
-                                        Stroke="{DynamicResource Theme_Coral}"
-                                        BackgroundColor="Transparent" StrokeShape="RoundRectangle 14">
-                                    <Border.Triggers>
-                                        <DataTrigger TargetType="Border" Binding="{Binding Exists}" Value="False">
-                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                        </DataTrigger>
-                                    </Border.Triggers>
-                                    <Border.GestureRecognizers>
+                                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                    <ContentView.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenLinkedNoteCommand}" CommandParameter="{Binding Title}" />
-                                    </Border.GestureRecognizers>
-                                    <Label Text="{Binding Title}" FontSize="13" FontAttributes="Bold">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding Exists}" Value="True">
-                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                    </ContentView.GestureRecognizers>
+                                    <Border Margin="0,0,8,8" Padding="12,5" StrokeThickness="1"
+                                            Stroke="{DynamicResource Theme_Coral}"
+                                            BackgroundColor="Transparent" StrokeShape="RoundRectangle 14">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding Exists}" Value="False">
+                                                <Setter Property="Stroke" Value="{DynamicResource Theme_Ocean_Dust}" />
                                             </DataTrigger>
-                                            <DataTrigger TargetType="Label" Binding="{Binding Exists}" Value="False">
-                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
-                                </Border>
+                                        </Border.Triggers>
+                                        <Label Text="{Binding Title}" FontSize="13" FontAttributes="Bold">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Exists}" Value="True">
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Exists}" Value="False">
+                                                    <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Border>
+                                </ContentView>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </FlexLayout>
@@ -230,17 +234,22 @@
                     <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Backlinks}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:Note">
-                                <Border StrokeThickness="1" Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
-                                        StrokeShape="RoundRectangle 12" Padding="12">
-                                    <Border.GestureRecognizers>
+                                <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                    <ContentView.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.OpenBacklinkCommand}" CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
-                                    <VerticalStackLayout Spacing="2">
-                                        <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
-                                        <Label Text="{Binding Preview}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="1" />
-                                    </VerticalStackLayout>
-                                </Border>
+                                    </ContentView.GestureRecognizers>
+                                    <Border StrokeThickness="1"
+                                            Stroke="{DynamicResource Theme_Dust_Ocean}"
+                                            BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                                            StrokeShape="RoundRectangle 12"
+                                            Padding="12"
+                                            InputTransparent="True">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding Preview}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" LineBreakMode="TailTruncation" MaxLines="1" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </ContentView>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>

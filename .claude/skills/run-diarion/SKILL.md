@@ -34,7 +34,45 @@ things that are not are **saving anything** and **clicking blind**.
   the user's next launch anyway — but say so in your report when the branch adds one.
 - If the change to be checked cannot be seen without saving, stop and ask the user first.
 
-## Launch
+## Phone first: the Android emulator
+
+Diarion ships to phones, and the Windows build is a proxy that hides whole classes of bugs: safe-area
+insets, edge-to-edge layout, touch gestures, the real pixel density. The owner's rule since 2026-10-21
+is the same as in Burdock: **check UI on the emulator, and use the Windows build only for what the
+emulator cannot do quickly.** The popover offset of TestFlight builds 11 and 12 was invisible on
+Windows and reproduced on the emulator at once.
+
+Everything lives on `D:` — `C:` has a few hundred megabytes free and a build that writes a temp file
+there dies with "There is not enough space on the disk". Prefix every command with the temp
+variables below; the folder `D:\tmp\t` exists.
+
+```bash
+export TEMP='D:\tmp\t' TMP='D:\tmp\t' JAVA_TOOL_OPTIONS='-Djava.io.tmpdir=D:\tmp\t'
+A=/d/tmp/Android/Sdk/platform-tools/adb.exe
+
+# Boot (about a minute). Redirect the output to a file: a pipe into `head` closes after a few
+# lines and takes the emulator down with it. Run in the background.
+ANDROID_AVD_HOME='D:\tmp\android-home\avd' /d/tmp/Android/Sdk/emulator/emulator.exe   -avd burdock_api36 -no-boot-anim -no-snapshot-save > /d/tmp/t/emulator.log 2>&1
+$A devices                      # emulator-5554  device
+
+# Build and install (Release: the Debug Android build dies in the ONNX binding; about 90 s warm).
+# Deploy only this way — `adb install` of the APK breaks Fast Deployment.
+dotnet build Diarion.csproj -f net10.0-android -c Release -t:Install -p:AndroidSdkDirectory='D:\tmp\Android\Sdk'
+
+# Launch, look, drive. Coordinates are device pixels: 1080x2400 at 420 dpi.
+$A shell monkey -p org.diarion.app -c android.intent.category.LAUNCHER 1
+$A exec-out screencap -p > /d/WORK/tmp/emu01.png
+$A shell input tap 886 974
+$A shell input swipe 540 1600 540 1250 400
+$A shell pidof org.diarion.app  # empty after a crash; then `adb logcat -d | grep -i diarion`
+```
+
+A fresh install shows the notification prompt (twice), onboarding and the tour; **Skip** is at the top
+right of onboarding and bottom left of the tour card. Halve the screenshot with PIL before reading it;
+full size is wasted context. The emulator's diary is throwaway: saving there is fine. Two warnings
+`XAAADB0000`/`MSB6006` from the uninstall step before the install are noise; any other warning is yours.
+
+## Launch on Windows
 
 `WindowsPackageType` is `None`, so there is a plain executable and no packaging step.
 
@@ -45,6 +83,22 @@ cd bin/Debug/net10.0-windows10.0.19041.0/win-x64 && ./Diarion.exe
 
 Start it with `run_in_background: true` and keep the task id — you will need it to stop the app, and you
 will need to stop it (see below).
+
+## Sandbox: looking without the real diary
+
+Debug builds honour two environment variables (`Services/DebugSandbox.cs`). `DIARION_SANDBOX_DIR`
+points the database and cache at a throwaway folder: the real database is never opened, the debug
+mock diary is not seeded, and saving there is allowed. `DIARION_SANDBOX_ONBOARDING=1` on top shows
+onboarding again without touching the real preference. `DIARION_SANDBOX_THEME=Dark` (or `Light`, `Pink`)
+forces the theme for the run, again without writing the real one. The encryption key still comes from
+the real SecureStorage, so nothing new is created there either. Other MAUI `Preferences` (language,
+reminder settings) are NOT sandboxed — do not change them in a sandbox run.
+
+```bash
+DIARION_SANDBOX_DIR='D:\WORK\tmp\diarion-sandbox' DIARION_SANDBOX_ONBOARDING=1 ./Diarion.exe
+```
+
+Delete the folder when done. Every rule above still applies to a run without these variables.
 
 ## Drive it
 
@@ -105,6 +159,15 @@ Checking that the task form's Save button survives the recurrence picker being o
 to a synthetic mouse drag — `drag.ps1` moves the pointer across a row and nothing happens. That is the
 tool failing, not the feature: the planner's swipe-to-delete works on Android and iOS and cannot be
 exercised here at all. Say so rather than reporting it as verified.
+
+## Two instances at once
+
+If the owner has Diarion open while you run a sandbox copy, pin yours: `shot.ps1` and `resize.ps1`
+take `-ProcessId <pid>` (find it with `tasklist`), `shot.ps1` prints `pid=` in its OK line, and
+`click.ps1 -ExpectPid <pid>` refuses with `WINDOW_MISMATCH` unless that process owns the window
+painted under the point. Never click without `-ExpectPid` while two instances exist: the other one is the
+real diary. The owner's instance also holds `Diarion.Core.dll`, so build in a detached worktree
+(`git worktree add --detach D:\WORK\SOURCE_CODE\Diarion-check HEAD`) rather than in their checkout.
 
 ## When the fallback is wrong
 

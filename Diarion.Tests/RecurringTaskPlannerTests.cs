@@ -35,6 +35,7 @@ public class RecurringTaskPlannerTests
         rule.HasTime = true;
         rule.TargetTime = TimeSpan.FromHours(8);
         rule.HasReminder = true;
+        rule.IsVoiceReminder = true;
 
         var planned = Plan(new[] { rule }).Single();
 
@@ -44,6 +45,7 @@ public class RecurringTaskPlannerTests
         planned.HasTime.Should().BeTrue();
         planned.TargetTime.Should().Be(TimeSpan.FromHours(8));
         planned.HasReminder.Should().BeTrue();
+        planned.IsVoiceReminder.Should().BeTrue();
         planned.IsCompleted.Should().BeFalse();
     }
 

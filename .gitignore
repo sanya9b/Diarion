@@ -264,6 +264,9 @@ Generated_Code/
 # because we have git ;-)
 _UpgradeReport_Files/
 Backup*/
+# ...but not the scheduled-backup source folder, which the rule above silently swallowed
+# (the first TestFlight run from feature/capture-review-backup failed on it, 2026-10-23).
+!Diarion.Core/Services/Backup/
 UpgradeLog*.XML
 UpgradeLog*.htm
 ServiceFabricBackup/
@@ -489,3 +492,11 @@ build_errors*.txt
 # not something a reviewer of a diff can check, and this repo ships a privacy claim.
 dump_types.exe
 *.exe
+
+# The StoreKit facade's build output. Produced on the macOS runner by
+# native/ios-storekit/build-xcframework.sh for every iOS build (spec 15, R3.5); a committed binary
+# would be one nobody could read in a diff, in a repo that ships a privacy claim.
+native/ios-storekit/DiarionStoreKit.xcframework/
+native/ios-storekit/.build/
+native/ios-storekit/.build-xcframework/
+native/ios-storekit/.swiftpm/

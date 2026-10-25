@@ -1,0 +1,104 @@
+name: Swift StoreKit facade
+
+# The short loop for the only Swift in the repository (spec 15, R3.5). Builds the static
+# xcframework exactly as build-ios.yml does and then runs the facade against a local StoreKit
+# configuration on a simulator — products, prices, the free-trial offer, empty entitlements and
+# the failure path — with no Apple ID, no sandbox and no App Store Connect. Purchases and the app
+# receipt need a host app, which a package test bundle is not; those are checked on a phone. A compile error in DiarionStoreKit.swift costs these few minutes, not
+# the twenty of a full iOS publish.
+
+on:
+  push:
+    paths:
+      - 'native/ios-storekit/**'
+      - '.github/workflows/swift-storekit.yml'
+  pull_request:
+    paths:
+      - 'native/ios-storekit/**'
+      - '.github/workflows/swift-storekit.yml'
+  workflow_dispatch:
+
+jobs:
+  facade:
+    name: Build the xcframework and run the StoreKit tests
+    runs-on: macos-26
+    # A hung test once ran for 34 minutes with no output. A normal run takes under ten.
+    timeout-minutes: 25
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Select Xcode 26.6
+      # Same toolchain the app is built with, so the facade and the app agree on the Swift ABI.
+      run: |
+        if [ -d /Applications/Xcode_26.6.app ]; then
+          XCODE_PATH=/Applications/Xcode_26.6.app
+        else
+          XCODE_PATH=$(ls -d /Applications/Xcode_26.6*.app 2>/dev/null | head -n 1)
+        fi
+        if [ -z "$XCODE_PATH" ]; then
+          echo "::error::Xcode 26.6 is not installed on this runner."
+          ls -d /Applications/Xcode*.app || true
+          exit 1
+        fi
+        sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+        echo "DEVELOPER_DIR=$XCODE_PATH/Contents/Developer" >> $GITHUB_ENV
+        xcodebuild -version
+
+    - name: Build the xcframework
+      run: native/ios-storekit/build-xcframework.sh
+
+    - name: Pick a simulator
+      id: simulator
+      run: |
+        UDID=$(xcrun simctl list devices available -j | python3 -c '
+        import json, sys
+        devices = json.load(sys.stdin)["devices"]
+        candidates = [d for runtime, ds in devices.items() if "iOS" in runtime for d in ds if d["name"].startswith("iPhone")]
+        if not candidates:
+            sys.exit("no available iPhone simulator on this runner")
+        print(candidates[-1]["udid"])')
+        echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+        xcrun simctl boot "$UDID" || true
+
+    - name: Run the StoreKit tests on the simulator
+      working-directory: native/ios-storekit
+      timeout-minutes: 15
+      run: |
+        # The full log goes to a file, uploaded on failure; the console gets the test lines as they
+        # happen. The first version piped straight into grep, which buffered everything — so when a
+        # test hung, the run showed nothing at all for half an hour.
+        set +e
+        xcodebuild test \
+          -scheme DiarionStoreKit \
+          -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}" \
+          -resultBundlePath "$RUNNER_TEMP/DiarionStoreKit.xcresult" \
+          -test-timeouts-enabled YES \
+          -default-test-execution-time-allowance 60 \
+          -maximum-test-execution-time-allowance 120 \
+          2>&1 | tee "$RUNNER_TEMP/xcodebuild-test.log" | grep --line-buffered -E "Test Case|Test Suite|error:|\*\* TEST"
+        status=${PIPESTATUS[0]}
+        set -e
+        if [ -d "$RUNNER_TEMP/DiarionStoreKit.xcresult" ]; then
+          xcrun xcresulttool get test-results summary --path "$RUNNER_TEMP/DiarionStoreKit.xcresult" \
+            | python3 -c 'import json, sys; s = json.load(sys.stdin); print("passed=%s failed=%s" % (s.get("passedTests", 0), s.get("failedTests", 0)))'
+        fi
+        exit $status
+
+    - name: Upload the test log
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: storekit-test-log
+        path: |
+          ${{ runner.temp }}/xcodebuild-test.log
+          ${{ runner.temp }}/DiarionStoreKit.xcresult
+        if-no-files-found: ignore
+
+    - name: Upload the xcframework
+      uses: actions/upload-artifact@v4
+      with:
+        name: DiarionStoreKit.xcframework
+        path: native/ios-storekit/DiarionStoreKit.xcframework
+        if-no-files-found: error

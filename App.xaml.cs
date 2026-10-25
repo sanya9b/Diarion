@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Diarion.Diagnostics;
 using Diarion.Services;
-using Diarion.Services.Ai;
+using Diarion.Services.Store;
+using CommunityToolkit.Mvvm.Messaging;
+using Diarion.Messages;
 using Microsoft.Maui;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
@@ -13,7 +15,7 @@ namespace Diarion;
 
 public partial class App : Application
 {
-    private const string OnboardingCompletedKey = "OnboardingCompleted";
+    internal const string OnboardingCompletedKey = "OnboardingCompleted";
     private static readonly TimeSpan RelockGrace = TimeSpan.FromSeconds(30);
     private DateTime? _backgroundedAtUtc;
     private bool _isLockShown;
@@ -57,6 +59,12 @@ public partial class App : Application
         // yet at CreateWindow time, so window.Handler?.MauiContext is null here.
         var services = IPlatformApplication.Current?.Services;
         var lockService = services?.GetService<IAppLockService>();
+        // Resolved first on purpose: the install evidence for the legacy rule must be captured
+        // before onboarding can complete in this launch, and the access state is restored from the
+        // keychain before the first frame (spec 15, R1.2, R2.1).
+        var entitlements = services?.GetService<IEntitlementService>();
+        services?.GetService<PaywallPresenter>()?.Start();
+        StartReminderCoordinator(services);
 
         var window = new Window();
 
@@ -84,28 +92,115 @@ public partial class App : Application
 
         window.Created += async (s, e) =>
         {
+            RefreshEntitlements(entitlements);
             await CheckOnboardingAsync(window);
             await CheckSecurityAsync(window, coldStart: true);
+            RetiredModelFiles.Sweep();
+            ClearRetiredAppActions();
+            StartScheduledBackup(services);
         };
         window.Resumed += async (s, e) =>
         {
             await CheckSecurityAsync(window, coldStart: false);
-            StartEmbeddingIndex(window.Handler?.MauiContext?.Services);
         };
 
         return window;
     }
 
     /// <summary>
-    /// Nudges the embedding index after the UI is up. It no-ops when AI is off or no model is
-    /// installed, and it derives its own work queue, so calling it repeatedly is free.
+    /// Build 16 published a "Quick entry" home-screen shortcut; the sheet it opened was removed on the
+    /// owner's word (2026-10-23). The system keeps a published shortcut across app updates, so without
+    /// this the icon would go on offering a menu item that opens nothing. Publishing an empty set clears
+    /// it; on a phone that never had it, this is a no-op.
     /// </summary>
-    private static void StartEmbeddingIndex(IServiceProvider? services) =>
-        (services ?? IPlatformApplication.Current?.Services)?.GetService<IEmbeddingIndexService>()?.Start();
+    private static void ClearRetiredAppActions()
+    {
+#if ANDROID || IOS
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                if (AppActions.Current.IsSupported)
+                {
+                    await AppActions.Current.SetAsync(Array.Empty<AppAction>());
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Retired app actions not cleared: {ex.Message}");
+            }
+        });
+#endif
+    }
+
+    /// <summary>
+    /// The scheduled backup's one trigger: a check when the app opens. Not a background job — iOS
+    /// has twice been measured as giving none worth having — and not immediate: writing the copy
+    /// closes and reopens the database for a moment, so it waits until well after the home screen
+    /// has read its day. Does nothing unless the feature is on and the interval has passed.
+    /// </summary>
+    private static void StartScheduledBackup(IServiceProvider? services)
+    {
+        var scheduler = services?.GetService<Diarion.Services.Backup.IScheduledBackupService>();
+        if (scheduler is null || !scheduler.IsSupported) return;
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(15));
+            try
+            {
+                await scheduler.RunIfDueAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Scheduled backup check failed: {ex}");
+            }
+        });
+    }
+
+    /// <summary>
+    /// Asks the store in the background. The service never downgrades the state for a missing
+    /// answer, so nothing here is on the critical path of the first screen.
+    /// </summary>
+    /// <summary>Pauses or restores reminders to match the access state (spec 15, R1.6). Off the
+    /// first frame's path: it reads the profile and habits from the database.</summary>
+    private static void StartReminderCoordinator(IServiceProvider? services)
+    {
+        var coordinator = services?.GetService<ReminderAccessCoordinator>();
+        if (coordinator is null) return;
+        _ = Task.Run(coordinator.StartAsync);
+    }
+
+    private static void RefreshEntitlements(IEntitlementService? entitlements)
+    {
+        if (entitlements is null) return;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await entitlements.RefreshAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Entitlement refresh failed: {ex}");
+            }
+        });
+    }
+
+    /// <summary>
+    /// The paywall follows onboarding for a new user (spec 15, R4.2) — after the sheet is gone, so
+    /// the two never stack. The presenter drops the request for anyone who may already write.
+    /// </summary>
+    private static async Task CloseOnboardingAsync(INavigation navigation)
+    {
+        await navigation.PopModalAsync();
+        WeakReferenceMessenger.Default.Send(new PaywallRequestedMessage(PaywallReason.AfterOnboarding));
+    }
 
     private async Task CheckOnboardingAsync(Window window)
     {
-        if (Preferences.Get(OnboardingCompletedKey, false)) return;
+        // DebugSandbox.ShowsOnboarding is a debug-only switch for looking at the first run again.
+        if (!Diarion.Services.DebugSandbox.ShowsOnboarding && Preferences.Get(OnboardingCompletedKey, false)) return;
 
         var services = window.Handler?.MauiContext?.Services;
         var navigation = window.Page?.Navigation;
@@ -116,8 +211,9 @@ public partial class App : Application
 
         page.ViewModel.Completed = () =>
         {
-            Preferences.Set(OnboardingCompletedKey, true);
-            _ = navigation.PopModalAsync();
+            if (!Diarion.Services.DebugSandbox.ShowsOnboarding)
+                Preferences.Set(OnboardingCompletedKey, true);
+            _ = CloseOnboardingAsync(navigation);
         };
 
         await navigation.PushModalAsync(page);
@@ -127,17 +223,6 @@ public partial class App : Application
     {
         base.OnSleep();
         _backgroundedAtUtc = DateTime.UtcNow;
-
-        // Android gives no dependable background CPU, and a foreground service is not worth the
-        // permission surface for indexing. Stopping also has to happen before the database can be
-        // reopened by a backup restore, which would invalidate the collection the loop writes to.
-        var services = IPlatformApplication.Current?.Services;
-        _ = services?.GetService<IEmbeddingIndexService>()?.StopAsync();
-
-        // Both graphs are resident megabytes — the generative one over a gigabyte — and nothing
-        // needs either while the user is elsewhere.
-        services?.GetService<ITextEmbedder>()?.Unload();
-        (services?.GetService<ITextGenerator>() as OnnxGenAiTextGenerator)?.Unload();
     }
 
     private async Task CheckSecurityAsync(Window window, bool coldStart)

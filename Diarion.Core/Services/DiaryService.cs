@@ -7,8 +7,8 @@ using Diarion.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Messages;
 using Diarion.Models;
-using Diarion.Models.Ai;
 using Diarion.Services.Database;
+using Diarion.Services.Store;
 using LiteDB;
 
 namespace Diarion.Services;
@@ -18,9 +18,11 @@ public class DiaryService : IDiaryService
     private readonly IDatabaseContext _dbContext;
     private readonly ITodoService _todoService;
     private readonly IProfileService _profileService;
+    private readonly IAccessGuard _accessGuard;
 
-    public DiaryService(IDatabaseContext dbContext, ITodoService todoService, IProfileService profileService)
+    public DiaryService(IDatabaseContext dbContext, ITodoService todoService, IProfileService profileService, IAccessGuard? accessGuard = null)
     {
+        _accessGuard = accessGuard ?? AccessGuard.Unrestricted;
         _dbContext = dbContext;
         _todoService = todoService;
         _profileService = profileService;
@@ -62,12 +64,14 @@ public class DiaryService : IDiaryService
 
     public async Task SaveEntryAsync(DiaryEntry entry)
     {
+        _accessGuard.EnsureWritable();
         await Task.Run(() => EntriesCollection.Upsert(entry));
         Announce(entry.Id);
     }
 
     public async Task DeleteEntryAsync(Guid id)
     {
+        _accessGuard.EnsureWritable();
         await Task.Run(() => EntriesCollection.Delete(id));
         await _todoService.DeleteTodosByDiaryEntryAsync(id);
         Announce(id);
@@ -75,7 +79,7 @@ public class DiaryService : IDiaryService
 
     private static void Announce(Guid id) =>
         WeakReferenceMessenger.Default.Send(
-            new DocumentChangedMessage(EmbeddingSourceKind.Diary, id.ToString()));
+            new DocumentChangedMessage(DocumentKind.Diary, id.ToString()));
 
     public async Task<StreakResult> GetCurrentStreakAsync()
     {
@@ -94,6 +98,19 @@ public class DiaryService : IDiaryService
 
             return StreakWalker.Walk(dates, DateTime.Today, grace);
         });
+    }
+
+    public Task<IReadOnlyList<DateTime>> GetContentDatesAsync(DateTime startDate, DateTime endDate)
+    {
+        var start = startDate.Date;
+        var end = endDate.Date;
+        return Task.Run(() => (IReadOnlyList<DateTime>)EntriesCollection
+            .Find(x => x.Date >= start && x.Date <= end)
+            .Where(e => e.HasContent())
+            .Select(e => e.Date.Date)
+            .Distinct()
+            .OrderBy(d => d)
+            .ToList());
     }
 
     public Task<IEnumerable<DiaryEntryStatsDto>> GetDiaryEntriesForStatsAsync(DateTime startDate, DateTime endDate)

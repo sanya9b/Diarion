@@ -92,4 +92,14 @@ public class MoodCorrelation
 
     public int SampleSize { get; set; }
     public int LagDays { get; set; }
+
+    /// <summary>
+    /// The bar a finding clears before anyone is told about it: three dots, i.e. p &lt; 0.05 after
+    /// the Benjamini-Hochberg adjustment. One number for the statistics card and the home-screen
+    /// path, so the two can never disagree about whether a hypothesis holds.
+    /// </summary>
+    public const int MinHoldingConfidence = 3;
+
+    /// <summary>Whether this finding is one the user is shown. See <see cref="MinHoldingConfidence"/>.</summary>
+    public bool Holds => Confidence >= MinHoldingConfidence;
 }

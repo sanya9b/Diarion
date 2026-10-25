@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using Diarion.Diagnostics;
 using Diarion.Models;
-using Diarion.Models.Ai;
 using LiteDB;
 
 namespace Diarion.Services.Database;
@@ -38,7 +37,18 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         }
         else
         {
-            _dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DbFileName);
+            var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+#if DEBUG
+            // A sandbox run (Services/DebugSandbox.cs in the app) keeps the real diary closed: the database
+            // goes to the throwaway folder instead. Debug builds only, like the mock seeder below.
+            var sandbox = Environment.GetEnvironmentVariable("DIARION_SANDBOX_DIR");
+            if (!string.IsNullOrWhiteSpace(sandbox))
+            {
+                Directory.CreateDirectory(sandbox);
+                folder = sandbox;
+            }
+#endif
+            _dbPath = Path.Combine(folder, DbFileName);
             // Encrypt the database at rest using a device-keychain-backed key. On the first run
             // after upgrading, a pre-existing plaintext file is migrated transparently and safely.
             var password = _keyProvider?.GetOrCreateKey();
@@ -63,7 +73,6 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         _db.GetCollection<RecurringTransaction>(DatabaseConstants.RecurringTransactionsCollection);
         // Same again for repeating tasks: a handful of rules, read once per day-load, no date to index.
         _db.GetCollection<RecurringTask>(DatabaseConstants.RecurringTasksCollection);
-        var embeddingsCollection = _db.GetCollection<EmbeddingChunk>(DatabaseConstants.EmbeddingsCollection);
 
         entriesCollection.EnsureIndex(x => x.Date);
         wishlistCollection.EnsureIndex(x => x.Date);
@@ -74,9 +83,6 @@ public class DatabaseContext : IDatabaseContext, IDisposable
         readingTrackerBooksCollection.EnsureIndex(x => x.SlotNumber, true);
         happyMomentsCollection.EnsureIndex(x => x.SlotNumber, true);
         goodDeedsCollection.EnsureIndex(x => x.SlotNumber, true);
-        // Indexed on the source, not the vector: every re-index and every entry edit deletes by
-        // SourceId, while similarity search is a full scan by design and no index would help it.
-        embeddingsCollection.EnsureIndex(x => x.SourceId);
 
         // Apply any pending schema migrations before seeding/using the data.
         MigrationRunner.Run(_db);

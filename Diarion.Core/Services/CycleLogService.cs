@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services.Database;
+using Diarion.Services.Store;
 using LiteDB;
 
 namespace Diarion.Services;
@@ -11,9 +12,11 @@ namespace Diarion.Services;
 public class CycleLogService : ICycleLogService
 {
     private readonly IDatabaseContext _dbContext;
+    private readonly IAccessGuard _accessGuard;
 
-    public CycleLogService(IDatabaseContext dbContext)
+    public CycleLogService(IDatabaseContext dbContext, IAccessGuard? accessGuard = null)
     {
+        _accessGuard = accessGuard ?? AccessGuard.Unrestricted;
         _dbContext = dbContext;
     }
 
@@ -25,6 +28,7 @@ public class CycleLogService : ICycleLogService
 
     public Task AddEpisodeAsync(DateTime start, int length)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var existing = MarkedDates().ToHashSet();
@@ -42,6 +46,7 @@ public class CycleLogService : ICycleLogService
 
     public Task RemoveEpisodeAsync(DateTime anyDayOfIt)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             // Deleting from the episode's own span rather than from a fixed length: the user may have
@@ -74,6 +79,7 @@ public class CycleLogService : ICycleLogService
 
     public Task SetSymptomsAsync(DateTime date, IEnumerable<string> symptoms)
     {
+        _accessGuard.EnsureWritable();
         return Task.Run(() =>
         {
             var day = date.Date;

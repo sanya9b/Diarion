@@ -3,7 +3,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
+using Diarion.Messages;
 using Diarion.Models;
+using Diarion.Resources.Icons;
 using Diarion.Resources.Localization;
 
 namespace Diarion.ViewModels;
@@ -34,7 +37,9 @@ public enum StatisticsTabOption
     Productivity,
     Finance,
     Habits,
-    Cycle
+    Cycle,
+    /// <summary>The period against the one before it. First in the strip, last in the enum: nothing orders by this.</summary>
+    Review
 }
 
 public partial class StatisticsTabItem : ObservableObject
@@ -42,8 +47,8 @@ public partial class StatisticsTabItem : ObservableObject
     public StatisticsTabOption Option { get; set; }
     public string DisplayName { get; set; } = string.Empty;
 
-    /// <summary>Emoji glyph shown before the tab label in the segmented selector.</summary>
-    public string Icon { get; set; } = string.Empty;
+    /// <summary>Line icon drawn before the tab label in the segmented selector (see <see cref="AppIcons"/>).</summary>
+    public Microsoft.Maui.Controls.Shapes.Geometry? IconGeometry { get; set; }
 
     [ObservableProperty]
     private bool _isSelected;
@@ -61,6 +66,14 @@ public partial class StatisticsViewModel : BaseViewModel
     private int _currentStreak;
 
     public bool IsStreakVisible => CurrentStreak > 0;
+
+    /// <summary>The season's sign in the pill, as on the home tile; read when the streak is counted.</summary>
+    [ObservableProperty]
+    private Season _streakSeason = SeasonCalendar.Of(DateTime.Today);
+
+    public Microsoft.Maui.Controls.Shapes.Geometry StreakIcon => AppIcons.ForSeason(StreakSeason);
+
+    partial void OnStreakSeasonChanged(Season value) => OnPropertyChanged(nameof(StreakIcon));
 
     /// <summary>
     /// The run only survives because a missed day was forgiven. Worth saying: an unmarked number implies
@@ -99,6 +112,9 @@ public partial class StatisticsViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool _isCycleTabVisible;
+
+    [ObservableProperty]
+    private bool _isReviewTabVisible;
 
     // --- The period, as two dates ---
 
@@ -152,22 +168,28 @@ public partial class StatisticsViewModel : BaseViewModel
 
     public ViewModels.Statistics.MoodStatsViewModel MoodStats { get; }
 
-    /// <summary>Verbatim passages describing what the selected window was about. Empty when AI is off.</summary>
-    public ObservableCollection<DigestExcerptItem> DigestExcerpts { get; } = [];
-
-    /// <summary>Subjects the window kept coming back to. Empty when AI is off.</summary>
-    public ObservableCollection<ThemeItem> Themes { get; } = [];
-
+    /// <summary>The days of the window on which something was written. The activity card's squares.</summary>
     [ObservableProperty]
-    private bool _hasThemes;
+    private System.Collections.Generic.IReadOnlyList<DateTime> _activityDates = Array.Empty<DateTime>();
 
+    /// <summary>«18 з 31» — written days out of the window's days.</summary>
     [ObservableProperty]
-    private bool _hasDigest;
+    private string _activityCountText = string.Empty;
+
+    /// <summary>The card shows once the window has been read, written days or not.</summary>
+    [ObservableProperty]
+    private bool _hasActivityDays;
     public ViewModels.Statistics.SleepStatsViewModel SleepStats { get; }
     public ViewModels.Statistics.ProductivityStatsViewModel ProductivityStats { get; }
     public ViewModels.Statistics.FinanceStatsViewModel FinanceStats { get; }
     public ViewModels.Statistics.HabitStatsViewModel HabitStats { get; }
     public ViewModels.Statistics.CycleStatsViewModel CycleStats { get; }
+
+    /// <summary>
+    /// The window against the window before it — the tab the screen opens on. What a person wants
+    /// first from a statistics screen is "what changed", and every other tab answers "what is".
+    /// </summary>
+    public ViewModels.Statistics.PeriodReviewViewModel Review { get; }
 
     /// <summary>The first-visit coach marks over this screen. Idle until the page starts it.</summary>
     public TourViewModel Tour { get; }
@@ -179,13 +201,12 @@ public partial class StatisticsViewModel : BaseViewModel
         Diarion.Services.INavigationService navigationService,
         Diarion.Services.IDispatcherService dispatcher,
         ViewModels.Statistics.MoodStatsViewModel moodStats,
-        Services.Ai.IDigestService digestService,
-        Services.Ai.IThemeClusterService themeService,
         ViewModels.Statistics.SleepStatsViewModel sleepStats,
         ViewModels.Statistics.ProductivityStatsViewModel productivityStats,
         ViewModels.Statistics.FinanceStatsViewModel financeStats,
         ViewModels.Statistics.HabitStatsViewModel habitStats,
         ViewModels.Statistics.CycleStatsViewModel cycleStats,
+        ViewModels.Statistics.PeriodReviewViewModel review,
         TourViewModel tour)
     {
         _statisticsService = statisticsService;
@@ -193,14 +214,16 @@ public partial class StatisticsViewModel : BaseViewModel
         _financeService = financeService;
         _navigationService = navigationService;
         _dispatcher = dispatcher;
+        // Lets another screen open this one on a given window.
+        WeakReferenceMessenger.Default.Register<StatisticsRangeRequestedMessage>(
+            this, (r, m) => ((StatisticsViewModel)r).ApplyRange(m.Range));
         MoodStats = moodStats;
-        _digestService = digestService;
-        _themeService = themeService;
         SleepStats = sleepStats;
         ProductivityStats = productivityStats;
         FinanceStats = financeStats;
         HabitStats = habitStats;
         CycleStats = cycleStats;
+        Review = review;
         Tour = tour;
 
         Title = AppResources.StatisticsTitle;
@@ -228,7 +251,7 @@ public partial class StatisticsViewModel : BaseViewModel
             {
                 Option = StatisticsTabOption.Cycle,
                 DisplayName = AppResources.TabCycle,
-                Icon = "🩸"
+                IconGeometry = AppIcons.Drop
             });
         }
         else if (!available && existing != null)
@@ -243,11 +266,12 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         Tabs = new System.Collections.ObjectModel.ObservableCollection<StatisticsTabItem>
         {
-            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, Icon = "😊", IsSelected = true },
-            new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = AppResources.TabSleep, Icon = "😴" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = AppResources.TabProductivity, Icon = "✅" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Finance, DisplayName = AppResources.FinanceTitle ?? "Finance", Icon = "💸" },
-            new StatisticsTabItem { Option = StatisticsTabOption.Habits, DisplayName = AppResources.TabHabits, Icon = "🌱" }
+            new StatisticsTabItem { Option = StatisticsTabOption.Review, DisplayName = AppResources.TabReview, IconGeometry = AppIcons.Bars, IsSelected = true },
+            new StatisticsTabItem { Option = StatisticsTabOption.General, DisplayName = AppResources.TabGeneral, IconGeometry = AppIcons.Smile },
+            new StatisticsTabItem { Option = StatisticsTabOption.Sleep, DisplayName = AppResources.TabSleep, IconGeometry = AppIcons.Moon },
+            new StatisticsTabItem { Option = StatisticsTabOption.Productivity, DisplayName = AppResources.TabProductivity, IconGeometry = AppIcons.CheckCircle },
+            new StatisticsTabItem { Option = StatisticsTabOption.Finance, DisplayName = AppResources.FinanceTitle ?? "Finance", IconGeometry = AppIcons.Banknote },
+            new StatisticsTabItem { Option = StatisticsTabOption.Habits, DisplayName = AppResources.TabHabits, IconGeometry = AppIcons.Sprout }
         };
         SelectTab(Tabs[0]);
     }
@@ -270,6 +294,7 @@ public partial class StatisticsViewModel : BaseViewModel
         IsFinanceTabVisible = item.Option == StatisticsTabOption.Finance;
         IsHabitsTabVisible = item.Option == StatisticsTabOption.Habits;
         IsCycleTabVisible = item.Option == StatisticsTabOption.Cycle;
+        IsReviewTabVisible = item.Option == StatisticsTabOption.Review;
 
         // Load data for the selected tab when switched
         if (_isInitialized)
@@ -405,14 +430,19 @@ public partial class StatisticsViewModel : BaseViewModel
             var streak = await _diaryService.GetCurrentStreakAsync();
             CurrentStreak = streak.Length;
             IsStreakHeldByGrace = streak.HeldByGrace;
+            StreakSeason = SeasonCalendar.Of(DateTime.Today);
             OnPropertyChanged(nameof(IsStreakVisible));
 
             var range = CurrentRange;
 
-            if (IsGeneralTabVisible)
+            if (IsReviewTabVisible)
             {
+                await Review.LoadDataAsync(range);
+            }
+            else if (IsGeneralTabVisible)
+            {
+                await LoadActivityAsync(range);
                 await MoodStats.LoadDataAsync(range);
-                await LoadDigestAsync(range);
             }
             else if (IsSleepTabVisible)
             {
@@ -522,64 +552,18 @@ public partial class StatisticsViewModel : BaseViewModel
     {
         _ = _navigationService.OpenFlyoutAsync();
     }
-    private readonly Services.Ai.IDigestService _digestService;
-    private readonly Services.Ai.IThemeClusterService _themeService;
-
     /// <summary>
-    /// The digest quotes the user's own sentences rather than paraphrasing them. That is what lets
-    /// weekly and monthly reports work on every device with no generative model at all.
+    /// Which days of the window were written on — by the same rule the streak counts, so the tile at the
+    /// top of the home screen and this card agree. A new list each time: the squares redraw when their
+    /// source is replaced.
     /// </summary>
-    private async Task LoadDigestAsync(StatsRange range)
+    private async Task LoadActivityAsync(StatsRange range)
     {
-        var start = range.Start;
-        var end = range.End;
+        var written = await _diaryService.GetContentDatesAsync(range.Start, range.End) ?? Array.Empty<DateTime>();
+        var days = (int)(range.End.Date - range.Start.Date).TotalDays + 1;
 
-        var digest = await _digestService.BuildAsync(start, end);
-
-        DigestExcerpts.Clear();
-        foreach (var excerpt in digest.Excerpts)
-        {
-            DigestExcerpts.Add(new DigestExcerptItem(excerpt));
-        }
-
-        HasDigest = digest.HasContent;
-
-        var themes = await _themeService.ClusterAsync(start, end);
-
-        Themes.Clear();
-        foreach (var theme in themes)
-        {
-            Themes.Add(new ThemeItem(theme));
-        }
-
-        HasThemes = themes.Count > 0;
+        ActivityDates = written.ToList();
+        ActivityCountText = string.Format(AppResources.StatsActivityCountFormat, written.Count, days);
+        HasActivityDays = true;
     }
-}
-
-/// <summary>A recurring theme, with its day count already phrased.</summary>
-public sealed class ThemeItem
-{
-    public ThemeItem(Services.Ai.DiaryTheme theme)
-    {
-        Label = theme.Label;
-        DaysLabel = string.Format(Resources.Localization.AppResources.StatsThemeDaysFormat, theme.DayCount);
-    }
-
-    public string Label { get; }
-
-    public string DaysLabel { get; }
-}
-
-/// <summary>A digest line with its date already formatted for display.</summary>
-public sealed class DigestExcerptItem
-{
-    public DigestExcerptItem(Services.Ai.DigestExcerpt excerpt)
-    {
-        Text = excerpt.Text;
-        DateLabel = excerpt.Date.ToString("d MMMM", System.Globalization.CultureInfo.CurrentCulture);
-    }
-
-    public string Text { get; }
-
-    public string DateLabel { get; }
 }

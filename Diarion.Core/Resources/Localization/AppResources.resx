@@ -148,6 +148,93 @@
   <data name="EmotionAngry" xml:space="preserve">
     <value>Angry</value>
   </data>
+  <data name="EmotionNeutral" xml:space="preserve">
+    <value>Neutral</value>
+  </data>
+  <data name="EmotionInspired" xml:space="preserve">
+    <value>Inspired</value>
+  </data>
+  <data name="EmotionExcited" xml:space="preserve">
+    <value>Excited</value>
+  </data>
+  <data name="EmotionProud" xml:space="preserve">
+    <value>Proud</value>
+  </data>
+  <data name="EmotionEnergetic" xml:space="preserve">
+    <value>Energetic</value>
+  </data>
+  <data name="EmotionPlayful" xml:space="preserve">
+    <value>Playful</value>
+  </data>
+  <data name="EmotionOptimistic" xml:space="preserve">
+    <value>Optimistic</value>
+  </data>
+  <data name="EmotionContent" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="EmotionGrateful" xml:space="preserve">
+    <value>Grateful</value>
+  </data>
+  <data name="EmotionRelaxed" xml:space="preserve">
+    <value>Relaxed</value>
+  </data>
+  <data name="EmotionLoving" xml:space="preserve">
+    <value>Loving</value>
+  </data>
+  <data name="EmotionSecure" xml:space="preserve">
+    <value>Secure</value>
+  </data>
+  <data name="EmotionPeaceful" xml:space="preserve">
+    <value>Peaceful</value>
+  </data>
+  <data name="EmotionStressed" xml:space="preserve">
+    <value>Stressed</value>
+  </data>
+  <data name="EmotionIrritated" xml:space="preserve">
+    <value>Irritated</value>
+  </data>
+  <data name="EmotionOverwhelmed" xml:space="preserve">
+    <value>Overwhelmed</value>
+  </data>
+  <data name="EmotionScared" xml:space="preserve">
+    <value>Scared</value>
+  </data>
+  <data name="EmotionFrustrated" xml:space="preserve">
+    <value>Frustrated</value>
+  </data>
+  <data name="EmotionTired" xml:space="preserve">
+    <value>Tired</value>
+  </data>
+  <data name="EmotionBored" xml:space="preserve">
+    <value>Bored</value>
+  </data>
+  <data name="EmotionLonely" xml:space="preserve">
+    <value>Lonely</value>
+  </data>
+  <data name="EmotionDisappointed" xml:space="preserve">
+    <value>Disappointed</value>
+  </data>
+  <data name="EmotionExhausted" xml:space="preserve">
+    <value>Exhausted</value>
+  </data>
+  <data name="EmotionHopeless" xml:space="preserve">
+    <value>Hopeless</value>
+  </data>
+  <data name="QuadrantPleasantEnergetic" xml:space="preserve">
+    <value>Upbeat</value>
+  </data>
+  <data name="QuadrantPleasantCalm" xml:space="preserve">
+    <value>At ease</value>
+  </data>
+  <data name="QuadrantUnpleasantEnergetic" xml:space="preserve">
+    <value>Tense</value>
+  </data>
+  <data name="QuadrantUnpleasantCalm" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="MoodClear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
   <data name="TodoListLabel" xml:space="preserve">
     <value>Tasks</value>
   </data>
@@ -397,9 +484,6 @@
   <data name="HabitTrackerAddButton" xml:space="preserve">
     <value>Add tracker</value>
   </data>
-  <data name="HabitTrackerEmptyState" xml:space="preserve">
-    <value>You do not have any trackers yet. Create the first one to start marking days.</value>
-  </data>
   <data name="HabitTrackerDaysSectionTitle" xml:space="preserve">
     <value>Days to mark</value>
   </data>
@@ -461,7 +545,7 @@
     <value>Save moment</value>
   </data>
   <data name="HappyMomentsTitleRequiredMessage" xml:space="preserve">
-    <value>Please enter the moment description.</value>
+    <value>Enter the moment description.</value>
   </data>
   <data name="GoodDeedsTitle" xml:space="preserve">
     <value>Good Deeds</value>
@@ -488,7 +572,7 @@
     <value>Save deed</value>
   </data>
   <data name="GoodDeedsTitleRequiredMessage" xml:space="preserve">
-    <value>Please enter the deed description.</value>
+    <value>Enter the deed description.</value>
   </data>
   <data name="TrackerPrototypeLabel" xml:space="preserve">
     <value>ADAPTIVE PREVIEW</value>
@@ -610,8 +694,29 @@
   <data name="SoulFoodPlaceholder" xml:space="preserve">
     <value>For example: read a book, listened to music...</value>
   </data>
+  <data name="SupportForOthersLabel" xml:space="preserve">
+    <value>FOR OTHERS:</value>
+  </data>
+  <data name="SupportForOthersPlaceholder" xml:space="preserve">
+    <value>For example: helped a colleague, called my parents...</value>
+  </data>
   <data name="HomeBlocksTitle" xml:space="preserve">
     <value>HOME SCREEN BLOCKS</value>
+  </data>
+  <data name="SettingsAppearanceTitle" xml:space="preserve">
+    <value>APPEARANCE &amp; LANGUAGE</value>
+  </data>
+  <data name="MoodIconSetTitle" xml:space="preserve">
+    <value>Mood icons</value>
+  </data>
+  <data name="MoodIconSetEmoji" xml:space="preserve">
+    <value>Smileys</value>
+  </data>
+  <data name="MoodIconSetWeather" xml:space="preserve">
+    <value>Weather</value>
+  </data>
+  <data name="MoodIconSetPlants" xml:space="preserve">
+    <value>Plants</value>
   </data>
   <data name="BlockMoodLabel" xml:space="preserve">
     <value>Mood</value>
@@ -634,11 +739,11 @@
   <data name="MoodHourlyLabel" xml:space="preserve">
     <value>By the hour</value>
   </data>
-  <data name="MoodHourlyHint" xml:space="preserve">
-    <value>Pick an hour, then tap a mood above</value>
+  <data name="MoodHourPickerTitle" xml:space="preserve">
+    <value>Choose an hour</value>
   </data>
-  <data name="MoodHourlyDayHint" xml:space="preserve">
-    <value>Tap a mood above to set the whole day</value>
+  <data name="MoodHourExit" xml:space="preserve">
+    <value>Back to the whole day</value>
   </data>
   <data name="MoodHourAccessibility" xml:space="preserve">
     <value>{0}:00 — {1}</value>
@@ -803,13 +908,25 @@
     <value>ADD</value>
   </data>
   <data name="CycleAddHint" xml:space="preserve">
-    <value>Pick the first day. Each period you record makes the forecast more accurate.</value>
+    <value>Pick the first and the last day. Each period you record makes the forecast more accurate.</value>
+  </data>
+  <data name="CycleRecordStart" xml:space="preserve">
+    <value>First day</value>
+  </data>
+  <data name="CycleRecordEnd" xml:space="preserve">
+    <value>Last day</value>
+  </data>
+  <data name="CycleRecordDaysFormat" xml:space="preserve">
+    <value>Days: {0}</value>
+  </data>
+  <data name="CycleRecordLastFormat" xml:space="preserve">
+    <value>Last recorded: {0}</value>
+  </data>
+  <data name="CycleRecordChip" xml:space="preserve">
+    <value>Period</value>
   </data>
   <data name="CycleHistoryTitle" xml:space="preserve">
     <value>Recorded periods</value>
-  </data>
-  <data name="CycleHistoryEmpty" xml:space="preserve">
-    <value>Nothing recorded yet</value>
   </data>
   <data name="CycleIntervalFormat" xml:space="preserve">
     <value>{0} days to the next</value>
@@ -839,7 +956,7 @@
     <value>Based on {0} recorded cycles (avg {1} days)</value>
   </data>
   <data name="CycleNoDataHint" xml:space="preserve">
-    <value>Mark the first day of your period to start the forecast</value>
+    <value>Record a period with the “+ Period” chip in the Health block on the home screen to start the forecast</value>
   </data>
   <data name="CycleLateFormat" xml:space="preserve">
     <value>Expected {0} days ago</value>
@@ -934,6 +1051,21 @@
   <data name="StatsMoodByHourNoHourlyData" xml:space="preserve">
     <value>You've only logged mood for the whole day. Mark mood by hour in your diary to see this chart.</value>
   </data>
+  <data name="StatsEnergyByHour" xml:space="preserve">
+    <value>Energy by hour</value>
+  </data>
+  <data name="StatsEnergyByHourSubtitle" xml:space="preserve">
+    <value>How much energy you usually have at each time of day</value>
+  </data>
+  <data name="StatsEnergyByHourHigh" xml:space="preserve">
+    <value>Energetic</value>
+  </data>
+  <data name="StatsEnergyByHourLow" xml:space="preserve">
+    <value>Calm</value>
+  </data>
+  <data name="StatsEnergyByHourBalanced" xml:space="preserve">
+    <value>Balanced on average</value>
+  </data>
   <data name="StreaksTitle" xml:space="preserve">
     <value>STREAKS</value>
   </data>
@@ -954,9 +1086,6 @@
   </data>
   <data name="PromptHistorySearch" xml:space="preserve">
     <value>Search answers</value>
-  </data>
-  <data name="PromptHistoryEmpty" xml:space="preserve">
-    <value>No answers yet. Answer the question of the day and it will appear here.</value>
   </data>
   <data name="PromptHistoryNoMatches" xml:space="preserve">
     <value>Nothing matches that search.</value>
@@ -1369,9 +1498,6 @@
   <data name="MinutesShort" xml:space="preserve">
     <value>m</value>
   </data>
-  <data name="SecondsShort" xml:space="preserve">
-    <value>s</value>
-  </data>
   <data name="SecurityLabel" xml:space="preserve">
     <value>SECURITY</value>
   </data>
@@ -1438,9 +1564,6 @@
   <data name="DeleteNoteConfirmMessage" xml:space="preserve">
     <value>The note will be gone for good — this cannot be undone.</value>
   </data>
-  <data name="EmptyNotes" xml:space="preserve">
-    <value>No notes found.</value>
-  </data>
   <data name="NotesTags" xml:space="preserve">
     <value>Tags</value>
   </data>
@@ -1498,8 +1621,26 @@
   <data name="StreakHeldByGraceHint" xml:space="preserve">
     <value>A forgiven day is holding this streak.</value>
   </data>
+  <data name="StreakTileAccessibleFormat" xml:space="preserve">
+    <value>Days in a row: {0}. Opens statistics</value>
+  </data>
+  <data name="StatsActivityHeader" xml:space="preserve">
+    <value>DAYS WITH ENTRIES</value>
+  </data>
+  <data name="StatsActivityCountFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="StatsActivityHint" xml:space="preserve">
+    <value>A filled square is a day on which something was written. The same days the streak counts.</value>
+  </data>
   <data name="CycleSymptomsLabel" xml:space="preserve">
     <value>Symptoms</value>
+  </data>
+  <data name="CycleSymptomsToday" xml:space="preserve">
+    <value>Symptoms today</value>
+  </data>
+  <data name="CycleSymptomsOnDayFormat" xml:space="preserve">
+    <value>Symptoms · {0}</value>
   </data>
   <data name="PlannerUntimedLabel" xml:space="preserve">
     <value>No time set</value>
@@ -1675,12 +1816,6 @@
   <data name="TourStatsTabsText" xml:space="preserve">
     <value>Mood, sleep, tasks, money, habits, cycle. Switching a tab keeps the dates you picked.</value>
   </data>
-  <data name="TourStatsThemesTitle" xml:space="preserve">
-    <value>What you keep coming back to</value>
-  </data>
-  <data name="TourStatsThemesText" xml:space="preserve">
-    <value>Once there are a couple of weeks of entries, the subjects that repeat gather here, counted in days rather than in passages. Your own wording, grouped on the device.</value>
-  </data>
   <data name="TourStatsInfluencesTitle" xml:space="preserve">
     <value>Guesses, checked</value>
   </data>
@@ -1688,10 +1823,10 @@
     <value>Sleep, meals, habits and the days themselves are compared with how you felt, and only what survives the check is listed — with the number of days it rests on. Often nothing survives, and the card says that too.</value>
   </data>
   <data name="TourSettingsTabsTitle" xml:space="preserve">
-    <value>Four groups of settings</value>
+    <value>Three groups of settings</value>
   </data>
   <data name="TourSettingsTabsText" xml:space="preserve">
-    <value>You, the screen, your data, and on-device AI. Nothing set here leaves the device.</value>
+    <value>You, the screen, and your data. Nothing set here leaves the device.</value>
   </data>
   <data name="TourSettingsBlocksTitle" xml:space="preserve">
     <value>Choose what the day asks you</value>
@@ -1718,7 +1853,7 @@
     <value>The two blocks that ask you something instead of recording an answer.</value>
   </data>
   <data name="SettingsReflectionHint" xml:space="preserve">
-    <value>Three fields at the end of the day: triggers, gratitude, something for yourself.</value>
+    <value>Four fields at the end of the day: triggers, gratitude, something for yourself, something for others.</value>
   </data>
   <data name="SettingsFinanceTitle" xml:space="preserve">
     <value>FINANCES</value>
@@ -1831,9 +1966,6 @@
   <data name="FactorDailySpend" xml:space="preserve">
     <value>Money spent</value>
   </data>
-  <data name="FactorThemeFormat" xml:space="preserve">
-    <value>Theme: {0}</value>
-  </data>
   <data name="SettingsCurrencyLabel" xml:space="preserve">
     <value>Currency</value>
   </data>
@@ -1846,176 +1978,11 @@
   <data name="StatsInsightProgressHint" xml:space="preserve">
     <value>Links between your mood and sleep, habits, meals, tasks and spending appear once there is enough to compare.</value>
   </data>
-  <data name="SettingsTabAi" xml:space="preserve">
-    <value>AI</value>
-  </data>
-  <data name="AiSectionTitle" xml:space="preserve">
-    <value>ON-DEVICE AI</value>
-  </data>
-  <data name="AiEnableToggle" xml:space="preserve">
-    <value>Enable on-device AI</value>
-  </data>
-  <data name="AiIntro" xml:space="preserve">
-    <value>See what your months were about, get weekly summaries, and find out how what you wrote about tracks your mood. Everything runs on this device.</value>
-  </data>
-  <data name="AiNetworkNotice" xml:space="preserve">
-    <value>The only thing Diarion downloads is the model file itself. Your entries are never sent anywhere.</value>
-  </data>
-  <data name="AiDeviceHeader" xml:space="preserve">
-    <value>YOUR DEVICE</value>
-  </data>
-  <data name="AiDeviceSummaryFormat" xml:space="preserve">
-    <value>{0} RAM · {1} free</value>
-  </data>
-  <data name="AiTierLow" xml:space="preserve">
-    <value>Search and summaries</value>
-  </data>
-  <data name="AiTierMid" xml:space="preserve">
-    <value>Search, summaries and chat</value>
-  </data>
-  <data name="AiTierHigh" xml:space="preserve">
-    <value>Everything, including larger models</value>
-  </data>
-  <data name="AiTierEmbeddingsOnly" xml:space="preserve">
-    <value>Themes and summaries — 123 MB, runs on any device</value>
-  </data>
-  <data name="AiModelsHeader" xml:space="preserve">
-    <value>MODELS</value>
-  </data>
-  <data name="AiRecommendedBadge" xml:space="preserve">
-    <value>recommended</value>
-  </data>
-  <data name="AiModelTooLargeForDevice" xml:space="preserve">
-    <value>Not enough memory on this device</value>
-  </data>
-  <data name="AiDownloadAction" xml:space="preserve">
-    <value>Download</value>
-  </data>
-  <data name="AiResumeAction" xml:space="preserve">
-    <value>Resume</value>
-  </data>
-  <data name="AiDeleteAction" xml:space="preserve">
-    <value>Delete</value>
-  </data>
-  <data name="AiCancelAction" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-  <data name="AiRetryAction" xml:space="preserve">
-    <value>Try again</value>
-  </data>
-  <data name="AiStateNotInstalled" xml:space="preserve">
-    <value>Not downloaded</value>
-  </data>
-  <data name="AiStateDownloading" xml:space="preserve">
-    <value>Downloading</value>
-  </data>
-  <data name="AiStateInstalled" xml:space="preserve">
-    <value>Ready</value>
-  </data>
-  <data name="AiStateCorrupt" xml:space="preserve">
-    <value>Damaged — download again</value>
-  </data>
-  <data name="AiStateInterrupted" xml:space="preserve">
-    <value>Interrupted — resume to finish</value>
-  </data>
-  <data name="AiDownloadFailed" xml:space="preserve">
-    <value>Download failed. Check the connection and try again.</value>
-  </data>
-  <data name="AiDownloadWifiOnlyStopped" xml:space="preserve">
-    <value>Stopped: Wi-Fi is gone. Downloaded files are kept — resume once you are back on Wi-Fi.</value>
-  </data>
-  <data name="AiMobileDataTitle" xml:space="preserve">
-    <value>You are on mobile data</value>
-  </data>
-  <data name="AiMobileDataConfirmFormat" xml:space="preserve">
-    <value>This model is {0} and will be downloaded over your mobile data allowance. Download anyway?</value>
-  </data>
-  <data name="AiMobileDataDownloadAnyway" xml:space="preserve">
-    <value>Download anyway</value>
-  </data>
-  <data name="AiWifiOnlyToggle" xml:space="preserve">
-    <value>Download over Wi-Fi only</value>
-  </data>
-  <data name="AiKeepOpenNotice" xml:space="preserve">
-    <value>Keep the app open while the model downloads.</value>
-  </data>
-  <data name="AiBackgroundNotice" xml:space="preserve">
-    <value>You can leave the app — the download continues in the background.</value>
-  </data>
-  <data name="AiStateVerifying" xml:space="preserve">
-    <value>Verifying</value>
-  </data>
-  <data name="AiDownloadOfFormat" xml:space="preserve">
-    <value>{0} of {1}</value>
-  </data>
-  <data name="AiDownloadRateFormat" xml:space="preserve">
-    <value>{0}/s</value>
-  </data>
-  <data name="AiDownloadEtaFormat" xml:space="preserve">
-    <value>~{0} left</value>
-  </data>
-  <data name="AiDownloadNotificationChannel" xml:space="preserve">
-    <value>Model downloads</value>
-  </data>
-  <data name="AiDownloadNotificationChannelDescription" xml:space="preserve">
-    <value>Progress of on-device AI model downloads.</value>
-  </data>
-  <data name="AiDownloadNotificationTitle" xml:space="preserve">
-    <value>Downloading AI model</value>
-  </data>
-  <data name="AiIndexHeader" xml:space="preserve">
-    <value>INDEX</value>
-  </data>
-  <data name="AiIndexIdle" xml:space="preserve">
-    <value>Not started</value>
-  </data>
-  <data name="AiIndexScanning" xml:space="preserve">
-    <value>Checking what changed</value>
-  </data>
-  <data name="AiIndexEmbeddingFormat" xml:space="preserve">
-    <value>Reading your entries — {0} of {1}</value>
-  </data>
-  <data name="AiIndexComplete" xml:space="preserve">
-    <value>Up to date</value>
-  </data>
-  <data name="AiIndexCancelled" xml:space="preserve">
-    <value>Paused</value>
-  </data>
-  <data name="AiIndexChunksFormat" xml:space="preserve">
-    <value>{0} fragments indexed</value>
-  </data>
-  <data name="AiIndexRebuildAction" xml:space="preserve">
-    <value>Rebuild index</value>
-  </data>
-  <data name="AiIndexClearAction" xml:space="preserve">
-    <value>Delete index</value>
-  </data>
-  <data name="AiIndexClearConfirm" xml:space="preserve">
-    <value>Delete the search index? Your entries are not affected — it can be rebuilt.</value>
-  </data>
-  <data name="UnitByte" xml:space="preserve">
-    <value>B</value>
-  </data>
-  <data name="UnitKilobyte" xml:space="preserve">
-    <value>KB</value>
-  </data>
-  <data name="UnitMegabyte" xml:space="preserve">
-    <value>MB</value>
-  </data>
-  <data name="UnitGigabyte" xml:space="preserve">
-    <value>GB</value>
-  </data>
-  <data name="UnitTerabyte" xml:space="preserve">
-    <value>TB</value>
-  </data>
   <data name="SearchTitle" xml:space="preserve">
     <value>Search</value>
   </data>
   <data name="SearchPlaceholder" xml:space="preserve">
     <value>What are you looking for?</value>
-  </data>
-  <data name="SearchHintPhrase" xml:space="preserve">
-    <value>A phrase works better than a single word — the model reads sentences.</value>
   </data>
   <data name="SearchScopeAll" xml:space="preserve">
     <value>Everything</value>
@@ -2025,12 +1992,6 @@
   </data>
   <data name="SearchScopeNotes" xml:space="preserve">
     <value>Notes</value>
-  </data>
-  <data name="SearchNoResults" xml:space="preserve">
-    <value>Nothing found</value>
-  </data>
-  <data name="SearchLexicalOnlyNotice" xml:space="preserve">
-    <value>Searching words only. Turn on AI in settings to search by meaning.</value>
   </data>
   <data name="SearchResultsCountFormat" xml:space="preserve">
     <value>{0} found</value>
@@ -2043,45 +2004,6 @@
   </data>
   <data name="QuickMenuSearch" xml:space="preserve">
     <value>Search</value>
-  </data>
-  <data name="StatsDigestHeader" xml:space="preserve">
-    <value>WHAT THIS PERIOD WAS ABOUT</value>
-  </data>
-  <data name="StatsDigestHint" xml:space="preserve">
-    <value>Your own words, picked as the most typical of the period — nothing here is generated.</value>
-  </data>
-  <data name="StatsThemesHeader" xml:space="preserve">
-    <value>RECURRING THEMES</value>
-  </data>
-  <data name="StatsThemeDaysFormat" xml:space="preserve">
-    <value>{0} days</value>
-  </data>
-  <data name="AiChatTitle" xml:space="preserve">
-    <value>Ask your diary</value>
-  </data>
-  <data name="AiChatPlaceholder" xml:space="preserve">
-    <value>Ask about your entries…</value>
-  </data>
-  <data name="AiChatIntro" xml:space="preserve">
-    <value>Answers come only from what you wrote, with the entries they came from shown underneath.</value>
-  </data>
-  <data name="AiChatUnavailable" xml:space="preserve">
-    <value>No chat model is installed. You can add one in Settings → AI.</value>
-  </data>
-  <data name="AiChatNothingRelevant" xml:space="preserve">
-    <value>I did not find entries to answer this from.</value>
-  </data>
-  <data name="AiChatUngrounded" xml:space="preserve">
-    <value>I could not answer this from your entries without guessing, so I would rather not.</value>
-  </data>
-  <data name="AiChatSourcesLabel" xml:space="preserve">
-    <value>Sources</value>
-  </data>
-  <data name="AiChatStop" xml:space="preserve">
-    <value>Stop</value>
-  </data>
-  <data name="QuickMenuAiChat" xml:space="preserve">
-    <value>Ask diary</value>
   </data>
   <data name="SnapshotPreviewTitle" xml:space="preserve">
     <value>What would be sent</value>
@@ -2124,5 +2046,371 @@
   </data>
   <data name="CycleAgeHint" xml:space="preserve">
     <value>The cycle calendar is available from age 14. Set your date of birth above to see it.</value>
+  </data>
+  <data name="PaywallTitle" xml:space="preserve">
+    <value>Diarion, all of it</value>
+  </data>
+  <data name="PaywallSubtitle" xml:space="preserve">
+    <value>Diary, habits, planner, notes, finances, cycle and statistics. Your entries stay on your phone only.</value>
+  </data>
+  <data name="PaywallMonthlyTitle" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="PaywallYearlyTitle" xml:space="preserve">
+    <value>Yearly</value>
+  </data>
+  <data name="PaywallPricePerMonthFormat" xml:space="preserve">
+    <value>{0} / month</value>
+  </data>
+  <data name="PaywallPricePerYearFormat" xml:space="preserve">
+    <value>{0} / year</value>
+  </data>
+  <data name="PaywallDiscountFormat" xml:space="preserve">
+    <value>Save {0}%</value>
+  </data>
+  <data name="PaywallTrialFormat" xml:space="preserve">
+    <value>{0} free, then {1}</value>
+  </data>
+  <data name="PaywallTrialDayOne" xml:space="preserve">
+    <value>{0} day</value>
+  </data>
+  <data name="PaywallTrialDayFew" xml:space="preserve">
+    <value>{0} days</value>
+  </data>
+  <data name="PaywallTrialDayMany" xml:space="preserve">
+    <value>{0} days</value>
+  </data>
+  <data name="PaywallTrialMonthFormat" xml:space="preserve">
+    <value>{0} mo</value>
+  </data>
+  <data name="PaywallTrialYearFormat" xml:space="preserve">
+    <value>{0} yr</value>
+  </data>
+  <data name="PaywallStartTrialButton" xml:space="preserve">
+    <value>Start free trial</value>
+  </data>
+  <data name="PaywallSubscribeButton" xml:space="preserve">
+    <value>Subscribe</value>
+  </data>
+  <data name="PaywallRestoreButton" xml:space="preserve">
+    <value>Restore purchases</value>
+  </data>
+  <data name="PaywallLaterButton" xml:space="preserve">
+    <value>Not now</value>
+  </data>
+  <data name="PaywallTermsLink" xml:space="preserve">
+    <value>Terms of Use</value>
+  </data>
+  <data name="PaywallPrivacyLink" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="PaywallAutoRenewNotice" xml:space="preserve">
+    <value>The subscription renews automatically until you cancel it. Cancel any time in your Apple ID settings at least 24 hours before the end of the period. If a free trial is not cancelled, payment is taken when it ends.</value>
+  </data>
+  <data name="PaywallDataPromise" xml:space="preserve">
+    <value>If the subscription ends, everything you wrote stays available to read, back up and export.</value>
+  </data>
+  <data name="PaywallPendingMessage" xml:space="preserve">
+    <value>The purchase is waiting for approval. Access opens as soon as Apple confirms it.</value>
+  </data>
+  <data name="PaywallRestoreNothingFound" xml:space="preserve">
+    <value>No active subscription was found for this Apple ID.</value>
+  </data>
+  <data name="PaywallStoreUnavailable" xml:space="preserve">
+    <value>The App Store is not available right now. Please try again later.</value>
+  </data>
+  <data name="PaywallPurchaseFailedFormat" xml:space="preserve">
+    <value>The purchase did not go through: {0}</value>
+  </data>
+  <data name="SubscriptionSectionTitle" xml:space="preserve">
+    <value>Subscription</value>
+  </data>
+  <data name="SubscriptionStatusLegacy" xml:space="preserve">
+    <value>You have been with us since the first version: free until {0}, then a subscription.</value>
+  </data>
+  <data name="SubscriptionStatusTrialFormat" xml:space="preserve">
+    <value>Free trial until {0}</value>
+  </data>
+  <data name="SubscriptionStatusRenewsFormat" xml:space="preserve">
+    <value>Active, renews on {0}</value>
+  </data>
+  <data name="SubscriptionStatusEndsFormat" xml:space="preserve">
+    <value>Active until {0}, will not renew</value>
+  </data>
+  <data name="SubscriptionStatusGraceFormat" xml:space="preserve">
+    <value>Apple could not take the payment. Access is kept until {0}.</value>
+  </data>
+  <data name="SubscriptionStatusReadOnly" xml:space="preserve">
+    <value>No subscription. Your entries are available to read, back up and export.</value>
+  </data>
+  <data name="SubscriptionStatusUnavailable" xml:space="preserve">
+    <value>No subscription is needed on this device: everything is available.</value>
+  </data>
+  <data name="SubscriptionManageButton" xml:space="preserve">
+    <value>Manage subscription</value>
+  </data>
+  <data name="SubscriptionSupportButton" xml:space="preserve">
+    <value>Support with a subscription</value>
+  </data>
+  <data name="ReadOnlyBannerText" xml:space="preserve">
+    <value>The subscription has ended: entries are read-only.</value>
+  </data>
+  <data name="ReadOnlyBannerButton" xml:space="preserve">
+    <value>Renew</value>
+  </data>
+  <data name="ReadOnlyBannerNewText" xml:space="preserve">
+    <value>Your entries are read-only for now. Subscribe to write.</value>
+  </data>
+  <data name="ReadOnlyBannerNewButton" xml:space="preserve">
+    <value>Subscribe</value>
+  </data>
+  <data name="LegacyWelcomeTitle" xml:space="preserve">
+    <value>Thank you for being with us since the first version</value>
+  </data>
+  <data name="LegacyWelcomeText" xml:space="preserve">
+    <value>Diarion is now paid. As a first-version user you keep everything free for three more months — until {0}. After that, writing takes a subscription; reading, backup and export stay open always.</value>
+  </data>
+  <data name="LegacyWelcomeDismiss" xml:space="preserve">
+    <value>Got it</value>
+  </data>
+  <data name="EmptyStateNotesTitle" xml:space="preserve">
+    <value>No notes yet</value>
+  </data>
+  <data name="EmptyStateNotesHint" xml:space="preserve">
+    <value>Create the first one, and it will appear here.</value>
+  </data>
+  <data name="EmptyStateHabitsTitle" xml:space="preserve">
+    <value>No trackers yet</value>
+  </data>
+  <data name="EmptyStateHabitsHint" xml:space="preserve">
+    <value>Create the first one, and the days you mark will show up here.</value>
+  </data>
+  <data name="EmptyStatePromptsTitle" xml:space="preserve">
+    <value>No answers yet</value>
+  </data>
+  <data name="EmptyStatePromptsHint" xml:space="preserve">
+    <value>Answer the question of the day, and it will appear here.</value>
+  </data>
+  <data name="EmptyStateCycleTitle" xml:space="preserve">
+    <value>Nothing recorded yet</value>
+  </data>
+  <data name="EmptyStateCycleHint" xml:space="preserve">
+    <value>Record a period with the “+ Period” chip in the Health block on the home screen, and the history and forecast will appear here.</value>
+  </data>
+  <data name="EmptyStateMoodTitle" xml:space="preserve">
+    <value>No mood for this period</value>
+  </data>
+  <data name="EmptyStateMoodHint" xml:space="preserve">
+    <value>Mark your mood in the day's entry, and the emotions and hours will appear here.</value>
+  </data>
+  <data name="EmptyStateSleepTitle" xml:space="preserve">
+    <value>No sleep for this period</value>
+  </data>
+  <data name="EmptyStateSleepHint" xml:space="preserve">
+    <value>Log your sleep in the day's entry, and the duration and quality will appear here.</value>
+  </data>
+  <data name="EmptyStateProductivityTitle" xml:space="preserve">
+    <value>No tasks for this period</value>
+  </data>
+  <data name="EmptyStateProductivityHint" xml:space="preserve">
+    <value>Add tasks in the planner, and the days you complete them will appear here.</value>
+  </data>
+  <data name="EmptyStateSearchTitle" xml:space="preserve">
+    <value>Nothing found</value>
+  </data>
+  <data name="EmptyStateSearchHint" xml:space="preserve">
+    <value>Try another word or a shorter query.</value>
+  </data>
+  <data name="TabReview" xml:space="preserve">
+    <value>Review</value>
+  </data>
+  <data name="ReviewVersusFormat" xml:space="preserve">
+    <value>vs {0}</value>
+  </data>
+  <data name="ReviewHint" xml:space="preserve">
+    <value>Compared with the period of the same length just before it. Nothing leaves the phone.</value>
+  </data>
+  <data name="ReviewDaysWritten" xml:space="preserve">
+    <value>Days written</value>
+  </data>
+  <data name="ReviewMood" xml:space="preserve">
+    <value>Mood</value>
+  </data>
+  <data name="ReviewSleep" xml:space="preserve">
+    <value>Sleep</value>
+  </data>
+  <data name="ReviewHabits" xml:space="preserve">
+    <value>Habits</value>
+  </data>
+  <data name="ReviewTasks" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="ReviewExpense" xml:space="preserve">
+    <value>Spent</value>
+  </data>
+  <data name="ReviewOfFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="ReviewNoChange" xml:space="preserve">
+    <value>no change</value>
+  </data>
+  <data name="ReviewNoPrevious" xml:space="preserve">
+    <value>nothing to compare with</value>
+  </data>
+  <data name="ReviewNoData" xml:space="preserve">
+    <value>not logged</value>
+  </data>
+  <data name="ReviewNoValue" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="ReviewHabitsHeader" xml:space="preserve">
+    <value>HABITS THIS PERIOD</value>
+  </data>
+  <data name="ReviewTopEmotionFormat" xml:space="preserve">
+    <value>Most often: {0}</value>
+  </data>
+  <data name="EmptyStateReviewTitle" xml:space="preserve">
+    <value>Nothing to compare yet</value>
+  </data>
+  <data name="EmptyStateReviewHint" xml:space="preserve">
+    <value>Write a few days and this tab will show what changed against the period before.</value>
+  </data>
+  <data name="AutoBackupTitle" xml:space="preserve">
+    <value>AUTOMATIC COPIES</value>
+  </data>
+  <data name="AutoBackupDescription" xml:space="preserve">
+    <value>A passphrase-protected copy is saved on this phone every day when you open the app: in Files → On My iPhone → Diarion, or in Downloads on Android. To keep the copies in iCloud Drive or Google Drive instead, change the folder. Restore one with the Restore button above.</value>
+  </data>
+  <data name="AutoBackupUnsupported" xml:space="preserve">
+    <value>Not available on this platform.</value>
+  </data>
+  <data name="AutoBackupEnableLabel" xml:space="preserve">
+    <value>Keep copies automatically</value>
+  </data>
+  <data name="AutoBackupFolderFormat" xml:space="preserve">
+    <value>Folder: {0}</value>
+  </data>
+  <data name="AutoBackupNoFolder" xml:space="preserve">
+    <value>No folder chosen</value>
+  </data>
+  <data name="AutoBackupIntervalLabel" xml:space="preserve">
+    <value>How often</value>
+  </data>
+  <data name="AutoBackupIntervalDaily" xml:space="preserve">
+    <value>Every day</value>
+  </data>
+  <data name="AutoBackupIntervalDaysFormat" xml:space="preserve">
+    <value>Every {0} days</value>
+  </data>
+  <data name="AutoBackupLastRunFormat" xml:space="preserve">
+    <value>Last copy: {0}</value>
+  </data>
+  <data name="AutoBackupNeverRun" xml:space="preserve">
+    <value>No copies yet. The first one is made as soon as this is switched on.</value>
+  </data>
+  <data name="AutoBackupRunNow" xml:space="preserve">
+    <value>Back up now</value>
+  </data>
+  <data name="AutoBackupChangeFolder" xml:space="preserve">
+    <value>Change folder</value>
+  </data>
+  <data name="AutoBackupPassphrasePrompt" xml:space="preserve">
+    <value>Choose a passphrase for the automatic copies. You will need it to restore one; the app cannot recover it for you.</value>
+  </data>
+  <data name="AutoBackupPassphraseConfirm" xml:space="preserve">
+    <value>Repeat the passphrase.</value>
+  </data>
+  <data name="AutoBackupPassphraseMismatch" xml:space="preserve">
+    <value>The two entries differ. Nothing was changed.</value>
+  </data>
+  <data name="AutoBackupOutcomeSuccess" xml:space="preserve">
+    <value>Copy saved.</value>
+  </data>
+  <data name="AutoBackupOutcomeFolderUnavailable" xml:space="preserve">
+    <value>The folder is no longer reachable. Choose it again.</value>
+  </data>
+  <data name="AutoBackupOutcomeNoPassphrase" xml:space="preserve">
+    <value>The passphrase is gone from secure storage. Switch the copies off and on again to set a new one.</value>
+  </data>
+  <data name="AutoBackupOutcomeFailed" xml:space="preserve">
+    <value>The copy could not be made. Nothing was changed.</value>
+  </data>
+  <data name="AutoBackupKeepHint" xml:space="preserve">
+    <value>The five newest copies stay in the folder; older ones are removed.</value>
+  </data>
+  <data name="SpokenReminderPhrase" xml:space="preserve">
+    <value>Reminder: {0}</value>
+  </data>
+  <data name="SpokenReminderEmpty" xml:space="preserve">
+    <value>Reminder</value>
+  </data>
+  <data name="VoiceReminderLabel" xml:space="preserve">
+    <value>Read aloud</value>
+  </data>
+  <data name="VoiceReminderHint" xml:space="preserve">
+    <value>The device reads the task out loud when the reminder arrives. Nothing leaves the phone.</value>
+  </data>
+  <data name="VoiceMissingTitle" xml:space="preserve">
+    <value>No voice for this language</value>
+  </data>
+  <data name="VoiceMissingMessage" xml:space="preserve">
+    <value>This device has no voice for the app's language, so the reminder will be read in the system voice. Voices can be added in the system settings.</value>
+  </data>
+  <data name="AutoBackupDeviceFolderIos" xml:space="preserve">
+    <value>On My iPhone → Diarion → Backups</value>
+  </data>
+  <data name="AutoBackupDeviceFolderAndroid" xml:space="preserve">
+    <value>Downloads → Diarion</value>
+  </data>
+  <data name="AutoBackupUseDevice" xml:space="preserve">
+    <value>Keep on the phone</value>
+  </data>
+  <data name="ReviewMoodRough" xml:space="preserve">
+    <value>Rough</value>
+  </data>
+  <data name="ReviewMoodLow" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="ReviewMoodSteady" xml:space="preserve">
+    <value>Steady</value>
+  </data>
+  <data name="ReviewMoodGood" xml:space="preserve">
+    <value>Good</value>
+  </data>
+  <data name="ReviewMoodGreat" xml:space="preserve">
+    <value>Great</value>
+  </data>
+  <data name="ReviewMoodBetter" xml:space="preserve">
+    <value>▲ better</value>
+  </data>
+  <data name="ReviewMoodSlightlyBetter" xml:space="preserve">
+    <value>▲ a little better</value>
+  </data>
+  <data name="ReviewMoodWorse" xml:space="preserve">
+    <value>▼ worse</value>
+  </data>
+  <data name="ReviewMoodSlightlyWorse" xml:space="preserve">
+    <value>▼ a little worse</value>
+  </data>
+  <data name="QuickNoteLabel" xml:space="preserve">
+    <value>QUICK NOTE:</value>
+  </data>
+  <data name="QuickNotePlaceholder" xml:space="preserve">
+    <value>A thought, an idea, a list — it goes to Notes</value>
+  </data>
+  <data name="QuickNoteSend" xml:space="preserve">
+    <value>Send to Notes</value>
+  </data>
+  <data name="QuickNoteSaved" xml:space="preserve">
+    <value>Saved to Notes</value>
+  </data>
+  <data name="PaywallQuarterlyTitle" xml:space="preserve">
+    <value>3 months</value>
+  </data>
+  <data name="PaywallPricePerQuarterFormat" xml:space="preserve">
+    <value>{0} / 3 months</value>
+  </data>
+  <data name="ReadOnlyBannerLegacyEndedText" xml:space="preserve">
+    <value>The three free months for first-version users have ended: your entries are read-only now.</value>
   </data>
 </root>

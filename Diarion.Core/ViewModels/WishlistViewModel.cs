@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -94,7 +95,7 @@ public partial class WishlistViewModel : BaseViewModel
         entry.WantText = NewWantText.Trim();
         entry.Date = NewDate.Date;
 
-        await _wishlistService.SaveWishlistEntryAsync(entry);
+        if (!await WriteGate.TryAsync(() => _wishlistService.SaveWishlistEntryAsync(entry))) return;
         
         CloseForm();
         await LoadAsync();
@@ -106,7 +107,7 @@ public partial class WishlistViewModel : BaseViewModel
         if (entry == null) return;
 
         entry.IsCompleted = !entry.IsCompleted;
-        await _wishlistService.SaveWishlistEntryAsync(entry);
+        if (!await WriteGate.TryAsync(() => _wishlistService.SaveWishlistEntryAsync(entry))) return;
         await LoadAsync();
     }
 
@@ -123,7 +124,7 @@ public partial class WishlistViewModel : BaseViewModel
 
         if (confirm)
         {
-            await _wishlistService.DeleteWishlistEntryAsync(entry.Id);
+            if (!await WriteGate.TryAsync(() => _wishlistService.DeleteWishlistEntryAsync(entry.Id))) return;
             Entries.Remove(entry);
         }
     }

@@ -12,6 +12,7 @@ using Diarion.Models;
 using Diarion.Services;
 using Diarion.Core.Services;
 using Diarion.Helpers;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -24,6 +25,7 @@ public partial class MainViewModel : BaseViewModel
     private readonly IHealthDataService _healthDataService;
     private readonly IProfileService _profileService;
     private readonly IGuidedPromptService _guidedPromptService;
+    private readonly IMoodIconSetService _moodIconSets;
 
     // Read once and reused across day loads; the library only changes when the user edits it.
     private PromptLibrary? _promptLibrary;
@@ -36,6 +38,9 @@ public partial class MainViewModel : BaseViewModel
 
     /// <summary>The first-run coach marks over this screen. Idle until the page starts it.</summary>
     public TourViewModel Tour { get; }
+
+    /// <summary>The note field at the foot of the day; what it takes goes to Notes, not to the day.</summary>
+    public QuickNoteViewModel QuickNote { get; }
 
     [ObservableProperty]
     private DiaryEntryViewModel? _currentEntry;
@@ -56,9 +61,36 @@ public partial class MainViewModel : BaseViewModel
     protected override void OnBusyStateChanged() => OnPropertyChanged(nameof(IsLoading));
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsStreakLong))]
     private int _currentStreak;
 
     public bool IsStreakVisible => CurrentStreak > 0;
+
+    /// <summary>
+    /// Three digits and up. The tile is 50 points wide and the count has no upper limit, so from 100 on
+    /// the number is set a size smaller rather than being cut — a run that long is the last one to hide.
+    /// </summary>
+    public bool IsStreakLong => CurrentStreak >= 100;
+
+    /// <summary>
+    /// The picture over the count: a sprout in spring, a sun in summer, a yellow leaf in autumn, a
+    /// snowflake in winter (owner, 2026-10-23). Read from today's date when the streak is counted, so the
+    /// tile turns with the season on its own.
+    /// </summary>
+    [ObservableProperty]
+    private Season _streakSeason = SeasonCalendar.Of(DateTime.Today);
+
+    public Microsoft.Maui.Controls.Shapes.Geometry StreakIcon => Diarion.Resources.Icons.AppIcons.ForSeason(StreakSeason);
+
+    partial void OnStreakSeasonChanged(Season value) => OnPropertyChanged(nameof(StreakIcon));
+
+    /// <summary>The run is alive only thanks to forgiven days (streak settings); the tile marks it, as statistics does.</summary>
+    [ObservableProperty]
+    private bool _isStreakHeldByGrace;
+
+    /// <summary>What a screen reader says for the streak tile.</summary>
+    [ObservableProperty]
+    private string _streakAccessibleText = string.Empty;
 
     [ObservableProperty]
     private bool _isPlannerMode;
@@ -81,7 +113,9 @@ public partial class MainViewModel : BaseViewModel
         QuickMenuViewModel quickMenuSection,
         HabitsSectionViewModel habitsSection,
         CycleStatusViewModel cycleStatusSection,
-        TourViewModel tour)
+        TourViewModel tour,
+        IMoodIconSetService moodIconSets,
+        QuickNoteViewModel quickNote)
     {
         using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
@@ -91,6 +125,7 @@ public partial class MainViewModel : BaseViewModel
         _healthDataService = healthDataService;
         _profileService = profileService;
         _guidedPromptService = guidedPromptService;
+        _moodIconSets = moodIconSets;
 
         CalendarSection = calendarSection;
         PlannerSection = plannerSection;
@@ -98,6 +133,7 @@ public partial class MainViewModel : BaseViewModel
         HabitsSection = habitsSection;
         CycleStatusSection = cycleStatusSection;
         Tour = tour;
+        QuickNote = quickNote;
 
         Title = Diarion.Resources.Localization.AppResources.MyEntriesTitle;
 
@@ -111,6 +147,14 @@ public partial class MainViewModel : BaseViewModel
             _ = CalendarSection.UpdateCalendarTasksForDayAsync(m.Date);
         });
 
+        // The streak counts days with something written, and the day's autosave is what usually turns today
+        // into one; the tile at the top must move then, not on the next visit.
+        WeakReferenceMessenger.Default.Register<DocumentChangedMessage>(this, (r, m) =>
+        {
+            if (m.SourceKind == DocumentKind.Diary)
+                _ = ((MainViewModel)r).UpdateStreakAsync();
+        });
+
         WeakReferenceMessenger.Default.Register<PromptLibraryChangedMessage>(this, (r, m) =>
         {
             _promptLibrary = null;
@@ -120,10 +164,35 @@ public partial class MainViewModel : BaseViewModel
         {
             // Marking one day moves every later prediction, so the whole grid is repainted, not that cell.
             _ = CalendarSection.UpdateCalendarTasksCompletionAsync();
+
+            // A period recorded from the health block's own panel changes the day shown right here;
+            // there is no page to come back from that would reload it.
+            _ = ((MainViewModel)r).RefreshCycleDayAsync();
+        });
+
+        // The faces' picture set was changed in settings: the day already open redraws them now.
+        WeakReferenceMessenger.Default.Register<MoodIconSetChangedMessage>(this, (r, m) =>
+        {
+            if (((MainViewModel)r).CurrentEntry is { } entry) entry.IconSet = m.Set;
         });
 
         CalendarSection.Initialize();
         QuickMenuSection.Initialize();
+    }
+
+    /// <summary>
+    /// Recounts the cycle day of the day on screen, after a period was recorded or removed. The number
+    /// is ours, not the user's, so changing it schedules no save (see <see cref="NonPersistedProperties"/>).
+    /// </summary>
+    public async Task RefreshCycleDayAsync()
+    {
+        if (CurrentEntry is not { } entry) return;
+
+        await CycleStatusSection.UpdateForDateAsync(entry.Date);
+
+        // The user may have moved to another day while the count ran; that day has its own.
+        if (!ReferenceEquals(CurrentEntry, entry)) return;
+        entry.CycleDay = CycleStatusSection.IsVisible ? CycleStatusSection.CycleDay : string.Empty;
     }
 
     [RelayCommand]
@@ -205,9 +274,33 @@ public partial class MainViewModel : BaseViewModel
         nameof(IsBusy),
         nameof(DiaryEntryViewModel.SelectedHour),
         nameof(DiaryEntryViewModel.IsHourSelected),
-        nameof(DiaryEntryViewModel.IsHourlyExpanded),
         nameof(DiaryEntryViewModel.CurrentMood),
+
+        // Counted from the recorded periods, never typed: a recount after recording a period on this
+        // screen must not persist an otherwise untouched day (the same rule LoadDayContentAsync keeps
+        // by holding IsBusy). It is written with the entry whenever the user does change something.
+        nameof(DiaryEntryViewModel.CycleDay),
+        nameof(DiaryEntryViewModel.HasCycleDay),
         nameof(HourMoodViewModel.IsSelected),
+
+        // The mood row's own state (spec 18): which face is lit, what the caption says, whether a
+        // bubble is out and where it points. Raised on hour changes and taps that write nothing.
+        nameof(DiaryEntryViewModel.CurrentQuadrant),
+        nameof(DiaryEntryViewModel.HasRefinements),
+        nameof(DiaryEntryViewModel.IsRefinementOpen),
+        nameof(DiaryEntryViewModel.SelectedColumn),
+        nameof(DiaryEntryViewModel.HasCurrentMood),
+        nameof(DiaryEntryViewModel.CurrentMoodName),
+        nameof(DiaryEntryViewModel.CurrentColorKey),
+        nameof(DiaryEntryViewModel.CurrentEmoji),
+        nameof(DiaryEntryViewModel.IconSet),
+        nameof(DiaryEntryViewModel.IsHourPickerOpen),
+        nameof(DiaryEntryViewModel.LoggedHourCount),
+        nameof(DiaryEntryViewModel.HourChipText),
+        nameof(DiaryEntryViewModel.HourChipBadge),
+        nameof(DiaryEntryViewModel.HasHourChipBadge),
+        nameof(DiaryEntryViewModel.IsHourChipFilled),
+        nameof(DiaryEntryViewModel.HourChipFillColorKey),
     };
 
     private void OnEntryPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -230,7 +323,7 @@ public partial class MainViewModel : BaseViewModel
         _autoSaveDebouncer.Debounce(async () =>
         {
             entry.SyncToModel();
-            await _diaryService.SaveEntryAsync(entry.Model);
+            if (!await WriteGate.TryAsync(() => _diaryService.SaveEntryAsync(entry.Model))) return;
             System.Diagnostics.Debug.WriteLine($"Auto-saved entry for {entry.Date:dd.MM.yyyy}");
         });
     }
@@ -285,7 +378,10 @@ public partial class MainViewModel : BaseViewModel
         using var _ = StartupTrace.Measure("MainViewModel.LoadEntriesForDateAsync");
         var entry = await _diaryService.GetEntryForDateAsync(date.Date);
         await _diaryHabitSyncService.SyncHabitsForEntryAsync(entry);
-        CurrentEntry = new DiaryEntryViewModel(entry, await EnsurePromptLibraryAsync());
+        CurrentEntry = new DiaryEntryViewModel(entry, await EnsurePromptLibraryAsync())
+        {
+            IconSet = _moodIconSets.Current
+        };
     }
 
     private async Task<PromptLibrary> EnsurePromptLibraryAsync()
@@ -327,7 +423,7 @@ public partial class MainViewModel : BaseViewModel
         try
         {
             CurrentEntry.SyncToModel();
-            await _diaryService.SaveEntryAsync(CurrentEntry.Model);
+            if (!await WriteGate.TryAsync(() => _diaryService.SaveEntryAsync(CurrentEntry.Model))) return;
             await UpdateStreakAsync();
         }
         catch (Exception ex)
@@ -370,9 +466,17 @@ public partial class MainViewModel : BaseViewModel
 
     private async Task UpdateStreakAsync()
     {
-        CurrentStreak = (await _diaryService.GetCurrentStreakAsync()).Length;
+        var streak = await _diaryService.GetCurrentStreakAsync();
+        StreakSeason = SeasonCalendar.Of(DateTime.Today);
+        CurrentStreak = streak.Length;
+        IsStreakHeldByGrace = streak.HeldByGrace;
+        StreakAccessibleText = string.Format(Diarion.Resources.Localization.AppResources.StreakTileAccessibleFormat, streak.Length);
         OnPropertyChanged(nameof(IsStreakVisible));
     }
+
+    /// <summary>The streak tile opens the statistics, where the days themselves are shown.</summary>
+    [RelayCommand]
+    private Task OpenStatisticsAsync() => _navigationService.NavigateToAsync("//StatisticsPage");
 
     [RelayCommand]
     public void OpenMenu()
@@ -385,6 +489,7 @@ public partial class MainViewModel : BaseViewModel
     {
         await _navigationService.NavigateToAsync("DiaryDetail");
     }
+
 
     [RelayCommand]
     public async Task GoToNewTodoAsync()

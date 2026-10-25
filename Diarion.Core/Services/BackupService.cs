@@ -49,15 +49,53 @@ public class BackupService : IBackupService
 
             CleanupOldTempBackups();
 
-            var salt = BackupKeyDeriver.NewSalt();
-            var iterations = BackupKeyDeriver.CurrentIterations;
-            var backupKey = BackupKeyDeriver.DeriveKey(passphrase, salt, iterations);
-
             var stamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var reencryptedPath = Path.Combine(_fileSystem.CacheDirectory, $"{BackupFilePrefix}{stamp}.tmp");
             var outputPath = Path.Combine(
                 _fileSystem.CacheDirectory,
                 $"{BackupFilePrefix}{stamp}{PortableBackupFile.FileExtension}");
+
+            var written = await WritePortableBackupAsync(passphrase, outputPath);
+            if (written != BackupOutcome.Success)
+            {
+                return written;
+            }
+
+            await _shareService.ShareFileAsync("Diarion Backup", outputPath);
+            return BackupOutcome.Success;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Export Backup Error: {ex.Message}");
+            return BackupOutcome.Failed;
+        }
+    }
+
+    public Task<BackupOutcome> WritePortableBackupAsync(string passphrase, string destinationPath)
+    {
+        if (string.IsNullOrEmpty(passphrase))
+        {
+            return Task.FromResult(BackupOutcome.Cancelled);
+        }
+
+        // Off the calling thread: re-encrypting the database is seconds of CPU on a large diary, and
+        // the scheduled caller runs this from a launch hook while the home screen is still drawing.
+        return Task.Run(() => WritePortableBackup(passphrase, destinationPath));
+    }
+
+    private BackupOutcome WritePortableBackup(string passphrase, string destinationPath)
+    {
+        var reencryptedPath = destinationPath + ".reencrypt.tmp";
+        try
+        {
+            var dbPath = _dbContext.DatabasePath;
+            if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
+            {
+                return BackupOutcome.Failed;
+            }
+
+            var salt = BackupKeyDeriver.NewSalt();
+            var iterations = BackupKeyDeriver.CurrentIterations;
+            var backupKey = BackupKeyDeriver.DeriveKey(passphrase, salt, iterations);
 
             // Close the DB so the on-disk file is fully checkpointed before it is read, then reopen.
             _dbContext.Close();
@@ -71,27 +109,24 @@ public class BackupService : IBackupService
                 _dbContext.Reopen();
             }
 
-            try
+            using (var payload = File.OpenRead(reencryptedPath))
+            using (var output = File.Create(destinationPath))
             {
-                using (var payload = File.OpenRead(reencryptedPath))
-                using (var output = File.Create(outputPath))
-                {
-                    PortableBackupFile.Write(output, salt, iterations, payload);
-                }
-            }
-            finally
-            {
-                // The intermediate carries the same data as the envelope and must not linger in cache.
-                SafeDelete(reencryptedPath);
+                PortableBackupFile.Write(output, salt, iterations, payload);
             }
 
-            await _shareService.ShareFileAsync("Diarion Backup", outputPath);
             return BackupOutcome.Success;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Export Backup Error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Portable backup write error: {ex.Message}");
+            SafeDelete(destinationPath);
             return BackupOutcome.Failed;
+        }
+        finally
+        {
+            // The intermediate carries the same data as the envelope and must not linger.
+            SafeDelete(reencryptedPath);
         }
     }
 

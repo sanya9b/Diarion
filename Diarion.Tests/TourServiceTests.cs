@@ -30,7 +30,6 @@ public class TourServiceTests
         steps.Select(s => s.Id).Should().Equal(
             TourStepId.StatsPeriod,
             TourStepId.StatsTabs,
-            TourStepId.StatsThemes,
             TourStepId.StatsInfluences);
     }
 

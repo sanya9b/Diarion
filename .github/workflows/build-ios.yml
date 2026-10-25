@@ -103,6 +103,15 @@ jobs:
       with:
         dotnet-version: '10.0.300' # Використовуємо поточний SDK, сумісний з iOS workload 26.5
 
+    # setup-dotnet ставить 10.0.300 поруч із тим, що вже є на образі, а без global.json dotnet бере
+    # найновіший SDK. У жовтні 2026 на образі з'явився 10.0.4xx — і разом із ним набір воркладів
+    # 10.0.401.1 з iOS 27.0, який вимагає Xcode 27, якого на раннері немає. global.json лише тут, а
+    # не в корені: ci.yml на Linux бере «найновіший 10.0.x» і з таким файлом не знайшов би SDK.
+    - name: Pin the .NET SDK band the iOS workload matches
+      run: |
+        dotnet new globaljson --sdk-version 10.0.300 --roll-forward latestPatch --force
+        dotnet --version
+
     - name: Restore required workloads
       run: dotnet workload restore Diarion.csproj --skip-manifest-update
 
@@ -137,6 +146,13 @@ jobs:
 
         echo "Identities available to codesign:"
         security find-identity -v -p codesigning "$KEYCHAIN"
+
+    # Swift-фасад над StoreKit 2 (spec 15, R3). Статична бібліотека, яку NativeReference у csproj
+    # лінкує в сам бінарник; бінарників у git немає, тож збирається тут щоразу — це хвилина. Повний
+    # цикл фасаду з тестами на симуляторі живе у swift-storekit.yml; тут лише те, без чого не
+    # збереться застосунок.
+    - name: Build the StoreKit facade
+      run: native/ios-storekit/build-xcframework.sh
 
     # Непідписаний шлях — рівно те, що тут було: перевірка, що воно збирається.
     - name: Publish unsigned app
@@ -174,6 +190,27 @@ jobs:
         fi
         echo "IPA_PATH=$IPA" >> $GITHUB_ENV
         echo "Built: $IPA"
+
+    # Spec 15, AC12: P/Invoke по __Internal мовчки впаде на телефоні, якщо лінкер викинув фасад або
+    # csproj його не побачив (умова Exists у NativeReference для Windows). Тому — по символах у
+    # готовому бінарнику, а не по логу збірки.
+    - name: StoreKit facade is linked into the binary
+      run: |
+        APP=$(find . -type d -name "Diarion.app" -path "*Release*" | head -n 1)
+        BIN="$APP/Diarion"
+        missing=0
+        for symbol in dsk_load_products dsk_purchase dsk_current_entitlements dsk_subscription_statuses                       dsk_sync dsk_app_transaction dsk_manage_subscriptions dsk_start_updates; do
+          if ! nm -g "$BIN" 2>/dev/null | grep -q " _${symbol}$"; then
+            echo "::error::Symbol _${symbol} is missing from $BIN"
+            missing=1
+          fi
+        done
+        if [ -d "$APP/Frameworks/DiarionStoreKit.framework" ]; then
+          echo "::error::DiarionStoreKit ended up as an embedded framework; it must be linked statically"
+          missing=1
+        fi
+        [ "$missing" = 0 ] && echo "all eight facade symbols are in the binary"
+        exit $missing
 
     # Те, що App Store Connect перевіряє у вкладених фреймворках, але збірка — ні. Перший аплоуд
     # 2026-09-20 упав саме тут: Info.plist фреймворку onnxruntime-genai без MinimumOSVersion і з

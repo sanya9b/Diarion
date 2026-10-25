@@ -192,6 +192,53 @@ public class PortableBackupTests : IDisposable
         restored.UserVersion.Should().Be(MigrationRunner.CurrentVersion);
     }
 
+    // ---- the writer on its own (what the scheduled backup calls) -----------
+
+    [Fact]
+    public async Task Write_portable_backup_produces_the_same_envelope_the_export_shares_without_sharing_it()
+    {
+        const string deviceKey = "d3JpdGUtb25seS1rZXktMzJieXRlcy1sb25nLXh4";
+        const string passphrase = "scheduled copy";
+        var dbPath = NewDatabase(deviceKey, "nightly");
+        var (service, share, context) = BuildService(dbPath, deviceKey);
+        var destination = Path.Combine(_dir, "nightly" + PortableBackupFile.FileExtension);
+
+        var outcome = await service.WritePortableBackupAsync(passphrase, destination);
+
+        outcome.Should().Be(BackupOutcome.Success);
+        share.SharedPath.Should().BeNull("writing a file is not sharing it");
+        File.Exists(destination + ".reencrypt.tmp").Should().BeFalse("the intermediate must not linger");
+        context.Close();
+
+        // The file opens exactly the way a restore would open it: header, derived key, payload.
+        PortableBackupFile.Header? header;
+        var payload = Path.Combine(_dir, "nightly_payload.db");
+        using (var probe = File.OpenRead(destination))
+        {
+            header = PortableBackupFile.TryReadHeader(probe);
+            header.Should().NotBeNull();
+            using var output = File.Create(payload);
+            PortableBackupFile.ExtractPayload(probe, header!, output);
+        }
+
+        var key = BackupKeyDeriver.DeriveKey(passphrase, header!.Salt, header.Iterations);
+        ReadMarker(payload, key).Should().Be("nightly");
+    }
+
+    [Fact]
+    public async Task Write_portable_backup_without_a_passphrase_writes_nothing()
+    {
+        const string deviceKey = "bm8tcGFzcy1rZXktMzJieXRlcy1sb25nLXBhZGRlZA==";
+        var dbPath = NewDatabase(deviceKey, "anything");
+        var (service, _, _) = BuildService(dbPath, deviceKey);
+        var destination = Path.Combine(_dir, "nothing" + PortableBackupFile.FileExtension);
+
+        var outcome = await service.WritePortableBackupAsync(string.Empty, destination);
+
+        outcome.Should().Be(BackupOutcome.Cancelled);
+        File.Exists(destination).Should().BeFalse();
+    }
+
     // ---- refusals ----------------------------------------------------------
 
     [Fact]

@@ -2,192 +2,171 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
-             xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Diarion.Controls.MoodSection"
              x:DataType="viewmodels:DiaryEntryViewModel">
 
     <ContentView.Resources>
-        <Style x:Key="MoodDot" TargetType="Border">
-            <Setter Property="StrokeShape" Value="RoundRectangle 16" />
-            <Setter Property="StrokeThickness" Value="1" />
-            <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
-            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Midnight}" />
-            <Setter Property="HeightRequest" Value="50" />
-            <Setter Property="HorizontalOptions" Value="Fill" />
+        <!-- A face's tap target: the whole cell, transparent. Press feedback lives here and scales this
+             element, which is why the chosen-state emphasis lives one level down. -->
+        <Style x:Key="MoodFaceCell" TargetType="Border">
+            <Setter Property="StrokeThickness" Value="0" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HeightRequest" Value="60" />
+            <Setter Property="behaviors:PressFeedback.IsEnabled" Value="True" />
         </Style>
+
+        <!-- The disc behind an emoji: a quiet surface until chosen, then the quadrant's hue on the
+             inner fill layer. The fill is a plain binding, not a trigger: a DataTrigger on a Border with
+             press feedback did not give the colour back on un-apply. -->
+        <Style x:Key="MoodFaceDisc" TargetType="Border">
+            <Setter Property="StrokeShape" Value="Ellipse" />
+            <Setter Property="StrokeThickness" Value="0" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Earth_Midnight}" />
+            <Setter Property="WidthRequest" Value="48" />
+            <Setter Property="HeightRequest" Value="48" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="InputTransparent" Value="True" />
+        </Style>
+
+        <!-- The fill layer inside a disc: transparent until its face is chosen. -->
+        <Style x:Key="MoodFill" TargetType="Border">
+            <Setter Property="StrokeThickness" Value="0" />
+            <Setter Property="InputTransparent" Value="True" />
+        </Style>
+
     </ContentView.Resources>
 
-    <Border Padding="16"
-            StrokeThickness="1"
-            Stroke="{DynamicResource Theme_Dust_Ocean}"
-            BackgroundColor="{DynamicResource Theme_Snow_Black}"
-            StrokeShape="RoundRectangle 20">
-        <Border.Shadow>
-            <Shadow Brush="{DynamicResource Theme_Midnight}" Offset="0,6" Radius="12" Opacity="0.2" />
-        </Border.Shadow>
+    <Border Style="{StaticResource Card}">
 
         <VerticalStackLayout Spacing="12">
-            <Label Text="{x:Static localization:AppResources.EmotionLabel}"
-                   FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5"
-                   TextColor="{DynamicResource Theme_Coral}" />
+            <!-- Header: the caption and, at the right, the hours chip. The row below speaks for the
+                 day until an hour is chosen in the chip's bubble; then the chip reads the hour and the
+                 ✕ beside it returns the row to the day, so the switch is never silent. -->
+            <!-- The clock stays where it is, at the card's right edge over the health block's drop: the ✕
+                 appears to its left and the chosen hour grows leftwards inside the chip. With the ✕ on the
+                 right and the hour after the icon, choosing an hour threw the clock a whole button's width
+                 to the left (owner, build 17, 2026-10-23).
+                 The ✕ has a column of its own width whether it is shown or not, and the clock is pinned to
+                 the right edge of the last column: a stack that grew when the ✕ appeared needed the row
+                 re-measured, which iPhone did not always do, and the clock slid right over the card's edge
+                 (owner, build 18, 2026-10-25). Nothing here moves on a re-measure now; the empty column sits
+                 behind the caption's free space, where it shows as nothing. -->
+            <Grid x:Name="Header" ColumnDefinitions="*,38,Auto" ColumnSpacing="0">
+                <Label Grid.Column="0" Text="{x:Static localization:AppResources.EmotionLabel}"
+                       Style="{StaticResource SectionHeader}" VerticalOptions="Center" />
 
-            <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="8">
-
-                <!-- Happy -->
-                <VerticalStackLayout Grid.Column="0" Spacing="4">
-                    <Border Style="{StaticResource MoodDot}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Happy}" />
-                        </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Happy}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Label Text="😊" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionHappy}" />
+                <Border Grid.Column="1" Style="{StaticResource HeaderChip}" WidthRequest="32" HorizontalOptions="Start"
+                        IsVisible="{Binding IsHourSelected}"
+                        SemanticProperties.Description="{x:Static localization:AppResources.MoodHourExit}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ExitHourModeCommand}" />
+                    </Border.GestureRecognizers>
+                    <Border Style="{StaticResource HeaderChipSurface}" Padding="0">
+                        <Path Data="M 7 7 L 17 17 M 17 7 L 7 17" Style="{StaticResource HeaderChipIcon}"
+                              WidthRequest="12" HeightRequest="12" Stroke="{DynamicResource Theme_Midnight_Snow}" />
                     </Border>
-                    <Label Text="{x:Static localization:AppResources.EmotionHappy}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                </VerticalStackLayout>
+                </Border>
 
-                <!-- Calm -->
-                <VerticalStackLayout Grid.Column="1" Spacing="4">
-                    <Border Style="{StaticResource MoodDot}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Calm}" />
-                        </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Calm}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Label Text="😌" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionCalm}" />
-                    </Border>
-                    <Label Text="{x:Static localization:AppResources.EmotionCalm}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                </VerticalStackLayout>
-
-                <!-- Anxious -->
-                <VerticalStackLayout Grid.Column="2" Spacing="4">
-                    <Border Style="{StaticResource MoodDot}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Anxious}" />
-                        </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Anxious}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Label Text="😰" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionAnxious}" />
-                    </Border>
-                    <Label Text="{x:Static localization:AppResources.EmotionAnxious}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                </VerticalStackLayout>
-
-                <!-- Sad -->
-                <VerticalStackLayout Grid.Column="3" Spacing="4">
-                    <Border Style="{StaticResource MoodDot}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Sad}" />
-                        </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Sad}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Label Text="😢" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionSad}" />
-                    </Border>
-                    <Label Text="{x:Static localization:AppResources.EmotionSad}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                </VerticalStackLayout>
-
-                <!-- Angry -->
-                <VerticalStackLayout Grid.Column="4" Spacing="4">
-                    <Border Style="{StaticResource MoodDot}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SelectEmotionCommand}" CommandParameter="{x:Static models:Emotion.Angry}" />
-                        </Border.GestureRecognizers>
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding CurrentMood}" Value="{x:Static models:Emotion.Angry}">
-                                <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Coral}" />
-                                <Setter Property="Stroke" Value="{DynamicResource Theme_Coral}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-                        <Label Text="😠" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" SemanticProperties.Description="{x:Static localization:AppResources.EmotionAngry}" />
-                    </Border>
-                    <Label Text="{x:Static localization:AppResources.EmotionAngry}" FontSize="10" HorizontalTextAlignment="Center" HorizontalOptions="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
-                </VerticalStackLayout>
-            </Grid>
-
-            <!-- Настрій по годинах (згорнуто за замовчуванням) -->
-            <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
-                <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ToggleHourlyCommand}" />
-                </Grid.GestureRecognizers>
-                <Label Grid.Column="0"
-                       Text="{localization:Translate Key=MoodHourlyLabel}"
-                       FontAttributes="Bold" FontSize="10" CharacterSpacing="1.5" TextTransform="Uppercase"
-                       TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center" />
-                <Label Grid.Column="1" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" VerticalOptions="Center">
-                    <Label.Triggers>
-                        <DataTrigger TargetType="Label" Binding="{Binding IsHourlyExpanded}" Value="True">
-                            <Setter Property="Text" Value="⌃" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Label" Binding="{Binding IsHourlyExpanded}" Value="False">
-                            <Setter Property="Text" Value="⌄" />
-                        </DataTrigger>
-                    </Label.Triggers>
-                </Label>
-            </Grid>
-
-            <VerticalStackLayout Spacing="8" IsVisible="{Binding IsHourlyExpanded}">
-                <Label FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}">
-                    <Label.Triggers>
-                        <DataTrigger TargetType="Label" Binding="{Binding IsHourSelected}" Value="True">
-                            <Setter Property="Text" Value="{localization:Translate Key=MoodHourlyHint}" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Label" Binding="{Binding IsHourSelected}" Value="False">
-                            <Setter Property="Text" Value="{localization:Translate Key=MoodHourlyDayHint}" />
-                        </DataTrigger>
-                    </Label.Triggers>
-                </Label>
-
-                <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Center"
-                            BindableLayout.ItemsSource="{Binding HourlyMood}">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="viewmodels:HourMoodViewModel">
-                            <Border WidthRequest="42" HeightRequest="34" Margin="0,0,6,6"
-                                    StrokeShape="RoundRectangle 10" StrokeThickness="1"
-                                    Stroke="{DynamicResource Theme_Dust_Ocean}"
-                                    BackgroundColor="{Binding ColorHex}"
-                                    SemanticProperties.Description="{Binding AccessibilityText}">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryEntryViewModel}}, Path=SelectHourCommand}" CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                                <Border.Triggers>
-                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                        <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
-                                        <Setter Property="StrokeThickness" Value="3" />
-                                    </DataTrigger>
-                                </Border.Triggers>
-                                <Label Text="{Binding HourLabel}" FontSize="12" InputTransparent="True"
-                                       HorizontalOptions="Center" VerticalOptions="Center">
+                <Border x:Name="HourChip" Grid.Column="2" Style="{StaticResource HeaderChip}" HorizontalOptions="End"
+                        SemanticProperties.Description="{Binding HourChipText}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenHourPickerCommand}" />
+                    </Border.GestureRecognizers>
+                    <!-- A clock, and to its left only state: the chosen hour, or how many hours carry a mood. No
+                         caption — the spoken label is the chip's description. Round while it is just the clock. -->
+                    <Border Style="{StaticResource HeaderChipSurface}"
+                            behaviors:ThemeColor.BackgroundKey="{Binding HourChipFillColorKey}"
+                            behaviors:ThemeColor.BackgroundFallbackKey="Theme_Snow_Black">
+                        <!-- Two layers over each other, not one row with a hidden member: the clock alone while there is
+                             no hour, the hour and the clock once there is one. In a row the hidden hour still left its place
+                             behind on iPhone the first time the bubble's copy was laid out, and the clock in the copy sat six
+                             points right of the clock in the chip (owner, build 18, 2026-10-25). Layered, nothing can push it. -->
+                        <Grid>
+                            <Path Data="{x:Static icons:AppIcons.Clock}" Style="{StaticResource HeaderChipIcon}"
+                                  Stroke="{DynamicResource Theme_Midnight_Snow}"
+                                  IsVisible="{Binding HasHourChipBadge, Converter={toolkit:InvertedBoolConverter}}" />
+                            <HorizontalStackLayout Spacing="5" HorizontalOptions="Center" VerticalOptions="Center"
+                                                   IsVisible="{Binding HasHourChipBadge}">
+                                <Label Text="{Binding HourChipBadge}"
+                                       FontSize="12" FontAttributes="Bold" VerticalOptions="Center"
+                                       TextColor="{DynamicResource Theme_Midnight_Snow}">
                                     <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding HasMood}" Value="True">
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Snow}" />
-                                            <Setter Property="FontAttributes" Value="Bold" />
-                                        </DataTrigger>
-                                        <DataTrigger TargetType="Label" Binding="{Binding HasMood}" Value="False">
-                                            <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsHourChipFilled}" Value="True">
+                                            <Setter Property="TextColor" Value="{DynamicResource Theme_OnAccent}" />
                                         </DataTrigger>
                                     </Label.Triggers>
                                 </Label>
+                                <Path Data="{x:Static icons:AppIcons.Clock}" Style="{StaticResource HeaderChipIcon}"
+                                      Stroke="{DynamicResource Theme_Midnight_Snow}">
+                                    <Path.Triggers>
+                                        <DataTrigger TargetType="Path" Binding="{Binding IsHourChipFilled}" Value="True">
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_OnAccent}" />
+                                        </DataTrigger>
+                                    </Path.Triggers>
+                                </Path>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </Border>
+            </Grid>
+
+            <!-- The row: five faces from unpleasant to pleasant, no words until one is chosen. A tap
+                 records the face's representative emotion and opens the bubble of precise states over
+                 the page; the chosen face fills with its hue and the precise state is named under it. -->
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="2">
+                <Grid x:Name="FacesRow" Grid.Row="0" ColumnDefinitions="*,*,*,*,*" BindableLayout.ItemsSource="{Binding Quadrants}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:MoodQuadrantViewModel">
+                            <Border Style="{StaticResource MoodFaceCell}" Grid.Column="{Binding Column}"
+                                    SemanticProperties.Description="{Binding Name}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DiaryEntryViewModel}}, Path=SelectQuadrantCommand}"
+                                                          CommandParameter="{Binding Quadrant}" />
+                                </Border.GestureRecognizers>
+                                <Border Style="{StaticResource MoodFaceDisc}" behaviors:SelectionEmphasis.IsActive="{Binding IsSelected}">
+                                    <Border Style="{StaticResource MoodFill}" StrokeShape="Ellipse" behaviors:ThemeColor.BackgroundKey="{Binding FillColorKey}">
+                                        <!-- The face in the set chosen in settings: the phone's emoji, weather or a
+                                             plant (MoodGlyph; a drawn one moves for a few breaths when chosen).
+                                             Dimmed at rest, full and lifting for a moment when chosen
+                                             (MoodIconMotion). It starts dimmed here: a face that is not chosen
+                                             binds false, the default, and a binding that changes nothing raises
+                                             nothing. -->
+                                        <controls:MoodGlyph Quadrant="{Binding Quadrant}" IconSet="{Binding IconSet}"
+                                                            IsActive="{Binding IsSelected}"
+                                                            WidthRequest="38" HeightRequest="38"
+                                                            HorizontalOptions="Center" VerticalOptions="Center"
+                                                            Opacity="{x:Static behaviors:MoodIconMotion.RestOpacity}"
+                                                            behaviors:MoodIconMotion.IsActive="{Binding IsSelected}" />
+                                    </Border>
+                                </Border>
                             </Border>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
-                </FlexLayout>
-            </VerticalStackLayout>
+                </Grid>
+
+                <!-- The one word on the row: the chosen state, under its face, in its hue. It spans the
+                     row and is slid under the face from code-behind, so a long name is never cut to the
+                     width of one cell. -->
+                <Grid Grid.Row="1" HeightRequest="18">
+                    <Label x:Name="Caption"
+                           Text="{Binding CurrentMoodName}" IsVisible="{Binding HasCurrentMood}"
+                           behaviors:ThemeColor.TextKey="{Binding CurrentColorKey}" FontSize="11" FontAttributes="Bold"
+                           HorizontalOptions="Center" VerticalOptions="Center" LineBreakMode="NoWrap" />
+                </Grid>
+            </Grid>
+
+            <!-- The bubble of precise states is a page-level AnchoredPopover holding MoodRefineContent;
+                 it asks this control where the chosen face is when it opens (MoodSection.xaml.cs). -->
+
+            <!-- The hours live in a bubble off the chip above (HourPickerContent in an AnchoredPopover
+                 on the page); with an hour chosen, this same row writes that hour. -->
         </VerticalStackLayout>
     </Border>
 </ContentView>

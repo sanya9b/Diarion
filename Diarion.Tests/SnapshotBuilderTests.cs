@@ -206,12 +206,12 @@ public class SnapshotBuilderTests
             EmotionCounts = { [Emotion.Calm] = 3, [Emotion.Sad] = 3, [Emotion.Happy] = 5, [Emotion.None] = 9 },
             DailyTrend =
             {
-                new MoodTrendPoint { Date = new DateTime(2026, 8, 3), Valence = 1.239, HasData = true, DominantEmotion = Emotion.Happy },
+                new MoodTrendPoint { Date = new DateTime(2026, 8, 3), Valence = 1.239, Energy = 0.667, HasData = true, DominantEmotion = Emotion.Happy },
                 new MoodTrendPoint { Date = new DateTime(2026, 8, 4), Valence = 0, HasData = false }
             },
             HourlyProfile =
             {
-                new MoodHourPoint { Hour = 9, Valence = 1.5, Count = 4, DayCount = 3, HasData = true },
+                new MoodHourPoint { Hour = 9, Valence = 1.5, Energy = -1.25, Count = 4, DayCount = 3, HasData = true },
                 new MoodHourPoint { Hour = 10, Valence = 0, Count = 0, DayCount = 0, HasData = false }
             }
         };
@@ -220,11 +220,14 @@ public class SnapshotBuilderTests
 
         snapshot.Mood.TopEmotion.Should().Be("Calm");
         snapshot.Mood.Daily[0].Valence.Should().Be(1.24);
+        snapshot.Mood.Daily[0].Energy.Should().Be(0.67);
         snapshot.Mood.Daily[1].Valence.Should().BeNull();
+        snapshot.Mood.Daily[1].Energy.Should().BeNull();
         snapshot.Mood.Daily[1].DominantEmotion.Should().BeNull();
 
         snapshot.Mood.ByHour.Should().ContainSingle();
         snapshot.Mood.ByHour[0].Hour.Should().Be(9);
+        snapshot.Mood.ByHour[0].Energy.Should().Be(-1.25);
         snapshot.Mood.ByHour[0].Observations.Should().Be(4);
         snapshot.Mood.ByHour[0].Days.Should().Be(3);
 
@@ -300,6 +303,7 @@ public class SnapshotBuilderTests
             {
                 Name = "Зарядка",
                 CreatedAt = new DateTime(2026, 1, 1),
+                TrackedSince = new DateTime(2026, 1, 1),
                 Schedule = monWedFri,
                 CompletedDates =
                 {
@@ -324,12 +328,49 @@ public class SnapshotBuilderTests
             {
                 Name = "Читання",
                 CreatedAt = new DateTime(2026, 8, 7),
+                TrackedSince = new DateTime(2026, 8, 7),
                 Schedule = new RecurrenceRule { Kind = RecurrenceKind.Daily },
                 CompletedDates = { new DateTime(2026, 8, 8) }
             }
         };
 
         (await BuildAsync()).Habits.Good[0].ScheduledDays.Should().Be(3);
+    }
+
+    [Fact]
+    public async Task A_built_in_habit_never_ticked_is_not_due_at_all()
+    {
+        // Seeded habits have no creation day; a new user who never ticked one has not been asked it.
+        _habitHistory = new List<HabitCompletionHistory>
+        {
+            new()
+            {
+                Name = "Вода",
+                CreatedAt = DateTime.MinValue,
+                TrackedSince = null,
+                Schedule = new RecurrenceRule { Kind = RecurrenceKind.Daily }
+            }
+        };
+
+        (await BuildAsync()).Habits.Good[0].ScheduledDays.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task A_built_in_habit_is_due_from_its_first_tick()
+    {
+        _habitHistory = new List<HabitCompletionHistory>
+        {
+            new()
+            {
+                Name = "Вода",
+                CreatedAt = DateTime.MinValue,
+                TrackedSince = new DateTime(2026, 8, 8),
+                Schedule = new RecurrenceRule { Kind = RecurrenceKind.Daily },
+                CompletedDates = { new DateTime(2026, 8, 8) }
+            }
+        };
+
+        (await BuildAsync()).Habits.Good[0].ScheduledDays.Should().Be(2);
     }
 
     [Fact]

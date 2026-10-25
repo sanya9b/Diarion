@@ -1,4 +1,4 @@
-﻿using Android.App;
+using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Plugin.Fingerprint;
@@ -14,5 +14,18 @@ public class MainActivity : MauiAppCompatActivity
 
         // Plugin.Fingerprint (v3/MAUI) needs the current activity to host the biometric prompt.
         CrossFingerprint.SetCurrentActivityResolver(() => this);
+
+        // The folder picker for scheduled backups. Registered here, before the activity starts, as
+        // the activity-result API requires; the service launches it and gets the tree URI back
+        // through the callback. No storage permission is involved — the grant is per folder.
+        Diarion.Services.AndroidBackupFolderService.Launcher = RegisterForActivityResult(
+            new AndroidX.Activity.Result.Contract.ActivityResultContracts.OpenDocumentTree(),
+            new FolderPickedCallback());
+    }
+
+    private sealed class FolderPickedCallback : Java.Lang.Object, AndroidX.Activity.Result.IActivityResultCallback
+    {
+        public void OnActivityResult(Java.Lang.Object? result) =>
+            Diarion.Services.AndroidBackupFolderService.OnFolderPicked(result as Android.Net.Uri);
     }
 }

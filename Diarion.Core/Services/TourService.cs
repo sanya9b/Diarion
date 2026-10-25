@@ -142,12 +142,6 @@ public class TourService : ITourService
         },
         new()
         {
-            Id = TourStepId.StatsThemes,
-            Title = AppResources.TourStatsThemesTitle,
-            Body = AppResources.TourStatsThemesText
-        },
-        new()
-        {
             Id = TourStepId.StatsInfluences,
             Title = AppResources.TourStatsInfluencesTitle,
             Body = AppResources.TourStatsInfluencesText

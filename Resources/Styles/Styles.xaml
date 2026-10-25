@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:behaviors="clr-namespace:Diarion.Behaviors">
 
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{DynamicResource Theme_Primary_White}" />
@@ -18,17 +19,28 @@
         <Setter Property="StrokeThickness" Value="1"/>
     </Style>
 
-    <Style TargetType="BoxView">
-        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Gray950_Gray200}" />
-    </Style>
+    <!-- No implicit BoxView style. The MAUI template gave every BoxView a BackgroundColor (near-black in
+         light, light grey in dark, #ffa8a8 in pink). Windows paints only a BoxView's Color, so nothing
+         showed on the PC; iPhone paints the background too. The mood bubble's invisible hit area came out
+         as a grey, black or salmon slab over the panel in TestFlight builds 6 to 8, and rounded BoxViews
+         sat on square corners. Every BoxView here sets its own Color. -->
 
-    <Style TargetType="Button">
-        <Setter Property="TextColor" Value="{DynamicResource Theme_White_Black}" />
-        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Primary_Primary}" />
+    <!-- Buttons. One shape (radius 12, 48 tall) and four voices, chosen by what the button does, never by
+         which screen it sits on. "Save" alone had seven looks: ink, ocean, amber, berry, sage and coral
+         fills with radii of 12, 14 and 18, so the same action read as a different product on each page.
+           Primary    ink on the page: the one action a form exists for (save, next, subscribe).
+           Secondary  outlined in the card stroke: the sibling actions (export, change PIN, archive).
+           Danger     outlined in Coral: delete and clear. Coral is the error accent and nothing else is.
+           Ghost      bare text in the muted ink: skip, later, restore.
+         Every colour is a theme token, so all four read the same way in light, dark and pink.
+         The implicit style is Primary's colours, so a Button with no style still lands in the family. -->
+    <Style x:Key="ButtonBase" TargetType="Button">
+        <Setter Property="TextColor" Value="{DynamicResource Theme_Snow_Midnight}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Midnight_Snow}" />
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="BorderWidth" Value="0"/>
-        <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="Padding" Value="14,10"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="16,10"/>
         <Setter Property="MinimumHeightRequest" Value="44"/>
         <Setter Property="MinimumWidthRequest" Value="44"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
@@ -47,23 +59,65 @@
         </Setter>
     </Style>
 
-    <Style TargetType="CheckBox">
-        <Setter Property="Color" Value="{DynamicResource Theme_Coral}" />
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+    <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}" />
+
+    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="HeightRequest" Value="48" />
+    </Style>
+
+    <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{DynamicResource Theme_Midnight_Snow}" />
+        <Setter Property="BorderColor" Value="{DynamicResource Theme_Dust_Ocean}" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="HeightRequest" Value="48" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState x:Name="Normal" />
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
-                            <Setter Property="Color" Value="{DynamicResource Theme_Gray300_Gray600}" />
+                            <Setter Property="TextColor" Value="{DynamicResource Theme_Gray300_Gray600}" />
+                            <Setter Property="BorderColor" Value="{DynamicResource Theme_Gray300_Gray600}" />
+                            <Setter Property="BackgroundColor" Value="Transparent" />
                         </VisualState.Setters>
                     </VisualState>
+                    <VisualState x:Name="PointerOver" />
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
     </Style>
+
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+        <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+        <Setter Property="BorderColor" Value="{DynamicResource Theme_Coral}" />
+    </Style>
+
+    <Style x:Key="GhostButton" TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+        <Setter Property="BorderWidth" Value="0" />
+        <Setter Property="HeightRequest" Value="44" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="TextColor" Value="{DynamicResource Theme_Gray300_Gray600}" />
+                            <Setter Property="BackgroundColor" Value="Transparent" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="PointerOver" />
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <!-- No native CheckBox anywhere. It is a square on Android and a circle on iOS, and it sat beside the
+         drawn one on the same screens, so a list was ticked with squares on one page and circles on the
+         next. Every tick box is controls:RoundedCheckBox; its look lives in that control. -->
 
     <Style TargetType="DatePicker">
         <Setter Property="TextColor" Value="{DynamicResource Theme_Gray900_White}" />
@@ -418,15 +472,77 @@
         <Setter Property="IconColor" Value="{DynamicResource Theme_Gray200_White}" />
     </Style>
 
-    <!-- Reusable statistics card. Shadow is applied inline per card to avoid sharing a
-         single Shadow instance across elements (a known MAUI pitfall). -->
-    <Style TargetType="Border" x:Key="StatCard">
-        <Setter Property="StrokeShape" Value="RoundRectangle 24" />
+    <!-- Surface tokens. Three radii carry the whole app: 20 for a card, 12 for a field inside one, and a
+         full pill for chips. Sixteen different radii had grown up screen by screen, and a card with 16
+         next to one with 24 reads as two different products. A Shadow is never set here: one Shadow
+         instance shared by every card is a known MAUI pitfall, so cards that want one set it inline. -->
+    <Style TargetType="Border" x:Key="Card">
+        <Setter Property="StrokeShape" Value="RoundRectangle 20" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
         <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Black}" />
         <Setter Property="Padding" Value="16" />
     </Style>
+
+    <!-- A text or time field inside a card. Padding and height stay with each field. -->
+    <Style TargetType="Border" x:Key="Field">
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+    </Style>
+
+    <!-- The caption at the top of a card. One voice for every block on the day screen: there were three
+         (Coral, ink and grey), which made the order of the blocks look like an order of importance. -->
+    <Style TargetType="Label" x:Key="SectionHeader">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CharacterSpacing" Value="1.5" />
+        <Setter Property="TextTransform" Value="Uppercase" />
+        <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+    </Style>
+
+    <!-- The small button at the right of a card's header: the hours chip on the mood card, the drop on the
+         health block, the ✕ that leaves hour mode. One geometry for all of them (owner, 2026-10-23: the
+         clock and the drop sat at different sizes and heights). 32 high, round while it holds only an
+         icon, a pill once the hours chip adds its number. The outer element carries press feedback and
+         no colour — the touch behaviour writes the background of the element it is attached to — so the
+         surface lives on HeaderChipSurface one layer down. The popover header copies use the same styles,
+         which is what keeps a copy exactly over its button. -->
+    <Style TargetType="Border" x:Key="HeaderChip">
+        <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HeightRequest" Value="32" />
+        <Setter Property="MinimumWidthRequest" Value="32" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="behaviors:PressFeedback.IsEnabled" Value="True" />
+    </Style>
+    <Style TargetType="Border" x:Key="HeaderChipSurface">
+        <Setter Property="StrokeShape" Value="RoundRectangle 15" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="InputTransparent" Value="True" />
+        <Setter Property="HeightRequest" Value="30" />
+        <Setter Property="MinimumWidthRequest" Value="30" />
+        <Setter Property="Padding" Value="7,0" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Snow_Black}" />
+    </Style>
+    <Style TargetType="Path" x:Key="HeaderChipIcon">
+        <Setter Property="WidthRequest" Value="16" />
+        <Setter Property="HeightRequest" Value="16" />
+        <Setter Property="Aspect" Value="Uniform" />
+        <Setter Property="StrokeThickness" Value="1.7" />
+        <Setter Property="StrokeLineCap" Value="Round" />
+        <Setter Property="StrokeLineJoin" Value="Round" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="InputTransparent" Value="True" />
+    </Style>
+
+    <!-- The statistics card is the card. -->
+    <Style TargetType="Border" x:Key="StatCard" BasedOn="{StaticResource Card}" />
 
     <!-- Circular PIN keypad button, shared by LockPage (unlock) and PinSetupPage (set/change).
          Padding=0 + Center options keep the frame a true 72x72 square so CornerRadius renders as a

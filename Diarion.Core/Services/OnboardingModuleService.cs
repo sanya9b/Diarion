@@ -25,10 +25,9 @@ public class OnboardingModuleService : IOnboardingModuleService
     /// "Food" here and goes looking for it a month later needs to recognise the row when they find it.
     /// </para>
     /// <para>
-    /// Two things are not offered. The cycle tracker, because it is gated on a gender this screen never
-    /// asks for and its default is off — putting it here would switch on a reproductive-health feature
-    /// for someone who only tapped Next. AI chat, because its tile appears only once a model is
-    /// installed, so a checkbox for it would promise a screen most phones are never offered.
+    /// The cycle tracker is not offered, because it is gated on a gender this screen never asks for
+    /// and its default is off — putting it here would switch on a reproductive-health feature for
+    /// someone who only tapped Next.
     /// </para>
     /// </remarks>
     public IReadOnlyList<OnboardingModule> GetModules() => new List<OnboardingModule>

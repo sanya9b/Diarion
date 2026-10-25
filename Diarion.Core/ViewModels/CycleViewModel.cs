@@ -11,6 +11,7 @@ using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Resources.Localization;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -31,7 +32,24 @@ public partial class SymptomToggleViewModel : ObservableObject
     public string Label { get; init; } = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FillColorKey))]
     private bool _isSelected;
+
+    /// <summary>
+    /// The chip's fill layer: the cycle's colour while chosen, null (the surface) otherwise. A binding for
+    /// the chips that carry press feedback, where a trigger on the background would not come back.
+    /// </summary>
+    public string? FillColorKey => IsSelected ? "Theme_Berry" : null;
+
+    /// <summary>A chip for <paramref name="key"/> (see <see cref="CycleSymptoms"/>) with its localized label.</summary>
+    public static SymptomToggleViewModel For(string key, bool selected) => new()
+    {
+        Key = key,
+        Label = Diarion.Resources.Localization.AppResources.ResourceManager
+                    .GetString(key, Diarion.Resources.Localization.AppResources.Culture
+                                    ?? System.Globalization.CultureInfo.CurrentUICulture) ?? key,
+        IsSelected = selected
+    };
 }
 
 public partial class CycleViewModel : BaseViewModel
@@ -72,10 +90,6 @@ public partial class CycleViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool _isFertileWindowEstimate;
-
-    /// <summary>Start date for the "record a period" picker; today, never the future.</summary>
-    [ObservableProperty]
-    private DateTime _newEpisodeStart = DateTime.Today;
 
     public DateTime MaximumDate => DateTime.Today;
 
@@ -122,14 +136,7 @@ public partial class CycleViewModel : BaseViewModel
         SymptomToggles.Clear();
         foreach (var key in CycleSymptoms.All)
         {
-            SymptomToggles.Add(new SymptomToggleViewModel
-            {
-                Key = key,
-                Label = Diarion.Resources.Localization.AppResources.ResourceManager
-                            .GetString(key, Diarion.Resources.Localization.AppResources.Culture
-                                            ?? System.Globalization.CultureInfo.CurrentUICulture) ?? key,
-                IsSelected = logged.Contains(key)
-            });
+            SymptomToggles.Add(SymptomToggleViewModel.For(key, logged.Contains(key)));
         }
     }
 
@@ -139,8 +146,8 @@ public partial class CycleViewModel : BaseViewModel
         if (toggle == null) return;
 
         toggle.IsSelected = !toggle.IsSelected;
-        await _cycleLogService.SetSymptomsAsync(
-            SymptomDate, SymptomToggles.Where(t => t.IsSelected).Select(t => t.Key));
+        if (!await WriteGate.TryAsync(() => _cycleLogService.SetSymptomsAsync(
+            SymptomDate, SymptomToggles.Where(t => t.IsSelected).Select(t => t.Key)))) return;
     }
 
     private void BuildEpisodeList(CycleHistory history)
@@ -157,15 +164,21 @@ public partial class CycleViewModel : BaseViewModel
             Episodes.Add(new CycleEpisodeItemViewModel
             {
                 Start = episode.Start,
-                RangeText = episode.Start == episode.End
-                    ? episode.Start.ToString("d MMM yyyy", CultureInfo.CurrentCulture)
-                    : $"{episode.Start.ToString("d MMM", CultureInfo.CurrentCulture)} – {episode.End.ToString("d MMM yyyy", CultureInfo.CurrentCulture)}",
+                RangeText = FormatRange(episode.Start, episode.End),
                 IntervalText = next == null
                     ? string.Empty
                     : string.Format(AppResources.CycleIntervalFormat, (next.Start - episode.Start).Days)
             });
         }
     }
+
+    /// <summary>
+    /// One period as the user reads it: "3 Oct 2026" for a single day, "3 Oct – 7 Oct 2026" otherwise.
+    /// Shared with the settings bubble that records periods, so both name a period the same way.
+    /// </summary>
+    public static string FormatRange(DateTime start, DateTime end) => start.Date == end.Date
+        ? start.ToString("d MMM yyyy", CultureInfo.CurrentCulture)
+        : $"{start.ToString("d MMM", CultureInfo.CurrentCulture)} – {end.ToString("d MMM yyyy", CultureInfo.CurrentCulture)}";
 
     private void ApplyForecast(CycleForecast forecast)
     {
@@ -214,13 +227,6 @@ public partial class CycleViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task AddEpisodeAsync()
-    {
-        await _cycleLogService.AddEpisodeAsync(NewEpisodeStart, _profile.GetNormalizedPeriodLength());
-        await ReloadAndBroadcastAsync();
-    }
-
-    [RelayCommand]
     private async Task DeleteEpisodeAsync(CycleEpisodeItemViewModel? item)
     {
         if (item == null) return;
@@ -233,7 +239,7 @@ public partial class CycleViewModel : BaseViewModel
 
         if (!confirm) return;
 
-        await _cycleLogService.RemoveEpisodeAsync(item.Start);
+        if (!await WriteGate.TryAsync(() => _cycleLogService.RemoveEpisodeAsync(item.Start))) return;
         await ReloadAndBroadcastAsync();
     }
 

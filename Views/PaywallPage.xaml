@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  The paywall (spec 15, R4). Everything Apple 3.1.2 asks for is on this one screen and visible
+  without scrolling past the button: the price per period, what happens after the trial, how to
+  cancel, Restore, and the terms and privacy links. Monochrome like the rest of the app; the only
+  accent is Sage on the discount, the palette's "good news" colour.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
+             xmlns:controls="clr-namespace:Diarion.Controls"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Views.PaywallPage"
+             x:Name="PageRoot"
+             x:DataType="viewmodels:PaywallViewModel"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="24,12,24,20">
+
+        <!-- Always a way out (R4.3). -->
+        <controls:CloseButton Grid.Row="0" HorizontalOptions="End" VerticalOptions="Start"
+                              Command="{Binding LaterCommand}" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="14" Padding="0,0,0,12">
+
+                <Label Text="D" FontFamily="MarckScript" FontSize="56" HorizontalOptions="Center"
+                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                <Label Text="{x:Static localization:AppResources.PaywallTitle}"
+                       FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                       TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                <Label Text="{x:Static localization:AppResources.PaywallSubtitle}"
+                       FontSize="14" HorizontalTextAlignment="Center" LineHeight="1.2"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,0,0,8" />
+
+                <ActivityIndicator IsRunning="{Binding IsWorking}" IsVisible="{Binding IsWorking}"
+                                   Color="{DynamicResource Theme_Midnight_Snow}" HeightRequest="28" />
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Plans}" Spacing="10">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:PaywallPlan">
+                            <ContentView behaviors:PressFeedback.IsEnabled="True">
+                                <ContentView.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BindingContext.SelectPlanCommand, Source={x:Reference PageRoot}}"
+                                                          CommandParameter="{Binding}" />
+                                </ContentView.GestureRecognizers>
+                                <Border StrokeShape="RoundRectangle 18" Padding="16,14"
+                                        BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
+                                            <Setter Property="Stroke" Value="{DynamicResource Theme_Dust_Ocean}" />
+                                            <Setter Property="StrokeThickness" Value="1" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+
+                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" RowDefinitions="Auto, Auto, Auto">
+                                        <Label Grid.RowSpan="3" Text="○"
+                                               FontSize="20" VerticalOptions="Center" WidthRequest="22"
+                                               TextColor="{DynamicResource Theme_Midnight_Snow}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="Text" Value="●" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+
+                                        <Label Grid.Column="1" Text="{Binding Title}" FontSize="16" FontAttributes="Bold"
+                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                                        <Border Grid.Column="2" IsVisible="{Binding HasBadge}" StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 10" Padding="8,2" VerticalOptions="Center"
+                                                BackgroundColor="{DynamicResource Theme_Sage}">
+                                            <Label Text="{Binding Badge}" FontSize="12" FontAttributes="Bold" TextColor="White" />
+                                        </Border>
+
+                                        <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding PriceText}" FontSize="15"
+                                               TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+                                        <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding TrialText}" IsVisible="{Binding HasTrial}"
+                                               FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                    </Grid>
+                                </Border>
+                            </ContentView>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <Label Text="{x:Static localization:AppResources.PaywallDataPromise}"
+                       FontSize="13" HorizontalTextAlignment="Center"
+                       TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,6,0,0" />
+
+                <Label Text="{Binding Message}" IsVisible="{Binding HasMessage}"
+                       FontSize="13" HorizontalTextAlignment="Center"
+                       TextColor="{DynamicResource Theme_Coral}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <VerticalStackLayout Grid.Row="2" Spacing="10">
+            <Button Style="{StaticResource PrimaryButton}" Text="{Binding PurchaseButtonText}"
+                    Command="{Binding PurchaseCommand}"
+                    IsVisible="{Binding HasPlans}" />
+
+            <Label Text="{x:Static localization:AppResources.PaywallAutoRenewNotice}"
+                   FontSize="11" HorizontalTextAlignment="Center" LineHeight="1.15"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="18">
+                <Label behaviors:PressFeedback.IsEnabled="True" Text="{x:Static localization:AppResources.PaywallRestoreButton}" FontSize="12"
+                       TextDecorations="Underline" TextColor="{DynamicResource Theme_Midnight_Snow}" Padding="0,8">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding RestoreCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label behaviors:PressFeedback.IsEnabled="True" Text="{x:Static localization:AppResources.PaywallTermsLink}" FontSize="12"
+                       TextDecorations="Underline" TextColor="{DynamicResource Theme_Midnight_Snow}" Padding="0,8">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenTermsCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label behaviors:PressFeedback.IsEnabled="True" Text="{x:Static localization:AppResources.PaywallPrivacyLink}" FontSize="12"
+                       TextDecorations="Underline" TextColor="{DynamicResource Theme_Midnight_Snow}" Padding="0,8">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenPrivacyCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+
+            <Button Style="{StaticResource GhostButton}" Text="{x:Static localization:AppResources.PaywallLaterButton}"
+                    Command="{Binding LaterCommand}" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

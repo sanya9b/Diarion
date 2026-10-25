@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Messages;
 using Diarion.Models;
-using Diarion.Models.Ai;
 using Diarion.Services.Database;
+using Diarion.Services.Store;
 using LiteDB;
 
 namespace Diarion.Services;
@@ -14,9 +14,11 @@ namespace Diarion.Services;
 public class NoteService : INoteService
 {
     private readonly IDatabaseContext _dbContext;
+    private readonly IAccessGuard _accessGuard;
 
-    public NoteService(IDatabaseContext dbContext)
+    public NoteService(IDatabaseContext dbContext, IAccessGuard? accessGuard = null)
     {
+        _accessGuard = accessGuard ?? AccessGuard.Unrestricted;
         _dbContext = dbContext;
     }
 
@@ -78,6 +80,7 @@ public class NoteService : INoteService
 
     public Task SaveNoteAsync(Note note)
     {
+        _accessGuard.EnsureWritable();
         var col = GetNotesCollection();
         note.UpdatedAt = DateTime.Now;
 
@@ -111,6 +114,7 @@ public class NoteService : INoteService
 
     public Task DeleteNoteAsync(string id)
     {
+        _accessGuard.EnsureWritable();
         var col = GetNotesCollection();
         try
         {
@@ -129,7 +133,7 @@ public class NoteService : INoteService
 
     private static void Announce(string id) =>
         WeakReferenceMessenger.Default.Send(
-            new DocumentChangedMessage(EmbeddingSourceKind.Note, id));
+            new DocumentChangedMessage(DocumentKind.Note, id));
 
     public Task<List<Note>> GetBacklinksAsync(string title, string? excludeId = null)
     {

@@ -93,4 +93,33 @@ public class ReadingTrackerViewModelTests
         viewModel.HasValidationMessage.Should().BeTrue();
         diaryServiceMock.Verify(s => s.SaveReadingTrackerBookAsync(It.IsAny<ReadingTrackerBook>()), Times.Never);
     }
+
+    [Theory]
+    [InlineData(0, 12)]
+    [InlineData(11, 12)]
+    [InlineData(12, 15)]
+    [InlineData(14, 15)]
+    [InlineData(15, 18)]
+    public void SlotCount_GrowsByWholeRowsAndKeepsAFreeRow(int highestFilledSlot, int expected)
+    {
+        ReadingTrackerViewModel.SlotCount(highestFilledSlot).Should().Be(expected);
+    }
+
+    [Fact]
+    public async Task LoadAsync_WithTwelveBooks_OpensANewRow()
+    {
+        var books = Enumerable.Range(1, 12)
+            .Select(n => new ReadingTrackerBook { SlotNumber = n, BookTitle = $"Book {n}", CompletedOn = new DateTime(2026, 1, n) })
+            .ToList();
+        var service = new Mock<IAuxiliaryService>();
+        service.Setup(s => s.GetReadingTrackerBooksAsync()).ReturnsAsync(books);
+
+        var viewModel = new ReadingTrackerViewModel(service.Object);
+        await viewModel.LoadAsync();
+
+        viewModel.Slots.Should().HaveCount(15);
+        viewModel.Slots.Take(12).Should().OnlyContain(s => s.IsFilled);
+        viewModel.Slots.Skip(12).Should().OnlyContain(s => s.IsEmpty);
+        viewModel.Slots[12].SlotNumber.Should().Be(13);
+    }
 }

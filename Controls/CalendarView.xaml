@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Diarion.Behaviors"
              xmlns:models="clr-namespace:Diarion.Models;assembly=Diarion.Core"
              xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
              xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
@@ -12,7 +13,7 @@
     <Grid x:Name="CalendarSection" RowDefinitions="Auto, Auto" IsClippedToBounds="True">
         <Grid x:Name="CalendarHeader" Grid.Row="0" RowDefinitions="Auto, Auto" IsVisible="False">
             <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Margin="0,4,0,12">
-                <Grid Grid.Column="0" BackgroundColor="Transparent" Padding="20,10" VerticalOptions="Center" HorizontalOptions="Start">
+                <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" BackgroundColor="Transparent" Padding="20,10" VerticalOptions="Center" HorizontalOptions="Start">
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding PreviousMonthCommand}" />
                     </Grid.GestureRecognizers>
@@ -24,7 +25,7 @@
                     <Label Text="{Binding CurrentYear}" FontSize="14" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
-                <Grid Grid.Column="2" BackgroundColor="Transparent" Padding="20,10" VerticalOptions="Center" HorizontalOptions="End">
+                <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="2" BackgroundColor="Transparent" Padding="20,10" VerticalOptions="Center" HorizontalOptions="End">
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding NextMonthCommand}" />
                     </Grid.GestureRecognizers>
@@ -56,16 +57,20 @@
                 IsVisible="False">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:CalendarDay">
-                    <ContentView FlexLayout.Basis="13.5%" HeightRequest="52" Margin="0,0,0,8">
+                    <!-- The whole cell takes the tap and the press, not the Border inside it: the Border carries the
+                         cycle and today fills as triggers, which never come back when TouchBehavior sits on the same
+                         element, and the selection and progress overlays beside it have to scale with it. -->
+                    <ContentView FlexLayout.Basis="13.5%" HeightRequest="52" Margin="0,0,0,8"
+                                 behaviors:PressFeedback.IsEnabled="True">
+                        <ContentView.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference CalendarViewRoot}}" CommandParameter="{Binding .}" />
+                        </ContentView.GestureRecognizers>
                         <Grid>
                             <Border StrokeShape="RoundRectangle 8"
                                     StrokeThickness="1"
                                     Stroke="{DynamicResource Theme_Dust_Ocean}"
                                     BackgroundColor="{DynamicResource Theme_Snow_Black}"
                                     Padding="6">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding BindingContext.SelectDateCommand, Source={x:Reference CalendarViewRoot}}" CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
                             
                             <Border.Triggers>
                                 <!-- Predicted days are outlined, logged days filled: now that one is a

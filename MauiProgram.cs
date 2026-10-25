@@ -94,6 +94,11 @@ public static class MauiProgram
 			}
 #elif IOS || MACCATALYST
 			handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+			// The native rounded-rect outline, as Entry already loses above. Windows draws these pickers
+			// without a border, and the app wraps them in its own Field border where it wants one; on
+			// iPhone the native outline sat inside that one and showed as a double frame once the Field
+			// radius went to 12 (owner, TestFlight build 9, 2026-10-21).
+			handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
 #elif WINDOWS
 			handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
 #endif
@@ -110,11 +115,22 @@ public static class MauiProgram
 			}
 #elif IOS || MACCATALYST
 			handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+			// The native rounded-rect outline, as Entry already loses above. Windows draws these pickers
+			// without a border, and the app wraps them in its own Field border where it wants one; on
+			// iPhone the native outline sat inside that one and showed as a double frame once the Field
+			// radius went to 12 (owner, TestFlight build 9, 2026-10-21).
+			handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
 #elif WINDOWS
 			handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
 #endif
 		});
 
-		return builder.Build();
+		var app = builder.Build();
+		// Motion tokens read the reduce-motion preference through this one instance from here on.
+		Diarion.Resources.Styles.Motion.Configure(app.Services.GetRequiredService<Diarion.Services.IMotionSettings>());
+		// Spoken reminders are read aloud as their notification arrives (spec 19). Here and not in the
+		// window: on Android the alarm wakes the application without one.
+		app.Services.GetRequiredService<Diarion.Services.SpokenReminderDispatcher>().Start();
+		return app;
 	}
 }

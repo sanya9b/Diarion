@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
-using Diarion.Services.Ai;
 using Diarion.ViewModels;
 using Diarion.ViewModels.Statistics;
 using FluentAssertions;
@@ -181,12 +181,33 @@ public class StatisticsRangeTests
 
     // --- The screen ---
 
-    private static StatisticsViewModel BuildViewModel(out Mock<IStatisticsService> stats)
+    [Fact]
+    public void StreakPill_DrawsTheSeason_AsTheHomeTileDoes()
+    {
+        var vm = BuildViewModel(out _);
+
+        vm.StreakSeason.Should().Be(SeasonCalendar.Of(DateTime.Today));
+        vm.StreakIcon.Should().BeOfType<Microsoft.Maui.Controls.Shapes.PathGeometry>()
+            .Which.Figures.Should().NotBeEmpty();
+
+        var raised = new List<string>();
+        vm.PropertyChanged += (_, e) => raised.Add(e.PropertyName ?? string.Empty);
+        vm.StreakSeason = vm.StreakSeason == Season.Winter ? Season.Summer : Season.Winter;
+        raised.Should().Contain(nameof(StatisticsViewModel.StreakIcon));
+    }
+
+    internal static StatisticsViewModel BuildViewModel(out Mock<IStatisticsService> stats)
         => BuildViewModel(out stats, out _);
+
+    /// <summary>The same view model, with a say over the diary service (the activity card reads it).</summary>
+    internal static StatisticsViewModel BuildViewModel(Action<Mock<IDiaryService>> configureDiary)
+        => BuildViewModel(out _, out _, configureDiary);
 
     private static StatisticsViewModel BuildViewModel(
         out Mock<IStatisticsService> stats,
-        out Mock<IDispatcherService> dispatcher)
+        out Mock<IDispatcherService> dispatcher,
+        Action<Mock<IDiaryService>>? configureDiary = null,
+        Diarion.Services.Reports.IPeriodReviewService? reviews = null)
     {
         stats = new Mock<IStatisticsService>();
         stats.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>()))
@@ -206,17 +227,7 @@ public class StatisticsRangeTests
 
         var diary = new Mock<IDiaryService>();
         diary.Setup(s => s.GetCurrentStreakAsync()).ReturnsAsync(new StreakResult(0, 0));
-
-        var digest = new Mock<IDigestService>();
-        digest.Setup(d => d.BuildAsync(
-                  It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync((DateTime start, DateTime end, int _, CancellationToken __) =>
-                  new Digest(start, end, 0, 0, Array.Empty<DigestExcerpt>()));
-
-        var themes = new Mock<IThemeClusterService>();
-        themes.Setup(t => t.ClusterAsync(
-                  It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync(Array.Empty<DiaryTheme>());
+        configureDiary?.Invoke(diary);
 
         var profile = new Mock<IProfileService>();
         profile.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile());
@@ -236,14 +247,31 @@ public class StatisticsRangeTests
             new Mock<INavigationService>().Object,
             dispatcher.Object,
             new MoodStatsViewModel(stats.Object, correlation.Object),
-            digest.Object,
-            themes.Object,
             new SleepStatsViewModel(stats.Object),
             new ProductivityStatsViewModel(stats.Object),
             new FinanceStatsViewModel(stats.Object, profile.Object),
             new HabitStatsViewModel(new Mock<IHabitService>().Object, profile.Object),
             new CycleStatsViewModel(new Mock<ICycleLogService>().Object, profile.Object),
+            new PeriodReviewViewModel(reviews ?? EmptyReviews(), profile.Object),
             new TourViewModel(profile.Object, new TourService()));
+    }
+
+    /// <summary>
+    /// The review tab is the one the screen opens on, so every load in these tests goes through it.
+    /// A real calculator over two empty snapshots, rather than a bare mock, so the view model gets
+    /// the shape it expects and the tests here stay about the period.
+    /// </summary>
+    private static Diarion.Services.Reports.IPeriodReviewService EmptyReviews()
+    {
+        var reviews = new Mock<Diarion.Services.Reports.IPeriodReviewService>();
+        reviews.Setup(r => r.BuildAsync(It.IsAny<StatsRange>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync((StatsRange range, CancellationToken _) =>
+                   Diarion.Services.Reports.PeriodReviewCalculator.Compare(
+                       new Diarion.Models.Ai.Reports.PeriodSnapshot(),
+                       new Diarion.Models.Ai.Reports.PeriodSnapshot(),
+                       range,
+                       Diarion.Services.Reports.PeriodReviewService.PreviousOf(range)));
+        return reviews.Object;
     }
 
     [Fact]
@@ -315,6 +343,7 @@ public class StatisticsRangeTests
         // collections, and WinUI ignores those writes from a background thread without complaining:
         // the charts stayed on the previous window while the numbers beside them moved on.
         var vm = BuildViewModel(out var stats, out var dispatcher);
+        vm.SelectTab(vm.Tabs.Single(t => t.Option == StatisticsTabOption.General));
         stats.Invocations.Clear();
 
         vm.RangeStart = LastMarch.Start;
@@ -330,6 +359,7 @@ public class StatisticsRangeTests
     public async Task ViewModel_LoadsExactlyTheChosenWindow()
     {
         var vm = BuildViewModel(out var stats);
+        vm.SelectTab(vm.Tabs.Single(t => t.Option == StatisticsTabOption.General));
         vm.RangeStart = LastMarch.Start;
         vm.RangeEnd = LastMarch.End;
         stats.Invocations.Clear();
@@ -337,6 +367,36 @@ public class StatisticsRangeTests
         await vm.LoadStatisticsAsync();
 
         stats.Verify(s => s.GetMoodStatisticsAsync(LastMarch), Times.Once);
+    }
+
+    [Fact]
+    public async Task ViewModel_OpensOnTheReviewTab_AndReviewsTheChosenWindow()
+    {
+        // The review is what the screen opens on: "what changed" before "what is". It is asked for
+        // the same two dates as every other tab, so the comparison and the charts count the same days.
+        var reviews = new Mock<Diarion.Services.Reports.IPeriodReviewService>();
+        reviews.Setup(r => r.BuildAsync(It.IsAny<StatsRange>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync((StatsRange range, CancellationToken _) =>
+                   Diarion.Services.Reports.PeriodReviewCalculator.Compare(
+                       new Diarion.Models.Ai.Reports.PeriodSnapshot(),
+                       new Diarion.Models.Ai.Reports.PeriodSnapshot(),
+                       range,
+                       Diarion.Services.Reports.PeriodReviewService.PreviousOf(range)));
+        var vm = BuildViewModel(out var stats, out _, reviews: reviews.Object);
+
+        vm.Tabs[0].Option.Should().Be(StatisticsTabOption.Review);
+        vm.IsReviewTabVisible.Should().BeTrue();
+
+        vm.RangeStart = LastMarch.Start;
+        vm.RangeEnd = LastMarch.End;
+        reviews.Invocations.Clear();
+        stats.Invocations.Clear();
+
+        await vm.LoadStatisticsAsync();
+
+        reviews.Verify(r => r.BuildAsync(LastMarch, It.IsAny<CancellationToken>()), Times.Once);
+        stats.Verify(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>()), Times.Never,
+            "the review tab does not also load the mood tab's charts");
     }
 
     [Fact]
@@ -351,5 +411,18 @@ public class StatisticsRangeTests
         await vm.LoadStatisticsAsync();
 
         stats.Verify(s => s.GetSleepStatisticsAsync(LastMarch), Times.Once);
+    }
+
+    [Fact]
+    public void RangeRequestedMessage_AppliesBothDatesAsOneWindow()
+    {
+        // Spec 17, R1.6: the home-screen path opens this screen on the window it counted.
+        var vm = BuildViewModel(out _);
+        var window = StatsRange.LastDays(30);
+
+        WeakReferenceMessenger.Default.Send(new Diarion.Messages.StatisticsRangeRequestedMessage(window));
+
+        vm.RangeStart.Should().Be(window.Start);
+        vm.RangeEnd.Should().Be(window.End);
     }
 }

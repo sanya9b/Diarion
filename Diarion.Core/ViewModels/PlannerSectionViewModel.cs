@@ -11,6 +11,7 @@ using Diarion.Diagnostics;
 using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Services;
+using Diarion.Services.Store;
 
 namespace Diarion.ViewModels;
 
@@ -92,7 +93,11 @@ public partial class PlannerSectionViewModel : ObservableObject
         foreach (var item in items)
         {
             var isRecurring = item.RecurringTaskId != null && live.Contains(item.RecurringTaskId.Value);
-            Todos.Add(new TodoItemViewModel(item, isRecurring, row => DeleteTodoCommand.Execute(row)));
+            Todos.Add(new TodoItemViewModel(
+                item,
+                isRecurring,
+                row => DeleteTodoCommand.Execute(row),
+                (row, priority) => ChoosePriorityCommand.Execute(new PriorityChoice(row, priority))));
         }
 
         BuildHourGrid();
@@ -217,14 +222,14 @@ public partial class PlannerSectionViewModel : ObservableObject
 
                 if (choice == wholeSeries)
                 {
-                    await _todoService.DeleteRecurringTaskAsync(todo.Model.RecurringTaskId.Value);
+                    if (!await WriteGate.TryAsync(() => _todoService.DeleteRecurringTaskAsync(todo.Model.RecurringTaskId.Value))) return;
                     RemoveFromView(todo);
                     WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
                     return;
                 }
             }
 
-            await _todoService.DeleteTodoAsync(todo.Id);
+            if (!await WriteGate.TryAsync(() => _todoService.DeleteTodoAsync(todo.Id))) return;
             RemoveFromView(todo);
             WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
         }
@@ -257,7 +262,12 @@ public partial class PlannerSectionViewModel : ObservableObject
         {
             todo.IsCompleted = !todo.IsCompleted;
             todo.SyncToModel();
-            await _todoService.SaveTodoAsync(todo.Model);
+            if (!await WriteGate.TryAsync(() => _todoService.SaveTodoAsync(todo.Model)))
+            {
+                // Not saved, so not ticked: a box that stays checked over a refused write lies about the day.
+                todo.IsCompleted = !todo.IsCompleted;
+                return;
+            }
             await LoadTodosForDateAsync(todo.TargetDate);
             WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
         }
@@ -273,6 +283,76 @@ public partial class PlannerSectionViewModel : ObservableObject
         if (todo == null)
             return;
 
+        // A tap on a row whose colours are open puts them away; it is not a request to leave the screen.
+        if (todo.IsPickingPriority)
+        {
+            todo.IsPickingPriority = false;
+            return;
+        }
+
         await _navigationService.NavigateToAsync($"TodoDetail?Id={todo.Id}");
     }
+
+    /// <summary>
+    /// A long press on a row opens its three priority colours in place; pressing again closes them. Only
+    /// one row is open at a time, so the screen never holds two half-finished choices.
+    /// </summary>
+    [RelayCommand]
+    private void TogglePriorityPicker(TodoItemViewModel? todo)
+    {
+        if (todo == null) return;
+
+        var open = !todo.IsPickingPriority;
+        foreach (var row in Todos) row.IsPickingPriority = false;
+        todo.IsPickingPriority = open;
+    }
+
+    /// <summary>
+    /// Saves a colour picked on the row. The colour is the priority, nothing else: it goes through the same
+    /// save the task form uses, so a change on an occurrence reaches its series the same way, and it keeps
+    /// the form's limit on high-priority tasks in a day.
+    /// </summary>
+    [RelayCommand]
+    private async Task ChoosePriorityAsync(PriorityChoice? choice)
+    {
+        if (choice == null) return;
+        var (todo, priority) = choice;
+        todo.IsPickingPriority = false;
+        if (todo.Priority == priority) return;
+
+        try
+        {
+            if (priority == TodoPriority.High
+                && Todos.Count(t => t.Priority == TodoPriority.High && t.Id != todo.Id) >= RecurringTaskPlanner.MaxHighPriorityPerDay)
+            {
+                await _dialogService.ShowAlertAsync(
+                    Diarion.Resources.Localization.AppResources.MaxHighPriorityAlertTitle,
+                    Diarion.Resources.Localization.AppResources.MaxHighPriorityAlertMessage,
+                    Diarion.Resources.Localization.AppResources.OkButtonLabel);
+                return;
+            }
+
+            var previous = todo.Priority;
+            todo.Priority = priority;
+            todo.SyncToModel();
+            if (!await WriteGate.TryAsync(() => _todoService.SaveTodoAsync(todo.Model)))
+            {
+                todo.Priority = previous;
+                todo.SyncToModel();
+                return;
+            }
+
+            // Reloaded rather than patched: the day is ordered by priority within an hour, and the series
+            // may have changed with it.
+            await LoadTodosForDateAsync(todo.TargetDate);
+            WeakReferenceMessenger.Default.Send(new TodoChangedMessage(todo.TargetDate));
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("Error changing priority: " + ex.Message);
+        }
+    }
 }
+
+/// <summary>A row and the colour picked on it — the one parameter <see cref="PlannerSectionViewModel.ChoosePriorityCommand"/> takes.</summary>
+public sealed record PriorityChoice(TodoItemViewModel Todo, TodoPriority Priority);

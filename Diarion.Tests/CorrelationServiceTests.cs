@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
-using Diarion.Services.Ai;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -68,8 +68,7 @@ public class CorrelationServiceTests
                .ReturnsAsync(new List<FinanceTransaction>());
 
         return new CorrelationService(
-            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object,
-            new NullThemeClusterService());
+            diary.Object, cycle.Object, profile.Object, todos.Object, finance.Object);
     }
 
     [Fact]
@@ -155,5 +154,43 @@ public class CorrelationServiceTests
         lagged[0].FactorKey.Should().Be("SleepDuration");
         lagged[0].LagDays.Should().Be(1);
         Math.Abs(lagged[0].Coefficient).Should().BeGreaterThan(0.7);
+    }
+
+    // ---- which factor the readiness names (spec 17, R1.1) ----------------------------------
+
+    [Fact]
+    public async Task Readiness_WithOneFactor_NamesIt()
+    {
+        var data = Enumerable.Range(0, 9).Select(i => Entry(daysAgo: i, sleepHours: 4 + i * 0.2, emotion: Tier(i)));
+
+        var readiness = await Build(data).GetReadinessAsync(StatsRange.LastDays(30));
+
+        readiness.PairedDays.Should().Be(9);
+        readiness.BestFactorKey.Should().Be(CorrelationService.Factors.SleepDuration);
+    }
+
+    [Fact]
+    public async Task Readiness_WithTwoFactors_NamesTheOneWithMorePairedDays()
+    {
+        // Sleep quality on all twelve days, sleep duration on six. Duration comes first in the series,
+        // so the name has to follow the count and not the order.
+        var data = Enumerable.Range(0, 12)
+            .Select(i => Entry(daysAgo: i, sleepHours: i < 6 ? 4 + i * 0.2 : null, emotion: Tier(i), quality: 1 + i % 5));
+
+        var readiness = await Build(data).GetReadinessAsync(StatsRange.LastDays(30));
+
+        readiness.PairedDays.Should().Be(12);
+        readiness.BestFactorKey.Should().Be(CorrelationService.Factors.SleepQuality);
+    }
+
+    [Fact]
+    public async Task Readiness_WithMoodAlone_NamesNothing()
+    {
+        var data = Enumerable.Range(0, 9).Select(i => Entry(daysAgo: i, emotion: Tier(i)));
+
+        var readiness = await Build(data).GetReadinessAsync(StatsRange.LastDays(30));
+
+        readiness.PairedDays.Should().Be(0);
+        readiness.BestFactorKey.Should().BeNull();
     }
 }

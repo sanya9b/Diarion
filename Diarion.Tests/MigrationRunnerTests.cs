@@ -25,6 +25,26 @@ public class MigrationRunnerTests
     }
 
     [Fact]
+    public void Run_DropsTheRetiredEmbeddingIndex_AndKeepsTheDiary()
+    {
+        // A database from before 2026-10-21 still carries the on-device AI's vector index. The migration
+        // frees that space and must not touch what the user wrote.
+        using var db = new LiteDatabase(new MemoryStream());
+        db.UserVersion = 7;
+        var entries = db.GetCollection<DiaryEntry>(DatabaseConstants.EntriesCollection);
+        var id = Guid.NewGuid();
+        entries.Insert(new DiaryEntry { Id = id, Date = new DateTime(2026, 9, 1), Content = "лишається" });
+        db.GetCollection(M008_DropRetiredEmbeddings.RetiredCollection)
+          .Insert(new BsonDocument { ["_id"] = "diary|x|0", ["Text"] = "slice", ["Vector"] = new byte[8] });
+
+        MigrationRunner.Run(db);
+
+        db.CollectionExists(M008_DropRetiredEmbeddings.RetiredCollection).Should().BeFalse();
+        entries.FindById(id).Content.Should().Be("лишається");
+        db.UserVersion.Should().Be(8);
+    }
+
+    [Fact]
     public void Run_NormalizesDiaryDatesToMidnight_AndSetsVersion()
     {
         using var db = new LiteDatabase(new MemoryStream());
