@@ -115,7 +115,7 @@ public class FinanceRecurringIntegrationTests : IDisposable
 
         // Oldest first, which is the order the feed offers them in.
         var oldest = viewModel.Feed.OfType<PlannedFeedItem>().OrderBy(i => i.Date).First();
-        await viewModel.ConfirmPlannedCommand.ExecuteAsync(oldest);
+        await viewModel.Planned.ConfirmPlannedCommand.ExecuteAsync(oldest);
 
         var posted = (await _service.GetFinanceTransactionsAsync()).Should().ContainSingle().Subject;
         posted.Date.Should().Be(oldest.Date);
@@ -134,7 +134,7 @@ public class FinanceRecurringIntegrationTests : IDisposable
         await viewModel.LoadAsync();
 
         var oldest = viewModel.Feed.OfType<PlannedFeedItem>().OrderBy(i => i.Date).First();
-        await viewModel.SkipPlannedCommand.ExecuteAsync(oldest);
+        await viewModel.Planned.SkipPlannedCommand.ExecuteAsync(oldest);
 
         (await _service.GetFinanceTransactionsAsync()).Should().BeEmpty();
         viewModel.Feed.OfType<PlannedFeedItem>().Should().HaveCount(2)
@@ -147,10 +147,10 @@ public class FinanceRecurringIntegrationTests : IDisposable
         var viewModel = NewViewModel();
         await viewModel.LoadAsync();
 
-        viewModel.ShowRecurringFormCommand.Execute(null);
-        viewModel.NewRecurringAmountText = "8000";
-        viewModel.NewRecurringCategory = "Rent";
-        await viewModel.SaveRecurringRuleCommand.ExecuteAsync(null);
+        viewModel.Planned.ShowRecurringFormCommand.Execute(null);
+        viewModel.Planned.NewRecurringAmountText = "8000";
+        viewModel.Planned.NewRecurringCategory = "Rent";
+        await viewModel.Planned.SaveRecurringRuleCommand.ExecuteAsync(null);
 
         // "From now on": today's occurrence has not arrived as far as the rule is concerned.
         (await _service.GetFinanceTransactionsAsync()).Should().BeEmpty();
@@ -172,7 +172,7 @@ public class FinanceRecurringIntegrationTests : IDisposable
 
         viewModel.TotalBalance.Should().Be(22000m);   // 30000 opening − 8000 posted
         viewModel.MonthExpense.Should().Be(8000m);
-        viewModel.Budgets.Single(b => b.Category == "Rent").AmountText.Should().StartWith("8");
+        viewModel.Budgets.Items.Single(b => b.Category == "Rent").AmountText.Should().StartWith("8");
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public class FinanceRecurringIntegrationTests : IDisposable
         (await _service.GetRecurringTransactionsAsync()).Single().AccountId.Should().Be(keeper.Id);
         viewModel.TotalBalance.Should().Be(1000m - 8000m);
 
-        viewModel.SelectAccountCommand.Execute(viewModel.Accounts.Single(a => a.Name == "Keeper"));
+        viewModel.Accounts.SelectAccountCommand.Execute(viewModel.Accounts.Items.Single(a => a.Name == "Keeper"));
         viewModel.TotalBalance.Should().Be(1000m - 8000m);
     }
 

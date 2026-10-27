@@ -105,13 +105,13 @@ public class FinanceViewModelTests
         var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         await viewModel.LoadAsync();
 
-        viewModel.NewTransactionType = TransactionType.Expense;
-        viewModel.NewAmountText = "150,75"; // Testing comma as decimal separator
-        viewModel.NewCategory = " Groceries ";
-        viewModel.NewDate = new DateTime(2025, 6, 15);
+        viewModel.TransactionForm.NewTransactionType = TransactionType.Expense;
+        viewModel.TransactionForm.NewAmountText = "150,75"; // Testing comma as decimal separator
+        viewModel.TransactionForm.NewCategory = " Groceries ";
+        viewModel.TransactionForm.NewDate = new DateTime(2025, 6, 15);
 
         // Act
-        await viewModel.SaveTransactionCommand.ExecuteAsync(null);
+        await viewModel.TransactionForm.SaveTransactionCommand.ExecuteAsync(null);
 
         // Assert
         storedTransactions.Should().ContainSingle();
@@ -120,9 +120,9 @@ public class FinanceViewModelTests
         storedTransactions[0].Category.Should().Be("Groceries");
         
         viewModel.Feed.OfType<TransactionFeedItem>().Should().HaveCount(1);
-        viewModel.NewAmountText.Should().BeEmpty();
-        viewModel.NewCategory.Should().BeEmpty();
-        viewModel.IsAddTransactionVisible.Should().BeFalse();
+        viewModel.TransactionForm.NewAmountText.Should().BeEmpty();
+        viewModel.TransactionForm.NewCategory.Should().BeEmpty();
+        viewModel.TransactionForm.IsAddTransactionVisible.Should().BeFalse();
     }
 
     [Fact]
@@ -132,10 +132,10 @@ public class FinanceViewModelTests
         var diaryServiceMock = new Mock<IFinanceService>();
         var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         
-        viewModel.NewAmountText = "invalid_number";
+        viewModel.TransactionForm.NewAmountText = "invalid_number";
 
         // Act
-        await viewModel.SaveTransactionCommand.ExecuteAsync(null);
+        await viewModel.TransactionForm.SaveTransactionCommand.ExecuteAsync(null);
 
         // Assert
         diaryServiceMock.Verify(s => s.SaveFinanceTransactionAsync(It.IsAny<FinanceTransaction>()), Times.Never);
@@ -148,10 +148,10 @@ public class FinanceViewModelTests
         var diaryServiceMock = new Mock<IFinanceService>();
         var viewModel = new FinanceViewModel(diaryServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         
-        viewModel.NewAmountText = "-50";
+        viewModel.TransactionForm.NewAmountText = "-50";
 
         // Act
-        await viewModel.SaveTransactionCommand.ExecuteAsync(null);
+        await viewModel.TransactionForm.SaveTransactionCommand.ExecuteAsync(null);
 
         // Assert
         diaryServiceMock.Verify(s => s.SaveFinanceTransactionAsync(It.IsAny<FinanceTransaction>()), Times.Never);
@@ -169,13 +169,13 @@ public class FinanceViewModelTests
         var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         
         // Act - Open the add dialog
-        await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null);
+        await viewModel.TransactionForm.ToggleAddTransactionCommand.ExecuteAsync(null);
         
         // Assert
-        viewModel.IsAddTransactionVisible.Should().BeTrue();
+        viewModel.TransactionForm.IsAddTransactionVisible.Should().BeTrue();
         financeServiceMock.Verify(s => s.GetCategoriesAsync(TransactionType.Expense), Times.Once);
-        viewModel.SuggestedCategories.Should().HaveCount(3);
-        viewModel.SuggestedCategories.Should().Contain("Groceries");
+        viewModel.TransactionForm.SuggestedCategories.Should().HaveCount(3);
+        viewModel.TransactionForm.SuggestedCategories.Should().Contain("Groceries");
     }
 
     [Fact]
@@ -191,16 +191,16 @@ public class FinanceViewModelTests
             .ReturnsAsync(new List<string> { "Salary", "Bonus" });
             
         var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
-        await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null); // Defaults to Expense
+        await viewModel.TransactionForm.ToggleAddTransactionCommand.ExecuteAsync(null); // Defaults to Expense
         
         // Act
-        await viewModel.SetTransactionTypeCommand.ExecuteAsync("Income");
+        await viewModel.TransactionForm.SetTransactionTypeCommand.ExecuteAsync("Income");
         
         // Assert
-        viewModel.IsIncomeTypeSelected.Should().BeTrue();
+        viewModel.TransactionForm.IsIncomeTypeSelected.Should().BeTrue();
         financeServiceMock.Verify(s => s.GetCategoriesAsync(TransactionType.Income), Times.Once);
-        viewModel.SuggestedCategories.Should().HaveCount(2);
-        viewModel.SuggestedCategories.Should().Contain("Salary");
+        viewModel.TransactionForm.SuggestedCategories.Should().HaveCount(2);
+        viewModel.TransactionForm.SuggestedCategories.Should().Contain("Salary");
     }
 
     [Fact]
@@ -213,17 +213,17 @@ public class FinanceViewModelTests
             .ReturnsAsync(new List<string> { "Groceries" });
             
         var viewModel = new FinanceViewModel(financeServiceMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
-        await viewModel.ToggleAddTransactionCommand.ExecuteAsync(null);
+        await viewModel.TransactionForm.ToggleAddTransactionCommand.ExecuteAsync(null);
         
         // Ensure suggestions are initially populated
-        viewModel.SuggestedCategories.Should().NotBeEmpty();
+        viewModel.TransactionForm.SuggestedCategories.Should().NotBeEmpty();
 
         // Act
-        viewModel.SelectCategoryCommand.Execute("Groceries");
+        viewModel.TransactionForm.SelectCategoryCommand.Execute("Groceries");
 
         // Assert
-        viewModel.NewCategory.Should().Be("Groceries");
-        viewModel.SuggestedCategories.Should().BeEmpty();
+        viewModel.TransactionForm.NewCategory.Should().Be("Groceries");
+        viewModel.TransactionForm.SuggestedCategories.Should().BeEmpty();
     }
 
     [Fact]
@@ -242,8 +242,8 @@ public class FinanceViewModelTests
         var viewModel = new FinanceViewModel(financeMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         await viewModel.LoadAsync();
 
-        viewModel.HasBudgets.Should().BeTrue();
-        var b = viewModel.Budgets.Should().ContainSingle().Subject;
+        viewModel.Budgets.HasBudgets.Should().BeTrue();
+        var b = viewModel.Budgets.Items.Should().ContainSingle().Subject;
         b.Category.Should().Be("Food");
         b.IsOverspent.Should().BeFalse();
         b.AmountText.Should().Contain("40");
@@ -255,13 +255,13 @@ public class FinanceViewModelTests
         var financeMock = FinanceMock();
 
         var viewModel = NewViewModel(financeMock);
-        viewModel.NewBudgetCategory = "Food";
-        viewModel.NewBudgetLimitText = "150";
+        viewModel.Budgets.NewBudgetCategory = "Food";
+        viewModel.Budgets.NewBudgetLimitText = "150";
 
-        await viewModel.SaveBudgetCommand.ExecuteAsync(null);
+        await viewModel.Budgets.SaveBudgetCommand.ExecuteAsync(null);
 
         financeMock.Verify(s => s.SaveBudgetAsync(It.Is<Budget>(b => b.Category == "Food" && b.MonthlyLimit == 150m)), Times.Once);
-        viewModel.IsBudgetFormVisible.Should().BeFalse();
+        viewModel.Budgets.IsBudgetFormVisible.Should().BeFalse();
     }
 
     [Fact]
@@ -274,7 +274,7 @@ public class FinanceViewModelTests
         var viewModel = new FinanceViewModel(financeMock.Object, new Mock<IDialogService>().Object, profileMock.Object);
         await viewModel.LoadAsync();
 
-        viewModel.ShowBudgets.Should().BeFalse();
+        viewModel.Budgets.ShowBudgets.Should().BeFalse();
     }
 
     [Fact]
@@ -294,13 +294,13 @@ public class FinanceViewModelTests
         var viewModel = new FinanceViewModel(financeMock.Object, new Mock<IDialogService>().Object, new Mock<IProfileService>().Object);
         await viewModel.LoadAsync();
 
-        var foodBudget = viewModel.Budgets.First(b => b.Category == "Food");
-        viewModel.ShowCategoryDetailCommand.Execute(foodBudget);
+        var foodBudget = viewModel.Budgets.Items.First(b => b.Category == "Food");
+        viewModel.Budgets.ShowCategoryDetailCommand.Execute(foodBudget);
 
-        viewModel.IsCategoryDetailVisible.Should().BeTrue();
-        viewModel.CategoryDetailTitle.Should().Be("Food");
-        viewModel.HasCategoryTransactions.Should().BeTrue();
-        viewModel.CategoryTransactions.Should().ContainSingle(t => t.Amount == 10m);
+        viewModel.Budgets.IsCategoryDetailVisible.Should().BeTrue();
+        viewModel.Budgets.CategoryDetailTitle.Should().Be("Food");
+        viewModel.Budgets.HasCategoryTransactions.Should().BeTrue();
+        viewModel.Budgets.CategoryTransactions.Should().ContainSingle(t => t.Amount == 10m);
     }
 
     // --- Accounts ---
@@ -322,15 +322,15 @@ public class FinanceViewModelTests
         var viewModel = NewViewModel(financeMock);
         await viewModel.LoadAsync();
 
-        viewModel.SelectAccountCommand.Execute(viewModel.Accounts.Single());
-        viewModel.EditSelectedAccountCommand.Execute(null);
-        viewModel.NewAccountName = "  Wallet  ";
-        viewModel.NewAccountInitialBalanceText = "120,50";
-        await viewModel.SaveAccountCommand.ExecuteAsync(null);
+        viewModel.Accounts.SelectAccountCommand.Execute(viewModel.Accounts.Items.Single());
+        viewModel.Accounts.EditSelectedAccountCommand.Execute(null);
+        viewModel.Accounts.NewAccountName = "  Wallet  ";
+        viewModel.Accounts.NewAccountInitialBalanceText = "120,50";
+        await viewModel.Accounts.SaveAccountCommand.ExecuteAsync(null);
 
         financeMock.Verify(s => s.SaveAccountAsync(It.Is<Account>(a =>
             a.Name == "Wallet" && a.InitialBalance == 120.50m && a.ResourceKey == null)), Times.Once);
-        viewModel.IsAccountFormVisible.Should().BeFalse();
+        viewModel.Accounts.IsAccountFormVisible.Should().BeFalse();
     }
 
     [Fact]
@@ -339,9 +339,9 @@ public class FinanceViewModelTests
         var financeMock = FinanceMock();
         var viewModel = NewViewModel(financeMock);
 
-        viewModel.ShowAccountFormCommand.Execute(null);
-        viewModel.NewAccountName = "   ";
-        await viewModel.SaveAccountCommand.ExecuteAsync(null);
+        viewModel.Accounts.ShowAccountFormCommand.Execute(null);
+        viewModel.Accounts.NewAccountName = "   ";
+        await viewModel.Accounts.SaveAccountCommand.ExecuteAsync(null);
 
         financeMock.Verify(s => s.SaveAccountAsync(It.IsAny<Account>()), Times.Never);
     }
@@ -363,16 +363,16 @@ public class FinanceViewModelTests
 
         viewModel.TotalBalance.Should().Be(320m);      // 150 opening + 200 − 30
 
-        viewModel.SelectAccountCommand.Execute(viewModel.Accounts.Single(a => a.Name == "Cash"));
+        viewModel.Accounts.SelectAccountCommand.Execute(viewModel.Accounts.Items.Single(a => a.Name == "Cash"));
 
-        viewModel.IsAllAccountsSelected.Should().BeFalse();
+        viewModel.Accounts.IsAllAccountsSelected.Should().BeFalse();
         viewModel.Feed.OfType<TransactionFeedItem>().Should().ContainSingle(i => i.Model.Amount == 30m);
         viewModel.TotalBalance.Should().Be(70m);       // 100 opening − 30
         viewModel.MonthIncome.Should().Be(0m);
 
-        viewModel.SelectAllAccountsCommand.Execute(null);
+        viewModel.Accounts.SelectAllAccountsCommand.Execute(null);
 
-        viewModel.IsAllAccountsSelected.Should().BeTrue();
+        viewModel.Accounts.IsAllAccountsSelected.Should().BeTrue();
         viewModel.Feed.OfType<TransactionFeedItem>().Should().HaveCount(2);
         viewModel.TotalBalance.Should().Be(320m);
     }
@@ -391,13 +391,13 @@ public class FinanceViewModelTests
         var viewModel = NewViewModel(financeMock);
         await viewModel.LoadAsync();
 
-        viewModel.Accounts.Should().ContainSingle(a => a.Name == "Cash");
+        viewModel.Accounts.Items.Should().ContainSingle(a => a.Name == "Cash");
         viewModel.TotalBalance.Should().Be(150m);      // 160 opening − 10, archived included
 
-        viewModel.ToggleShowArchivedAccountsCommand.Execute(null);
+        viewModel.Accounts.ToggleShowArchivedAccountsCommand.Execute(null);
 
-        viewModel.Accounts.Should().HaveCount(2);
-        viewModel.Accounts.Should().ContainSingle(a => a.Name == "Old" && a.IsArchived);
+        viewModel.Accounts.Items.Should().HaveCount(2);
+        viewModel.Accounts.Items.Should().ContainSingle(a => a.Name == "Old" && a.IsArchived);
     }
 
     [Fact]
@@ -410,9 +410,9 @@ public class FinanceViewModelTests
         var viewModel = NewViewModel(financeMock, dialog.Object);
         await viewModel.LoadAsync();
 
-        viewModel.SelectAccountCommand.Execute(viewModel.Accounts.Single());
-        viewModel.EditSelectedAccountCommand.Execute(null);
-        await viewModel.ToggleArchiveAccountCommand.ExecuteAsync(null);
+        viewModel.Accounts.SelectAccountCommand.Execute(viewModel.Accounts.Items.Single());
+        viewModel.Accounts.EditSelectedAccountCommand.Execute(null);
+        await viewModel.Accounts.ToggleArchiveAccountCommand.ExecuteAsync(null);
 
         only.IsArchived.Should().BeFalse();
         financeMock.Verify(s => s.SaveAccountAsync(It.IsAny<Account>()), Times.Never);
@@ -429,9 +429,9 @@ public class FinanceViewModelTests
         var viewModel = NewViewModel(financeMock, dialog.Object);
         await viewModel.LoadAsync();
 
-        viewModel.SelectAccountCommand.Execute(viewModel.Accounts.Single());
-        viewModel.EditSelectedAccountCommand.Execute(null);
-        await viewModel.DeleteAccountCommand.ExecuteAsync(null);
+        viewModel.Accounts.SelectAccountCommand.Execute(viewModel.Accounts.Items.Single());
+        viewModel.Accounts.EditSelectedAccountCommand.Execute(null);
+        await viewModel.Accounts.DeleteAccountCommand.ExecuteAsync(null);
 
         financeMock.Verify(s => s.DeleteAccountAsync(It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
         dialog.Verify(d => d.ShowAlertAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -452,13 +452,13 @@ public class FinanceViewModelTests
         var viewModel = NewViewModel(financeMock, ConfirmingDialog().Object);
         await viewModel.LoadAsync();
 
-        viewModel.SelectAccountCommand.Execute(viewModel.Accounts.Single(a => a.Name == "Doomed"));
-        viewModel.EditSelectedAccountCommand.Execute(null);
+        viewModel.Accounts.SelectAccountCommand.Execute(viewModel.Accounts.Items.Single(a => a.Name == "Doomed"));
+        viewModel.Accounts.EditSelectedAccountCommand.Execute(null);
 
-        viewModel.HasReassignTargets.Should().BeTrue();
-        viewModel.SelectReassignTargetCommand.Execute(viewModel.ReassignTargets.Single(a => a.Name == "Chosen"));
+        viewModel.Accounts.HasReassignTargets.Should().BeTrue();
+        viewModel.Accounts.SelectReassignTargetCommand.Execute(viewModel.Accounts.ReassignTargets.Single(a => a.Name == "Chosen"));
 
-        await viewModel.DeleteAccountCommand.ExecuteAsync(null);
+        await viewModel.Accounts.DeleteAccountCommand.ExecuteAsync(null);
 
         financeMock.Verify(s => s.DeleteAccountAsync(doomed.Id, chosen.Id), Times.Once);
     }
@@ -467,15 +467,15 @@ public class FinanceViewModelTests
     public void SelectAccountIcon_MovesTheSelectionFlag()
     {
         var viewModel = NewViewModel(FinanceMock());
-        viewModel.ShowAccountFormCommand.Execute(null);
+        viewModel.Accounts.ShowAccountFormCommand.Execute(null);
 
-        viewModel.AvailableIcons[0].IsSelected.Should().BeTrue();
+        viewModel.Accounts.AvailableIcons[0].IsSelected.Should().BeTrue();
 
-        viewModel.SelectAccountIconCommand.Execute(viewModel.AvailableIcons[3].Value);
+        viewModel.Accounts.SelectAccountIconCommand.Execute(viewModel.Accounts.AvailableIcons[3].Value);
 
-        viewModel.NewAccountIcon.Should().Be(viewModel.AvailableIcons[3].Value);
-        viewModel.AvailableIcons[3].IsSelected.Should().BeTrue();
-        viewModel.AvailableIcons[0].IsSelected.Should().BeFalse();
+        viewModel.Accounts.NewAccountIcon.Should().Be(viewModel.Accounts.AvailableIcons[3].Value);
+        viewModel.Accounts.AvailableIcons[3].IsSelected.Should().BeTrue();
+        viewModel.Accounts.AvailableIcons[0].IsSelected.Should().BeFalse();
     }
 
     // --- Transfers ---
@@ -493,18 +493,18 @@ public class FinanceViewModelTests
         var viewModel = NewViewModel(financeMock);
         await viewModel.LoadAsync();
 
-        viewModel.ShowTransferFormCommand.Execute(null);
-        viewModel.SelectTransferFromCommand.Execute(viewModel.TransferFromOptions.Single(a => a.Name == "Card"));
-        viewModel.SelectTransferToCommand.Execute(viewModel.TransferToOptions.Single(a => a.Name == "Cash"));
-        viewModel.NewTransferAmountText = "150";
-        await viewModel.SaveTransferCommand.ExecuteAsync(null);
+        viewModel.Transfers.ShowTransferFormCommand.Execute(null);
+        viewModel.Transfers.SelectTransferFromCommand.Execute(viewModel.Transfers.TransferFromOptions.Single(a => a.Name == "Card"));
+        viewModel.Transfers.SelectTransferToCommand.Execute(viewModel.Transfers.TransferToOptions.Single(a => a.Name == "Cash"));
+        viewModel.Transfers.NewTransferAmountText = "150";
+        await viewModel.Transfers.SaveTransferCommand.ExecuteAsync(null);
 
         stored.Should().ContainSingle();
         stored[0].Amount.Should().Be(150m);
         stored[0].FromAccountId.Should().Be(from.Id);
         stored[0].ToAccountId.Should().Be(to.Id);
 
-        viewModel.IsTransferFormVisible.Should().BeFalse();
+        viewModel.Transfers.IsTransferFormVisible.Should().BeFalse();
         viewModel.Feed.OfType<TransferFeedItem>().Single().FromName.Should().Be("Card");
 
         // Money only moved between accounts, so the aggregate balance is untouched.
@@ -520,13 +520,13 @@ public class FinanceViewModelTests
         var viewModel = NewViewModel(financeMock);
         await viewModel.LoadAsync();
 
-        viewModel.ShowTransferFormCommand.Execute(null);
-        viewModel.NewTransferAmountText = "50";
-        await viewModel.SaveTransferCommand.ExecuteAsync(null);
+        viewModel.Transfers.ShowTransferFormCommand.Execute(null);
+        viewModel.Transfers.NewTransferAmountText = "50";
+        await viewModel.Transfers.SaveTransferCommand.ExecuteAsync(null);
 
         financeMock.Verify(s => s.SaveTransferAsync(It.IsAny<Transfer>()), Times.Never);
-        viewModel.HasTransferError.Should().BeTrue();
-        viewModel.IsTransferFormVisible.Should().BeTrue();
+        viewModel.Transfers.HasTransferError.Should().BeTrue();
+        viewModel.Transfers.IsTransferFormVisible.Should().BeTrue();
     }
 
     [Fact]
@@ -539,12 +539,12 @@ public class FinanceViewModelTests
         var viewModel = NewViewModel(financeMock);
         await viewModel.LoadAsync();
 
-        viewModel.ShowTransferFormCommand.Execute(null);
-        viewModel.NewTransferAmountText = "0";
-        await viewModel.SaveTransferCommand.ExecuteAsync(null);
+        viewModel.Transfers.ShowTransferFormCommand.Execute(null);
+        viewModel.Transfers.NewTransferAmountText = "0";
+        await viewModel.Transfers.SaveTransferCommand.ExecuteAsync(null);
 
         financeMock.Verify(s => s.SaveTransferAsync(It.IsAny<Transfer>()), Times.Never);
-        viewModel.HasTransferError.Should().BeTrue();
+        viewModel.Transfers.HasTransferError.Should().BeTrue();
     }
 
     // --- The unified feed and planned transactions ---
@@ -593,7 +593,7 @@ public class FinanceViewModelTests
 
         await viewModel.Invoking(v => v.LoadAsync()).Should().NotThrowAsync();
         viewModel.TotalBalance.Should().Be(100m);
-        viewModel.HasPending.Should().BeFalse();
+        viewModel.Planned.HasPending.Should().BeFalse();
     }
 
     [Fact]
@@ -626,7 +626,7 @@ public class FinanceViewModelTests
         viewModel.Feed[0].Should().BeOfType<PlannedFeedItem>();
         viewModel.Feed[1].Should().BeOfType<TransferFeedItem>();
         viewModel.Feed[2].Should().BeOfType<TransactionFeedItem>();
-        viewModel.HasPending.Should().BeTrue();
+        viewModel.Planned.HasPending.Should().BeTrue();
     }
 
     [Fact]
@@ -672,7 +672,7 @@ public class FinanceViewModelTests
         await viewModel.LoadAsync();
         viewModel.Feed.OfType<PlannedFeedItem>().Should().HaveCount(2);
 
-        viewModel.SelectAccountCommand.Execute(viewModel.Accounts.Single(a => a.Name == "Card"));
+        viewModel.Accounts.SelectAccountCommand.Execute(viewModel.Accounts.Items.Single(a => a.Name == "Card"));
 
         viewModel.Feed.OfType<PlannedFeedItem>().Should().ContainSingle()
                  .Which.Category.Should().Be("CardRent");
@@ -708,7 +708,7 @@ public class FinanceViewModelTests
         await viewModel.LoadAsync();
 
         var item = viewModel.Feed.OfType<PlannedFeedItem>().Single();
-        await viewModel.ConfirmPlannedCommand.ExecuteAsync(item);
+        await viewModel.Planned.ConfirmPlannedCommand.ExecuteAsync(item);
 
         financeMock.Verify(s => s.ConfirmOccurrenceAsync(occurrence.RuleId, occurrence.Date, It.IsAny<Guid?>()), Times.Once);
         financeMock.Verify(s => s.GetFinanceTransactionsAsync(), Times.Exactly(2)); // reloaded
@@ -725,7 +725,7 @@ public class FinanceViewModelTests
         var viewModel = NewViewModel(financeMock);
         await viewModel.LoadAsync();
 
-        await viewModel.SkipPlannedCommand.ExecuteAsync(viewModel.Feed.OfType<PlannedFeedItem>().Single());
+        await viewModel.Planned.SkipPlannedCommand.ExecuteAsync(viewModel.Feed.OfType<PlannedFeedItem>().Single());
 
         financeMock.Verify(s => s.SkipOccurrenceAsync(occurrence.RuleId, occurrence.Date), Times.Once);
         financeMock.Verify(s => s.ConfirmOccurrenceAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<Guid?>()), Times.Never);
@@ -744,17 +744,17 @@ public class FinanceViewModelTests
         var viewModel = NewViewModel(financeMock);
         await viewModel.LoadAsync();
 
-        viewModel.ShowRecurringFormCommand.Execute(null);
-        viewModel.NewRecurringAmountText = "8000";
-        viewModel.NewRecurringCategory = "Rent";
-        await viewModel.SaveRecurringRuleCommand.ExecuteAsync(null);
+        viewModel.Planned.ShowRecurringFormCommand.Execute(null);
+        viewModel.Planned.NewRecurringAmountText = "8000";
+        viewModel.Planned.NewRecurringCategory = "Rent";
+        await viewModel.Planned.SaveRecurringRuleCommand.ExecuteAsync(null);
 
         saved.Should().NotBeNull();
         saved!.Amount.Should().Be(8000m);
         // Today is already "dealt with", so nothing is written the moment the rule is created.
         saved.LastPostedThrough.Date.Should().Be(DateTime.Today);
         saved.Recurrence.Anchor.Date.Should().Be(DateTime.Today);
-        viewModel.IsRecurringFormVisible.Should().BeFalse();
+        viewModel.Planned.IsRecurringFormVisible.Should().BeFalse();
     }
 
     [Fact]
@@ -769,10 +769,10 @@ public class FinanceViewModelTests
         await viewModel.LoadAsync();
 
         var start = DateTime.Today.AddDays(-40);
-        viewModel.ShowRecurringFormCommand.Execute(null);
-        viewModel.NewRecurringAmountText = "8000";
-        viewModel.NewRecurringStartDate = start;
-        await viewModel.SaveRecurringRuleCommand.ExecuteAsync(null);
+        viewModel.Planned.ShowRecurringFormCommand.Execute(null);
+        viewModel.Planned.NewRecurringAmountText = "8000";
+        viewModel.Planned.NewRecurringStartDate = start;
+        await viewModel.Planned.SaveRecurringRuleCommand.ExecuteAsync(null);
 
         // Deliberately chosen in the past, so the watermark sits before it and the backfill runs.
         saved!.LastPostedThrough.Date.Should().Be(start.AddDays(-1));
@@ -788,7 +788,7 @@ public class FinanceViewModelTests
         await viewModel.LoadAsync();
 
         financeMock.Verify(s => s.ApplyDuePostingsAsync(It.IsAny<DateTime>(), It.IsAny<Guid?>()), Times.Never);
-        viewModel.ShowPlanned.Should().BeFalse();
+        viewModel.Planned.ShowPlanned.Should().BeFalse();
     }
 
     [Fact]
@@ -798,13 +798,13 @@ public class FinanceViewModelTests
         var viewModel = NewViewModel(financeMock);
         await viewModel.LoadAsync();
 
-        viewModel.ShowRecurringFormCommand.Execute(null);
-        viewModel.NewRecurringAmountText = "not a number";
-        await viewModel.SaveRecurringRuleCommand.ExecuteAsync(null);
+        viewModel.Planned.ShowRecurringFormCommand.Execute(null);
+        viewModel.Planned.NewRecurringAmountText = "not a number";
+        await viewModel.Planned.SaveRecurringRuleCommand.ExecuteAsync(null);
 
         financeMock.Verify(s => s.SaveRecurringTransactionAsync(It.IsAny<RecurringTransaction>()), Times.Never);
-        viewModel.HasRecurringError.Should().BeTrue();
-        viewModel.IsRecurringFormVisible.Should().BeTrue();
+        viewModel.Planned.HasRecurringError.Should().BeTrue();
+        viewModel.Planned.IsRecurringFormVisible.Should().BeTrue();
     }
 
     [Fact]

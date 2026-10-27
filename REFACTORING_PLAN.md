@@ -4,6 +4,7 @@
 - [x] 1.1 Створити `IMenstrualCycleService` та `MenstrualCycleService`. Перенести логіку розрахунку циклу з `MainViewModel`. Написати Unit-тести.
 - [x] 1.2 Створити `ICalendarService` та `CalendarService`. Перенести логіку генерації `CalendarDay` з `MainViewModel`. Написати Unit-тести.
 - [x] 1.3 Додати метод `GetTodosForDateRangeAsync` у `ITodoService` та оновити `MainViewModel.UpdateCalendarTasksCompletion`, щоб уникнути N+1 запитів.
+- [x] 1.4 Розбити `FinanceViewModel` (1314 рядків, єдиний God Object серед view model). Зроблено 2026-10-27 у `feature/v1.2`: батько лишив собі завантаження, стрічку й баланси; рахунки, перекази, планові, бюджети й форма транзакції — окремі view model у `ViewModels/Finance/`, зі спільним знімком даних `FinanceLedger` і колбеком перезавантаження. Конструктор, DI і поведінка без змін; у XAML лише префікси секцій (`Accounts.`, `Transfers.`, `Planned.`, `Budgets.`, `TransactionForm.`). Єдина свідома зміна: правило планової транзакції бере рахунок із фільтра сторінки, а не з пікера форми транзакції, яку користувач міг і не відкривати.
 
 ## Пріоритет 2: Очищення інфраструктурного шару (Database)
 - [x] 2.1 Створити `IDatabaseSeeder` та `DatabaseSeeder` і винести генерацію mock-даних та ініціалізацію звичок з `DatabaseContext.cs`.
