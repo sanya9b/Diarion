@@ -19,7 +19,17 @@ public static class PromptSelector
     {
         var valence = MoodAggregate.Valence(emotion, hourlyMood);
 
-        if (valence <= -1) return PromptCategory.CbtReframe;
+        if (valence <= -1)
+        {
+            // Valence decides that the day was hard; the quadrant decides what kind of hard. Sadness,
+            // tiredness and emptiness get rest, not reframing — an exhausted person is not short of
+            // arguments. Anxiety and anger keep the CBT question. A tie between the two unpleasant
+            // quadrants breaks by enum order, which lands on the energetic one, i.e. the older default.
+            return MoodAggregate.DominantQuadrant(emotion, hourlyMood) == EmotionQuadrant.UnpleasantCalm
+                ? PromptCategory.Restoration
+                : PromptCategory.CbtReframe;
+        }
+
         if (valence >= 1) return gratitudeWritten ? PromptCategory.Savouring : PromptCategory.EveningGratitude;
         return PromptCategory.OpenReflection;
     }

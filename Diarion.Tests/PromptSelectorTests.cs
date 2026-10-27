@@ -13,9 +13,15 @@ public class PromptSelectorTests
     private static readonly DateTime Day = new(2026, 7, 15);
 
     [Theory]
-    [InlineData(Emotion.Sad, PromptCategory.CbtReframe)]
+    [InlineData(Emotion.Sad, PromptCategory.Restoration)]
+    [InlineData(Emotion.Tired, PromptCategory.Restoration)]
+    [InlineData(Emotion.Exhausted, PromptCategory.Restoration)]
+    [InlineData(Emotion.Lonely, PromptCategory.Restoration)]
     [InlineData(Emotion.Angry, PromptCategory.CbtReframe)]
     [InlineData(Emotion.Anxious, PromptCategory.CbtReframe)]
+    [InlineData(Emotion.Stressed, PromptCategory.CbtReframe)]
+    [InlineData(Emotion.Overwhelmed, PromptCategory.CbtReframe)]
+    [InlineData(Emotion.Neutral, PromptCategory.OpenReflection)]
     [InlineData(Emotion.None, PromptCategory.OpenReflection)]
     public void SelectCategory_MapsMoodToCategory(Emotion emotion, PromptCategory expected)
     {
@@ -46,14 +52,14 @@ public class PromptSelectorTests
 
         // The scalar says the day was great; the hours say otherwise and must win.
         PromptSelector.SelectCategory(Emotion.Happy, hourly, gratitudeWritten: false)
-            .Should().Be(PromptCategory.CbtReframe);
+            .Should().Be(PromptCategory.Restoration);
     }
 
     [Fact]
     public void SelectCategory_NoHourlyMood_FallsBackToTheScalar()
     {
         PromptSelector.SelectCategory(Emotion.Sad, new List<HourMood>(), gratitudeWritten: false)
-            .Should().Be(PromptCategory.CbtReframe);
+            .Should().Be(PromptCategory.Restoration);
     }
 
     [Fact]
@@ -101,7 +107,7 @@ public class PromptSelectorTests
     [Fact]
     public void Select_ReturnsAPromptFromTheChosenCategory()
     {
-        var picked = PromptSelector.Select(Day, Emotion.Sad, null, false, Pool(10));
+        var picked = PromptSelector.Select(Day, Emotion.Anxious, null, false, Pool(10));
 
         picked!.Category.Should().Be(PromptCategory.CbtReframe);
     }
@@ -154,7 +160,7 @@ public class PromptSelectorTests
         });
 
         // A prompt written tomorrow cannot be the question a past day asked.
-        PromptSelector.Select(Day, Emotion.Sad, null, false, library)!.TextEn.Should().Be("old");
+        PromptSelector.Select(Day, Emotion.Anxious, null, false, library)!.TextEn.Should().Be("old");
     }
 
     [Fact]
@@ -167,7 +173,7 @@ public class PromptSelectorTests
         });
 
         Enumerable.Range(0, 30)
-            .Select(i => PromptSelector.Select(Day.AddDays(i), Emotion.Sad, null, false, library)!.TextEn)
+            .Select(i => PromptSelector.Select(Day.AddDays(i), Emotion.Anxious, null, false, library)!.TextEn)
             .Should().OnlyContain(text => text == "kept");
     }
 
@@ -177,8 +183,8 @@ public class PromptSelectorTests
         var a = new GuidedPrompt { Category = PromptCategory.CbtReframe, TextEn = "a", CreatedAt = new DateTime(2020, 1, 1) };
         var b = new GuidedPrompt { Category = PromptCategory.CbtReframe, TextEn = "b", CreatedAt = new DateTime(2020, 1, 2) };
 
-        var forwards = PromptSelector.Select(Day, Emotion.Sad, null, false, new PromptLibrary(new[] { a, b }));
-        var backwards = PromptSelector.Select(Day, Emotion.Sad, null, false, new PromptLibrary(new[] { b, a }));
+        var forwards = PromptSelector.Select(Day, Emotion.Anxious, null, false, new PromptLibrary(new[] { a, b }));
+        var backwards = PromptSelector.Select(Day, Emotion.Anxious, null, false, new PromptLibrary(new[] { b, a }));
 
         backwards!.Id.Should().Be(forwards!.Id);
     }
@@ -199,5 +205,55 @@ public class PromptSelectorTests
 
         seen.Should().HaveCount(3).And.OnlyHaveUniqueItems();
         cursor.Id.Should().Be(start.Id, "three steps through three prompts returns to the start");
+    }
+
+    // --- Restoration (spec 18, phase 5): valence says the day was hard, the quadrant says what kind ---
+
+    [Fact]
+    public void SelectCategory_HardDayDominatedByLowEnergyHours_Rests()
+    {
+        var hourly = Hours((9, Emotion.Sad), (14, Emotion.Tired), (20, Emotion.Anxious));
+
+        PromptSelector.SelectCategory(Emotion.None, hourly, gratitudeWritten: false)
+            .Should().Be(PromptCategory.Restoration);
+    }
+
+    [Fact]
+    public void SelectCategory_HardDayDominatedByAnxiousHours_StillReframes()
+    {
+        var hourly = Hours((9, Emotion.Anxious), (14, Emotion.Stressed), (20, Emotion.Sad));
+
+        PromptSelector.SelectCategory(Emotion.None, hourly, gratitudeWritten: false)
+            .Should().Be(PromptCategory.CbtReframe);
+    }
+
+    [Fact]
+    public void SelectCategory_TieBetweenTheTwoUnpleasantQuadrants_KeepsTheOlderDefault()
+    {
+        // One sad hour, one anxious hour: neither quadrant leads, and the question stays the CBT one
+        // rather than switching to rest on a coin toss.
+        var hourly = Hours((9, Emotion.Sad), (14, Emotion.Anxious));
+
+        PromptSelector.SelectCategory(Emotion.None, hourly, gratitudeWritten: false)
+            .Should().Be(PromptCategory.CbtReframe);
+    }
+
+    [Fact]
+    public void SelectCategory_ATiredHourInAGoodDay_DoesNotTurnItIntoRest()
+    {
+        // Valence still decides whether the day was hard at all: +2, +2, -1 is a good day with a dip.
+        var hourly = Hours((9, Emotion.Happy), (14, Emotion.Happy), (22, Emotion.Tired));
+
+        PromptSelector.SelectCategory(Emotion.None, hourly, gratitudeWritten: false)
+            .Should().Be(PromptCategory.EveningGratitude);
+    }
+
+    [Fact]
+    public void Select_SadDay_ReturnsARestorationPrompt()
+    {
+        var picked = PromptSelector.Select(Day, Emotion.Sad, null, false, Pool(10));
+
+        picked.Should().NotBeNull();
+        picked!.Category.Should().Be(PromptCategory.Restoration);
     }
 }

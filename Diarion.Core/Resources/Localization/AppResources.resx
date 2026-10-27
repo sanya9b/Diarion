@@ -1129,6 +1129,9 @@
   <data name="PromptCategoryEveningGratitude" xml:space="preserve">
     <value>Evening gratitude</value>
   </data>
+  <data name="PromptCategoryRestoration" xml:space="preserve">
+    <value>Rest and recovery</value>
+  </data>
   <data name="StreakForgivingLabel" xml:space="preserve">
     <value>Forgiving streaks</value>
   </data>
@@ -1467,6 +1470,36 @@
   </data>
   <data name="PromptGratitude10" xml:space="preserve">
     <value>Close the day with one sentence you'd thank it for.</value>
+  </data>
+  <data name="PromptRest01" xml:space="preserve">
+    <value>What drained you today, and what, even a little, gave something back?</value>
+  </data>
+  <data name="PromptRest02" xml:space="preserve">
+    <value>If your body could ask for one thing this evening, what would it be?</value>
+  </data>
+  <data name="PromptRest03" xml:space="preserve">
+    <value>What can you leave undone tomorrow without anything falling apart?</value>
+  </data>
+  <data name="PromptRest04" xml:space="preserve">
+    <value>When did you last feel properly rested? What was different about that day?</value>
+  </data>
+  <data name="PromptRest05" xml:space="preserve">
+    <value>Who or what is quietly asking more of you right now than you have to give?</value>
+  </data>
+  <data name="PromptRest06" xml:space="preserve">
+    <value>What is the smallest kind thing you could do for yourself in the next hour?</value>
+  </data>
+  <data name="PromptRest07" xml:space="preserve">
+    <value>Days like this pass. What has helped you through them before?</value>
+  </data>
+  <data name="PromptRest08" xml:space="preserve">
+    <value>Is this tiredness about today, or has it been building for a while?</value>
+  </data>
+  <data name="PromptRest09" xml:space="preserve">
+    <value>What would “enough” look like today, if you stopped measuring it against a better day?</value>
+  </data>
+  <data name="PromptRest10" xml:space="preserve">
+    <value>Name one thing you can put down tonight and pick up again tomorrow.</value>
   </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Not enough data for this period.</value>

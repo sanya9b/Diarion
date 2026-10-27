@@ -1210,6 +1210,12 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string PromptCategoryRestoration {
+            get {
+                return ResourceManager.GetString("PromptCategoryRestoration", resourceCulture);
+            }
+        }
+
         public static string StreakForgivingLabel {
             get {
                 return ResourceManager.GetString("StreakForgivingLabel", resourceCulture);

@@ -22,7 +22,7 @@ public class DatabaseSeederPromptTests
         new DatabaseSeeder().Seed(db);
 
         var seeded = Prompts(db).FindAll().ToList();
-        seeded.Should().HaveCount(40);
+        seeded.Should().HaveCount(50);
         seeded.Should().OnlyContain(p => !string.IsNullOrWhiteSpace(p.TextEn));
         seeded.Should().OnlyContain(p => !string.IsNullOrWhiteSpace(p.TextUk));
         seeded.Should().OnlyContain(p => !string.IsNullOrEmpty(p.ResourceKey));
@@ -58,7 +58,7 @@ public class DatabaseSeederPromptTests
         new DatabaseSeeder().Seed(db);
         new DatabaseSeeder().Seed(db);
 
-        Prompts(db).Count().Should().Be(40);
+        Prompts(db).Count().Should().Be(50);
     }
 
     [Fact]

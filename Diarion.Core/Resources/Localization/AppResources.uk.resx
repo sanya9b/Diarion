@@ -1117,6 +1117,9 @@
   <data name="PromptCategoryEveningGratitude" xml:space="preserve">
     <value>Вечірня вдячність</value>
   </data>
+  <data name="PromptCategoryRestoration" xml:space="preserve">
+    <value>Відпочинок і відновлення</value>
+  </data>
   <data name="StreakForgivingLabel" xml:space="preserve">
     <value>Прощаючі серії</value>
   </data>
@@ -1455,6 +1458,36 @@
   </data>
   <data name="PromptGratitude10" xml:space="preserve">
     <value>Заверши день однією фразою, за яку йому дякуєш.</value>
+  </data>
+  <data name="PromptRest01" xml:space="preserve">
+    <value>Що сьогодні забрало сили, а що хоч трохи повернуло?</value>
+  </data>
+  <data name="PromptRest02" xml:space="preserve">
+    <value>Якби тіло могло попросити одну річ на вечір, що б це було?</value>
+  </data>
+  <data name="PromptRest03" xml:space="preserve">
+    <value>Що завтра можна не робити — і нічого не розвалиться?</value>
+  </data>
+  <data name="PromptRest04" xml:space="preserve">
+    <value>Коли востаннє тобі вдавалося по-справжньому відпочити? Що того дня було інакше?</value>
+  </data>
+  <data name="PromptRest05" xml:space="preserve">
+    <value>Хто або що зараз тихо просить від тебе більше, ніж у тебе є?</value>
+  </data>
+  <data name="PromptRest06" xml:space="preserve">
+    <value>Яка найменша добра річ, яку ти можеш зробити для себе в найближчу годину?</value>
+  </data>
+  <data name="PromptRest07" xml:space="preserve">
+    <value>Такі дні минають. Що раніше допомагало тобі їх пережити?</value>
+  </data>
+  <data name="PromptRest08" xml:space="preserve">
+    <value>Ця втома про сьогодні — чи вона накопичувалася довше?</value>
+  </data>
+  <data name="PromptRest09" xml:space="preserve">
+    <value>Як виглядало б «достатньо» сьогодні, якби не міряти себе кращим днем?</value>
+  </data>
+  <data name="PromptRest10" xml:space="preserve">
+    <value>Назви одну річ, яку сьогодні ввечері можна відкласти, а завтра підняти знову.</value>
   </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Недостатньо даних за цей період.</value>
