@@ -522,6 +522,36 @@
                         <Label Text="{Binding MoodStats.InsightProgressHint}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                     </VerticalStackLayout>
                 </Border>
+
+                <Border x:Name="EnergyInfluencesAnchor" Style="{StaticResource StatCard}" IsVisible="{Binding MoodStats.HasEnergyCorrelations}">
+                    <!-- The same test report for energy. Its own card because its own family of
+                         hypotheses: sharing the list with mood would share the correction and move
+                         findings that have nothing to do with energy. No progress twin — energy
+                         rests on exactly the days mood does, and that card already says how many. -->
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static localization:AppResources.StatsEnergyInfluencesTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
+                        <Label Text="{Binding MoodStats.EnergyCorrelationSummaryText}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding MoodStats.EnergyCorrelations}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:MoodCorrelationItem">
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                            <Label Text="{Binding Description}" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                            <Label Text="{Binding Evidence}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding Dots}" FontSize="12" CharacterSpacing="1" VerticalOptions="Center" TextColor="{DynamicResource Theme_Coral}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <Label Text="{x:Static localization:AppResources.StatsCorrelationDisclaimer}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
 
             <!-- ================= SLEEP TAB ================= -->

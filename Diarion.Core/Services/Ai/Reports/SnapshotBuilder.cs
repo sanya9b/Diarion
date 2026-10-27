@@ -89,11 +89,16 @@ public sealed class SnapshotBuilder : ISnapshotBuilder
         var finance = await _statistics.GetFinanceStatisticsAsync(range);
 
         var correlations = new List<SnapshotCorrelation>();
+        var energyCorrelations = new List<SnapshotCorrelation>();
         foreach (var lag in Lags)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var found = await _correlations.GetMoodCorrelationsAsync(range, lag);
             correlations.AddRange(found.Select(ToSnapshot));
+
+            cancellationToken.ThrowIfCancellationRequested();
+            var foundEnergy = await _correlations.GetEnergyCorrelationsAsync(range, lag);
+            energyCorrelations.AddRange(foundEnergy.Select(ToSnapshot));
         }
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -124,14 +129,8 @@ public sealed class SnapshotBuilder : ISnapshotBuilder
             Mood = BuildMood(mood),
             Tasks = new SnapshotTasks { Completed = todos.CompletedCount, Total = todos.TotalCount },
             Finance = BuildFinance(finance),
-
-            // Strongest first regardless of which lag found it, then by name and lag so that two runs
-            // over the same week cannot reorder ties.
-            Correlations = correlations
-                .OrderByDescending(c => Math.Abs(c.Coefficient))
-                .ThenBy(c => c.Factor, StringComparer.Ordinal)
-                .ThenBy(c => c.LagDays)
-                .ToList(),
+            Correlations = Ranked(correlations),
+            EnergyCorrelations = Ranked(energyCorrelations),
 
             Habits = BuildHabits(habits, trackers, range),
             Days = days,
@@ -359,6 +358,17 @@ public sealed class SnapshotBuilder : ISnapshotBuilder
             Symptoms = (l.Symptoms ?? new List<string>()).OrderBy(s => s, StringComparer.Ordinal).ToList()
         })
         .ToList();
+
+    /// <summary>
+    /// Strongest first regardless of which lag found it, then by name and lag so that two runs over
+    /// the same week cannot reorder ties. Shared by both families so they read the same way.
+    /// </summary>
+    private static List<SnapshotCorrelation> Ranked(IEnumerable<SnapshotCorrelation> correlations) =>
+        correlations
+            .OrderByDescending(c => Math.Abs(c.Coefficient))
+            .ThenBy(c => c.Factor, StringComparer.Ordinal)
+            .ThenBy(c => c.LagDays)
+            .ToList();
 
     private static SnapshotCorrelation ToSnapshot(MoodCorrelation c) => new()
     {

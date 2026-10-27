@@ -22,6 +22,8 @@ public class MoodStatsQuadrantTests
         var correlationMock = new Mock<ICorrelationService>();
         correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
             .ReturnsAsync(new List<MoodCorrelation>());
+        correlationMock.Setup(c => c.GetEnergyCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<MoodCorrelation>());
 
         return new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
     }

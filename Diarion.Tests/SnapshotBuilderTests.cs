@@ -34,6 +34,8 @@ public class SnapshotBuilderTests
     private FinanceStatistics _finance = new();
     private List<MoodCorrelation> _sameDay = new();
     private List<MoodCorrelation> _lagged = new();
+    private List<MoodCorrelation> _energySameDay = new();
+    private List<MoodCorrelation> _energyLagged = new();
     private List<HabitCompletionHistory> _habitHistory = new();
     private List<HarmfulHabitTracker> _trackers = new();
 
@@ -52,6 +54,10 @@ public class SnapshotBuilderTests
             .ReturnsAsync(() => _sameDay);
         _correlations.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), 1))
             .ReturnsAsync(() => _lagged);
+        _correlations.Setup(c => c.GetEnergyCorrelationsAsync(It.IsAny<StatsRange>(), 0))
+            .ReturnsAsync(() => _energySameDay);
+        _correlations.Setup(c => c.GetEnergyCorrelationsAsync(It.IsAny<StatsRange>(), 1))
+            .ReturnsAsync(() => _energyLagged);
 
         _diary.Setup(d => d.GetAllEntriesAsync()).ReturnsAsync(() => _entries);
         _habits.Setup(h => h.GetHabitCompletionsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
@@ -437,5 +443,30 @@ public class SnapshotBuilderTests
         var second = SnapshotSerializer.ToJson(await BuildAsync());
 
         second.Should().Be(first);
+    }
+
+    [Fact]
+    public async Task Energy_correlations_travel_as_their_own_list_ranked_the_same_way()
+    {
+        _sameDay = new List<MoodCorrelation>
+        {
+            new() { FactorKey = "FactorSleepDuration", Coefficient = 0.4, AdjustedPValue = 0.01, SampleSize = 7 }
+        };
+        _energySameDay = new List<MoodCorrelation>
+        {
+            new() { FactorKey = "FactorSleepDuration", Axis = MoodAxis.Energy, Coefficient = 0.2, AdjustedPValue = 0.3, SampleSize = 7 }
+        };
+        _energyLagged = new List<MoodCorrelation>
+        {
+            new() { FactorKey = "FactorMealsLogged", Axis = MoodAxis.Energy, Coefficient = -0.65, AdjustedPValue = 0.02, SampleSize = 6, LagDays = 1 }
+        };
+
+        var snapshot = await BuildAsync();
+
+        snapshot.Correlations.Select(c => c.Factor).Should().Equal("FactorSleepDuration");
+        snapshot.EnergyCorrelations.Select(c => c.Factor)
+            .Should().Equal("FactorMealsLogged", "FactorSleepDuration");
+        snapshot.EnergyCorrelations[0].LagDays.Should().Be(1);
+        snapshot.EnergyCorrelations[0].Coefficient.Should().Be(-0.65);
     }
 }

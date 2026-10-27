@@ -1779,6 +1779,10 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("StatsMoodInfluencesTitle", resourceCulture) ?? string.Empty; }
         }
 
+        public static string StatsEnergyInfluencesTitle {
+            get { return ResourceManager.GetString("StatsEnergyInfluencesTitle", resourceCulture) ?? string.Empty; }
+        }
+
         public static string StatsCorrelationDisclaimer {
             get { return ResourceManager.GetString("StatsCorrelationDisclaimer", resourceCulture) ?? string.Empty; }
         }

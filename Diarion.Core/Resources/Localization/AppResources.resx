@@ -1903,6 +1903,9 @@
   <data name="StatsMoodInfluencesTitle" xml:space="preserve">
     <value>WORTH CHECKING</value>
   </data>
+  <data name="StatsEnergyInfluencesTitle" xml:space="preserve">
+    <value>WORTH CHECKING: ENERGY</value>
+  </data>
   <data name="StatsCorrelationDisclaimer" xml:space="preserve">
     <value>These are patterns in your own log, not causes. The way to find out is on purpose: change one of them for a week and see whether the pattern follows.</value>
   </data>

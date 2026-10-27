@@ -35,6 +35,14 @@ public interface ICorrelationService
     Task<IReadOnlyList<MoodCorrelation>> GetMoodCorrelationsAsync(StatsRange range, int lagDays = 0);
 
     /// <summary>
+    /// The same pass measured against the day's energy (arousal) instead of its valence. A separate
+    /// method rather than a flag so that it is also a separate Benjamini-Hochberg family: the energy
+    /// hypotheses never compete with the mood ones, and adding this axis moves no existing finding.
+    /// Readiness is shared with <see cref="GetReadinessAsync"/> — a day with a mood has an energy.
+    /// </summary>
+    Task<IReadOnlyList<MoodCorrelation>> GetEnergyCorrelationsAsync(StatsRange range, int lagDays = 0);
+
+    /// <summary>
     /// How much more logging it takes before any correlation can be reported. Exists so the screen
     /// can say "six days of fourteen" instead of showing nothing at all for a fortnight — which is
     /// the fortnight during which people decide whether the app is worth keeping.

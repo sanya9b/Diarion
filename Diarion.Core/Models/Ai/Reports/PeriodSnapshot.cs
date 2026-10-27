@@ -54,6 +54,13 @@ public sealed class PeriodSnapshot
     /// </summary>
     public List<SnapshotCorrelation> Correlations { get; init; } = new();
 
+    /// <summary>
+    /// The same engine run against the day's energy instead of its valence. Kept apart from
+    /// <see cref="Correlations"/> because it was corrected apart: the two lists are two families of
+    /// hypotheses, and a model reading them should not treat a sleep finding here as a repeat of one there.
+    /// </summary>
+    public List<SnapshotCorrelation> EnergyCorrelations { get; init; } = new();
+
     public SnapshotHabits Habits { get; init; } = new();
 
     /// <summary>

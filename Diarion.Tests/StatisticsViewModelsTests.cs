@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
 using Diarion.Services;
@@ -31,6 +32,8 @@ public class StatisticsViewModelsTests
         var correlationMock = new Mock<ICorrelationService>();
         correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
             .ReturnsAsync(new List<MoodCorrelation>());
+        correlationMock.Setup(c => c.GetEnergyCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<MoodCorrelation>());
 
         var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
 
@@ -52,6 +55,8 @@ public class StatisticsViewModelsTests
 
         var correlationMock = new Mock<ICorrelationService>();
         correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<MoodCorrelation>());
+        correlationMock.Setup(c => c.GetEnergyCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
             .ReturnsAsync(new List<MoodCorrelation>());
 
         var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
@@ -83,6 +88,8 @@ public class StatisticsViewModelsTests
 
         var correlationMock = new Mock<ICorrelationService>();
         correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<MoodCorrelation>());
+        correlationMock.Setup(c => c.GetEnergyCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
             .ReturnsAsync(new List<MoodCorrelation>());
 
         var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
@@ -129,6 +136,8 @@ public class StatisticsViewModelsTests
 
         var correlationMock = new Mock<ICorrelationService>();
         correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<MoodCorrelation>());
+        correlationMock.Setup(c => c.GetEnergyCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
             .ReturnsAsync(new List<MoodCorrelation>());
 
         var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
@@ -197,5 +206,91 @@ public class StatisticsViewModelsTests
         vm.NetBalance.Should().Be(-200m);
         vm.NetBalanceText.Should().StartWith("-");
         vm.NetBalanceText.Should().Contain("200");
+    }
+
+    [Fact]
+    public async Task MoodStats_EnergyCard_ShowsOnlyHoldingEnergyFindings_AndCountsItsOwnFamily()
+    {
+        var statsMock = new Mock<IStatisticsService>();
+        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>()))
+            .ReturnsAsync(new MoodStatistics
+            {
+                TopEmotion = Emotion.Happy,
+                EmotionCounts = new Dictionary<Emotion, int> { { Emotion.Happy, 15 } }
+            });
+
+        var correlationMock = new Mock<ICorrelationService>();
+        // Mood pass: eight tried, none held — so the mood card gives way to "nothing holds yet".
+        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
+            .ReturnsAsync(Enumerable.Range(0, 8).Select(i => new MoodCorrelation
+            {
+                FactorKey = CorrelationService.Factors.SleepDuration, Confidence = 1, Coefficient = 0.1, SampleSize = 20
+            }).ToList());
+        // Energy pass: three tried, one held.
+        correlationMock.Setup(c => c.GetEnergyCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<MoodCorrelation>
+            {
+                new() { FactorKey = CorrelationService.Factors.SleepDuration, Axis = MoodAxis.Energy, Confidence = 4, Coefficient = 0.6, SampleSize = 20 },
+                new() { FactorKey = CorrelationService.Factors.MealsLogged, Axis = MoodAxis.Energy, Confidence = 2, Coefficient = -0.2, SampleSize = 20 },
+                new() { FactorKey = CorrelationService.Factors.TaskCompletion, Axis = MoodAxis.Energy, Confidence = 1, Coefficient = 0.05, SampleSize = 20 }
+            });
+
+        var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
+
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
+
+        vm.HasCorrelations.Should().BeFalse();
+        vm.HasInsightProgress.Should().BeTrue();
+
+        vm.HasEnergyCorrelations.Should().BeTrue();
+        vm.EnergyCorrelations.Should().ContainSingle();
+        vm.EnergyCorrelations[0].Description.Should().StartWith("↑");
+        vm.EnergyCorrelations[0].Dots.Should().Be("●●●●○");
+        vm.EnergyCorrelationSummaryText.Should().Contain("3").And.Contain("1");
+    }
+
+    [Fact]
+    public async Task MoodStats_EnergyCard_IsAbsent_WhenNothingAboutEnergyHolds_AndClearsOnEmptyPeriod()
+    {
+        var stats = new MoodStatistics
+        {
+            TopEmotion = Emotion.Happy,
+            EmotionCounts = new Dictionary<Emotion, int> { { Emotion.Happy, 15 } }
+        };
+        var statsMock = new Mock<IStatisticsService>();
+        statsMock.Setup(s => s.GetMoodStatisticsAsync(It.IsAny<StatsRange>())).ReturnsAsync(() => stats);
+
+        var correlationMock = new Mock<ICorrelationService>();
+        correlationMock.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<MoodCorrelation>
+            {
+                new() { FactorKey = CorrelationService.Factors.SleepDuration, Confidence = 5, Coefficient = 0.8, SampleSize = 20 }
+            });
+        correlationMock.Setup(c => c.GetEnergyCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<MoodCorrelation>
+            {
+                new() { FactorKey = CorrelationService.Factors.SleepDuration, Axis = MoodAxis.Energy, Confidence = 2, Coefficient = 0.3, SampleSize = 20 }
+            });
+
+        var vm = new MoodStatsViewModel(statsMock.Object, correlationMock.Object);
+
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
+
+        vm.HasCorrelations.Should().BeTrue();
+        vm.HasEnergyCorrelations.Should().BeFalse();
+        vm.EnergyCorrelationSummaryText.Should().BeEmpty();
+
+        // A period with no emotions at all resets the energy card along with the rest.
+        stats = new MoodStatistics { EmotionCounts = new Dictionary<Emotion, int>() };
+        correlationMock.Setup(c => c.GetEnergyCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<MoodCorrelation>
+            {
+                new() { FactorKey = CorrelationService.Factors.SleepDuration, Axis = MoodAxis.Energy, Confidence = 5, Coefficient = 0.9, SampleSize = 20 }
+            });
+
+        await vm.LoadDataAsync(StatsRange.LastDays(30));
+
+        vm.IsEmpty.Should().BeTrue();
+        vm.HasEnergyCorrelations.Should().BeFalse();
     }
 }
