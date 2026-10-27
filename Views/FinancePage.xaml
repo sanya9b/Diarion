@@ -421,6 +421,8 @@
                             </Label.GestureRecognizers>
                         </Label>
                     </Grid>
+                    <!-- Built after each load, so it never flashes while the ledger is still being read. -->
+                    <Label Text="{localization:Translate Key=FinanceFeedEmpty}" IsVisible="{Binding IsFeedEmpty}" FontSize="13" HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,16,0,0" />
                 </VerticalStackLayout>
             </CollectionView.Header>
 
@@ -711,13 +713,13 @@
                     <ScrollView MaximumHeightRequest="260" IsVisible="{Binding Budgets.HasCategoryTransactions}">
                         <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Budgets.CategoryTransactions}">
                             <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="models:FinanceTransaction">
+                                <DataTemplate x:DataType="viewModels:CategoryExpenseItem">
                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                            <Label Text="{Binding Note}" FontSize="13" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" IsVisible="{Binding Note, Converter={toolkit:IsStringNotNullOrWhiteSpaceConverter}}" />
-                                            <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                                            <Label Text="{Binding Note}" FontSize="13" TextColor="{DynamicResource Theme_Midnight_Snow}" LineBreakMode="TailTruncation" IsVisible="{Binding HasNote}" />
+                                            <Label Text="{Binding DateText}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                                         </VerticalStackLayout>
-                                        <Label Grid.Column="1" Text="{Binding Amount, StringFormat='-{0:N2}'}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding AmountText}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
                                     </Grid>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
@@ -819,6 +821,11 @@
                         </HorizontalStackLayout>
                     </ScrollView>
 
+
+                    <Button Style="{StaticResource PrimaryButton}" Text="{localization:Translate Key=SaveButton}"
+                            Command="{Binding Accounts.SaveAccountCommand}"
+                            Margin="0,4,0,0" />
+
                     <!-- Куди перенести транзакції при видаленні -->
                     <VerticalStackLayout Spacing="6" IsVisible="{Binding Accounts.HasReassignTargets}">
                         <Label Text="{localization:Translate Key=ReassignToLabel}" FontSize="11" FontAttributes="Bold" TextTransform="Uppercase" CharacterSpacing="1" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,4,0,0" />
@@ -857,10 +864,6 @@
                             </HorizontalStackLayout>
                         </ScrollView>
                     </VerticalStackLayout>
-
-                    <Button Style="{StaticResource PrimaryButton}" Text="{localization:Translate Key=SaveButton}"
-                            Command="{Binding Accounts.SaveAccountCommand}"
-                            Margin="0,4,0,0" />
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding Accounts.IsEditingAccount}">
                         <Button Style="{StaticResource SecondaryButton}" FontSize="13" Grid.Column="0"
@@ -1028,11 +1031,19 @@
                 </Border.GestureRecognizers>
 
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="{localization:Translate Key=PlannedFormTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="{localization:Translate Key=PlannedFormTitle}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Theme_Midnight_Snow}" VerticalOptions="Center" />
+                        <Grid behaviors:PressFeedback.IsEnabled="True" Grid.Column="1" Padding="8,0,0,8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Planned.HideRecurringFormCommand}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="✕" FontSize="20" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </Grid>
+                    </Grid>
 
                     <!-- Income / expense -->
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                        <ContentView Grid.Column="0" behaviors:PressFeedback.IsEnabled="True">
+                        <ContentView Grid.Column="1" behaviors:PressFeedback.IsEnabled="True">
                             <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Planned.SetRecurringTypeCommand}" CommandParameter="Expense" />
                             </ContentView.GestureRecognizers>
@@ -1045,7 +1056,7 @@
                                 <Label Text="{localization:Translate Key=ExpenseLabel}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                             </Border>
                         </ContentView>
-                        <ContentView Grid.Column="1" behaviors:PressFeedback.IsEnabled="True">
+                        <ContentView Grid.Column="0" behaviors:PressFeedback.IsEnabled="True">
                             <ContentView.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Planned.SetRecurringTypeCommand}" CommandParameter="Income" />
                             </ContentView.GestureRecognizers>
@@ -1060,7 +1071,8 @@
                         </ContentView>
                     </Grid>
 
-                    <Entry Text="{Binding Planned.NewRecurringAmountText}" Placeholder="{localization:Translate Key=AmountPlaceholder}" Keyboard="Numeric" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" />
+                    <Entry Text="{Binding Planned.NewRecurringAmountText}" Placeholder="{localization:Translate Key=AmountPlaceholder}" Keyboard="Numeric" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" Margin="0,4,0,0" />
+                    <BoxView HeightRequest="1" BackgroundColor="{DynamicResource Theme_Dust_Ocean}" Margin="0,0,0,2" />
                     <Entry Text="{Binding Planned.NewRecurringCategory}" Placeholder="{localization:Translate Key=CategoryPlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="15" />
                     <Entry Text="{Binding Planned.NewRecurringNote}" Placeholder="{localization:Translate Key=NotePlaceholder}" BackgroundColor="Transparent" TextColor="{DynamicResource Theme_Midnight_Snow}" FontSize="14" />
 

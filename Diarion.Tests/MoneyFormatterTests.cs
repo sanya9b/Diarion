@@ -74,6 +74,21 @@ public class MoneyFormatterTests
     }
 
     [Fact]
+    public void A_negative_amount_puts_the_sign_before_the_symbol()
+    {
+        // "$ -1,450.00" on the balance card next to "-$ 250.00" in the month figures read as two
+        // different conventions on one screen.
+        MoneyFormatter.Format(-1450m, "USD", Invariant).Should().Be("-$ 1,450.00");
+        MoneyFormatter.Format(-50m, "UAH", Invariant).Should().Be(MoneyFormatter.FormatSigned(-50m, "UAH", Invariant));
+    }
+
+    [Fact]
+    public void An_amount_that_rounds_to_zero_is_not_negative()
+    {
+        MoneyFormatter.Format(-0.001m, "USD", Invariant).Should().Be("$ 0.00");
+    }
+
+    [Fact]
     public void A_signed_amount_never_prints_two_minus_signs()
     {
         MoneyFormatter.FormatSigned(-50m, "UAH", Invariant).Should().Be("-50.00 ₴");

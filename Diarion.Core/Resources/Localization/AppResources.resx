@@ -1210,6 +1210,9 @@
   <data name="FinanceTitle" xml:space="preserve">
     <value>Income / Expenses</value>
   </data>
+  <data name="FinanceFeedEmpty" xml:space="preserve">
+    <value>Nothing here yet. Add a transaction or a transfer.</value>
+  </data>
   <data name="TotalBalanceLabel" xml:space="preserve">
     <value>Total Balance</value>
   </data>
@@ -1229,7 +1232,7 @@
     <value>0.00</value>
   </data>
   <data name="CategoryPlaceholder" xml:space="preserve">
-    <value>Category (e.g. Salary, Groceries)</value>
+    <value>Category (e.g. Groceries)</value>
   </data>
   <data name="NotePlaceholder" xml:space="preserve">
     <value>Note (optional)</value>

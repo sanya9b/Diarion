@@ -56,6 +56,13 @@ public partial class FinanceViewModel : BaseViewModel
     /// </summary>
     public ObservableCollection<FinanceFeedItem> Feed { get; } = new();
 
+    /// <summary>
+    /// The feed has been built and holds nothing for the current filter. False until the first load so
+    /// the empty-state line does not flash under the header while the ledger is still being read.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isFeedEmpty;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TotalBalanceText))]
     private decimal _totalBalance;
@@ -219,6 +226,8 @@ public partial class FinanceViewModel : BaseViewModel
         {
             Feed.Add(item);
         }
+
+        IsFeedEmpty = Feed.Count == 0;
     }
 
     private void CalculateBalances()

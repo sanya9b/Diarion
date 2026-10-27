@@ -81,11 +81,17 @@ public static class MoneyFormatter
         }
     }
 
-    /// <summary>Groups and rounds to two decimals in the current culture, then attaches the symbol.</summary>
+    /// <summary>
+    /// Groups and rounds to two decimals in the current culture, then attaches the symbol. A negative
+    /// amount carries its sign in front of the whole thing ("-$ 1,450.00"), the same place
+    /// <see cref="FormatSigned"/> puts it — the balance card used to print "$ -1,450.00" next to
+    /// "-$ 250.00" on the same screen. A value that rounds to zero is not negative.
+    /// </summary>
     public static string Format(decimal amount, string? currencyCode, CultureInfo? culture = null)
     {
-        var number = amount.ToString("N2", culture ?? CultureInfo.CurrentCulture);
-        return Attach(number, currencyCode);
+        var number = Math.Abs(amount).ToString("N2", culture ?? CultureInfo.CurrentCulture);
+        var text = Attach(number, currencyCode);
+        return amount < 0 && Math.Round(amount, 2) != 0 ? "-" + text : text;
     }
 
     /// <summary>

@@ -15,6 +15,21 @@ public class BudgetItemViewModel
     public bool IsOverspent { get; set; }
 }
 
+/// <summary>
+/// One expense row in a budget's category detail. Carries its amount already formatted, in the same
+/// currency and with the same sign placement as the feed, instead of a raw number the page would
+/// format on its own and differently.
+/// </summary>
+public class CategoryExpenseItem
+{
+    public Guid Id { get; set; }
+    public decimal Amount { get; set; }
+    public string AmountText { get; set; } = string.Empty;
+    public string DateText { get; set; } = string.Empty;
+    public string Note { get; set; } = string.Empty;
+    public bool HasNote => !string.IsNullOrWhiteSpace(Note);
+}
+
 /// <summary>An account chip in the selector strip and the add-transaction picker.</summary>
 public partial class AccountItemViewModel : ObservableObject
 {

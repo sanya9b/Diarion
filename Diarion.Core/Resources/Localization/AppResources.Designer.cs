@@ -1382,6 +1382,10 @@ namespace Diarion.Resources.Localization {
             }
         }
 
+        public static string FinanceFeedEmpty {
+            get { return ResourceManager.GetString("FinanceFeedEmpty", resourceCulture) ?? string.Empty; }
+        }
+
         public static string FinanceTitle {
             get {
                 return ResourceManager.GetString("FinanceTitle", resourceCulture) ?? string.Empty;

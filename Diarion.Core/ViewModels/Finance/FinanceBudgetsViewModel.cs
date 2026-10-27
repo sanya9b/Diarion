@@ -44,7 +44,7 @@ public partial class FinanceBudgetsViewModel : ObservableObject
 
     // --- Category detail (tap a budget widget) ---
 
-    public ObservableCollection<FinanceTransaction> CategoryTransactions { get; } = new();
+    public ObservableCollection<CategoryExpenseItem> CategoryTransactions { get; } = new();
 
     [ObservableProperty]
     private bool _isCategoryDetailVisible;
@@ -114,10 +114,19 @@ public partial class FinanceBudgetsViewModel : ObservableObject
             .OrderByDescending(t => t.Date)
             .ToList();
 
+        var culture = System.Globalization.CultureInfo.CurrentCulture;
         CategoryTransactions.Clear();
         foreach (var t in expenses)
         {
-            CategoryTransactions.Add(t);
+            CategoryTransactions.Add(new CategoryExpenseItem
+            {
+                Id = t.Id,
+                Amount = t.Amount,
+                // An expense, so shown the way the feed shows one: sign in front of the currency.
+                AmountText = _ledger.Money(-t.Amount),
+                DateText = t.Date.ToString("dd.MM.yyyy", culture),
+                Note = t.Note ?? string.Empty
+            });
         }
 
         HasCategoryTransactions = CategoryTransactions.Count > 0;
