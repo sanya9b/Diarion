@@ -30,6 +30,16 @@ public partial class FinanceTransferViewModel : ObservableObject
         _reloadAsync = reloadAsync;
     }
 
+    /// <summary>
+    /// A transfer needs two active accounts. With one, the form opened onto a "to" picker with nobody
+    /// to pick and a validation error as the only way out; the entry point hides instead.
+    /// </summary>
+    [ObservableProperty]
+    private bool _canTransfer;
+
+    /// <summary>Called by the owner once the ledger holds this load's accounts.</summary>
+    internal void Refresh() => CanTransfer = _ledger.ActiveAccounts.Count() >= 2;
+
     [ObservableProperty]
     private bool _isTransferFormVisible;
 

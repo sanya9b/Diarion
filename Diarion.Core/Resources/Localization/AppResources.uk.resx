@@ -1199,7 +1199,7 @@
     <value>Дохід / Витрати</value>
   </data>
   <data name="FinanceFeedEmpty" xml:space="preserve">
-    <value>Поки що порожньо. Додайте транзакцію або переказ.</value>
+    <value>Поки що порожньо. Додайте першу транзакцію.</value>
   </data>
   <data name="TotalBalanceLabel" xml:space="preserve">
     <value>Загальний баланс</value>

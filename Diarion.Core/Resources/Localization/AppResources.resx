@@ -1211,7 +1211,7 @@
     <value>Income / Expenses</value>
   </data>
   <data name="FinanceFeedEmpty" xml:space="preserve">
-    <value>Nothing here yet. Add a transaction or a transfer.</value>
+    <value>Nothing here yet. Add your first transaction.</value>
   </data>
   <data name="TotalBalanceLabel" xml:space="preserve">
     <value>Total Balance</value>

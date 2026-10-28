@@ -239,6 +239,8 @@
                                                     </DataTrigger>
                                                 </Border.Triggers>
                                                 <HorizontalStackLayout Spacing="6">
+                                                    <!-- The colour chosen in the account form, otherwise seen nowhere on the page. -->
+                                                    <BoxView WidthRequest="8" HeightRequest="8" CornerRadius="4" Color="{Binding Color}" VerticalOptions="Center" Margin="0,0,2,0" />
                                                     <Label Text="{Binding Icon}" FontSize="13" VerticalOptions="Center" />
                                                     <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" LineBreakMode="TailTruncation">
                                                         <Label.Triggers>
@@ -367,7 +369,7 @@
                                             <ContentView.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.Budgets.ShowCategoryDetailCommand}" CommandParameter="{Binding .}" />
                                             </ContentView.GestureRecognizers>
-                                            <Border WidthRequest="140"
+                                            <Border WidthRequest="168"
                                                     StrokeThickness="1"
                                                     Stroke="{DynamicResource Theme_Dust_Ocean}"
                                                     BackgroundColor="{DynamicResource Theme_Snow_Black}"
@@ -386,8 +388,8 @@
                                                             </DataTrigger>
                                                         </ProgressBar.Triggers>
                                                     </ProgressBar>
-                                                    <Grid ColumnDefinitions="Auto,*">
-                                                        <Label Grid.Column="0" Text="{Binding ProgressPercentText}" FontSize="12" FontAttributes="Bold">
+                                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                                                        <Label Grid.Column="0" Text="{Binding ProgressPercentText}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center">
                                                             <Label.Triggers>
                                                                 <DataTrigger TargetType="Label" Binding="{Binding IsOverspent}" Value="True">
                                                                     <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
@@ -397,8 +399,19 @@
                                                                 </DataTrigger>
                                                             </Label.Triggers>
                                                         </Label>
-                                                        <Label Grid.Column="1" Text="{Binding AmountText}" FontSize="9" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                                                        <Label Grid.Column="1" Text="{Binding AmountText}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" HorizontalTextAlignment="End" VerticalOptions="Center" LineBreakMode="TailTruncation" />
                                                     </Grid>
+                                                    <!-- Already computed for the detail; the widget is where the question is asked. -->
+                                                    <Label Text="{Binding RemainingText}" FontSize="11" LineBreakMode="TailTruncation">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsOverspent}" Value="True">
+                                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Coral}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsOverspent}" Value="False">
+                                                                <Setter Property="TextColor" Value="{DynamicResource Theme_Ocean_Dust}" />
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
                                                 </VerticalStackLayout>
                                             </Border>
                                         </ContentView>
@@ -410,7 +423,7 @@
 
                     <!-- Перекази і плани: тільки кнопки додавання. Самі рядки живуть у спільній стрічці. -->
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
-                        <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Text="{localization:Translate Key=AddTransferButton}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Theme_Sage}">
+                        <Label behaviors:PressFeedback.IsEnabled="True" Grid.Column="0" Text="{localization:Translate Key=AddTransferButton}" FontSize="12" FontAttributes="Bold" IsVisible="{Binding Transfers.CanTransfer}" TextColor="{DynamicResource Theme_Sage}">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Transfers.ShowTransferFormCommand}" />
                             </Label.GestureRecognizers>

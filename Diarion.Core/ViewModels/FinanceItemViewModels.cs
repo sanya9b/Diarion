@@ -39,6 +39,15 @@ public partial class AccountItemViewModel : ObservableObject
     public string ColorHex { get; set; } = string.Empty;
     public bool IsArchived { get; set; }
 
+    /// <summary>
+    /// The colour the account was given in its form, as a colour the chip can paint. Until now the
+    /// swatch was chosen and never seen again anywhere on the page.
+    /// </summary>
+    public Microsoft.Maui.Graphics.Color Color =>
+        string.IsNullOrEmpty(ColorHex)
+            ? Microsoft.Maui.Graphics.Colors.Transparent
+            : Microsoft.Maui.Graphics.Color.FromArgb(ColorHex);
+
     [ObservableProperty]
     private string _balanceText = string.Empty;
 

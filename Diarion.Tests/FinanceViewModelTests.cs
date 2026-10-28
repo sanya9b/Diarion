@@ -838,4 +838,36 @@ public class FinanceViewModelTests
         vm.MonthIncomeText.Should().StartWith("+");
         vm.MonthExpenseText.Should().StartWith("-");
     }
+
+    [Fact]
+    public async Task Transfers_AreOfferedOnlyWithTwoActiveAccounts()
+    {
+        // One account: the transfer form would open onto a "to" picker with nobody to pick.
+        var only = new Account { Name = "Cash" };
+        var vm = NewViewModel(FinanceMock(accounts: new List<Account> { only }));
+        await vm.LoadAsync();
+        vm.Transfers.CanTransfer.Should().BeFalse();
+
+        // A second account that is archived does not count; an active one does.
+        var archived = new Account { Name = "Old", IsArchived = true };
+        vm = NewViewModel(FinanceMock(accounts: new List<Account> { only, archived }));
+        await vm.LoadAsync();
+        vm.Transfers.CanTransfer.Should().BeFalse();
+
+        var card = new Account { Name = "Card" };
+        vm = NewViewModel(FinanceMock(accounts: new List<Account> { only, card }));
+        await vm.LoadAsync();
+        vm.Transfers.CanTransfer.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task AccountChip_CarriesTheAccountColour()
+    {
+        var acc = new Account { Name = "Card", ColorHex = "#C26D53" };
+        var vm = NewViewModel(FinanceMock(accounts: new List<Account> { acc }));
+        await vm.LoadAsync();
+
+        var chip = vm.Accounts.Items.Single();
+        chip.Color.Should().Be(Microsoft.Maui.Graphics.Color.FromArgb("#C26D53"));
+    }
 }

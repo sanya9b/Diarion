@@ -134,6 +134,7 @@ public partial class FinanceViewModel : BaseViewModel
             Accounts.Rebuild();
             RefreshDerived();
             Planned.Refresh();
+            Transfers.Refresh();
 
             await Budgets.LoadAsync();
         }
