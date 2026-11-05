@@ -602,6 +602,29 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Віджети домашнього екрана (spec 20, D2). What the widgets may show without the app being
+                     opened. The default follows the app lock; a choice is saved as it is made. Phones only. -->
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16"
+                        IsVisible="{Binding IsWidgetSettingsAvailable}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{x:Static localization:AppResources.WidgetPrivacyTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{x:Static localization:AppResources.WidgetPrivacyHint}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Picker ItemsSource="{Binding WidgetPrivacyOptions}" ItemDisplayBinding="{Binding Title}" SelectedItem="{Binding SelectedWidgetPrivacy}" BackgroundColor="Transparent" FontSize="14" HeightRequest="36" />
+
+                        <Label Text="{Binding SelectedWidgetPrivacyHint}" FontSize="12" LineBreakMode="WordWrap" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{x:Static localization:AppResources.WidgetPrivacyLockedDefault}" FontSize="12" LineBreakMode="WordWrap" TextColor="{DynamicResource Theme_Ocean_Dust}" IsVisible="{Binding ShowsWidgetLockedHint}" />
+                        <Label Text="{x:Static localization:AppResources.WidgetPrivacyWarning}" FontSize="12" LineBreakMode="WordWrap" TextColor="{DynamicResource Theme_Coral}" IsVisible="{Binding ShowsWidgetTextWarning}" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Backup & Restore -->
                 <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
                         Stroke="{DynamicResource Theme_Dust_Ocean}"

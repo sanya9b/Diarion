@@ -160,6 +160,15 @@ public partial class MainViewModel : BaseViewModel
             _promptLibrary = null;
         });
 
+        // A home-screen widget was tapped (spec 20, D3): the deep link has already landed on this tab
+        // and now asks for the half it was about, the same way the two tabs under the date do.
+        WeakReferenceMessenger.Default.Register<HomeSectionRequestedMessage>(this, (r, m) =>
+        {
+            var self = (MainViewModel)r;
+            if (m.Section == HomeSection.Planner) _ = self.SwitchToPlannerModeAsync();
+            else self.SwitchToDiaryMode();
+        });
+
         WeakReferenceMessenger.Default.Register<CycleLogChangedMessage>(this, (r, m) =>
         {
             // Marking one day moves every later prediction, so the whole grid is repainted, not that cell.

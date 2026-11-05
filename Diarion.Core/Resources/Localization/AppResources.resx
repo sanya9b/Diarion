@@ -2452,4 +2452,70 @@
   <data name="ReadOnlyBannerLegacyEndedText" xml:space="preserve">
     <value>The three free months for first-version users have ended: your entries are read-only now.</value>
   </data>
+  <data name="WidgetOpenLabel" xml:space="preserve">
+    <value>Open diary</value>
+  </data>
+  <data name="WidgetUpdatedFormat" xml:space="preserve">
+    <value>Updated {0}</value>
+  </data>
+  <data name="WidgetStreakDayOne" xml:space="preserve">
+    <value>{0} day in a row</value>
+  </data>
+  <data name="WidgetStreakDayFew" xml:space="preserve">
+    <value>{0} days in a row</value>
+  </data>
+  <data name="WidgetStreakDayMany" xml:space="preserve">
+    <value>{0} days in a row</value>
+  </data>
+  <data name="WidgetStreakNone" xml:space="preserve">
+    <value>Start a streak today</value>
+  </data>
+  <data name="WidgetMoodLabel" xml:space="preserve">
+    <value>Mood of the day</value>
+  </data>
+  <data name="WidgetMoodEmpty" xml:space="preserve">
+    <value>How are you?</value>
+  </data>
+  <data name="WidgetTasksFormat" xml:space="preserve">
+    <value>{0} of {1} tasks</value>
+  </data>
+  <data name="WidgetTasksNone" xml:space="preserve">
+    <value>No tasks today</value>
+  </data>
+  <data name="WidgetHabitsFormat" xml:space="preserve">
+    <value>{0} of {1} habits</value>
+  </data>
+  <data name="WidgetHabitsNone" xml:space="preserve">
+    <value>No habits today</value>
+  </data>
+  <data name="WidgetPrivacyTitle" xml:space="preserve">
+    <value>Home-screen widgets</value>
+  </data>
+  <data name="WidgetPrivacyHint" xml:space="preserve">
+    <value>What the widgets may show without the app being opened.</value>
+  </data>
+  <data name="WidgetPrivacyButtonOnly" xml:space="preserve">
+    <value>Button only</value>
+  </data>
+  <data name="WidgetPrivacyButtonOnlyHint" xml:space="preserve">
+    <value>A logo and a button. Nothing else.</value>
+  </data>
+  <data name="WidgetPrivacyCounts" xml:space="preserve">
+    <value>Numbers and glyphs</value>
+  </data>
+  <data name="WidgetPrivacyCountsHint" xml:space="preserve">
+    <value>Streak, the mood glyph, how many tasks and habits are done. None of your text.</value>
+  </data>
+  <data name="WidgetPrivacyWithText" xml:space="preserve">
+    <value>With text</value>
+  </data>
+  <data name="WidgetPrivacyWithTextHint" xml:space="preserve">
+    <value>Also the names of tasks and habits.</value>
+  </data>
+  <data name="WidgetPrivacyWarning" xml:space="preserve">
+    <value>Widgets are visible to anyone holding your unlocked phone, PIN or no PIN.</value>
+  </data>
+  <data name="WidgetPrivacyLockedDefault" xml:space="preserve">
+    <value>While the app lock is on, the widgets show only a button until you choose otherwise here.</value>
+  </data>
 </root>

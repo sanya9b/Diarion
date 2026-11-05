@@ -2957,5 +2957,29 @@ public static string ClearAllDataSuccessMsg {
         public static string ReadOnlyBannerLegacyEndedText {
             get { return ResourceManager.GetString("ReadOnlyBannerLegacyEndedText", resourceCulture) ?? string.Empty; }
         }
+
+        // Home-screen widgets (spec 20)
+        public static string WidgetOpenLabel => ResourceManager.GetString("WidgetOpenLabel", resourceCulture) ?? string.Empty;
+        public static string WidgetUpdatedFormat => ResourceManager.GetString("WidgetUpdatedFormat", resourceCulture) ?? string.Empty;
+        public static string WidgetStreakDayOne => ResourceManager.GetString("WidgetStreakDayOne", resourceCulture) ?? string.Empty;
+        public static string WidgetStreakDayFew => ResourceManager.GetString("WidgetStreakDayFew", resourceCulture) ?? string.Empty;
+        public static string WidgetStreakDayMany => ResourceManager.GetString("WidgetStreakDayMany", resourceCulture) ?? string.Empty;
+        public static string WidgetStreakNone => ResourceManager.GetString("WidgetStreakNone", resourceCulture) ?? string.Empty;
+        public static string WidgetMoodLabel => ResourceManager.GetString("WidgetMoodLabel", resourceCulture) ?? string.Empty;
+        public static string WidgetMoodEmpty => ResourceManager.GetString("WidgetMoodEmpty", resourceCulture) ?? string.Empty;
+        public static string WidgetTasksFormat => ResourceManager.GetString("WidgetTasksFormat", resourceCulture) ?? string.Empty;
+        public static string WidgetTasksNone => ResourceManager.GetString("WidgetTasksNone", resourceCulture) ?? string.Empty;
+        public static string WidgetHabitsFormat => ResourceManager.GetString("WidgetHabitsFormat", resourceCulture) ?? string.Empty;
+        public static string WidgetHabitsNone => ResourceManager.GetString("WidgetHabitsNone", resourceCulture) ?? string.Empty;
+        public static string WidgetPrivacyTitle => ResourceManager.GetString("WidgetPrivacyTitle", resourceCulture) ?? string.Empty;
+        public static string WidgetPrivacyHint => ResourceManager.GetString("WidgetPrivacyHint", resourceCulture) ?? string.Empty;
+        public static string WidgetPrivacyButtonOnly => ResourceManager.GetString("WidgetPrivacyButtonOnly", resourceCulture) ?? string.Empty;
+        public static string WidgetPrivacyButtonOnlyHint => ResourceManager.GetString("WidgetPrivacyButtonOnlyHint", resourceCulture) ?? string.Empty;
+        public static string WidgetPrivacyCounts => ResourceManager.GetString("WidgetPrivacyCounts", resourceCulture) ?? string.Empty;
+        public static string WidgetPrivacyCountsHint => ResourceManager.GetString("WidgetPrivacyCountsHint", resourceCulture) ?? string.Empty;
+        public static string WidgetPrivacyWithText => ResourceManager.GetString("WidgetPrivacyWithText", resourceCulture) ?? string.Empty;
+        public static string WidgetPrivacyWithTextHint => ResourceManager.GetString("WidgetPrivacyWithTextHint", resourceCulture) ?? string.Empty;
+        public static string WidgetPrivacyWarning => ResourceManager.GetString("WidgetPrivacyWarning", resourceCulture) ?? string.Empty;
+        public static string WidgetPrivacyLockedDefault => ResourceManager.GetString("WidgetPrivacyLockedDefault", resourceCulture) ?? string.Empty;
     }
 }

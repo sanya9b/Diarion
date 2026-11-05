@@ -82,6 +82,14 @@ public partial class UserProfile : ObservableObject
     // Безпека
     [ObservableProperty] private bool _isBiometricAuthEnabled;
 
+    /// <summary>
+    /// What the home-screen widgets may show, if the user has chosen (spec 20, D2). Null is "not
+    /// chosen", which <see cref="Widgets.WidgetPrivacyPolicy"/> turns into a default that follows the
+    /// app lock — and which is also what every profile written before the field existed reads as, so
+    /// an update needs no migration. Switching the lock on puts it back to null.
+    /// </summary>
+    [ObservableProperty] private Widgets.WidgetPrivacyLevel? _widgetPrivacyLevel;
+
     // Нагадування вести щоденник
     [ObservableProperty] private bool _isDailyReminderEnabled;
     [ObservableProperty] private TimeSpan _dailyReminderTime = new(20, 0, 0);

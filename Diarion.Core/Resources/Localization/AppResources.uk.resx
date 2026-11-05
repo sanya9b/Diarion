@@ -2452,4 +2452,70 @@
   <data name="ReadOnlyBannerLegacyEndedText" xml:space="preserve">
     <value>Три безкоштовні місяці для користувачів першої версії скінчились: записи доступні лише для читання.</value>
   </data>
+  <data name="WidgetOpenLabel" xml:space="preserve">
+    <value>Відкрити щоденник</value>
+  </data>
+  <data name="WidgetUpdatedFormat" xml:space="preserve">
+    <value>Оновлено {0}</value>
+  </data>
+  <data name="WidgetStreakDayOne" xml:space="preserve">
+    <value>{0} день поспіль</value>
+  </data>
+  <data name="WidgetStreakDayFew" xml:space="preserve">
+    <value>{0} дні поспіль</value>
+  </data>
+  <data name="WidgetStreakDayMany" xml:space="preserve">
+    <value>{0} днів поспіль</value>
+  </data>
+  <data name="WidgetStreakNone" xml:space="preserve">
+    <value>Почніть серію сьогодні</value>
+  </data>
+  <data name="WidgetMoodLabel" xml:space="preserve">
+    <value>Настрій дня</value>
+  </data>
+  <data name="WidgetMoodEmpty" xml:space="preserve">
+    <value>Як настрій?</value>
+  </data>
+  <data name="WidgetTasksFormat" xml:space="preserve">
+    <value>{0} з {1} справ</value>
+  </data>
+  <data name="WidgetTasksNone" xml:space="preserve">
+    <value>Сьогодні без справ</value>
+  </data>
+  <data name="WidgetHabitsFormat" xml:space="preserve">
+    <value>{0} з {1} звичок</value>
+  </data>
+  <data name="WidgetHabitsNone" xml:space="preserve">
+    <value>Сьогодні без звичок</value>
+  </data>
+  <data name="WidgetPrivacyTitle" xml:space="preserve">
+    <value>Віджети на домашньому екрані</value>
+  </data>
+  <data name="WidgetPrivacyHint" xml:space="preserve">
+    <value>Що віджети можуть показувати, не відкриваючи застосунок.</value>
+  </data>
+  <data name="WidgetPrivacyButtonOnly" xml:space="preserve">
+    <value>Лише кнопка</value>
+  </data>
+  <data name="WidgetPrivacyButtonOnlyHint" xml:space="preserve">
+    <value>Логотип і кнопка. Більше нічого.</value>
+  </data>
+  <data name="WidgetPrivacyCounts" xml:space="preserve">
+    <value>Числа й гліфи</value>
+  </data>
+  <data name="WidgetPrivacyCountsHint" xml:space="preserve">
+    <value>Серія, гліф настрою, скільки справ і звичок зроблено. Жодного вашого тексту.</value>
+  </data>
+  <data name="WidgetPrivacyWithText" xml:space="preserve">
+    <value>З текстом</value>
+  </data>
+  <data name="WidgetPrivacyWithTextHint" xml:space="preserve">
+    <value>Також назви справ і звичок.</value>
+  </data>
+  <data name="WidgetPrivacyWarning" xml:space="preserve">
+    <value>Віджети видно будь-кому, хто тримає ваш розблокований телефон, з PIN чи без.</value>
+  </data>
+  <data name="WidgetPrivacyLockedDefault" xml:space="preserve">
+    <value>Поки ввімкнено блокування, віджети показують лише кнопку, доки ви не оберете інше тут.</value>
+  </data>
 </root>

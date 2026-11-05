@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Models;
+using Diarion.Models.Widgets;
 using Diarion.Resources.Localization;
+using Diarion.Messages;
 using Diarion.Services;
 using Microsoft.Maui.Controls;
 
@@ -78,6 +81,59 @@ public partial class ProfileViewModel : BaseViewModel
         new(GenderType.Other, Diarion.Resources.Localization.AppResources.GenderOther)
     };
 
+    // ---- Home-screen widgets (spec 20, D2) ----
+    // The level is saved the moment it is picked, like the other switches on this screen, and the
+    // coordinator is told so the widget redraws before the user has put the phone down. Only phones
+    // have widgets; on Windows the card is not shown rather than shown and inert.
+
+    public bool IsWidgetSettingsAvailable => OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
+
+    public List<WidgetPrivacyOption> WidgetPrivacyOptions { get; } = new()
+    {
+        new(WidgetPrivacyLevel.ButtonOnly, AppResources.WidgetPrivacyButtonOnly, AppResources.WidgetPrivacyButtonOnlyHint),
+        new(WidgetPrivacyLevel.Counts, AppResources.WidgetPrivacyCounts, AppResources.WidgetPrivacyCountsHint),
+        new(WidgetPrivacyLevel.WithText, AppResources.WidgetPrivacyWithText, AppResources.WidgetPrivacyWithTextHint)
+    };
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowsWidgetTextWarning))]
+    [NotifyPropertyChangedFor(nameof(SelectedWidgetPrivacyHint))]
+    private WidgetPrivacyOption? _selectedWidgetPrivacy;
+
+    private bool _isLoadingWidgetPrivacy;
+
+    public bool ShowsWidgetTextWarning => SelectedWidgetPrivacy?.Level == WidgetPrivacyLevel.WithText;
+
+    public string SelectedWidgetPrivacyHint => SelectedWidgetPrivacy?.Hint ?? string.Empty;
+
+    /// <summary>The lock is on and nothing has been chosen: say why the widget is only a button.</summary>
+    public bool ShowsWidgetLockedHint => IsLockEnabled && Profile?.WidgetPrivacyLevel is null;
+
+    partial void OnSelectedWidgetPrivacyChanged(WidgetPrivacyOption? value)
+    {
+        if (value is null || Profile is null || _isLoadingWidgetPrivacy) return;
+        if (Profile.WidgetPrivacyLevel == value.Level) return;
+
+        Profile.WidgetPrivacyLevel = value.Level;
+        _ = PersistWidgetPrivacyAsync();
+    }
+
+    private async Task PersistWidgetPrivacyAsync()
+    {
+        await _profileService.SaveUserProfileAsync(Profile);
+        OnPropertyChanged(nameof(ShowsWidgetLockedHint));
+        WeakReferenceMessenger.Default.Send(new WidgetRefreshRequestedMessage());
+    }
+
+    private void LoadWidgetPrivacy()
+    {
+        var level = WidgetPrivacyPolicy.Resolve(Profile.WidgetPrivacyLevel, _appLockService.IsLockEnabled);
+        _isLoadingWidgetPrivacy = true;
+        SelectedWidgetPrivacy = WidgetPrivacyOptions.First(o => o.Level == level);
+        _isLoadingWidgetPrivacy = false;
+        OnPropertyChanged(nameof(ShowsWidgetLockedHint));
+    }
+
     public ProfileViewModel(
         IProfileService profileService,
         IBackupService backupService,
@@ -118,6 +174,7 @@ public partial class ProfileViewModel : BaseViewModel
         SelectedCurrency = MoneyFormatter.Resolve(Profile.GetEffectiveCurrencyCode());
 
         NotifyLockState();
+        LoadWidgetPrivacy();
         RefreshCrashReport();
 
         IsBusy = false;
@@ -284,6 +341,7 @@ public partial class ProfileViewModel : BaseViewModel
         if (!confirm) return;
 
         _appLockService.RemovePin();
+        WeakReferenceMessenger.Default.Send(new AppLockChangedMessage(false));
         NotifyLockState();
     }
 
@@ -292,6 +350,7 @@ public partial class ProfileViewModel : BaseViewModel
         OnPropertyChanged(nameof(IsLockEnabled));
         OnPropertyChanged(nameof(IsLockDisabled));
         OnPropertyChanged(nameof(IsBiometricEnabled));
+        OnPropertyChanged(nameof(ShowsWidgetLockedHint));
     }
 
     partial void OnSelectedGenderItemChanged(GenderItem? value)
@@ -480,3 +539,6 @@ public partial class ProfileViewModel : BaseViewModel
             Diarion.Resources.Localization.AppResources.OkButtonLabel);
     }
 }
+
+/// <summary>One row of the widget privacy picker: the level, its name, and the sentence under it.</summary>
+public sealed record WidgetPrivacyOption(WidgetPrivacyLevel Level, string Title, string Hint);

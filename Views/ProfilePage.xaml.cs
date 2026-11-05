@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Messaging;
 using System.Globalization;
 using System.Threading.Tasks;
 using Diarion.Models;
@@ -141,6 +142,8 @@ public partial class ProfilePage : ContentPage
         CultureInfo.DefaultThreadCurrentUICulture = culture;
         Diarion.Resources.Localization.AppResources.Culture = culture;
         Diarion.Resources.Localization.LocalizationResourceManager.Instance.SetCulture(culture);
+        // The widget snapshot carries its labels already localised (spec 20, D4); it is rewritten now.
+        WeakReferenceMessenger.Default.Send(new Diarion.Messages.WidgetRefreshRequestedMessage());
 
         if (Application.Current?.Windows.Count > 0)
         {
