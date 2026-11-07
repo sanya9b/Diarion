@@ -500,3 +500,13 @@ native/ios-storekit/DiarionStoreKit.xcframework/
 native/ios-storekit/.build/
 native/ios-storekit/.build-xcframework/
 native/ios-storekit/.swiftpm/
+
+# The widget extension's generated and built files (spec 20, R6): what xcodegen and xcodebuild
+# produce on the macOS runner from native/ios-widgets/project.yml. Nothing of it is source.
+native/ios-widgets/DiarionWidgets.xcodeproj/
+native/ios-widgets/DiarionWidgets/Info.plist
+native/ios-widgets/DiarionWidgets/DiarionWidgets.entitlements
+native/ios-widgets/DiarionWidgets.entitlements
+native/ios-widgets/build/
+native/ios-widgets/DiarionWidgetsShared/.build/
+native/ios-widgets/DiarionWidgetsShared/.swiftpm/

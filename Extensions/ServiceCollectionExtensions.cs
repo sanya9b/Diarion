@@ -124,6 +124,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IWidgetSnapshotService, WidgetSnapshotService>();
 #if ANDROID
         services.AddSingleton<IWidgetSnapshotPublisher, AndroidWidgetSnapshotPublisher>();
+#elif IOS
+        services.AddSingleton<IWidgetSnapshotPublisher, IosWidgetSnapshotPublisher>();
 #else
         services.AddSingleton<IWidgetSnapshotPublisher, NullWidgetSnapshotPublisher>();
 #endif

@@ -1,6 +1,7 @@
 using CommunityToolkit.Maui;
 using Diarion.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.LifecycleEvents;
 using Plugin.LocalNotification;
 
 namespace Diarion;
@@ -23,6 +24,21 @@ public static class MauiProgram
 			.UseMauiApp<App>()
 			.UseMauiCommunityToolkit()
 			.UseLocalNotification()
+			// A home-screen widget opens the app with a diarion:// link (spec 20, D3). Info.plist
+			// declares the scheme; the deep-link service navigates once the Shell is up and the
+			// lock, if any, is down. Android hands the same link over as an intent extra instead.
+			.ConfigureLifecycleEvents(events =>
+			{
+#if IOS
+				events.AddiOS(ios => ios.OpenUrl((app, url, options) =>
+				{
+					var link = url?.AbsoluteString;
+					if (string.IsNullOrEmpty(link) || !Diarion.Services.Widgets.WidgetDeepLink.TryParse(link, out _)) return false;
+					IPlatformApplication.Current?.Services.GetService<Diarion.Services.Widgets.IDeepLinkService>()?.Open(link);
+					return true;
+				}));
+#endif
+			})
 			// The note editor's line: a field that draws bold as bold. See Controls/Handlers.
 			.ConfigureMauiHandlers(handlers =>
 				handlers.AddHandler<Diarion.Controls.RichTextBlock, Diarion.Controls.Handlers.RichTextBlockHandler>())

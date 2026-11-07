@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Spec 20, R6: the App Group shared with DiarionWidgets. A separate file from Entitlements.plist,
+	     selected by Diarion.csproj only with -p:DiarionWidgets=true, because the provisioning profile
+	     must carry the same capability: the owner enabled App Groups on both App IDs and regenerated
+	     both profiles on 2026-11-07, and a build without the flag still signs with the plain file. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.org.diarion.app</string>
+	</array>
+</dict>
+</plist>

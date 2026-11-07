@@ -1,0 +1,48 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "today.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Today" } },
+        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Сьогодні" } }
+      }
+    },
+    "today.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Streak, mood and today's counts at a glance." } },
+        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Серія, настрій і підсумок дня одним поглядом." } }
+      }
+    },
+    "tasks.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tasks of the day" } },
+        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Справи дня" } }
+      }
+    },
+    "tasks.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "How many of today's tasks are done." } },
+        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Скільки сьогоднішніх справ зроблено." } }
+      }
+    },
+    "habits.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Habits" } },
+        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Звички" } }
+      }
+    },
+    "habits.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Today's habits, ticked and not." } },
+        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Сьогоднішні звички: зроблені й ні." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

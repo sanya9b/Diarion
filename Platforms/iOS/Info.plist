@@ -61,5 +61,20 @@
 	     why the line is worth re-reading rather than inheriting. -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+
+	<!-- The diarion:// scheme the home-screen widgets open the app with (spec 20, D3/R5). A custom
+	     scheme, not a universal link: nothing outside the phone needs to open the app, and the only
+	     code that builds these links lives in this repository (WidgetDeepLink). -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>org.diarion.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>diarion</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

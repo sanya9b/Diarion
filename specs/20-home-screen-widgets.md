@@ -1,6 +1,6 @@
 # 20 — Віджети домашнього й заблокованого екрана
 
-- **Priority:** P2 · **Effort:** L (iOS) + M (Android) + S (Core) · **Status:** In progress (власник сказав «починай» 2026-11-05; A і B готові й перевірені на емуляторі, C чекає на дії власника в Apple Developer) · **Depends on:** 01, 04, 07, 15 · **Blocks:** —
+- **Priority:** P2 · **Effort:** L (iOS) + M (Android) + S (Core) · **Status:** In progress (A і B готові й перевірені на емуляторі 2026-11-05; C — код і CI написані 2026-11-07 після того, як власник створив App Group і обидва профілі; перевірка на телефоні через TestFlight) · **Depends on:** 01, 04, 07, 15 · **Blocks:** —
 
 > Рядок «Home/lock-screen віджети» у `PRODUCT_ROADMAP.md` стояв як **відхилений** з трьома блокерами.
 > Ця спека написана на окремий запит власника (2026-11-05); того ж дня власник сказав «починай», і рядок
@@ -187,9 +187,18 @@ Windows і Mac Catalyst поза обсягом.
   PIN одразу перемикає віджети на «лише кнопку» (AC2); файл зліпка на рівні «числа» не містить тексту
   користувача (AC1, перевірено і тестом, і `cat` файлу на емуляторі). AC6 (мова) — лише тестом; AC7 (CI) —
   після пушу.
-- [ ] **Phase C — iOS конвеєр з одним віджетом W1.** Xcode-таргет, App Group, CI, TestFlight-збірка на
-  телефон власника. Мета фази — довести, що конвеєр живий, а не красу.
-- [ ] **Phase D — iOS W2–W3 і віджети заблокованого екрана.**
+- [~] **Phase C — iOS конвеєр** (2026-11-07). Власник створив `group.org.diarion.app`, App ID
+  `org.diarion.app.widgets`, перевипустив обидва профілі й оновив секрети (`IOS_WIDGETS_PROVISIONING_PROFILE_BASE64`
+  новий). У репозиторії: `native/ios-widgets/` за зразком Burdock (XcodeGen `project.yml`, пакет
+  `DiarionWidgetsShared` з тестами, `scripts/build-appex.sh`), `Entitlements.Widgets.plist` і
+  `AdditionalAppExtensions` за прапорцем `-p:DiarionWidgets=true`, `IosWidgetSnapshotPublisher` (App Group,
+  захист до першого розблокування, поза iCloud-бекапом), `dsk_reload_widgets` у StoreKit-фасаді (WidgetKit
+  лише Swift), `CFBundleURLTypes` + `OpenUrl` для `diarion://`, ввід `widgets` у `build-ios.yml`
+  (типово ввімкнено) і новий `swift-widgets.yml` для швидкого циклу. Усі три віджети й три грані
+  екрана блокування написані одразу — на iOS вони відрізняються лише view, конвеєр один. Лишається:
+  зелений `swift-widgets.yml`, непідписана збірка з вбудованим `.appex`, appstore-збірка і перевірка на
+  телефоні власника за AC3–AC6.
+- [x] **Phase D — iOS W2–W3 і віджети заблокованого екрана** увійшли в C: написані тим самим коштом.
 - [ ] **Phase E — друга хвиля W4–W8** за окремими рішеннями, по одному рядку в roadmap.
 
 ### Ризики
