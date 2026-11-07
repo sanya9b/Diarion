@@ -45,7 +45,7 @@
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
-		<ApplicationVersion>25</ApplicationVersion>
+		<ApplicationVersion>27</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -103,6 +103,25 @@
 			<Kind>Framework</Kind>
 			<ForceLoad>true</ForceLoad>
 		</NativeReference>
+	</ItemGroup>
+
+	<!--
+	  The WidgetKit extension (spec 20, R6): opt-in with -p:DiarionWidgets=true, because the App Group
+	  entitlement must also be in the provisioning profile. CI builds the .appex first
+	  (native/ios-widgets/scripts/build-appex.sh), then this project embeds it into Diarion.app/PlugIns
+	  and signs the app with Entitlements.Widgets.plist. MSBuild re-signs the .appex and takes its
+	  entitlements from native/ios-widgets/DiarionWidgets.entitlements, which build-appex.sh writes.
+	  Without the flag nothing here applies and the app signs with the plain Entitlements.plist.
+	-->
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(DiarionWidgets)' == 'true'">
+		<CodesignEntitlements>Platforms\iOS\Entitlements.Widgets.plist</CodesignEntitlements>
+	</PropertyGroup>
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(DiarionWidgets)' == 'true'">
+		<AdditionalAppExtensions Include="$(MSBuildProjectDirectory)/native/ios-widgets">
+			<Name>DiarionWidgets</Name>
+			<BuildOutput Condition="$(RuntimeIdentifier.StartsWith('iossimulator'))">build/Release-iphonesimulator</BuildOutput>
+			<BuildOutput Condition="!$(RuntimeIdentifier.StartsWith('iossimulator'))">build/Release-iphoneos</BuildOutput>
+		</AdditionalAppExtensions>
 	</ItemGroup>
 
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(Configuration)' == 'Release'">

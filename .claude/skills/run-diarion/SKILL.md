@@ -72,6 +72,24 @@ right of onboarding and bottom left of the tour card. Halve the screenshot with 
 full size is wasted context. The emulator's diary is throwaway: saving there is fine. Two warnings
 `XAAADB0000`/`MSB6006` from the uninstall step before the install are noise; any other warning is yours.
 
+### Widgets on the emulator (spec 20)
+
+- `-t:Install` uninstalls first: data, onboarding state and every placed widget are gone each time.
+  Budget a fresh onboarding (notification prompt → Skip top right → tour Skip bottom left) per install.
+- Place a widget: long-press an empty spot (`input swipe x y x y 1200`), tap **Widgets** in the popup
+  (its position follows the press — screenshot first), tap the search field, `input text Diarion`,
+  tap the Diarion row with the keyboard still up, then `input draganddrop <preview x y> <home x y> 2000`.
+  Remove one by `draganddrop` onto the top edge (`540 230`) — "Item removed" confirms.
+- Never test a widget tap after `am force-stop`: Android cancels a stopped app's PendingIntents, so the
+  tap does nothing until the next publish. Background the app with HOME instead; the relock grace is
+  30 s, so wait that long before expecting the lock screen.
+- The emulator is rooted: `MSYS_NO_PATHCONV=1 adb shell "cat /data/data/org.diarion.app/files/widget-snapshot.json"`
+  shows the live snapshot (and `last-crash.log` beside it). Without `MSYS_NO_PATHCONV` Git Bash
+  rewrites `/data/...` into `C:/Program Files/Git/data/...`.
+- Dark theme: `adb shell cmd uimode night yes|no`; widgets repaint without a relaunch.
+- Blind tap chains land on system screens (a Google sign-in once): on a cold emulator the first taps
+  are slow and arrive late, so screenshot between steps.
+
 ## Launch on Windows
 
 `WindowsPackageType` is `None`, so there is a plain executable and no packaging step.

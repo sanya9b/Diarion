@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Messaging;
 using System.Globalization;
 using System.Threading.Tasks;
 using Diarion.Models;
@@ -119,6 +120,8 @@ public partial class ProfilePage : ContentPage
             newTheme = Diarion.Services.ThemeManager.ThemeLight;
 
         Diarion.Services.ThemeManager.SetTheme(newTheme);
+        // The widgets wear the app's theme (spec 20, D7): the snapshot is rewritten with the new colours.
+        WeakReferenceMessenger.Default.Send(new Diarion.Messages.WidgetRefreshRequestedMessage());
 
         if (newTheme == Diarion.Services.ThemeManager.ThemePink)
             ThemeThumbAlignment = LayoutOptions.End;
@@ -141,6 +144,8 @@ public partial class ProfilePage : ContentPage
         CultureInfo.DefaultThreadCurrentUICulture = culture;
         Diarion.Resources.Localization.AppResources.Culture = culture;
         Diarion.Resources.Localization.LocalizationResourceManager.Instance.SetCulture(culture);
+        // The widget snapshot carries its labels already localised (spec 20, D4); it is rewritten now.
+        WeakReferenceMessenger.Default.Send(new Diarion.Messages.WidgetRefreshRequestedMessage());
 
         if (Application.Current?.Windows.Count > 0)
         {

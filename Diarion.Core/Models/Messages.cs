@@ -122,3 +122,55 @@ public sealed class StatisticsRangeRequestedMessage
         Range = range;
     }
 }
+
+/// <summary>
+/// Asks the widget coordinator to republish the snapshot for a reason the saves do not announce: the
+/// widget privacy level or the language changed (spec 20).
+/// </summary>
+public sealed class WidgetRefreshRequestedMessage
+{
+}
+
+/// <summary>
+/// The app lock was switched on or off. Sent by the PIN screens; the widget coordinator answers to
+/// "on" at once by dropping the chosen widget level and clearing the snapshot (spec 20, R9).
+/// </summary>
+public sealed class AppLockChangedMessage
+{
+    public bool IsEnabled { get; }
+
+    public AppLockChangedMessage(bool isEnabled)
+    {
+        IsEnabled = isEnabled;
+    }
+}
+
+/// <summary>
+/// A task, series or rule was written or deleted, announced by <c>TodoService</c> itself so every
+/// save path is covered — the detail page saves without telling the planner, and the widget snapshot
+/// must follow that save too (spec 20, R4). <see cref="TodoChangedMessage"/> stays the planner's own
+/// word for "this day's list changed"; this one says only that the store did.
+/// </summary>
+public sealed class TodoStoreChangedMessage
+{
+}
+
+public enum HomeSection
+{
+    Diary,
+    Planner
+}
+
+/// <summary>
+/// Asks the home screen to show one of its two halves. Sent by a widget deep link after it has
+/// navigated to the home tab; the main view model switches the mode the way the tabs would.
+/// </summary>
+public sealed class HomeSectionRequestedMessage
+{
+    public HomeSection Section { get; }
+
+    public HomeSectionRequestedMessage(HomeSection section)
+    {
+        Section = section;
+    }
+}

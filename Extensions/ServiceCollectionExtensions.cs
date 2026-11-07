@@ -5,6 +5,7 @@ using Diarion.Core.Services;
 using Diarion.Services.Ai.Reports;
 using Diarion.Services.Backup;
 using Diarion.Services.Store;
+using Diarion.Services.Widgets;
 using Diarion.ViewModels;
 using Diarion.ViewModels.Statistics;
 using Diarion.Views;
@@ -116,6 +117,21 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISnapshotBuilder, SnapshotBuilder>();
         // The local review tab: the same snapshot, twice, compared on the device. No network, no model.
         services.AddSingleton<Diarion.Services.Reports.IPeriodReviewService, Diarion.Services.Reports.PeriodReviewService>();
+
+        // Home-screen widgets (spec 20). The widget process never opens the database: the app writes a
+        // small snapshot at the privacy level in force and the widgets only read it. Where there are no
+        // widgets the publisher says so and the coordinator stays idle.
+        services.AddSingleton<IWidgetThemeProvider, MauiWidgetThemeProvider>();
+        services.AddSingleton<IWidgetSnapshotService, WidgetSnapshotService>();
+#if ANDROID
+        services.AddSingleton<IWidgetSnapshotPublisher, AndroidWidgetSnapshotPublisher>();
+#elif IOS
+        services.AddSingleton<IWidgetSnapshotPublisher, IosWidgetSnapshotPublisher>();
+#else
+        services.AddSingleton<IWidgetSnapshotPublisher, NullWidgetSnapshotPublisher>();
+#endif
+        services.AddSingleton<WidgetSnapshotCoordinator>();
+        services.AddSingleton<IDeepLinkService, MauiDeepLinkService>();
 
         return services;
     }

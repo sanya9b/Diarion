@@ -12,12 +12,12 @@ namespace Diarion.Tests;
 
 public class ProfileViewModelTests
 {
-    private static ProfileViewModel Create(Mock<IProfileService> profile, Mock<INotificationService> notif)
+    private static ProfileViewModel Create(Mock<IProfileService> profile, Mock<INotificationService> notif, Mock<IAppLockService>? appLock = null)
     {
         return new ProfileViewModel(
             profile.Object,
             new Mock<IBackupService>().Object,
-            new Mock<IAppLockService>().Object,
+            (appLock ?? new Mock<IAppLockService>()).Object,
             new Mock<IBiometricService>().Object,
             new Mock<IDialogService>().Object,
             notif.Object,
@@ -128,5 +128,49 @@ public class ProfileViewModelTests
         vm.HasBirthDate.Should().BeFalse();
         vm.Profile.BirthDate.Should().BeNull();
         vm.Profile.IsIntimateLifeAvailable.Should().BeFalse();
+    }
+
+    // ---- Home-screen widgets (spec 20, D2) ----
+
+    [Fact]
+    public async Task WidgetPrivacy_defaults_to_counts_without_a_lock_and_button_only_with_one()
+    {
+        var profileMock = new Mock<IProfileService>();
+        profileMock.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(new UserProfile());
+
+        var open = Create(profileMock, new Mock<INotificationService>());
+        await open.LoadProfileAsync();
+        open.SelectedWidgetPrivacy!.Level.Should().Be(Diarion.Models.Widgets.WidgetPrivacyLevel.Counts);
+        open.ShowsWidgetLockedHint.Should().BeFalse();
+
+        var lockMock = new Mock<IAppLockService>();
+        lockMock.SetupGet(l => l.IsLockEnabled).Returns(true);
+        var locked = Create(profileMock, new Mock<INotificationService>(), lockMock);
+        await locked.LoadProfileAsync();
+        locked.SelectedWidgetPrivacy!.Level.Should().Be(Diarion.Models.Widgets.WidgetPrivacyLevel.ButtonOnly);
+        locked.ShowsWidgetLockedHint.Should().BeTrue("the card must say why the widget is only a button");
+        profileMock.Verify(p => p.SaveUserProfileAsync(It.IsAny<UserProfile>()), Times.Never,
+            "loading the default must not write it as a choice");
+    }
+
+    [Fact]
+    public async Task WidgetPrivacy_choice_is_saved_at_once_and_the_warning_follows_the_text_level()
+    {
+        var profile = new UserProfile();
+        var profileMock = new Mock<IProfileService>();
+        profileMock.Setup(p => p.GetUserProfileAsync()).ReturnsAsync(profile);
+        var vm = Create(profileMock, new Mock<INotificationService>());
+        await vm.LoadProfileAsync();
+
+        vm.SelectedWidgetPrivacy = vm.WidgetPrivacyOptions.Single(o => o.Level == Diarion.Models.Widgets.WidgetPrivacyLevel.WithText);
+
+        profile.WidgetPrivacyLevel.Should().Be(Diarion.Models.Widgets.WidgetPrivacyLevel.WithText);
+        profileMock.Verify(p => p.SaveUserProfileAsync(profile), Times.Once);
+        vm.ShowsWidgetTextWarning.Should().BeTrue();
+        vm.SelectedWidgetPrivacyHint.Should().NotBeNullOrWhiteSpace();
+
+        vm.SelectedWidgetPrivacy = vm.WidgetPrivacyOptions.Single(o => o.Level == Diarion.Models.Widgets.WidgetPrivacyLevel.ButtonOnly);
+        vm.ShowsWidgetTextWarning.Should().BeFalse();
+        vm.ShowsWidgetLockedHint.Should().BeFalse("a chosen level is not the lock's default");
     }
 }
