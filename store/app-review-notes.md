@@ -390,7 +390,12 @@ Not applicable. The app is not a medical device and makes no medical claims: the
 
 ---
 
-## 10. Версія 1.1 — підписка (спека 15, R6.4)
+## 10. Версія 1.1 → 1.2 — підписка (спека 15, R6.4)
+
+> 2026-11-07: подається 1.2 (збірка 27), не 1.1. Чинний текст Notes — `D:\WORKpple-signingsc-notes-1.2.txt`
+> (3990 знаків): блок про підписку першим, абзац про віджети (зліпок в App Group, три рівні приватності,
+> deep links, без мережі), мережа — «застосунок сам запитів не робить». Записано в ASC через API.
+> Нижче — історія того, як до нього дійшли.
 
 Чинні Notes (повна відповідь з §9 у `D:\WORK\apple-signing\asc-notes-full.txt`) двічі кажуть
 неправду про 1.1: «the app is free with no in-app purchases» (п. 1) і «no payment processor» (п. 4).

@@ -266,8 +266,9 @@ Terms of Use: https://diarion.org/en/terms
 Privacy Policy: https://diarion.org/en/privacy
 ```
 
-**«Що нового» у версії 1.1.** Перший абзац — прямо про підписку (R6.4). Список «Також» звірено зі
-збіркою 21 (2026-10-25) — тією, що подається.
+**«Що нового» у версії 1.2.** Перший абзац — прямо про підписку (R6.4). Список «Також» звірено зі
+збіркою 27 (2026-11-07) — тією, що подається; 1.1 так і не була подана, її запис в ASC перейменовано
+на 1.2 і тексти нижче записані туди через API.
 
 Українська:
 ```
@@ -276,16 +277,17 @@ Diarion став платним: підписка Diarion Base на місяць
 Якщо ви встановили версію 1.0 — наступні три місяці все лишається для вас безкоштовним, дату видно на картці на головній. Нічого робити не треба.
 
 Також:
+• віджети на домашньому екрані: серія, настрій, справи й звички — рівень приватності обираєте ви
 • настрій можна назвати точніше: п'ять облич, під кожним — до семи станів; обличчя на вибір — смайли, погода або рослини
 • настрій по годинах — годинник у кутку картки
+• статистика шукає зв'язки не лише з настроєм, а й з енергією — друга родина гіпотез
+• підказки для роздумів у спокійні, але неприємні дні — про відпочинок і відновлення
+• фінанси: колір рахунку на чипах, бюджет показує залишок або перевитрату, переказ між рахунками
 • вкладка «Огляд» у статистиці: що змінилось проти попереднього періоду, словами
 • пошук по щоденнику
 • озвучені нагадування: задача читається вголос у потрібний час
 • швидка нотатка внизу дня — одразу в Нотатки
 • автоматичні резервні копії просто в телефон
-• симптоми в панелі місячних, день циклу поруч з інтимним життям
-• стрічка під датою показує, скільки днів лишилось до першої гіпотези
-• серії прощають пропущений день, а на плитці серії — знак пори року
 ```
 
 English:
@@ -295,16 +297,17 @@ Diarion is now paid: a Diarion Base subscription — monthly, every three months
 If you installed version 1.0, everything stays free for you for the next three months; the date is on the card on the home screen. There is nothing to do.
 
 Also:
+• home-screen widgets: streak, mood, tasks and habits — you choose the privacy level
 • name your mood more precisely: five faces, each with up to seven feelings; pick the faces you like — emoji, weather or plants
 • mood by the hour, from the clock in the corner of the card
+• statistics now look for links with your energy as well as your mood — a second family of hypotheses
+• reflection prompts for calm but unpleasant days — about rest and recovery
+• finances: account colours on the chips, budgets show what is left or overspent, transfers between accounts
 • a Review tab in statistics: what changed against the previous period, in words
 • search across the diary
 • spoken reminders: a task is read aloud at its time
 • a quick note at the foot of the day goes straight to Notes
 • automatic backups right on the phone
-• symptoms in the period panel, the cycle day next to intimate life
-• a strip under the date shows how many days are left until your first hypothesis
-• streaks forgive a missed day, and the streak tile wears the season
 ```
 
 **Поля App Store Connect, які не міняються:** ціна застосунку `Free`; Privacy Policy URL ті самі;
