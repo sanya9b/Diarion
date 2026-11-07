@@ -5,9 +5,10 @@ using System.IO;
 using Android.App;
 using Android.Appwidget;
 using Android.Content;
+using Android.Content.Res;
+using Color = Android.Graphics.Color;
 using Android.Views;
 using Android.Widget;
-using AndroidX.Core.Content;
 using Diarion.Models.Widgets;
 using Diarion.Services.Widgets;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +18,9 @@ namespace Diarion.Widgets;
 
 /// <summary>
 /// What the three Android widgets share (spec 20, R7): reading the snapshot file, the tap that opens
-/// the app on a <c>diarion://</c> link, the button-only overlay, and the mood and priority dots.
+/// the app on a <c>diarion://</c> link, the button-only overlay, and the theme (D7): every colour on
+/// the widget comes from the snapshot's theme section — the app's own Light, Dark or Pink — and only
+/// the gallery preview, which cannot run code, uses the fixed resources in the layout.
 /// <para>
 /// The provider runs inside the app's own process — Android creates <c>MainApplication</c>, and with
 /// it the service container, before any receiver — but it still draws from the file and never from the
@@ -57,6 +60,12 @@ public abstract class DiarionWidgetProvider : AppWidgetProvider
         var views = new RemoteViews(context.PackageName, LayoutId);
         views.SetOnClickPendingIntent(Resource.Id.widget_root, TapIntent(context, Destination));
 
+        var palette = WidgetPalette.For(snapshot?.Theme);
+        views.SetInt(Resource.Id.widget_root, "setBackgroundResource", palette.BackgroundDrawable);
+        views.SetTextColor(Resource.Id.widget_open_label, palette.Text);
+        views.SetTextColor(Resource.Id.widget_date, palette.Secondary);
+        views.SetTextColor(Resource.Id.widget_updated, palette.Secondary);
+
         var showsData = snapshot is not null && snapshot.PrivacyLevel != WidgetPrivacyLevel.ButtonOnly;
         views.SetViewVisibility(Resource.Id.widget_content, showsData ? ViewStates.Visible : ViewStates.Gone);
         views.SetViewVisibility(Resource.Id.widget_button_only, showsData ? ViewStates.Gone : ViewStates.Visible);
@@ -67,14 +76,14 @@ public abstract class DiarionWidgetProvider : AppWidgetProvider
         {
             views.SetTextViewText(Resource.Id.widget_date, snapshot!.Labels.DateShort);
             views.SetTextViewText(Resource.Id.widget_updated, snapshot.Labels.Updated);
-            Render(context, views, snapshot);
+            Render(context, views, snapshot, palette);
         }
 
         return views;
     }
 
     /// <summary>Fills the data half. Called only with a snapshot above the button-only level.</summary>
-    protected abstract void Render(Context context, RemoteViews views, WidgetSnapshot snapshot);
+    protected abstract void Render(Context context, RemoteViews views, WidgetSnapshot snapshot, WidgetPalette palette);
 
     /// <summary>
     /// Opens <c>MainActivity</c> with the link as both data and extra. Data makes the three intents
@@ -92,27 +101,79 @@ public abstract class DiarionWidgetProvider : AppWidgetProvider
             context, (int)destination, intent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable)!;
     }
 
-    /// <summary>The quadrant's brand hue as a filled dot, or a ring when nothing is recorded (AGENTS.md palette).</summary>
-    protected static int MoodDrawable(string? quadrant) => quadrant switch
+    /// <summary>A filled dot in <paramref name="fill"/>, or the ring in the secondary colour when null.</summary>
+    protected static void SetDot(RemoteViews views, int viewId, Color? fill, WidgetPalette palette)
     {
-        nameof(Models.EmotionQuadrant.PleasantEnergetic) => Resource.Drawable.widget_dot_coral,
-        nameof(Models.EmotionQuadrant.PleasantCalm) => Resource.Drawable.widget_dot_sage,
-        nameof(Models.EmotionQuadrant.UnpleasantEnergetic) => Resource.Drawable.widget_dot_amber,
-        nameof(Models.EmotionQuadrant.UnpleasantCalm) => Resource.Drawable.widget_dot_ocean,
-        nameof(Models.EmotionQuadrant.Neutral) => Resource.Drawable.widget_dot_dust,
-        _ => Resource.Drawable.widget_ring
+        views.SetImageViewResource(viewId, fill is null ? Resource.Drawable.widget_ring_tint : Resource.Drawable.widget_dot);
+        views.SetInt(viewId, "setColorFilter", (fill ?? palette.Secondary).ToArgb());
+    }
+
+    /// <summary>Progress tint follows the theme where RemoteViews allows it (API 31); older systems keep the drawable's Sage.</summary>
+    protected static void SetProgress(RemoteViews views, int viewId, int done, int total, WidgetPalette palette)
+    {
+        views.SetProgressBar(viewId, total > 0 ? total : 1, done, false);
+        if (OperatingSystem.IsAndroidVersionAtLeast(31))
+        {
+            views.SetColorStateList(viewId, "setProgressTintList", ColorStateList.ValueOf(palette.Sage));
+            views.SetColorStateList(viewId, "setProgressBackgroundTintList", ColorStateList.ValueOf(palette.Track));
+        }
+    }
+}
+
+/// <summary>The snapshot's theme as Android colours, with the brand light palette when a file carries none.</summary>
+public readonly record struct WidgetPalette(
+    int BackgroundDrawable, Color Text, Color Secondary, Color Track, Color Accent, Color Sage, Color Amber, Color Ocean)
+{
+    public static WidgetPalette For(WidgetTheme? theme)
+    {
+        if (theme is null)
+        {
+            return new WidgetPalette(Resource.Drawable.widget_background, Parse("#22282C", Color.Black), Parse("#6B7680", Color.Gray),
+                Parse("#E0E6EA", Color.LightGray), Parse("#C26D53", Color.Red), Parse("#8FA083", Color.Green),
+                Parse("#C9985A", Color.Yellow), Parse("#929FA7", Color.Gray));
+        }
+
+        var background = theme.Name switch
+        {
+            "Dark" => Resource.Drawable.widget_background_dark,
+            "Pink" => Resource.Drawable.widget_background_pink,
+            _ => Resource.Drawable.widget_background
+        };
+        return new WidgetPalette(background, Parse(theme.Text, Color.Black), Parse(theme.Secondary, Color.Gray),
+            Parse(theme.Track, Color.LightGray), Parse(theme.Accent, Color.Red), Parse(theme.Sage, Color.Green),
+            Parse(theme.Amber, Color.Yellow), Parse(theme.Ocean, Color.Gray));
+    }
+
+    /// <summary>The quadrant's hue, or null when nothing is recorded (a ring then).</summary>
+    public Color? Mood(string? quadrant) => quadrant switch
+    {
+        nameof(Models.EmotionQuadrant.PleasantEnergetic) => Accent,
+        nameof(Models.EmotionQuadrant.PleasantCalm) => Sage,
+        nameof(Models.EmotionQuadrant.UnpleasantEnergetic) => Amber,
+        nameof(Models.EmotionQuadrant.UnpleasantCalm) => Ocean,
+        nameof(Models.EmotionQuadrant.Neutral) => Track,
+        _ => null
     };
 
-    /// <summary>Coral / Amber / Sage for high / medium / low, as the planner colours them.</summary>
-    protected static int PriorityDrawable(string priority) => priority switch
+    /// <summary>Accent / Amber / Sage for high / medium / low, as the planner colours them.</summary>
+    public Color Priority(string priority) => priority switch
     {
-        nameof(Models.TodoPriority.High) => Resource.Drawable.widget_dot_coral,
-        nameof(Models.TodoPriority.Low) => Resource.Drawable.widget_dot_sage,
-        _ => Resource.Drawable.widget_dot_amber
+        nameof(Models.TodoPriority.High) => Accent,
+        nameof(Models.TodoPriority.Low) => Sage,
+        _ => Amber
     };
 
-    protected static global::Android.Graphics.Color TextColor(Context context, bool secondary)
-        => new(ContextCompat.GetColor(context, secondary ? Resource.Color.widget_text_secondary : Resource.Color.widget_text));
+    private static Color Parse(string hex, Color fallback)
+    {
+        try
+        {
+            return Color.ParseColor(hex);
+        }
+        catch (Java.Lang.IllegalArgumentException)
+        {
+            return fallback;
+        }
+    }
 }
 
 /// <summary>The snapshot file on Android, and the two things the providers may ask the app for.</summary>

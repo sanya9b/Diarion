@@ -33,6 +33,9 @@ public sealed record WidgetSnapshot
 
     public required WidgetLabels Labels { get; init; }
 
+    /// <summary>The app's theme as colours, at every level: a button-only widget is still the app's colour.</summary>
+    public WidgetTheme? Theme { get; init; }
+
     public WidgetStreak? Streak { get; init; }
 
     public WidgetMood? Mood { get; init; }
@@ -55,6 +58,35 @@ public sealed record WidgetLabels
 
     /// <summary>"Updated 14:02" — honest about how fresh the numbers are, since iOS throttles refreshes.</summary>
     public required string Updated { get; init; }
+}
+
+/// <summary>
+/// The active app theme as #RRGGBB strings (spec 20, D7). The app picks Light, Dark or Pink by hand,
+/// so the widgets follow that pick instead of the system appearance. Surfaces and text come from the
+/// theme's card keys; the accents too, because the Pink theme recolours them.
+/// </summary>
+public sealed record WidgetTheme
+{
+    /// <summary>"Light", "Dark" or "Pink" — the Android provider picks the rounded background by it.</summary>
+    public required string Name { get; init; }
+
+    public required string Background { get; init; }
+
+    public required string Text { get; init; }
+
+    public required string Secondary { get; init; }
+
+    /// <summary>Progress track and the empty ring.</summary>
+    public required string Track { get; init; }
+
+    /// <summary>Coral in the brand themes: high priority, the pleasant-energetic mood, the bookmark.</summary>
+    public required string Accent { get; init; }
+
+    public required string Sage { get; init; }
+
+    public required string Amber { get; init; }
+
+    public required string Ocean { get; init; }
 }
 
 public sealed record WidgetStreak

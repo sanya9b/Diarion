@@ -18,10 +18,15 @@ public sealed class TodayWidgetProvider : DiarionWidgetProvider
 
     protected override WidgetDestination Destination => WidgetDestination.Today;
 
-    protected override void Render(Context context, RemoteViews views, WidgetSnapshot snapshot)
+    protected override void Render(Context context, RemoteViews views, WidgetSnapshot snapshot, WidgetPalette palette)
     {
-        views.SetImageViewResource(Resource.Id.widget_mood, MoodDrawable(snapshot.Mood?.Quadrant));
+        SetDot(views, Resource.Id.widget_mood, palette.Mood(snapshot.Mood?.Quadrant), palette);
         views.SetContentDescription(Resource.Id.widget_mood, snapshot.Mood?.Label ?? string.Empty);
+
+        views.SetTextColor(Resource.Id.widget_headline, palette.Text);
+        views.SetTextColor(Resource.Id.widget_subline, palette.Secondary);
+        views.SetTextColor(Resource.Id.widget_tasks_label, palette.Text);
+        views.SetTextColor(Resource.Id.widget_habits_label, palette.Text);
 
         var streak = snapshot.Streak;
         if (streak is { Days: > 0 })

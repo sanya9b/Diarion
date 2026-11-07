@@ -120,6 +120,8 @@ public partial class ProfilePage : ContentPage
             newTheme = Diarion.Services.ThemeManager.ThemeLight;
 
         Diarion.Services.ThemeManager.SetTheme(newTheme);
+        // The widgets wear the app's theme (spec 20, D7): the snapshot is rewritten with the new colours.
+        WeakReferenceMessenger.Default.Send(new Diarion.Messages.WidgetRefreshRequestedMessage());
 
         if (newTheme == Diarion.Services.ThemeManager.ThemePink)
             ThemeThumbAlignment = LayoutOptions.End;

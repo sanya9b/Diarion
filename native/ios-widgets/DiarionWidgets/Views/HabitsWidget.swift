@@ -23,16 +23,16 @@ struct HabitsEntryView: View {
 
     var body: some View {
         content
-            .diarionBackground(family: family)
+            .diarionBackground(entry.palette, family: family)
             .widgetURL(URL(string: "diarion://habits"))
     }
 
     @ViewBuilder
     private var content: some View {
         if let snapshot = entry.current, !snapshot.isButtonOnly, let habits = snapshot.habits {
-            HabitsView(snapshot: snapshot, habits: habits, rows: family == .systemLarge ? 10 : 4)
+            HabitsView(snapshot: snapshot, habits: habits, palette: entry.palette, rows: family == .systemLarge ? 10 : 4)
         } else {
-            ButtonOnlyView(label: entry.openLabel)
+            ButtonOnlyView(label: entry.openLabel, palette: entry.palette)
         }
     }
 }
@@ -40,6 +40,7 @@ struct HabitsEntryView: View {
 struct HabitsView: View {
     let snapshot: WidgetSnapshot
     let habits: WidgetSnapshot.Habits
+    let palette: WidgetPalette
     let rows: Int
 
     private static let maxDots = 10
@@ -52,17 +53,17 @@ struct HabitsView: View {
             HStack {
                 Text(habits.label)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(DiarionPalette.text)
+                    .foregroundStyle(palette.text)
                     .lineLimit(1)
                 Spacer(minLength: 4)
-                DateLabel(text: snapshot.labels.dateShort)
+                DateLabel(text: snapshot.labels.dateShort, palette: palette)
             }
             if habits.items == nil {
                 // Dots in the habits' own order are not known at this level, only how many are done:
                 // the done ones come first, which reads as a bar filling from the left.
                 HStack(spacing: 6) {
                     ForEach(0..<min(habits.total, Self.maxDots), id: \.self) { index in
-                        Dot(fill: index < habits.done ? DiarionPalette.sage : nil, size: 14)
+                        Dot(fill: index < habits.done ? palette.sage : nil, palette: palette, size: 14)
                     }
                 }
                 .padding(.top, 4)
@@ -70,10 +71,10 @@ struct HabitsView: View {
                 VStack(alignment: .leading, spacing: WidgetMetrics.rowSpacing) {
                     ForEach(Array(visible.enumerated()), id: \.offset) { _, item in
                         HStack(spacing: 8) {
-                            Dot(fill: item.done ? DiarionPalette.sage : nil)
+                            Dot(fill: item.done ? palette.sage : nil, palette: palette)
                             Text(item.name)
                                 .font(.footnote)
-                                .foregroundStyle(item.done ? DiarionPalette.secondary : DiarionPalette.text)
+                                .foregroundStyle(item.done ? palette.secondary : palette.text)
                                 .lineLimit(1)
                         }
                     }
@@ -82,12 +83,12 @@ struct HabitsView: View {
             }
             Spacer(minLength: 0)
             HStack {
-                UpdatedLabel(text: snapshot.labels.updated)
+                UpdatedLabel(text: snapshot.labels.updated, palette: palette)
                 Spacer(minLength: 4)
                 if hidden > 0 {
                     Text(verbatim: "+\(hidden)")
                         .font(.caption2)
-                        .foregroundStyle(DiarionPalette.secondary)
+                        .foregroundStyle(palette.secondary)
                 }
             }
         }

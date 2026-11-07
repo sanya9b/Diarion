@@ -25,17 +25,20 @@ public sealed class WidgetSnapshotService : IWidgetSnapshotService
     private readonly IDiaryService _diaryService;
     private readonly ITodoService _todoService;
     private readonly IHabitService _habitService;
+    private readonly IWidgetThemeProvider _themes;
     private readonly TimeProvider _clock;
 
     public WidgetSnapshotService(
         IDiaryService diaryService,
         ITodoService todoService,
         IHabitService habitService,
+        IWidgetThemeProvider? themes = null,
         TimeProvider? clock = null)
     {
         _diaryService = diaryService;
         _todoService = todoService;
         _habitService = habitService;
+        _themes = themes ?? new NullWidgetThemeProvider();
         _clock = clock ?? TimeProvider.System;
     }
 
@@ -59,7 +62,8 @@ public sealed class WidgetSnapshotService : IWidgetSnapshotService
             GeneratedAt = now,
             Locale = culture.TwoLetterISOLanguageName,
             PrivacyLevel = level,
-            Labels = labels
+            Labels = labels,
+            Theme = _themes.Current()
         };
 
         if (level == WidgetPrivacyLevel.ButtonOnly) return snapshot;

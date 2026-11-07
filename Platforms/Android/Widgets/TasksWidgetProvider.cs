@@ -28,11 +28,13 @@ public sealed class TasksWidgetProvider : DiarionWidgetProvider
 
     protected override WidgetDestination Destination => WidgetDestination.Tasks;
 
-    protected override void Render(Context context, RemoteViews views, WidgetSnapshot snapshot)
+    protected override void Render(Context context, RemoteViews views, WidgetSnapshot snapshot, WidgetPalette palette)
     {
         var tasks = snapshot.Tasks;
         views.SetTextViewText(Resource.Id.widget_title, tasks?.Label ?? string.Empty);
-        views.SetProgressBar(Resource.Id.widget_progress, tasks is { Total: > 0 } ? tasks.Total : 1, tasks?.Done ?? 0, false);
+        views.SetTextColor(Resource.Id.widget_title, palette.Text);
+        views.SetTextColor(Resource.Id.widget_more, palette.Secondary);
+        SetProgress(views, Resource.Id.widget_progress, tasks?.Done ?? 0, tasks?.Total ?? 0, palette);
 
         var items = tasks?.Items;
         for (var i = 0; i < Rows.Length; i++)
@@ -45,10 +47,11 @@ public sealed class TasksWidgetProvider : DiarionWidgetProvider
 
             var item = items[i];
             views.SetViewVisibility(Rows[i], ViewStates.Visible);
-            views.SetImageViewResource(Dots[i], item.Done ? Resource.Drawable.widget_dot_done : PriorityDrawable(item.Priority));
+            SetDot(views, Dots[i], item.Done ? palette.Sage : palette.Priority(item.Priority), palette);
             views.SetTextViewText(Titles[i], item.Title);
-            views.SetTextColor(Titles[i], TextColor(context, secondary: item.Done));
+            views.SetTextColor(Titles[i], item.Done ? palette.Secondary : palette.Text);
             views.SetTextViewText(Times[i], item.Time ?? string.Empty);
+            views.SetTextColor(Times[i], palette.Secondary);
             views.SetViewVisibility(Times[i], item.Time is null ? ViewStates.Gone : ViewStates.Visible);
         }
 

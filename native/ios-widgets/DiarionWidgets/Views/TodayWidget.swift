@@ -23,18 +23,19 @@ struct TodayEntryView: View {
 
     var body: some View {
         content
-            .diarionBackground(family: family)
+            .diarionBackground(entry.palette, family: family)
             .widgetURL(URL(string: "diarion://today"))
     }
 
     @ViewBuilder
     private var content: some View {
+        let palette = entry.palette
         if let snapshot = entry.current, !snapshot.isButtonOnly {
             switch family {
-            case .accessoryCircular: CircularStreakView(snapshot: snapshot)
+            case .accessoryCircular: CircularStreakView(snapshot: snapshot, palette: palette)
             case .accessoryRectangular: RectangularTodayView(snapshot: snapshot)
             case .accessoryInline: InlineTodayView(snapshot: snapshot)
-            default: TodayView(snapshot: snapshot)
+            default: TodayView(snapshot: snapshot, palette: palette)
             }
         } else {
             switch family {
@@ -46,7 +47,7 @@ struct TodayEntryView: View {
             case .accessoryRectangular, .accessoryInline:
                 Label { Text(entry.openLabel) } icon: { Image(systemName: "book.closed") }
             default:
-                ButtonOnlyView(label: entry.openLabel)
+                ButtonOnlyView(label: entry.openLabel, palette: palette)
             }
         }
     }
@@ -54,43 +55,46 @@ struct TodayEntryView: View {
 
 struct TodayView: View {
     let snapshot: WidgetSnapshot
+    let palette: WidgetPalette
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack {
-                DateLabel(text: snapshot.labels.dateShort)
+                DateLabel(text: snapshot.labels.dateShort, palette: palette)
                 Spacer(minLength: 4)
-                Dot(fill: DiarionPalette.mood(snapshot.mood?.quadrant), size: 16)
+                Dot(fill: palette.mood(snapshot.mood?.quadrant), palette: palette, size: 16)
                     .accessibilityLabel(Text(snapshot.mood?.label ?? ""))
             }
             if let streak = snapshot.streak {
                 if streak.days > 0 {
                     Text(verbatim: "\(streak.days)")
                         .font(.system(size: 30, weight: .bold))
-                        .foregroundStyle(DiarionPalette.text)
+                        .foregroundStyle(palette.text)
                         .padding(.top, 4)
                 }
                 Text(streak.label)
                     .font(.caption)
-                    .foregroundStyle(DiarionPalette.secondary)
+                    .foregroundStyle(palette.secondary)
                     .lineLimit(2)
             }
             Spacer(minLength: 0)
             if let tasks = snapshot.tasks {
-                Text(tasks.label).font(.footnote).foregroundStyle(DiarionPalette.text).lineLimit(1)
+                Text(tasks.label).font(.footnote).foregroundStyle(palette.text).lineLimit(1)
             }
             if let habits = snapshot.habits {
-                Text(habits.label).font(.footnote).foregroundStyle(DiarionPalette.text).lineLimit(1)
+                Text(habits.label).font(.footnote).foregroundStyle(palette.text).lineLimit(1)
             }
-            UpdatedLabel(text: snapshot.labels.updated).padding(.top, 2)
+            UpdatedLabel(text: snapshot.labels.updated, palette: palette).padding(.top, 2)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }
 
-/// Lock screen circle: the streak number, or the glyph when there is no run yet.
+/// Lock screen circle: the streak number, or the glyph when there is no run yet. Vibrant rendering
+/// ignores colours, so the palette only shapes the glyph.
 struct CircularStreakView: View {
     let snapshot: WidgetSnapshot
+    let palette: WidgetPalette
 
     var body: some View {
         ZStack {
@@ -104,7 +108,7 @@ struct CircularStreakView: View {
                     Image(systemName: "flame.fill").font(.system(size: 9))
                 }
             } else {
-                DiarionGlyph(size: 26)
+                DiarionGlyph(size: 26, palette: palette)
             }
         }
         .accessibilityLabel(Text(snapshot.streak?.label ?? snapshot.labels.appName))

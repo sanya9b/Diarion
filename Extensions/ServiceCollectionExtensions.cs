@@ -121,6 +121,7 @@ public static class ServiceCollectionExtensions
         // Home-screen widgets (spec 20). The widget process never opens the database: the app writes a
         // small snapshot at the privacy level in force and the widgets only read it. Where there are no
         // widgets the publisher says so and the coordinator stays idle.
+        services.AddSingleton<IWidgetThemeProvider, MauiWidgetThemeProvider>();
         services.AddSingleton<IWidgetSnapshotService, WidgetSnapshotService>();
 #if ANDROID
         services.AddSingleton<IWidgetSnapshotPublisher, AndroidWidgetSnapshotPublisher>();

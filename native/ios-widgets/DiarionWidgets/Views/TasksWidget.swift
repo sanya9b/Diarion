@@ -24,16 +24,16 @@ struct TasksEntryView: View {
 
     var body: some View {
         content
-            .diarionBackground(family: family)
+            .diarionBackground(entry.palette, family: family)
             .widgetURL(URL(string: "diarion://tasks"))
     }
 
     @ViewBuilder
     private var content: some View {
         if let snapshot = entry.current, !snapshot.isButtonOnly, let tasks = snapshot.tasks {
-            TasksView(snapshot: snapshot, tasks: tasks, rows: family == .systemLarge ? 8 : 3)
+            TasksView(snapshot: snapshot, tasks: tasks, palette: entry.palette, rows: family == .systemLarge ? 8 : 3)
         } else {
-            ButtonOnlyView(label: entry.openLabel)
+            ButtonOnlyView(label: entry.openLabel, palette: entry.palette)
         }
     }
 }
@@ -41,6 +41,7 @@ struct TasksEntryView: View {
 struct TasksView: View {
     let snapshot: WidgetSnapshot
     let tasks: WidgetSnapshot.Tasks
+    let palette: WidgetPalette
     let rows: Int
 
     private var visible: [WidgetSnapshot.TaskItem] { Array((tasks.items ?? []).prefix(rows)) }
@@ -51,30 +52,28 @@ struct TasksView: View {
             HStack {
                 Text(tasks.label)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(DiarionPalette.text)
+                    .foregroundStyle(palette.text)
                     .lineLimit(1)
                 Spacer(minLength: 4)
-                DateLabel(text: snapshot.labels.dateShort)
+                DateLabel(text: snapshot.labels.dateShort, palette: palette)
             }
-            ProgressView(value: Double(tasks.done), total: Double(max(tasks.total, 1)))
-                .tint(DiarionPalette.sage)
-                .background(DiarionPalette.track)
+            ProgressBar(fraction: tasks.total > 0 ? Double(tasks.done) / Double(tasks.total) : 0, palette: palette)
             if !visible.isEmpty {
                 VStack(alignment: .leading, spacing: WidgetMetrics.rowSpacing) {
                     ForEach(Array(visible.enumerated()), id: \.offset) { _, item in
-                        TaskRow(item: item)
+                        TaskRow(item: item, palette: palette)
                     }
                 }
                 .privacySensitive()
             }
             Spacer(minLength: 0)
             HStack {
-                UpdatedLabel(text: snapshot.labels.updated)
+                UpdatedLabel(text: snapshot.labels.updated, palette: palette)
                 Spacer(minLength: 4)
                 if hidden > 0 {
                     Text(verbatim: "+\(hidden)")
                         .font(.caption2)
-                        .foregroundStyle(DiarionPalette.secondary)
+                        .foregroundStyle(palette.secondary)
                 }
             }
         }
@@ -82,22 +81,39 @@ struct TasksView: View {
     }
 }
 
+/// Track in the theme's divider colour, fill in its Sage: progress is success, not an alarm.
+struct ProgressBar: View {
+    let fraction: Double
+    let palette: WidgetPalette
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                Capsule().fill(palette.track)
+                Capsule().fill(palette.sage).frame(width: geometry.size.width * min(max(fraction, 0), 1))
+            }
+        }
+        .frame(height: 6)
+    }
+}
+
 struct TaskRow: View {
     let item: WidgetSnapshot.TaskItem
+    let palette: WidgetPalette
 
     var body: some View {
         HStack(spacing: 8) {
-            Dot(fill: item.done ? DiarionPalette.sage : DiarionPalette.priority(item.priority), size: WidgetMetrics.smallDot)
+            Dot(fill: item.done ? palette.sage : palette.priority(item.priority), palette: palette, size: WidgetMetrics.smallDot)
             Text(item.title)
                 .font(.footnote)
-                .foregroundStyle(item.done ? DiarionPalette.secondary : DiarionPalette.text)
-                .strikethrough(item.done, color: DiarionPalette.secondary)
+                .foregroundStyle(item.done ? palette.secondary : palette.text)
+                .strikethrough(item.done, color: palette.secondary)
                 .lineLimit(1)
             Spacer(minLength: 4)
             if let time = item.time {
                 Text(time)
                     .font(.caption)
-                    .foregroundStyle(DiarionPalette.secondary)
+                    .foregroundStyle(palette.secondary)
                     .lineLimit(1)
             }
         }

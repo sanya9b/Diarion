@@ -31,10 +31,12 @@ public sealed class HabitsWidgetProvider : DiarionWidgetProvider
 
     protected override WidgetDestination Destination => WidgetDestination.Habits;
 
-    protected override void Render(Context context, RemoteViews views, WidgetSnapshot snapshot)
+    protected override void Render(Context context, RemoteViews views, WidgetSnapshot snapshot, WidgetPalette palette)
     {
         var habits = snapshot.Habits;
         views.SetTextViewText(Resource.Id.widget_title, habits?.Label ?? string.Empty);
+        views.SetTextColor(Resource.Id.widget_title, palette.Text);
+        views.SetTextColor(Resource.Id.widget_more, palette.Secondary);
 
         var items = habits?.Items;
         var withText = items is not null;
@@ -50,7 +52,7 @@ public sealed class HabitsWidgetProvider : DiarionWidgetProvider
             for (var i = 0; i < DotIds.Length; i++)
             {
                 views.SetViewVisibility(DotIds[i], i < total ? ViewStates.Visible : ViewStates.Gone);
-                views.SetImageViewResource(DotIds[i], i < done ? Resource.Drawable.widget_dot_done : Resource.Drawable.widget_ring);
+                SetDot(views, DotIds[i], i < done ? palette.Sage : null, palette);
             }
             return;
         }
@@ -65,9 +67,9 @@ public sealed class HabitsWidgetProvider : DiarionWidgetProvider
             }
 
             views.SetViewVisibility(Rows[i], ViewStates.Visible);
-            views.SetImageViewResource(Marks[i], list[i].Done ? Resource.Drawable.widget_dot_done : Resource.Drawable.widget_ring);
+            SetDot(views, Marks[i], list[i].Done ? palette.Sage : null, palette);
             views.SetTextViewText(Titles[i], list[i].Name);
-            views.SetTextColor(Titles[i], TextColor(context, secondary: list[i].Done));
+            views.SetTextColor(Titles[i], list[i].Done ? palette.Secondary : palette.Text);
         }
 
         var hidden = habits!.Total - System.Math.Min(list.Count, Rows.Length);

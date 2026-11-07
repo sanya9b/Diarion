@@ -16,24 +16,53 @@ public struct WidgetSnapshot: Codable, Equatable {
     /// "ButtonOnly", "Counts" or "WithText".
     public let privacyLevel: String
     public let labels: Labels
+    /// The app's theme as #RRGGBB strings; nil in a file written before the theme travelled, or in samples.
+    public let theme: Theme?
     public let streak: Streak?
     public let mood: Mood?
     public let tasks: Tasks?
     public let habits: Habits?
 
     public init(schemaVersion: Int = WidgetSnapshot.currentSchemaVersion, date: String, generatedAt: String,
-                locale: String, privacyLevel: String, labels: Labels, streak: Streak? = nil, mood: Mood? = nil,
-                tasks: Tasks? = nil, habits: Habits? = nil) {
+                locale: String, privacyLevel: String, labels: Labels, theme: Theme? = nil, streak: Streak? = nil,
+                mood: Mood? = nil, tasks: Tasks? = nil, habits: Habits? = nil) {
         self.schemaVersion = schemaVersion
         self.date = date
         self.generatedAt = generatedAt
         self.locale = locale
         self.privacyLevel = privacyLevel
         self.labels = labels
+        self.theme = theme
         self.streak = streak
         self.mood = mood
         self.tasks = tasks
         self.habits = habits
+    }
+
+    /// The active app theme (spec 20, D7): Light, Dark or Pink, chosen in the app, not by the system.
+    public struct Theme: Codable, Equatable {
+        public let name: String
+        public let background: String
+        public let text: String
+        public let secondary: String
+        public let track: String
+        public let accent: String
+        public let sage: String
+        public let amber: String
+        public let ocean: String
+
+        public init(name: String, background: String, text: String, secondary: String, track: String,
+                    accent: String, sage: String, amber: String, ocean: String) {
+            self.name = name
+            self.background = background
+            self.text = text
+            self.secondary = secondary
+            self.track = track
+            self.accent = accent
+            self.sage = sage
+            self.amber = amber
+            self.ocean = ocean
+        }
     }
 
     public struct Labels: Codable, Equatable {

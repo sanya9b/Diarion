@@ -47,6 +47,19 @@ final class SnapshotCodecTests: XCTestCase {
         XCTAssertEqual(snapshot.habits?.items?.first?.name, "Вода")
     }
 
+    func testThemeDecodesAndIsOptional() throws {
+        let json = """
+        {"schemaVersion":1,"date":"2026-11-07","generatedAt":"x","locale":"uk","privacyLevel":"ButtonOnly",\
+        "labels":{"appName":"Diarion","open":"Відкрити щоденник","dateShort":"сб, 7 лист.","updated":"Оновлено 20:00"},\
+        "theme":{"name":"Pink","background":"#FFF7F9","text":"#5A2C3A","secondary":"#A66B81","track":"#ffd5d5",\
+        "accent":"#E05A88","sage":"#FFB6C1","amber":"#F080A8","ocean":"#ff92b0"}}
+        """
+        let snapshot = try XCTUnwrap(SnapshotCodec.decode(Data(json.utf8)))
+        XCTAssertEqual(snapshot.theme?.name, "Pink")
+        XCTAssertEqual(snapshot.theme?.accent, "#E05A88")
+        XCTAssertNil(try XCTUnwrap(SnapshotCodec.decode(Data(countsFixture.utf8))).theme, "older files have no theme and still decode")
+    }
+
     func testButtonOnlyHasNoSections() throws {
         let json = """
         {"schemaVersion":1,"date":"2026-11-05","generatedAt":"x","locale":"en","privacyLevel":"ButtonOnly",\

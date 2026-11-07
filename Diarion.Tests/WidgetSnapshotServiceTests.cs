@@ -235,4 +235,28 @@ public class WidgetSnapshotServiceTests : IDisposable
             AppResources.Culture = previous;
         }
     }
+
+    private sealed class PinkThemes : IWidgetThemeProvider
+    {
+        public WidgetTheme? Current() => new()
+        {
+            Name = "Pink", Background = "#FFF7F9", Text = "#5A2C3A", Secondary = "#A66B81", Track = "#ffd5d5",
+            Accent = "#E05A88", Sage = "#FFB6C1", Amber = "#F080A8", Ocean = "#ff92b0"
+        };
+    }
+
+    [Fact]
+    public async Task Theme_rides_along_at_every_level_and_is_absent_without_a_provider()
+    {
+        var themed = new WidgetSnapshotService(_diary, _todos, _habits, new PinkThemes());
+
+        var buttonOnly = await themed.BuildAsync(_today, WidgetPrivacyLevel.ButtonOnly);
+        var counts = await themed.BuildAsync(_today, WidgetPrivacyLevel.Counts);
+
+        buttonOnly.Theme!.Name.Should().Be("Pink", "a button-only widget is still the app's colour");
+        counts.Theme!.Accent.Should().Be("#E05A88");
+        WidgetSnapshotJson.Serialize(counts).Should().Contain("\"theme\":{\"name\":\"Pink\"");
+
+        (await _service.BuildAsync(_today, WidgetPrivacyLevel.Counts)).Theme.Should().BeNull();
+    }
 }

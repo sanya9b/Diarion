@@ -1,40 +1,70 @@
 import SwiftUI
 import UIKit
+import DiarionWidgetsShared
 
-/// The brand palette (AGENTS.md): monochrome surfaces, semantic accents only on dots. The same hex
-/// values as Resources/Styles/Colors.xaml and the Android widget_colors.xml, light and dark.
-enum DiarionPalette {
-    static let snow = Color(hex: 0xFFFFFF)
-    static let midnight = Color(hex: 0x22282C)
-    static let earth = Color(hex: 0xE9E7E1)
-    static let dust = Color(hex: 0xE0E6EA)
-    static let ocean = Color(hex: 0x929FA7)
-    static let coral = Color(hex: 0xC26D53)
-    static let amber = Color(hex: 0xC9985A)
-    static let sage = Color(hex: 0x8FA083)
+/// The colours one widget is drawn with (spec 20, D7). Built from the snapshot's `theme` — the app's
+/// own Light, Dark or Pink, chosen by hand — and falling back to the brand palette in the system's
+/// appearance when a file carries no theme (an older file, the gallery samples).
+struct WidgetPalette {
+    let background: Color
+    let text: Color
+    let secondary: Color
+    let track: Color
+    let accent: Color
+    let sage: Color
+    let amber: Color
+    let ocean: Color
 
-    static let background = Color.dynamic(light: 0xFFFFFF, dark: 0x22282C)
-    static let text = Color.dynamic(light: 0x22282C, dark: 0xE9E7E1)
-    static let secondary = ocean
-    static let track = Color.dynamic(light: 0xE9E7E1, dark: 0x3A4247)
-    static let dustDot = Color.dynamic(light: 0xE0E6EA, dark: 0x4A545B)
+    /// Brand palette following the system appearance: the same hex values as Colors.xaml.
+    static let fallback = WidgetPalette(
+        background: Color.dynamic(light: 0xFFFFFF, dark: 0x2B3136),
+        text: Color.dynamic(light: 0x22282C, dark: 0xFFFFFF),
+        secondary: Color.dynamic(light: 0x6B7680, dark: 0xE0E6EA),
+        track: Color.dynamic(light: 0xE0E6EA, dark: 0x929FA7),
+        accent: Color(hex: 0xC26D53),
+        sage: Color(hex: 0x8FA083),
+        amber: Color(hex: 0xC9985A),
+        ocean: Color(hex: 0x929FA7))
+
+    init(background: Color, text: Color, secondary: Color, track: Color, accent: Color, sage: Color, amber: Color, ocean: Color) {
+        self.background = background
+        self.text = text
+        self.secondary = secondary
+        self.track = track
+        self.accent = accent
+        self.sage = sage
+        self.amber = amber
+        self.ocean = ocean
+    }
+
+    init(theme: WidgetSnapshot.Theme) {
+        self.init(
+            background: Color(hexString: theme.background),
+            text: Color(hexString: theme.text),
+            secondary: Color(hexString: theme.secondary),
+            track: Color(hexString: theme.track),
+            accent: Color(hexString: theme.accent),
+            sage: Color(hexString: theme.sage),
+            amber: Color(hexString: theme.amber),
+            ocean: Color(hexString: theme.ocean))
+    }
 
     /// The quadrant's hue, or nil when nothing is recorded (the view draws a ring then).
-    static func mood(_ quadrant: String?) -> Color? {
+    func mood(_ quadrant: String?) -> Color? {
         switch quadrant {
-        case "PleasantEnergetic": return coral
+        case "PleasantEnergetic": return accent
         case "PleasantCalm": return sage
         case "UnpleasantEnergetic": return amber
         case "UnpleasantCalm": return ocean
-        case "Neutral": return dustDot
+        case "Neutral": return track
         default: return nil
         }
     }
 
-    /// Coral / Amber / Sage for high / medium / low, as the planner colours them.
-    static func priority(_ priority: String) -> Color {
+    /// Accent / Amber / Sage for high / medium / low, as the planner colours them.
+    func priority(_ priority: String) -> Color {
         switch priority {
-        case "High": return coral
+        case "High": return accent
         case "Low": return sage
         default: return amber
         }
@@ -44,6 +74,18 @@ enum DiarionPalette {
 extension Color {
     init(hex: UInt32) {
         self.init(uiColor: UIColor(hex: hex))
+    }
+
+    /// "#RRGGBB" as the app writes it; anything else is Ocean grey rather than a crash.
+    init(hexString: String) {
+        var value = hexString.trimmingCharacters(in: .whitespacesAndNewlines)
+        if value.hasPrefix("#") { value.removeFirst() }
+        var number: UInt64 = 0
+        if value.count == 6, Scanner(string: value).scanHexInt64(&number) {
+            self.init(hex: UInt32(number))
+        } else {
+            self.init(hex: 0x929FA7)
+        }
     }
 
     /// A light/dark pair as one dynamic colour that follows the appearance of the widget.
