@@ -107,17 +107,26 @@ public partial class PaywallViewModel : BaseViewModel
         {
             var products = await _store.LoadProductsAsync(StoreCatalog.BaseProductIds);
             BuildPlans(products);
-            if (!HasPlans) Message = AppResources.PaywallStoreUnavailable;
+            if (!HasPlans) Message = Unavailable($"{products.Count} of {StoreCatalog.BaseProductIds.Count} products");
         }
-        catch (StoreException)
+        catch (StoreException ex)
         {
-            Message = AppResources.PaywallStoreUnavailable;
+            Message = Unavailable(ex.Message);
         }
         finally
         {
             IsWorking = false;
         }
     }
+
+    /// <summary>
+    /// "App Store is unavailable" with what the store actually said in brackets. The detail is technical
+    /// and English on purpose: with the agreement, the bank and three products all Active, the TestFlight
+    /// paywall still said only "unavailable", and nothing on the screen told whether StoreKit threw or
+    /// answered with an empty list (owner, 2026-11-07). A user who ever sees this line has a problem
+    /// support needs the detail for anyway.
+    /// </summary>
+    private static string Unavailable(string detail) => $"{AppResources.PaywallStoreUnavailable} ({detail})";
 
     [RelayCommand]
     private void SelectPlan(PaywallPlan? plan)

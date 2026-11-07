@@ -287,11 +287,25 @@ public class PaywallViewModelTests
         await vm.LoadCommand.ExecuteAsync(null);
 
         vm.HasPlans.Should().BeFalse();
-        vm.Message.Should().Be(AppResources.PaywallStoreUnavailable);
+        vm.Message.Should().StartWith(AppResources.PaywallStoreUnavailable);
+        vm.Message.Should().Contain("offline", "the store's own words are the only diagnostic a TestFlight screenshot carries");
         vm.PurchaseCommand.CanExecute(null).Should().BeFalse();
 
         vm.LaterCommand.Execute(null);
         closed.Should().BeTrue("'Not now' always leads into the app (R4.3)");
+    }
+
+    [Fact]
+    public async Task A_store_that_answers_with_no_products_says_how_many_were_asked_for()
+    {
+        // Nothing offered, nothing thrown: the message must still tell an empty answer from a failure.
+        var vm = Create();
+
+        await vm.LoadCommand.ExecuteAsync(null);
+
+        vm.HasPlans.Should().BeFalse();
+        vm.Message.Should().StartWith(AppResources.PaywallStoreUnavailable);
+        vm.Message.Should().Contain($"0 of {StoreCatalog.BaseProductIds.Count} products");
     }
 
     [Fact]
