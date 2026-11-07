@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Diarion.Models;
+using Diarion.Services;
 using Diarion.Services.Database;
 using Diarion.Services.Database.Migrations;
 using FluentAssertions;
@@ -41,7 +42,7 @@ public class MigrationRunnerTests
 
         db.CollectionExists(M008_DropRetiredEmbeddings.RetiredCollection).Should().BeFalse();
         entries.FindById(id).Content.Should().Be("лишається");
-        db.UserVersion.Should().Be(8);
+        db.UserVersion.Should().Be(MigrationRunner.CurrentVersion);
     }
 
     [Fact]
@@ -648,5 +649,85 @@ public class MigrationRunnerTests
         MigrateTodoRepeats(db);
 
         Rules(db).Single().Recurrence.Anchor.Should().Be(new DateTime(2026, 7, 1));
+    }
+
+    // --- M009: restoration prompts for libraries seeded before the category existed ---
+
+    private static ILiteCollection<GuidedPrompt> Prompts(LiteDatabase db) =>
+        db.GetCollection<GuidedPrompt>(DatabaseConstants.GuidedPromptsCollection);
+
+    /// <summary>A library as the seeder wrote it before phase 5: four families, forty rows, order 0..39.</summary>
+    private static void SeedTheOldForty(LiteDatabase db)
+    {
+        var order = 0;
+        var rows = PromptCatalog.SeedKeys
+            .Where(kv => kv.Key != PromptCategory.Restoration)
+            .SelectMany(kv => kv.Value.Select(key => DatabaseSeeder.BuiltInPrompt(key, kv.Key, order++)))
+            .ToList();
+        Prompts(db).InsertBulk(rows);
+    }
+
+    [Fact]
+    public void Run_OnAnEmptyLibrary_LeavesSeedingToTheSeeder()
+    {
+        // A fresh install: the migration must not plant ten rows that would make the seeder skip the
+        // other forty. After both have run the library is complete and in one order.
+        using var db = new LiteDatabase(new MemoryStream());
+
+        MigrationRunner.Run(db);
+        Prompts(db).Count().Should().Be(0);
+
+        new DatabaseSeeder().Seed(db);
+        Prompts(db).Count().Should().Be(50);
+        Prompts(db).FindAll().Select(p => p.Order).Should().BeEquivalentTo(Enumerable.Range(0, 50));
+    }
+
+    [Fact]
+    public void Run_TopsUpAnOldLibraryWithTheRestorationPrompts_AndLeavesTheRestAlone()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        db.UserVersion = 8;
+        SeedTheOldForty(db);
+        var mine = new GuidedPrompt { TextEn = "mine", TextUk = "моє", Category = PromptCategory.OpenReflection };
+        Prompts(db).Insert(mine);
+
+        MigrationRunner.Run(db);
+
+        var all = Prompts(db).FindAll().ToList();
+        all.Should().HaveCount(51);
+
+        var rest = all.Where(p => p.Category == PromptCategory.Restoration).OrderBy(p => p.Order).ToList();
+        rest.Select(p => p.ResourceKey).Should().Equal(PromptCatalog.SeedKeys[PromptCategory.Restoration]);
+        rest.Select(p => p.Order).Should().Equal(Enumerable.Range(40, 10));
+        rest.Should().OnlyContain(p => !string.IsNullOrWhiteSpace(p.TextEn) && !string.IsNullOrWhiteSpace(p.TextUk));
+        rest.Should().OnlyContain(p => p.TextEn != p.TextUk);
+        rest.Should().OnlyContain(p => p.CreatedAt == DateTime.MinValue);
+
+        all.Single(p => p.Id == mine.Id).Order.Should().Be(int.MaxValue);
+        db.UserVersion.Should().Be(MigrationRunner.CurrentVersion);
+    }
+
+    [Fact]
+    public void Run_RestorationTopUp_IsIdempotent_AndFillsOnlyWhatIsMissing()
+    {
+        using var db = new LiteDatabase(new MemoryStream());
+        SeedTheOldForty(db);
+        // Two of the ten already there, one of them removed by the user: neither may be written again.
+        Prompts(db).Insert(DatabaseSeeder.BuiltInPrompt("PromptRest03", PromptCategory.Restoration, 40));
+        Prompts(db).Insert(new GuidedPrompt
+        {
+            ResourceKey = "PromptRest07", Category = PromptCategory.Restoration, Order = 41,
+            TextEn = "x", TextUk = "y", DeletedAt = new DateTime(2026, 10, 1)
+        });
+
+        new M009_SeedRestorationPrompts().Up(db);
+        new M009_SeedRestorationPrompts().Up(db);
+
+        var rest = Prompts(db).Find(p => p.Category == PromptCategory.Restoration).ToList();
+        rest.Should().HaveCount(10);
+        rest.Select(p => p.ResourceKey).Should().OnlyHaveUniqueItems();
+        rest.Single(p => p.ResourceKey == "PromptRest07").DeletedAt.Should().NotBeNull();
+        rest.Where(p => p.ResourceKey != "PromptRest03" && p.ResourceKey != "PromptRest07")
+            .Select(p => p.Order).Should().BeEquivalentTo(Enumerable.Range(42, 8));
     }
 }

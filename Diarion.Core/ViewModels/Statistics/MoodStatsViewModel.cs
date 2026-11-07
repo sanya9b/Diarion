@@ -56,6 +56,24 @@ public partial class MoodStatsViewModel : ObservableObject
     private string _correlationSummaryText = string.Empty;
 
     /// <summary>
+    /// The same test report for the day's energy, in a card of its own. Its hypotheses are corrected as
+    /// a separate family (see <see cref="MoodAxis"/>), so the two cards never dilute each other.
+    /// </summary>
+    /// <remarks>
+    /// Only two states, not three: the "how far along" and "nothing held" cards belong to the mood pass,
+    /// and energy rests on exactly the same days, so a second progress card would repeat the first word
+    /// for word. When nothing about energy holds, the card is simply absent.
+    /// </remarks>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasEnergyCorrelations))]
+    private System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem> _energyCorrelations = new();
+
+    public bool HasEnergyCorrelations => EnergyCorrelations.Count > 0;
+
+    [ObservableProperty]
+    private string _energyCorrelationSummaryText = string.Empty;
+
+    /// <summary>
     /// The headline of the card that stands in for the list: either how close the data is to its
     /// first comparison, or that comparisons were made and none held.
     /// </summary>
@@ -127,20 +145,7 @@ public partial class MoodStatsViewModel : ObservableObject
     private async Task LoadCorrelationsAsync(StatsRange range)
     {
         var correlations = await _correlationService.GetMoodCorrelationsAsync(range);
-        var items = new System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem>();
-
-        // Only surface associations that survive the check (p < 0.05 after adjustment, i.e. >= 3 dots).
-        foreach (var c in correlations.Where(c => c.Holds))
-        {
-            var arrow = c.Coefficient >= 0 ? "↑" : "↓";
-
-            items.Add(new MoodCorrelationItem
-            {
-                Description = $"{arrow}  {FactorName(c.FactorKey)}",
-                Dots = new string('●', c.Confidence) + new string('○', 5 - c.Confidence),
-                Evidence = string.Format(AppResources.StatsCorrelationEvidenceFormat, c.SampleSize)
-            });
-        }
+        var items = HoldingRows(correlations);
 
         Correlations = items;
 
@@ -176,6 +181,45 @@ public partial class MoodStatsViewModel : ObservableObject
     }
 
     /// <summary>
+    /// The energy pass. Same rows, same bar (three dots after adjustment), its own count of how many
+    /// were tried — the number that makes the survivors worth anything is per family, not per screen.
+    /// </summary>
+    private async Task LoadEnergyCorrelationsAsync(StatsRange range)
+    {
+        var correlations = await _correlationService.GetEnergyCorrelationsAsync(range);
+        var items = HoldingRows(correlations);
+
+        EnergyCorrelations = items;
+        EnergyCorrelationSummaryText = items.Count > 0
+            ? string.Format(AppResources.StatsHypothesesCheckedFormat, correlations.Count, items.Count)
+            : string.Empty;
+    }
+
+    /// <summary>
+    /// Only the associations that survive the check (p &lt; 0.05 after adjustment, i.e. >= 3 dots),
+    /// as rows. One builder for both axes so the two cards cannot drift apart in what a row says.
+    /// </summary>
+    private static System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem> HoldingRows(
+        System.Collections.Generic.IReadOnlyList<MoodCorrelation> correlations)
+    {
+        var items = new System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem>();
+
+        foreach (var c in correlations.Where(c => c.Holds))
+        {
+            var arrow = c.Coefficient >= 0 ? "↑" : "↓";
+
+            items.Add(new MoodCorrelationItem
+            {
+                Description = $"{arrow}  {FactorName(c.FactorKey)}",
+                Dots = new string('●', c.Confidence) + new string('○', 5 - c.Confidence),
+                Evidence = string.Format(AppResources.StatsCorrelationEvidenceFormat, c.SampleSize)
+            });
+        }
+
+        return items;
+    }
+
+    /// <summary>
     /// The user-facing name of a factor. Structured factors are looked up; a theme cannot be,
     /// because the key carries the user's own sentence and the list is different every window.
     /// </summary>
@@ -195,6 +239,8 @@ public partial class MoodStatsViewModel : ObservableObject
                 EmotionChartData.Clear();
                 Correlations = new System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem>();
                 CorrelationSummaryText = string.Empty;
+                EnergyCorrelations = new System.Collections.ObjectModel.ObservableCollection<MoodCorrelationItem>();
+                EnergyCorrelationSummaryText = string.Empty;
                 InsightProgressText = string.Format(
                     AppResources.StatsInsightProgressFormat, 0, CorrelationService.MinSampleSize);
                 InsightProgressHint = AppResources.StatsInsightProgressHint;
@@ -270,6 +316,7 @@ public partial class MoodStatsViewModel : ObservableObject
                 }));
 
             await LoadCorrelationsAsync(range);
+            await LoadEnergyCorrelationsAsync(range);
         }
         finally
         {

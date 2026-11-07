@@ -193,4 +193,103 @@ public class CorrelationServiceTests
         readiness.PairedDays.Should().Be(0);
         readiness.BestFactorKey.Should().BeNull();
     }
+
+    // --- Energy axis (spec 18, phase 4) ---
+
+    /// <summary>Energy rising with sleep, valence flat around zero: Relaxed (+1,-2) → Neutral → Playful (+1,+1) → Stressed (-1,+2).</summary>
+    private static Emotion EnergyTier(int i) => i switch
+    {
+        < 5 => Emotion.Relaxed,   // arousal -2
+        < 10 => Emotion.Neutral,  // 0
+        < 15 => Emotion.Playful,  // +1
+        _ => Emotion.Stressed     // +2
+    };
+
+    [Fact]
+    public async Task EnergyAxis_SleepDurationVsEnergy_IsDetected_FromScalarDays()
+    {
+        var data = new List<DiaryEntryStatsDto>();
+        for (int i = 0; i < 20; i++)
+        {
+            data.Add(Entry(daysAgo: i, sleepHours: 4 + i * 0.2, emotion: EnergyTier(i)));
+        }
+        var service = Build(data);
+
+        var result = await service.GetEnergyCorrelationsAsync(StatsRange.LastDays(20));
+
+        result.Should().ContainSingle();
+        var sleep = result[0];
+        sleep.Axis.Should().Be(MoodAxis.Energy);
+        sleep.FactorKey.Should().Be(CorrelationService.Factors.SleepDuration);
+        sleep.Coefficient.Should().BeGreaterThan(0.7);
+        sleep.Holds.Should().BeTrue();
+        sleep.SampleSize.Should().Be(20);
+    }
+
+    [Fact]
+    public async Task EnergyAxis_ReadsHourlyObservations_WhenTheDayHasNoScalar()
+    {
+        // Each day logs two hours and no day-level emotion; energy is the mean arousal of those hours.
+        var data = new List<DiaryEntryStatsDto>();
+        for (int i = 0; i < 20; i++)
+        {
+            var dto = Entry(daysAgo: i, sleepHours: 4 + i * 0.2);
+            dto.HourlyMood = new List<HourMood>
+            {
+                new() { Hour = 9, Mood = EnergyTier(i) },
+                new() { Hour = 15, Mood = EnergyTier(i) }
+            };
+            data.Add(dto);
+        }
+
+        var result = await Build(data).GetEnergyCorrelationsAsync(StatsRange.LastDays(20));
+
+        result.Should().ContainSingle();
+        result[0].Axis.Should().Be(MoodAxis.Energy);
+        result[0].Coefficient.Should().BeGreaterThan(0.7);
+    }
+
+    [Fact]
+    public async Task EnergyAxis_IsItsOwnFamily_TestsTheSameFactorsAndAnswersIndependently()
+    {
+        // Valence climbs with sleep (Sad → Anxious → Calm → Happy) while arousal flips -1, +1, -1, +1:
+        // the mood pass finds sleep, the energy pass tests the same factor and rightly finds nothing.
+        var data = new List<DiaryEntryStatsDto>();
+        for (int i = 0; i < 20; i++)
+        {
+            data.Add(Entry(daysAgo: i, sleepHours: 4 + i * 0.2, emotion: Tier(i)));
+        }
+        var service = Build(data);
+
+        var mood = await service.GetMoodCorrelationsAsync(StatsRange.LastDays(20));
+        var energy = await service.GetEnergyCorrelationsAsync(StatsRange.LastDays(20));
+
+        mood.Should().ContainSingle(c => c.FactorKey == CorrelationService.Factors.SleepDuration && c.Holds);
+        energy.Should().ContainSingle(c => c.FactorKey == CorrelationService.Factors.SleepDuration);
+        energy[0].Axis.Should().Be(MoodAxis.Energy);
+        energy[0].Holds.Should().BeFalse();
+        energy[0].SampleSize.Should().Be(mood[0].SampleSize);
+        mood[0].Axis.Should().Be(MoodAxis.Valence);
+    }
+
+    [Fact]
+    public async Task EnergyAxis_HonoursTheSameLag()
+    {
+        // Yesterday's sleep against today's energy: shift the energy tiers one day later.
+        var data = new List<DiaryEntryStatsDto>();
+        for (int i = 0; i < 21; i++)
+        {
+            var dto = Entry(daysAgo: i, sleepHours: 4 + i * 0.2);
+            if (i > 0) dto.Emotion = EnergyTier(i - 1);
+            data.Add(dto);
+        }
+        var service = Build(data);
+
+        var sameDay = await service.GetEnergyCorrelationsAsync(StatsRange.LastDays(21));
+        var lagged = await service.GetEnergyCorrelationsAsync(StatsRange.LastDays(21), lagDays: 1);
+
+        lagged.Should().ContainSingle();
+        lagged[0].LagDays.Should().Be(1);
+        lagged[0].Coefficient.Should().BeGreaterThan(sameDay.Single().Coefficient);
+    }
 }

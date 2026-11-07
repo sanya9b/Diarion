@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Diagnostics;
+using Diarion.Messages;
 using Diarion.Models;
 using Diarion.Services.Database;
 using Diarion.Services.Store;
@@ -27,6 +29,10 @@ public class TodoService : ITodoService
     private ILiteCollection<TodoItem> TodosCollection => _dbContext.GetCollection<TodoItem>(DatabaseConstants.TodosCollection);
     private ILiteCollection<UserProfile> ProfileCollection => _dbContext.GetCollection<UserProfile>(DatabaseConstants.ProfileCollection);
     private ILiteCollection<RecurringTask> RecurringTasksCollection => _dbContext.GetCollection<RecurringTask>(DatabaseConstants.RecurringTasksCollection);
+
+    /// <summary>After every explicit write, never after the reads that lay down occurrences — a listener
+    /// that reads the day back would otherwise feed itself.</summary>
+    private static void AnnounceStoreChanged() => WeakReferenceMessenger.Default.Send(new TodoStoreChangedMessage());
 
     public Task<IEnumerable<TodoStatsDto>> GetTodosForStatsAsync(DateTime startDate, DateTime endDate)
     {
@@ -192,10 +198,10 @@ public class TodoService : ITodoService
         return Task.Run(() => TodosCollection.FindAll().ToList());
     }
 
-    public Task SaveTodoAsync(TodoItem todo)
+    public async Task SaveTodoAsync(TodoItem todo)
     {
         _accessGuard.EnsureWritable();
-        return Task.Run(() =>
+        await Task.Run(() =>
         {
             var existing = TodosCollection.FindById(todo.Id);
 
@@ -207,12 +213,13 @@ public class TodoService : ITodoService
             TodosCollection.Upsert(todo);
             UpdateLocalNotification(todo);
         });
+        AnnounceStoreChanged();
     }
 
-    public Task DeleteTodoAsync(Guid todoId)
+    public async Task DeleteTodoAsync(Guid todoId)
     {
         _accessGuard.EnsureWritable();
-        return Task.Run(() =>
+        await Task.Run(() =>
         {
             var todo = TodosCollection.FindById(todoId);
 
@@ -235,12 +242,13 @@ public class TodoService : ITodoService
             TodosCollection.Delete(todoId);
             _notificationService?.CancelTodoReminder(todoId);
         });
+        AnnounceStoreChanged();
     }
 
-    public Task DeleteRecurringTaskAsync(Guid ruleId)
+    public async Task DeleteRecurringTaskAsync(Guid ruleId)
     {
         _accessGuard.EnsureWritable();
-        return Task.Run(() =>
+        await Task.Run(() =>
         {
             _notificationService?.CancelRepeatingTaskReminder(ruleId);
 
@@ -260,6 +268,7 @@ public class TodoService : ITodoService
             // do. Nulling it would erase where they came from, and auto-migration already leaves them be.
             RecurringTasksCollection.Delete(ruleId);
         });
+        AnnounceStoreChanged();
     }
 
     /// <summary>
@@ -291,10 +300,10 @@ public class TodoService : ITodoService
     public Task<List<RecurringTask>> GetRecurringTasksAsync()
         => Task.Run(() => RecurringTasksCollection.FindAll().ToList());
 
-    public Task SetRecurrenceAsync(Guid todoId, RecurrenceRule? recurrence)
+    public async Task SetRecurrenceAsync(Guid todoId, RecurrenceRule? recurrence)
     {
         _accessGuard.EnsureWritable();
-        return Task.Run(() =>
+        await Task.Run(() =>
         {
             var todo = TodosCollection.FindById(todoId);
             if (todo == null) return;
@@ -365,6 +374,7 @@ public class TodoService : ITodoService
             RecurringTasksCollection.Update(rule);
             SyncRuleReminder(rule);
         });
+        AnnounceStoreChanged();
     }
 
     /// <summary>
@@ -444,10 +454,10 @@ public class TodoService : ITodoService
         SyncRuleReminder(rule);
     }
 
-    public Task DeleteTodosByDiaryEntryAsync(Guid diaryEntryId)
+    public async Task DeleteTodosByDiaryEntryAsync(Guid diaryEntryId)
     {
         _accessGuard.EnsureWritable();
-        return Task.Run(() =>
+        await Task.Run(() =>
         {
             var todos = TodosCollection.Find(x => x.DiaryEntryId == diaryEntryId).ToList();
             TodosCollection.DeleteMany(x => x.DiaryEntryId == diaryEntryId);
@@ -460,6 +470,7 @@ public class TodoService : ITodoService
                 }
             }
         });
+        AnnounceStoreChanged();
     }
 
     private void UpdateLocalNotification(TodoItem todo)

@@ -7,7 +7,8 @@ using Diarion.Models;
 namespace Diarion.Services;
 
 /// <summary>
-/// Computes Pearson correlations between daily mood valence and daily factors, fully on-device.
+/// Computes Pearson correlations between daily mood (valence, and separately energy) and daily
+/// factors, fully on-device.
 /// <para>
 /// This is the one place where keeping eight domains in a single app pays for itself: sleep, cycle,
 /// habits, meals, money and tasks are all measured against the same mood series, which no
@@ -61,8 +62,13 @@ public class CorrelationService : ICorrelationService
     /// Loads the mood series and every factor series for the window. Shared by the correlation pass
     /// and the readiness check so the two can never disagree about how much data there is.
     /// </summary>
+    /// <remarks>
+    /// <paramref name="axis"/> only changes which number each mood day carries. The set of days is
+    /// the same for both axes — a day either has observations or it does not — which is why
+    /// readiness can be reported once and why the two passes always test the same factors.
+    /// </remarks>
     private async Task<(Dictionary<DateTime, double> Mood, List<(string Key, Dictionary<DateTime, double> Values)> Factors)>
-        BuildSeriesAsync(StatsRange range, int lagDays)
+        BuildSeriesAsync(StatsRange range, int lagDays, MoodAxis axis = MoodAxis.Valence)
     {
         // Fetch enough history to pair each factor day with a mood day `lagDays` later.
         var start = range.Start.AddDays(-lagDays);
@@ -75,7 +81,9 @@ public class CorrelationService : ICorrelationService
             // hours actually logged instead of a single snapshot.
             if (MoodAggregate.HasAny(e.Emotion, e.HourlyMood))
             {
-                moodByDate[e.Date.Date] = MoodAggregate.Valence(e.Emotion, e.HourlyMood);
+                moodByDate[e.Date.Date] = axis == MoodAxis.Energy
+                    ? MoodAggregate.Energy(e.Emotion, e.HourlyMood)
+                    : MoodAggregate.Valence(e.Emotion, e.HourlyMood);
             }
         }
 
@@ -135,12 +143,22 @@ public class CorrelationService : ICorrelationService
         return new CorrelationReadiness(best, MinSampleSize, bestKey);
     }
 
-    public async Task<IReadOnlyList<MoodCorrelation>> GetMoodCorrelationsAsync(StatsRange range, int lagDays = 0)
+    public Task<IReadOnlyList<MoodCorrelation>> GetMoodCorrelationsAsync(StatsRange range, int lagDays = 0) =>
+        ComputeAsync(range, lagDays, MoodAxis.Valence);
+
+    public Task<IReadOnlyList<MoodCorrelation>> GetEnergyCorrelationsAsync(StatsRange range, int lagDays = 0) =>
+        ComputeAsync(range, lagDays, MoodAxis.Energy);
+
+    /// <summary>
+    /// One pass, one axis, one Benjamini-Hochberg family. Each public entry point calls this
+    /// separately on purpose: the correction below spans only the hypotheses of this call.
+    /// </summary>
+    private async Task<IReadOnlyList<MoodCorrelation>> ComputeAsync(StatsRange range, int lagDays, MoodAxis axis)
     {
         range = range.Normalized();
         lagDays = Math.Max(0, lagDays);
 
-        var (moodByDate, factors) = await BuildSeriesAsync(range, lagDays);
+        var (moodByDate, factors) = await BuildSeriesAsync(range, lagDays, axis);
 
         var candidates = new List<MoodCorrelation>();
         foreach (var (key, values) in factors)
@@ -156,6 +174,7 @@ public class CorrelationService : ICorrelationService
             candidates.Add(new MoodCorrelation
             {
                 FactorKey = key,
+                Axis = axis,
                 Coefficient = r,
                 SampleSize = xs.Count,
                 LagDays = lagDays,

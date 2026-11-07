@@ -20,6 +20,7 @@ public class PromptCatalogTests
     [InlineData(PromptCategory.Savouring)]
     [InlineData(PromptCategory.OpenReflection)]
     [InlineData(PromptCategory.EveningGratitude)]
+    [InlineData(PromptCategory.Restoration)]
     public void EveryCategoryHasTenPrompts(PromptCategory category)
     {
         PromptCatalog.SeedKeys[category].Should().HaveCount(10);
@@ -31,7 +32,7 @@ public class PromptCatalogTests
         var all = PromptCatalog.AllKeys.ToList();
 
         all.Should().OnlyHaveUniqueItems();
-        all.Should().HaveCount(40);
+        all.Should().HaveCount(50);
     }
 
     [Theory]

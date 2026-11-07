@@ -1129,6 +1129,9 @@
   <data name="PromptCategoryEveningGratitude" xml:space="preserve">
     <value>Evening gratitude</value>
   </data>
+  <data name="PromptCategoryRestoration" xml:space="preserve">
+    <value>Rest and recovery</value>
+  </data>
   <data name="StreakForgivingLabel" xml:space="preserve">
     <value>Forgiving streaks</value>
   </data>
@@ -1207,6 +1210,9 @@
   <data name="FinanceTitle" xml:space="preserve">
     <value>Income / Expenses</value>
   </data>
+  <data name="FinanceFeedEmpty" xml:space="preserve">
+    <value>Nothing here yet. Add your first transaction.</value>
+  </data>
   <data name="TotalBalanceLabel" xml:space="preserve">
     <value>Total Balance</value>
   </data>
@@ -1226,7 +1232,7 @@
     <value>0.00</value>
   </data>
   <data name="CategoryPlaceholder" xml:space="preserve">
-    <value>Category (e.g. Salary, Groceries)</value>
+    <value>Category (e.g. Groceries)</value>
   </data>
   <data name="NotePlaceholder" xml:space="preserve">
     <value>Note (optional)</value>
@@ -1467,6 +1473,36 @@
   </data>
   <data name="PromptGratitude10" xml:space="preserve">
     <value>Close the day with one sentence you'd thank it for.</value>
+  </data>
+  <data name="PromptRest01" xml:space="preserve">
+    <value>What drained you today, and what, even a little, gave something back?</value>
+  </data>
+  <data name="PromptRest02" xml:space="preserve">
+    <value>If your body could ask for one thing this evening, what would it be?</value>
+  </data>
+  <data name="PromptRest03" xml:space="preserve">
+    <value>What can you leave undone tomorrow without anything falling apart?</value>
+  </data>
+  <data name="PromptRest04" xml:space="preserve">
+    <value>When did you last feel properly rested? What was different about that day?</value>
+  </data>
+  <data name="PromptRest05" xml:space="preserve">
+    <value>Who or what is quietly asking more of you right now than you have to give?</value>
+  </data>
+  <data name="PromptRest06" xml:space="preserve">
+    <value>What is the smallest kind thing you could do for yourself in the next hour?</value>
+  </data>
+  <data name="PromptRest07" xml:space="preserve">
+    <value>Days like this pass. What has helped you through them before?</value>
+  </data>
+  <data name="PromptRest08" xml:space="preserve">
+    <value>Is this tiredness about today, or has it been building for a while?</value>
+  </data>
+  <data name="PromptRest09" xml:space="preserve">
+    <value>What would “enough” look like today, if you stopped measuring it against a better day?</value>
+  </data>
+  <data name="PromptRest10" xml:space="preserve">
+    <value>Name one thing you can put down tonight and pick up again tomorrow.</value>
   </data>
   <data name="EmptyDataMessage" xml:space="preserve">
     <value>Not enough data for this period.</value>
@@ -1903,6 +1939,9 @@
   <data name="StatsMoodInfluencesTitle" xml:space="preserve">
     <value>WORTH CHECKING</value>
   </data>
+  <data name="StatsEnergyInfluencesTitle" xml:space="preserve">
+    <value>WORTH CHECKING: ENERGY</value>
+  </data>
   <data name="StatsCorrelationDisclaimer" xml:space="preserve">
     <value>These are patterns in your own log, not causes. The way to find out is on purpose: change one of them for a week and see whether the pattern follows.</value>
   </data>
@@ -2048,7 +2087,7 @@
     <value>The cycle calendar is available from age 14. Set your date of birth above to see it.</value>
   </data>
   <data name="PaywallTitle" xml:space="preserve">
-    <value>Diarion, all of it</value>
+    <value>Diarion Base subscription</value>
   </data>
   <data name="PaywallSubtitle" xml:space="preserve">
     <value>Diary, habits, planner, notes, finances, cycle and statistics. Your entries stay on your phone only.</value>
@@ -2412,5 +2451,71 @@
   </data>
   <data name="ReadOnlyBannerLegacyEndedText" xml:space="preserve">
     <value>The three free months for first-version users have ended: your entries are read-only now.</value>
+  </data>
+  <data name="WidgetOpenLabel" xml:space="preserve">
+    <value>Open diary</value>
+  </data>
+  <data name="WidgetUpdatedFormat" xml:space="preserve">
+    <value>Updated {0}</value>
+  </data>
+  <data name="WidgetStreakDayOne" xml:space="preserve">
+    <value>{0} day in a row</value>
+  </data>
+  <data name="WidgetStreakDayFew" xml:space="preserve">
+    <value>{0} days in a row</value>
+  </data>
+  <data name="WidgetStreakDayMany" xml:space="preserve">
+    <value>{0} days in a row</value>
+  </data>
+  <data name="WidgetStreakNone" xml:space="preserve">
+    <value>Start a streak today</value>
+  </data>
+  <data name="WidgetMoodLabel" xml:space="preserve">
+    <value>Mood of the day</value>
+  </data>
+  <data name="WidgetMoodEmpty" xml:space="preserve">
+    <value>How are you?</value>
+  </data>
+  <data name="WidgetTasksFormat" xml:space="preserve">
+    <value>{0} of {1} tasks</value>
+  </data>
+  <data name="WidgetTasksNone" xml:space="preserve">
+    <value>No tasks today</value>
+  </data>
+  <data name="WidgetHabitsFormat" xml:space="preserve">
+    <value>{0} of {1} habits</value>
+  </data>
+  <data name="WidgetHabitsNone" xml:space="preserve">
+    <value>No habits today</value>
+  </data>
+  <data name="WidgetPrivacyTitle" xml:space="preserve">
+    <value>Home-screen widgets</value>
+  </data>
+  <data name="WidgetPrivacyHint" xml:space="preserve">
+    <value>What the widgets may show without the app being opened.</value>
+  </data>
+  <data name="WidgetPrivacyButtonOnly" xml:space="preserve">
+    <value>Button only</value>
+  </data>
+  <data name="WidgetPrivacyButtonOnlyHint" xml:space="preserve">
+    <value>A logo and a button. Nothing else.</value>
+  </data>
+  <data name="WidgetPrivacyCounts" xml:space="preserve">
+    <value>Numbers and glyphs</value>
+  </data>
+  <data name="WidgetPrivacyCountsHint" xml:space="preserve">
+    <value>Streak, the mood glyph, how many tasks and habits are done. None of your text.</value>
+  </data>
+  <data name="WidgetPrivacyWithText" xml:space="preserve">
+    <value>With text</value>
+  </data>
+  <data name="WidgetPrivacyWithTextHint" xml:space="preserve">
+    <value>Also the names of tasks and habits.</value>
+  </data>
+  <data name="WidgetPrivacyWarning" xml:space="preserve">
+    <value>Widgets are visible to anyone holding your unlocked phone, PIN or no PIN.</value>
+  </data>
+  <data name="WidgetPrivacyLockedDefault" xml:space="preserve">
+    <value>While the app lock is on, the widgets show only a button until you choose otherwise here.</value>
   </data>
 </root>

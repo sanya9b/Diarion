@@ -58,7 +58,6 @@ public class DatabaseSeeder : IDatabaseSeeder
     {
         if (promptsCollection.Count() > 0) return;
 
-        var ukrainian = new CultureInfo("uk");
         var order = 0;
         var seeded = new List<GuidedPrompt>();
 
@@ -66,20 +65,29 @@ public class DatabaseSeeder : IDatabaseSeeder
         {
             foreach (var key in keys)
             {
-                seeded.Add(new GuidedPrompt
-                {
-                    ResourceKey = key,
-                    Category = category,
-                    TextEn = AppResources.ResourceManager.GetString(key, CultureInfo.InvariantCulture) ?? string.Empty,
-                    TextUk = AppResources.ResourceManager.GetString(key, ukrainian) ?? string.Empty,
-                    Order = order++,
-                    CreatedAt = DateTime.MinValue
-                });
+                seeded.Add(BuiltInPrompt(key, category, order++));
             }
         }
 
         promptsCollection.InsertBulk(seeded);
     }
+
+    private static readonly CultureInfo Ukrainian = new("uk");
+
+    /// <summary>
+    /// One built-in prompt row, text copied out of both resource sets by explicit culture — the ambient
+    /// culture is not set up yet when seeding runs. Shared with the migrations that top up a library
+    /// seeded before a category existed, so a row looks the same whichever path wrote it.
+    /// </summary>
+    public static GuidedPrompt BuiltInPrompt(string key, PromptCategory category, int order) => new()
+    {
+        ResourceKey = key,
+        Category = category,
+        TextEn = AppResources.ResourceManager.GetString(key, CultureInfo.InvariantCulture) ?? string.Empty,
+        TextUk = AppResources.ResourceManager.GetString(key, Ukrainian) ?? string.Empty,
+        Order = order,
+        CreatedAt = DateTime.MinValue
+    };
 
     private static void BackfillDefaultHabitResourceKeys(ILiteCollection<HabitDefinition> habitsCollection)
     {

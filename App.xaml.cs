@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Diarion.Diagnostics;
 using Diarion.Services;
 using Diarion.Services.Store;
+using Diarion.Services.Widgets;
 using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Messages;
 using Microsoft.Maui;
@@ -65,6 +66,9 @@ public partial class App : Application
         var entitlements = services?.GetService<IEntitlementService>();
         services?.GetService<PaywallPresenter>()?.Start();
         StartReminderCoordinator(services);
+        // Widgets (spec 20): subscribes to the saves and publishes the first snapshot of this launch.
+        services?.GetService<WidgetSnapshotCoordinator>()?.Start();
+        var deepLinks = services?.GetService<IDeepLinkService>();
 
         var window = new Window();
 
@@ -79,7 +83,11 @@ public partial class App : Application
                     _isLockShown = false;
                     _backgroundedAtUtc = null;
                     // Unlocked may fire off the UI thread (biometric continuation); swap on main.
-                    MainThread.BeginInvokeOnMainThread(() => window.Page = new AppShell());
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        window.Page = new AppShell();
+                        deepLinks?.FlushPending();
+                    });
                 };
                 window.Page = lockPage;
             }
@@ -95,6 +103,8 @@ public partial class App : Application
             RefreshEntitlements(entitlements);
             await CheckOnboardingAsync(window);
             await CheckSecurityAsync(window, coldStart: true);
+            // A widget tap that started the app: by now the Shell is up and, without a lock, ready.
+            deepLinks?.FlushPending();
             RetiredModelFiles.Sweep();
             ClearRetiredAppActions();
             StartScheduledBackup(services);
@@ -195,6 +205,7 @@ public partial class App : Application
     {
         await navigation.PopModalAsync();
         WeakReferenceMessenger.Default.Send(new PaywallRequestedMessage(PaywallReason.AfterOnboarding));
+        IPlatformApplication.Current?.Services.GetService<IDeepLinkService>()?.FlushPending();
     }
 
     private async Task CheckOnboardingAsync(Window window)
@@ -223,6 +234,16 @@ public partial class App : Application
     {
         base.OnSleep();
         _backgroundedAtUtc = DateTime.UtcNow;
+        // The home screen is about to be looked at: a snapshot still waiting on its debounce goes out now.
+        var coordinator = IPlatformApplication.Current?.Services.GetService<WidgetSnapshotCoordinator>();
+        if (coordinator is not null) _ = coordinator.FlushAsync();
+    }
+
+    /// <summary>A widget tap that arrived while the lock was up is played once the lock is gone.</summary>
+    private static async Task PopLockAndFlushAsync(INavigation navigation, IServiceProvider services)
+    {
+        await navigation.PopModalAsync();
+        services.GetService<IDeepLinkService>()?.FlushPending();
     }
 
     private async Task CheckSecurityAsync(Window window, bool coldStart)
@@ -251,7 +272,7 @@ public partial class App : Application
         {
             _isLockShown = false;
             _backgroundedAtUtc = null;
-            _ = navigation.PopModalAsync();
+            _ = PopLockAndFlushAsync(navigation, services);
         };
 
         await navigation.PushModalAsync(lockPage);

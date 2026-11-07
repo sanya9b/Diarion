@@ -30,7 +30,19 @@ public sealed class PaywallPresenter : IRecipient<PaywallRequestedMessage>
         _store = store;
     }
 
-    public void Start() => WeakReferenceMessenger.Default.Register(this);
+    private bool _started;
+
+    /// <summary>
+    /// Idempotent: on Android the activity can be finished (back on the root page) and created again
+    /// while the process and this singleton live on, so <c>App.CreateWindow</c> runs twice and a
+    /// second Register would throw "already subscribed" — which it did, on the emulator, 2026-11-05.
+    /// </summary>
+    public void Start()
+    {
+        if (_started) return;
+        _started = true;
+        WeakReferenceMessenger.Default.Register(this);
+    }
 
     public void Receive(PaywallRequestedMessage message) =>
         MainThread.BeginInvokeOnMainThread(() => _ = ShowAsync(message.Reason));

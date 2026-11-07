@@ -65,13 +65,30 @@ public enum CorrelationStrength
 }
 
 /// <summary>
-/// A statistical association between a daily factor (e.g. sleep duration) and mood valence.
+/// Which axis of the circumplex a correlation pass measures the factors against. Each axis is its
+/// own Benjamini-Hochberg family: folding energy into the valence pass would double the pool and
+/// tighten every threshold, so findings about mood could vanish merely because energy was added.
+/// </summary>
+public enum MoodAxis
+{
+    /// <summary>How pleasant the day was, the mean of <c>ToValence()</c> over its observations.</summary>
+    Valence = 0,
+
+    /// <summary>How energetic the day was, the mean of <c>ToArousal()</c> over the same observations.</summary>
+    Energy = 1
+}
+
+/// <summary>
+/// A statistical association between a daily factor (e.g. sleep duration) and one axis of mood.
 /// Coefficient is Pearson's r (-1..+1); Confidence is 1..5 (significance from a Fisher z-test);
 /// it is a correlation, not proven causation.
 /// </summary>
 public class MoodCorrelation
 {
     public string FactorKey { get; set; } = string.Empty;
+
+    /// <summary>Which mood axis the factor was measured against. Findings on different axes are different claims.</summary>
+    public MoodAxis Axis { get; set; } = MoodAxis.Valence;
     public double Coefficient { get; set; }
     public CorrelationStrength Strength { get; set; }
 

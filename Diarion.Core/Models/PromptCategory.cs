@@ -16,5 +16,12 @@ public enum PromptCategory
     Savouring = 2,
 
     /// <summary>Good mood, gratitude not yet written — the evening gratitude ritual.</summary>
-    EveningGratitude = 3
+    EveningGratitude = 3,
+
+    /// <summary>
+    /// Low mood with low energy — sadness, tiredness, emptiness. A soft question about rest and
+    /// recovery instead of a thought to examine: an exhausted person is not short of arguments.
+    /// Stored by value in every prompt row, so appended, never reordered (spec 18, phase 5).
+    /// </summary>
+    Restoration = 4
 }

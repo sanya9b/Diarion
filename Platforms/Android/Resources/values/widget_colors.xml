@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget palette, light. Monochrome surfaces (Snow / Midnight / Ocean / Dust / Earth), semantic
+     accents only on dots: Coral high / pleasant-energetic, Amber medium / unpleasant-energetic,
+     Sage low / pleasant-calm / done, Ocean unpleasant-calm. See values-night for dark. -->
+<resources>
+    <color name="widget_bg">#FFFFFF</color>
+    <color name="widget_text">#22282C</color>
+    <color name="widget_text_secondary">#929FA7</color>
+    <color name="widget_track">#E9E7E1</color>
+    <color name="widget_coral">#C26D53</color>
+    <color name="widget_amber">#C9985A</color>
+    <color name="widget_sage">#8FA083</color>
+    <color name="widget_ocean">#929FA7</color>
+    <color name="widget_dust">#E0E6EA</color>
+</resources>

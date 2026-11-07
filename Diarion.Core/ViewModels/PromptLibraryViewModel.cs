@@ -49,6 +49,7 @@ public partial class PromptLibraryViewModel : BaseViewModel
         PromptCategory.Savouring => AppResources.PromptCategorySavouring,
         PromptCategory.OpenReflection => AppResources.PromptCategoryOpenReflection,
         PromptCategory.EveningGratitude => AppResources.PromptCategoryEveningGratitude,
+        PromptCategory.Restoration => AppResources.PromptCategoryRestoration,
         _ => category.ToString()
     };
 

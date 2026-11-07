@@ -11,7 +11,7 @@ namespace Diarion.Tests;
 
 /// <summary>
 /// Spec 16, decision D1: the app addresses the person as «ви»; only the diary's own questions — the
-/// forty guided prompts — say «ти», because those are words a person says to themselves. The rule
+/// fifty guided prompts — say «ти», because those are words a person says to themselves. The rule
 /// used to hold by accident (84 strings one way, 11 strays the other on four screens), so it is pinned
 /// here in both directions: no stray «ти» in interface strings, and no «ви» creeping into the prompts.
 /// <para>
@@ -21,7 +21,7 @@ namespace Diarion.Tests;
 /// </summary>
 public class AppResourcesVoiceTests
 {
-    private static readonly Regex PromptKey = new(@"^Prompt(Cbt|Gratitude|Open|Savour)\d{2}$", RegexOptions.Compiled);
+    private static readonly Regex PromptKey = new(@"^Prompt(Cbt|Gratitude|Open|Savour|Rest)\d{2}$", RegexOptions.Compiled);
 
     // Pronouns are unambiguous. Ukrainian imperatives are not detectable by suffix without false
     // positives on nouns («назви», «зміни»), so the second group is a curated list of whole words
@@ -69,8 +69,8 @@ public class AppResourcesVoiceTests
     {
         var prompts = Ukrainian().Where(e => PromptKey.IsMatch(e.Key)).ToList();
 
-        // Forty built-in questions, ten per family; a new family must be added to PromptKey above.
-        prompts.Should().HaveCount(40);
+        // Fifty built-in questions, ten per family; a new family must be added to PromptKey above.
+        prompts.Should().HaveCount(50);
 
         prompts.Where(p => Formal.IsMatch(NotAVerb.Replace(p.Value, " ")))
             .Select(p => $"{p.Key}: {p.Value}")

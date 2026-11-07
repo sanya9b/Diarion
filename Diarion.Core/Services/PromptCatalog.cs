@@ -22,6 +22,7 @@ public static class PromptCatalog
             [PromptCategory.Savouring] = Numbered("PromptSavour", 10),
             [PromptCategory.OpenReflection] = Numbered("PromptOpen", 10),
             [PromptCategory.EveningGratitude] = Numbered("PromptGratitude", 10),
+            [PromptCategory.Restoration] = Numbered("PromptRest", 10),
         };
 
     public static IEnumerable<string> AllKeys => SeedKeys.Values.SelectMany(k => k);

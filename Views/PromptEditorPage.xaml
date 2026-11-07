@@ -116,6 +116,22 @@
                             <Label Text="{x:Static localization:AppResources.PromptCategoryEveningGratitude}" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
                         </Border>
                     </ContentView>
+
+                    <ContentView behaviors:PressFeedback.IsEnabled="True">
+                        <ContentView.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SetCategoryCommand}" CommandParameter="{x:Static models:PromptCategory.Restoration}" />
+                        </ContentView.GestureRecognizers>
+                        <Border Padding="14,10" StrokeThickness="1" StrokeShape="RoundRectangle 16"
+                                Stroke="{DynamicResource Theme_Dust_Ocean}" BackgroundColor="Transparent">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Category}" Value="{x:Static models:PromptCategory.Restoration}">
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource Theme_Sage}" />
+                                    <Setter Property="Stroke" Value="{DynamicResource Theme_Sage}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Label Text="{x:Static localization:AppResources.PromptCategoryRestoration}" InputTransparent="True" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                        </Border>
+                    </ContentView>
                 </VerticalStackLayout>
 
                 <Label Text="{Binding ValidationMessage}"

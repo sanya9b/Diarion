@@ -80,12 +80,22 @@ Diarion — застосунок для щоденних записів. Без 
 • Резервна копія шифрується паролем, який знаєте тільки ви
 • Експорт у JSON, CSV і Markdown — ваші записи ваші, і виносяться звідси в один дотик
 
-ЄДИНЕ, ЩО ЗАВАНТАЖУЄТЬСЯ З МЕРЕЖІ
+З МЕРЕЖІ НЕ ЙДЕ НІЧОГО
 
-Мовна модель для розділу ШІ — близько 123 МБ, і тільки коли ви самі це запустите. Працює вона теж на телефоні: тексти записів у мережу не йдуть. Не вмикайте — застосунок повністю робочий без неї.
+Застосунок сам не робить жодного мережевого запиту: ні телеметрії, ні перевірки оновлень, ні реклами. Єдине звернення до мережі — оформлення й перевірка підписки, і його виконує сама iOS через App Store.
+
+ПІДПИСКА
+
+Писати в Diarion можна з підпискою Diarion Base — на місяць, на три місяці або на рік, перші 3 дні безкоштовно. Ціна показується в застосунку перед оформленням; для української вітрини App Store показує її в доларах США. Підписка поновлюється автоматично, якщо не вимкнути автопоновлення щонайменше за 24 години до кінця періоду, — у налаштуваннях Apple ID. Коли підписка закінчується, усе написане лишається доступним для читання, резервної копії та експорту.
+
+Якщо ви встановили Diarion 1.0, перші три місяці після оновлення все лишається для вас безкоштовним.
+
+Умови використання: https://diarion.org/terms
+Політика приватності: https://diarion.org/privacy
 
 Три теми оформлення, українська та англійська, щоденне нагадування у зручний вам час.
 ```
+(Оновлено 2026-10-26 під версію 1.1: абзац про модель ШІ прибрано — локального ШІ з 2026-10-21 немає; блок «ПІДПИСКА» з розділу 7 тепер тут, у повному тексті.)
 
 ### English
 
@@ -133,12 +143,22 @@ PRIVACY IS THE STRONG SIDE
 • Backups are encrypted with a passphrase only you know
 • Export to JSON, CSV and Markdown — your entries are yours, and they leave in one tap
 
-THE ONE THING THAT IS DOWNLOADED
+NOTHING GOES OVER THE NETWORK
 
-A language model for the AI section — about 123 MB, and only when you start it yourself. It runs on the phone too: entry text never goes to the network. Leave it off and the app works in full without it.
+The app makes no network requests of its own: no telemetry, no update checks, no ads. The one connection is buying and checking the subscription, and iOS makes it through the App Store.
+
+SUBSCRIPTION
+
+Writing in Diarion takes a Diarion Base subscription — monthly, every three months or yearly, with the first 3 days free. The price is shown in the app before you subscribe. The subscription renews automatically unless auto-renew is turned off at least 24 hours before the end of the period, in your Apple ID settings. When a subscription ends, everything you wrote stays available to read, back up and export.
+
+If you installed Diarion 1.0, everything stays free for you for the first three months after the update.
+
+Terms of Use: https://diarion.org/en/terms
+Privacy Policy: https://diarion.org/en/privacy
 
 Three themes, Ukrainian and English, and a daily reminder at a time that suits you.
 ```
+(Updated 2026-10-26 for 1.1: the AI-model paragraph is gone — there is no on-device AI since 2026-10-21; the SUBSCRIPTION block from section 7 now lives here, in the full text.)
 
 ---
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_today_label">Diarion: Сьогодні</string>
+    <string name="widget_today_description">Серія, настрій і підсумок дня одним поглядом.</string>
+    <string name="widget_tasks_label">Diarion: Справи дня</string>
+    <string name="widget_tasks_description">Скільки сьогоднішніх справ зроблено.</string>
+    <string name="widget_habits_label">Diarion: Звички</string>
+    <string name="widget_habits_description">Сьогоднішні звички: зроблені й ні.</string>
+    <string name="widget_open_fallback">Відкрити Diarion</string>
+    <string name="widget_preview_date">чт, 5 лист.</string>
+    <string name="widget_preview_streak">12 днів поспіль</string>
+    <string name="widget_preview_tasks">2 з 5 справ</string>
+    <string name="widget_preview_habits">3 з 4 звичок</string>
+    <string name="widget_preview_updated">Оновлено 14:02</string>
+</resources>

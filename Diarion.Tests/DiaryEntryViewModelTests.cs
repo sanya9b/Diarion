@@ -268,7 +268,7 @@ public class DiaryEntryViewModelTests
         CategoryOf(viewModel).Should().NotBe(PromptCategory.CbtReframe);
 
         viewModel.SelectHourCommand.Execute(viewModel.HourlyMood.Single(h => h.Hour == 10));
-        viewModel.SelectEmotionCommand.Execute(Emotion.Sad);
+        viewModel.SelectEmotionCommand.Execute(Emotion.Anxious);
 
         CategoryOf(viewModel).Should().Be(PromptCategory.CbtReframe);
     }
@@ -318,9 +318,21 @@ public class DiaryEntryViewModelTests
         CategoryOf(viewModel).Should().Be(PromptCategory.OpenReflection);
 
         // Mood is normally recorded after the day screen has already opened.
-        viewModel.Emotion = Emotion.Sad;
+        viewModel.Emotion = Emotion.Anxious;
 
         CategoryOf(viewModel).Should().Be(PromptCategory.CbtReframe);
+    }
+
+    [Fact]
+    public void RecordingSadness_SwitchesThePromptToRest()
+    {
+        // Spec 18, phase 5: unpleasant and calm is a day for recovery, not for arguing with a thought.
+        var viewModel = new DiaryEntryViewModel(new DiaryEntry { Date = new DateTime(2026, 7, 15) }, _library);
+        CategoryOf(viewModel).Should().Be(PromptCategory.OpenReflection);
+
+        viewModel.Emotion = Emotion.Sad;
+
+        CategoryOf(viewModel).Should().Be(PromptCategory.Restoration);
     }
 
     [Fact]
@@ -360,7 +372,7 @@ public class DiaryEntryViewModelTests
         viewModel.ShufflePromptCommand.Execute(null);
 
         viewModel.PromptResourceKey.Should().NotBe(before);
-        CategoryOf(viewModel).Should().Be(PromptCategory.CbtReframe);
+        CategoryOf(viewModel).Should().Be(PromptCategory.Restoration);
     }
 
     [Theory]

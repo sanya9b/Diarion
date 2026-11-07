@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Gallery names and descriptions (spec 20, D4). The widgets' own labels arrive in the snapshot,
+     already in the app's language; these few are read by the launcher, in the system language. -->
+<resources>
+    <string name="widget_today_label">Diarion: Today</string>
+    <string name="widget_today_description">Streak, mood and today\'s counts at a glance.</string>
+    <string name="widget_tasks_label">Diarion: Tasks of the day</string>
+    <string name="widget_tasks_description">How many of today\'s tasks are done.</string>
+    <string name="widget_habits_label">Diarion: Habits</string>
+    <string name="widget_habits_description">Today\'s habits, ticked and not.</string>
+    <string name="widget_open_fallback">Open Diarion</string>
+    <string name="widget_preview_date">Thu, 5 Nov</string>
+    <string name="widget_preview_streak">12 days in a row</string>
+    <string name="widget_preview_tasks">2 of 5 tasks</string>
+    <string name="widget_preview_habits">3 of 4 habits</string>
+    <string name="widget_preview_updated">Updated 14:02</string>
+</resources>

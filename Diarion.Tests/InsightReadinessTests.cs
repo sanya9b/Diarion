@@ -124,6 +124,8 @@ public class InsightReadinessTests
         var correlation = new Mock<ICorrelationService>();
         correlation.Setup(c => c.GetMoodCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
                    .ReturnsAsync(correlations ?? new List<MoodCorrelation>());
+        correlation.Setup(c => c.GetEnergyCorrelationsAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
+                   .ReturnsAsync(new List<MoodCorrelation>());
         correlation.Setup(c => c.GetReadinessAsync(It.IsAny<StatsRange>(), It.IsAny<int>()))
                    .ReturnsAsync(readiness);
 
