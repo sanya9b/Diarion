@@ -17,6 +17,6 @@ public partial class LockPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await ViewModel.OnAppearingAsync();
+        await Diarion.Services.PageLoadGuard.RunAsync(this, () => ViewModel.OnAppearingAsync());
     }
 }

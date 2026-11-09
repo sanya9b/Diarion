@@ -108,6 +108,7 @@ public partial class App : Application
             RetiredModelFiles.Sweep();
             ClearRetiredAppActions();
             StartScheduledBackup(services);
+            ReportRolledBackMigration(services);
         };
         window.Resumed += async (s, e) =>
         {
@@ -141,6 +142,29 @@ public partial class App : Application
             }
         });
 #endif
+    }
+
+    /// <summary>
+    /// A schema migration that threw was rolled back and the app opened on the previous schema
+    /// (DatabaseContext.MigrationFailure). Nothing on screen says so; the crash report in Settings
+    /// does, which is how the failure gets back to the developer instead of staying a mystery.
+    /// </summary>
+    private static void ReportRolledBackMigration(IServiceProvider? services)
+    {
+        if (services is null) return;
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                var failure = services.GetService<Diarion.Services.Database.IDatabaseContext>()?.MigrationFailure;
+                if (failure is not null)
+                    services.GetService<ICrashReporter>()?.Record("Schema migration (rolled back)", failure);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Migration status check failed: {ex}");
+            }
+        });
     }
 
     /// <summary>

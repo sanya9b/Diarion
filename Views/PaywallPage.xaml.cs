@@ -21,7 +21,7 @@ public partial class PaywallPage : ContentPage
         base.OnAppearing();
         if (_loaded) return;
         _loaded = true;
-        await ViewModel.LoadCommand.ExecuteAsync(null);
+        await Diarion.Services.PageLoadGuard.RunAsync(this, () => ViewModel.LoadCommand.ExecuteAsync(null));
     }
 
     /// <summary>Android's back button is "Not now", never a way to leave the sheet half-closed.</summary>

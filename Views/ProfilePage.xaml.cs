@@ -66,14 +66,17 @@ public partial class ProfilePage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadProfileAsync();
-        // The card reads device-local settings, not the profile; a run that happened at launch
-        // shows up here on the next visit.
-        _autoBackup.Load();
+        await Diarion.Services.PageLoadGuard.RunAsync(this, async () =>
+        {
+            await _viewModel.LoadProfileAsync();
+            // The card reads device-local settings, not the profile; a run that happened at launch
+            // shows up here on the next visit.
+            _autoBackup.Load();
 
-        // After the profile: the guide is about the switches on this screen, and until it is loaded
-        // they are showing defaults.
-        await _viewModel.Tour.StartAsync(TourId.Settings);
+            // After the profile: the guide is about the switches on this screen, and until it is loaded
+            // they are showing defaults.
+            await _viewModel.Tour.StartAsync(TourId.Settings);
+        });
     }
 
     // --- Settings guide (onboarding stage 3) ------------------------------------------------------

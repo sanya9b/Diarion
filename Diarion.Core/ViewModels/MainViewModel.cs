@@ -18,6 +18,8 @@ namespace Diarion.ViewModels;
 
 public partial class MainViewModel : BaseViewModel
 {
+    private readonly ICrashReporter? _crashReporter;
+
     private readonly IDiaryService _diaryService;
     private readonly IDiaryHabitSyncService _diaryHabitSyncService;
     private readonly INavigationService _navigationService;
@@ -115,8 +117,10 @@ public partial class MainViewModel : BaseViewModel
         CycleStatusViewModel cycleStatusSection,
         TourViewModel tour,
         IMoodIconSetService moodIconSets,
-        QuickNoteViewModel quickNote)
+        QuickNoteViewModel quickNote,
+        ICrashReporter? crashReporter = null)
     {
+        _crashReporter = crashReporter;
         using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
         _diaryHabitSyncService = diaryHabitSyncService;
@@ -158,6 +162,15 @@ public partial class MainViewModel : BaseViewModel
         WeakReferenceMessenger.Default.Register<PromptLibraryChangedMessage>(this, (r, m) =>
         {
             _promptLibrary = null;
+        });
+
+        // A restored backup replaced the database under this screen: drop everything cached from the
+        // old one and read the day again, now from the restored file.
+        WeakReferenceMessenger.Default.Register<DatabaseRestoredMessage>(this, (r, m) =>
+        {
+            var self = (MainViewModel)r;
+            self._promptLibrary = null;
+            _ = self.ReloadAfterRestoreAsync();
         });
 
         // A home-screen widget was tapped (spec 20, D3): the deep link has already landed on this tab
@@ -393,6 +406,20 @@ public partial class MainViewModel : BaseViewModel
         };
     }
 
+    private async Task ReloadAfterRestoreAsync()
+    {
+        try
+        {
+            await QuickMenuSection.RefreshAsync();
+            await LoadEntriesAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Reload after restore failed: {ex}");
+            _crashReporter?.Record("MainViewModel.ReloadAfterRestoreAsync (survived)", ex);
+        }
+    }
+
     private async Task<PromptLibrary> EnsurePromptLibraryAsync()
         => _promptLibrary ??= await _guidedPromptService.GetLibraryAsync();
 
@@ -437,7 +464,8 @@ public partial class MainViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error saving entry: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error saving entry: {ex}");
+            _crashReporter?.Record("MainViewModel.SaveEntryAsync (survived)", ex);
         }
         finally
         {
@@ -464,7 +492,11 @@ public partial class MainViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error loading entries: {ex.Message}");
+            // Not rethrown: the screen stays up with its empty state. But not silent either — this is
+            // where "the diary came back empty after the update" was going unseen. The report lands
+            // in Settings next to a crash, which it would otherwise have been.
+            System.Diagnostics.Debug.WriteLine($"Error loading entries: {ex}");
+            _crashReporter?.Record("MainViewModel.LoadEntriesAsync (survived)", ex);
         }
         finally
         {

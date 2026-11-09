@@ -174,3 +174,14 @@ public sealed class HomeSectionRequestedMessage
         Section = section;
     }
 }
+
+/// <summary>
+/// A backup was restored: the file under every service is a different database now. Anything that
+/// keeps data in memory between loads — the home screen's profile, its prompt library, the day on
+/// show — reloads on this rather than waiting for the restart the alert asks for, which on iOS a
+/// swipe to the home screen does not deliver.
+/// </summary>
+public sealed class DatabaseRestoredMessage
+{
+}
+

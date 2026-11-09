@@ -170,7 +170,7 @@ public static class EncryptedLiteDatabaseFactory
     /// migration runner reads it to decide what still needs applying, and a copy that lost it would be
     /// re-migrated from zero on restore.
     /// </summary>
-    private static void CopyAllCollections(LiteDatabase source, LiteDatabase destination)
+    public static void CopyAllCollections(LiteDatabase source, LiteDatabase destination)
     {
         foreach (var name in source.GetCollectionNames())
         {
