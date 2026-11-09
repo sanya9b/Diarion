@@ -2518,4 +2518,88 @@
   <data name="WidgetPrivacyLockedDefault" xml:space="preserve">
     <value>Поки ввімкнено блокування, віджети показують лише кнопку, доки ви не оберете інше тут.</value>
   </data>
+  <data name="CloudRecoveryTitle" xml:space="preserve">
+    <value>Відновлення через iCloud</value>
+  </data>
+  <data name="CloudRecoveryDescription" xml:space="preserve">
+    <value>Зашифрована копія щоденника зберігається у вашому власному iCloud, тож після перевстановлення чи на новому iPhone він повертається сам. Без ключа цього телефона її не прочитати.</value>
+  </data>
+  <data name="CloudRecoveryEnableLabel" xml:space="preserve">
+    <value>Зберігати копію в iCloud</value>
+  </data>
+  <data name="CloudRecoveryUnavailable" xml:space="preserve">
+    <value>На цьому iPhone iCloud вимкнений або немає входу в обліковий запис.</value>
+  </data>
+  <data name="CloudRecoveryUnsupported" xml:space="preserve">
+    <value>Поки що лише на iPhone.</value>
+  </data>
+  <data name="CloudRecoveryStatusNever" xml:space="preserve">
+    <value>Копії в iCloud ще немає.</value>
+  </data>
+  <data name="CloudRecoveryStatusFormat" xml:space="preserve">
+    <value>Остання копія: {0}</value>
+  </data>
+  <data name="CloudRecoveryStatusFailed" xml:space="preserve">
+    <value>Остання копія не вдалась; наступна спроба при відкритті застосунку.</value>
+  </data>
+  <data name="CloudRecoveryCopyNow" xml:space="preserve">
+    <value>Зробити копію зараз</value>
+  </data>
+  <data name="CloudRecoveryDelete" xml:space="preserve">
+    <value>Видалити копію з iCloud</value>
+  </data>
+  <data name="CloudRecoveryDeleteConfirm" xml:space="preserve">
+    <value>Видалити копію з iCloud? Автоматичні копії теж зупиняться.</value>
+  </data>
+  <data name="CloudRecoveryRestore" xml:space="preserve">
+    <value>Відновити з iCloud</value>
+  </data>
+  <data name="CloudRecoveryRestoreConfirm" xml:space="preserve">
+    <value>Замінити все на цьому телефоні копією з iCloud від {0}?</value>
+  </data>
+  <data name="CloudRecoveryConsentTitle" xml:space="preserve">
+    <value>Зберігати копію в iCloud?</value>
+  </data>
+  <data name="CloudRecoveryConsentText" xml:space="preserve">
+    <value>Diarion може зберігати зашифровану копію щоденника у вашому власному iCloud, щоб після перевстановлення чи на новому iPhone він повернувся сам. Без ключа цього телефона її не прочитати. Змінити рішення можна будь-коли в Налаштуваннях → Дані.</value>
+  </data>
+  <data name="CloudRecoveryConsentAccept" xml:space="preserve">
+    <value>Увімкнути</value>
+  </data>
+  <data name="CloudRecoveryConsentLater" xml:space="preserve">
+    <value>Не зараз</value>
+  </data>
+  <data name="RecoveryFoundTitle" xml:space="preserve">
+    <value>Ваш щоденник є в iCloud</value>
+  </data>
+  <data name="RecoveryFoundTextFormat" xml:space="preserve">
+    <value>У вашому iCloud знайдено копію від {0}. Відновити її чи почати з чистого?</value>
+  </data>
+  <data name="RecoveryRestoreButton" xml:space="preserve">
+    <value>Відновити</value>
+  </data>
+  <data name="RecoveryStartFreshButton" xml:space="preserve">
+    <value>Почати з чистого</value>
+  </data>
+  <data name="RecoveryDownloading" xml:space="preserve">
+    <value>Відновлюємо з iCloud…</value>
+  </data>
+  <data name="RecoveryRestored" xml:space="preserve">
+    <value>Відновлено. Ваші записи повернулись.</value>
+  </data>
+  <data name="RecoveryOutcomeKeyMismatch" xml:space="preserve">
+    <value>Цю копію зроблено ключем іншого iPhone. Увімкніть iCloud Keychain на обох телефонах або відновіть копію з парольною фразою.</value>
+  </data>
+  <data name="RecoveryOutcomeDownloadFailed" xml:space="preserve">
+    <value>iCloud ще не віддав копію. Перевірте з'єднання і спробуйте ще раз.</value>
+  </data>
+  <data name="RecoveryOutcomeFailed" xml:space="preserve">
+    <value>Копію не вдалося відновити.</value>
+  </data>
+  <data name="AutoBackupUseCloud" xml:space="preserve">
+    <value>Зберігати в iCloud Drive</value>
+  </data>
+  <data name="AutoBackupCloudFolderIos" xml:space="preserve">
+    <value>iCloud Drive → Diarion → Backups</value>
+  </data>
 </root>

@@ -144,6 +144,8 @@ public sealed class ScheduledBackupService : IScheduledBackupService
 
     public BackupFolderPick? DeviceFolder => _folder.DeviceFolder;
 
+    public BackupFolderPick? CloudFolder => _folder.CloudFolder;
+
     public void Enable(BackupFolderPick? folder, string passphrase, int intervalDays)
     {
         folder ??= _folder.DeviceFolder

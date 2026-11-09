@@ -35,6 +35,21 @@
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<!-- Spec 21: the Documents folder of the iCloud container shows in Files as iCloud Drive → Diarion.
+	     That is where the "iCloud Drive" option of the automatic copies writes; the recovery copy sits
+	     outside Documents and is not shown. Harmless in a build without the iCloud entitlement. -->
+	<key>NSUbiquitousContainers</key>
+	<dict>
+		<key>iCloud.org.diarion.app</key>
+		<dict>
+			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
+			<true/>
+			<key>NSUbiquitousContainerName</key>
+			<string>Diarion</string>
+			<key>NSUbiquitousContainerSupportedFolderLevels</key>
+			<string>Any</string>
+		</dict>
+	</dict>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Allows you to securely unlock your diary.</string>
 	<!-- Removed for v1 together with the HealthKit entitlement and both localised copies:

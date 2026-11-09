@@ -33,6 +33,16 @@ public sealed class IosBackupFolderService : IBackupFolderService
     public BackupFolderPick? DeviceFolder =>
         new(BackupFolderPick.DeviceToken, Diarion.Resources.Localization.AppResources.AutoBackupDeviceFolderIos);
 
+    /// <summary>
+    /// Documents/Backups of the app's iCloud container: Files → iCloud Drive → Diarion → Backups
+    /// (spec 21, D1). Outlives the app and follows the Apple ID. Null until the container has been
+    /// resolved once (ICloudContainer), and null for good without the entitlement or an account.
+    /// </summary>
+    public BackupFolderPick? CloudFolder =>
+        ICloudContainer.RootIfKnown is null
+            ? null
+            : new(BackupFolderPick.CloudToken, Diarion.Resources.Localization.AppResources.AutoBackupCloudFolderIos);
+
     public async Task<BackupFolderPick?> PickFolderAsync()
     {
         var tcs = new TaskCompletionSource<NSUrl?>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -154,6 +164,17 @@ public sealed class IosBackupFolderService : IBackupFolderService
     private static NSUrl? Resolve(string token)
     {
         if (string.IsNullOrEmpty(token)) return null;
+
+        if (token == BackupFolderPick.CloudToken)
+        {
+            var root = ICloudContainer.RootAsync().GetAwaiter().GetResult();
+            if (root?.Path is null) return null;
+
+            var cloudBackups = Path.Combine(root.Path, "Documents", "Backups");
+            Directory.CreateDirectory(cloudBackups);
+            // The app's own container: no security scope, same as the device folder below.
+            return NSUrl.FromFilename(cloudBackups);
+        }
 
         if (token == BackupFolderPick.DeviceToken)
         {

@@ -29,6 +29,9 @@ public static class AppIcons
 
     public const string DropPath = "M 12 3 C 12 3 5.5 10 5.5 14.5 A 6.5 6.5 0 0 0 18.5 14.5 C 18.5 10 12 3 12 3 Z";
 
+
+    public const string CloudPath = "M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z";
+
     public const string CalendarPath = "M 4 6 L 20 6 L 20 20 L 4 20 Z M 4 10 L 20 10 M 8.5 3.5 L 8.5 7.5 M 15.5 3.5 L 15.5 7.5";
 
     public const string FlamePath =
@@ -87,6 +90,9 @@ public static class AppIcons
     public static Geometry Banknote => Parse(BanknotePath);
     public static Geometry Sprout => Parse(SproutPath);
     public static Geometry Drop => Parse(DropPath);
+
+    /// <summary>A cloud outline: the iCloud recovery offer and card (spec 21).</summary>
+    public static Geometry Cloud => Parse(CloudPath);
     public static Geometry Calendar => Parse(CalendarPath);
     public static Geometry Flame => Parse(FlamePath);
     public static Geometry Clock => Parse(ClockPath);

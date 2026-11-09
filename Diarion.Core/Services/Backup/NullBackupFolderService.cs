@@ -11,6 +11,8 @@ public sealed class NullBackupFolderService : IBackupFolderService
 
     public BackupFolderPick? DeviceFolder => null;
 
+    public BackupFolderPick? CloudFolder => null;
+
     public Task<BackupFolderPick?> PickFolderAsync() => Task.FromResult<BackupFolderPick?>(null);
 
     public Task<bool> CanWriteAsync(string token) => Task.FromResult(false);

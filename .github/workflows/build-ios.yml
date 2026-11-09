@@ -25,6 +25,10 @@ on:
         description: 'Вбудувати розширення DiarionWidgets (App Group у entitlements + другий профіль)'
         type: boolean
         default: true
+      cloud:
+        description: 'iCloud (spec 21): контейнер iCloud.org.diarion.app у entitlements; профіль застосунку має нести iCloud. Вмикає й віджети.'
+        type: boolean
+        default: true
 
 jobs:
   build:
@@ -34,7 +38,10 @@ jobs:
       SIGNED: ${{ inputs.mode == 'appstore' }}
       # Spec 20, R6. Off is the build that was here before the widgets: no .appex, no App Group
       # entitlement, the old profile — the way back if an extension build ever blocks a release.
-      WIDGETS: ${{ inputs.widgets }}
+      WIDGETS: ${{ inputs.widgets || inputs.cloud }}
+      # Spec 21. Off is the build before the iCloud container: Entitlements.Widgets.plist, the
+      # profile without iCloud — the way back if the capability ever blocks a release.
+      CLOUD: ${{ inputs.cloud }}
 
     steps:
     - name: Checkout repository
@@ -166,6 +173,11 @@ jobs:
           security cms -D -i "$RUNNER_TEMP/widgets.mobileprovision" > "$RUNNER_TEMP/widgets-profile.plist"
           /usr/libexec/PlistBuddy -c 'Print Entitlements:com.apple.security.application-groups' "$RUNNER_TEMP/profile.plist" \
             || { echo "::error::Профіль застосунку не містить App Groups. Перегенеруйте його після ввімкнення capability й оновіть IOS_PROVISIONING_PROFILE_BASE64."; exit 1; }
+          # Spec 21: the same check for iCloud, before twenty minutes of build find out.
+          if [ "$CLOUD" = "true" ]; then
+            /usr/libexec/PlistBuddy -c 'Print Entitlements:com.apple.developer.icloud-container-identifiers' "$RUNNER_TEMP/profile.plist" \
+              || { echo "::error::Профіль застосунку не містить iCloud. Створіть контейнер iCloud.org.diarion.app, увімкніть iCloud (CloudDocuments) на App ID, перегенеруйте профіль і оновіть IOS_PROVISIONING_PROFILE_BASE64. Або запустіть з cloud=false."; exit 1; }
+          fi
           WIDGETS_PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print Name' "$RUNNER_TEMP/widgets-profile.plist")
           WIDGETS_APP_ID=$(/usr/libexec/PlistBuddy -c 'Print Entitlements:application-identifier' "$RUNNER_TEMP/widgets-profile.plist")
           echo "WIDGETS_PROFILE_NAME=$WIDGETS_PROFILE_NAME" >> $GITHUB_ENV
@@ -214,7 +226,7 @@ jobs:
     # Непідписаний шлях — рівно те, що тут було: перевірка, що воно збирається.
     - name: Publish unsigned app
       if: env.SIGNED != 'true'
-      run: dotnet publish Diarion.csproj -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64 -p:DiarionWidgets=$WIDGETS -p:CodesignKey="-" -p:CodesignProvision="-"
+      run: dotnet publish Diarion.csproj -f net10.0-ios -c Release -p:RuntimeIdentifier=ios-arm64 -p:DiarionWidgets=$WIDGETS -p:DiarionCloud=$CLOUD -p:CodesignKey="-" -p:CodesignProvision="-"
 
     - name: Package the unsigned app into an IPA
       # zip з текою Payload. Для встановлення це не годиться і для магазину теж — тільки артефакт.
@@ -238,6 +250,7 @@ jobs:
           -p:RuntimeIdentifier=ios-arm64 \
           -p:ArchiveOnBuild=true \
           -p:DiarionWidgets=$WIDGETS \
+          -p:DiarionCloud=$CLOUD \
           -p:CodesignKey="$IOS_CODESIGN_IDENTITY" \
           -p:CodesignProvision="$IOS_PROVISIONING_PROFILE_NAME"
 

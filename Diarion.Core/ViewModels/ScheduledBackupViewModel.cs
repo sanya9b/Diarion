@@ -50,6 +50,10 @@ public partial class ScheduledBackupViewModel : ObservableObject
     [ObservableProperty]
     private bool _canUseDeviceFolder;
 
+    /// <summary>True while copies go somewhere other than the cloud drive and the platform has one (spec 21, D1).</summary>
+    [ObservableProperty]
+    private bool _canUseCloudFolder;
+
     [ObservableProperty]
     private string _statusText = string.Empty;
 
@@ -210,6 +214,16 @@ public partial class ScheduledBackupViewModel : ObservableObject
         RefreshTexts();
     }
 
+    /// <summary>To the app's folder in the cloud drive, which outlives the app and follows the account.</summary>
+    [RelayCommand]
+    private void UseCloudFolder()
+    {
+        if (_service.CloudFolder is not { } cloud) return;
+
+        _service.SetFolder(cloud);
+        RefreshTexts();
+    }
+
     [RelayCommand]
     private async Task ChangeFolderAsync()
     {
@@ -249,15 +263,19 @@ public partial class ScheduledBackupViewModel : ObservableObject
         var culture = CultureInfo.CurrentCulture;
 
         var isDevice = settings.FolderToken == BackupFolderPick.DeviceToken;
+        var isCloud = settings.FolderToken == BackupFolderPick.CloudToken;
 
-        // The phone's folder is named from the service each time rather than from the stored name, so it
-        // follows a change of the app's language.
-        var name = isDevice ? _service.DeviceFolder?.DisplayName : settings.FolderName;
+        // The phone's and the cloud's folders are named from the service each time rather than from the
+        // stored name, so they follow a change of the app's language.
+        var name = isDevice ? _service.DeviceFolder?.DisplayName
+            : isCloud ? _service.CloudFolder?.DisplayName ?? settings.FolderName
+            : settings.FolderName;
         FolderText = string.IsNullOrEmpty(name)
             ? AppResources.AutoBackupNoFolder
             : string.Format(culture, AppResources.AutoBackupFolderFormat, name);
 
         CanUseDeviceFolder = !isDevice && _service.DeviceFolder is not null;
+        CanUseCloudFolder = !isCloud && _service.CloudFolder is not null;
 
         StatusText = StatusFor(settings, culture);
     }

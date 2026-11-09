@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:Diarion.Resources.Icons;assembly=Diarion.Core"
+             xmlns:viewmodels="clr-namespace:Diarion.ViewModels;assembly=Diarion.Core"
+             xmlns:localization="clr-namespace:Diarion.Resources.Localization;assembly=Diarion.Core"
+             x:Class="Diarion.Views.RecoveryPage"
+             x:DataType="viewmodels:RecoveryViewModel"
+             BackgroundColor="{DynamicResource Theme_Earth_Midnight}"
+             NavigationPage.HasNavigationBar="False">
+
+    <!-- Spec 21, D4: the first-launch offer. One question, two answers, nothing automatic. -->
+    <Grid RowDefinitions="*, Auto, *" Padding="32">
+
+        <VerticalStackLayout Grid.Row="1" Spacing="20" HorizontalOptions="Fill">
+            <Path Data="{x:Static icons:AppIcons.Cloud}" WidthRequest="48" HeightRequest="48"
+                  Stroke="{DynamicResource Theme_Midnight_Snow}" StrokeThickness="1.6"
+                  StrokeLineCap="Round" StrokeLineJoin="Round" Aspect="Uniform"
+                  InputTransparent="True" HorizontalOptions="Center" />
+
+            <Label Text="{x:Static localization:AppResources.RecoveryFoundTitle}"
+                   FontSize="22" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                   TextColor="{DynamicResource Theme_Midnight_Snow}" />
+
+            <Label Text="{Binding FoundText}" FontSize="15" HorizontalTextAlignment="Center"
+                   TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+            <!-- While the file comes down from iCloud: the bar moves, the buttons wait. -->
+            <VerticalStackLayout Spacing="8" IsVisible="{Binding IsBusy}">
+                <ProgressBar Progress="{Binding Progress}" ProgressColor="{DynamicResource Theme_Coral}" />
+                <Label Text="{x:Static localization:AppResources.RecoveryDownloading}" FontSize="13"
+                       HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+            </VerticalStackLayout>
+
+            <Label Text="{Binding ErrorText}" IsVisible="{Binding HasError}" FontSize="13"
+                   HorizontalTextAlignment="Center" TextColor="{DynamicResource Theme_Coral}" />
+
+            <Button Text="{x:Static localization:AppResources.RecoveryRestoreButton}"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding RestoreCommand}" IsEnabled="{Binding IsNotBusy}" Margin="0,12,0,0" />
+
+            <Button Text="{x:Static localization:AppResources.RecoveryStartFreshButton}"
+                    Style="{StaticResource GhostButton}"
+                    Command="{Binding StartFreshCommand}" IsEnabled="{Binding IsNotBusy}" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

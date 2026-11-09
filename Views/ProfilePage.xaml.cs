@@ -30,18 +30,22 @@ public partial class ProfilePage : ContentPage
     }
 
     private readonly ScheduledBackupViewModel _autoBackup;
+    private readonly CloudRecoveryViewModel _cloudRecovery;
 
     public ProfilePage(
         ProfileViewModel viewModel,
         SubscriptionSectionViewModel subscription,
         MoodIconSetViewModel moodIconSets,
-        ScheduledBackupViewModel autoBackup)
+        ScheduledBackupViewModel autoBackup,
+        CloudRecoveryViewModel cloudRecovery)
     {
         InitializeComponent();
         SubscriptionCard.BindingContext = subscription;
         MoodIconSetRow.BindingContext = moodIconSets;
         _autoBackup = autoBackup;
         AutoBackupCard.BindingContext = autoBackup;
+        _cloudRecovery = cloudRecovery;
+        CloudRecoveryCard.BindingContext = cloudRecovery;
 
         _viewModel = viewModel;
         BindingContext = _viewModel;
@@ -72,6 +76,7 @@ public partial class ProfilePage : ContentPage
             // The card reads device-local settings, not the profile; a run that happened at launch
             // shows up here on the next visit.
             _autoBackup.Load();
+            await _cloudRecovery.LoadAsync();
 
             // After the profile: the guide is about the switches on this screen, and until it is loaded
             // they are showing defaults.

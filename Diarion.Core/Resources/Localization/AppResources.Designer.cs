@@ -2981,5 +2981,116 @@ public static string ClearAllDataSuccessMsg {
         public static string WidgetPrivacyWithTextHint => ResourceManager.GetString("WidgetPrivacyWithTextHint", resourceCulture) ?? string.Empty;
         public static string WidgetPrivacyWarning => ResourceManager.GetString("WidgetPrivacyWarning", resourceCulture) ?? string.Empty;
         public static string WidgetPrivacyLockedDefault => ResourceManager.GetString("WidgetPrivacyLockedDefault", resourceCulture) ?? string.Empty;
+            public static string CloudRecoveryTitle {
+            get { return ResourceManager.GetString("CloudRecoveryTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryDescription {
+            get { return ResourceManager.GetString("CloudRecoveryDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryEnableLabel {
+            get { return ResourceManager.GetString("CloudRecoveryEnableLabel", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryUnavailable {
+            get { return ResourceManager.GetString("CloudRecoveryUnavailable", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryUnsupported {
+            get { return ResourceManager.GetString("CloudRecoveryUnsupported", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryStatusNever {
+            get { return ResourceManager.GetString("CloudRecoveryStatusNever", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryStatusFormat {
+            get { return ResourceManager.GetString("CloudRecoveryStatusFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryStatusFailed {
+            get { return ResourceManager.GetString("CloudRecoveryStatusFailed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryCopyNow {
+            get { return ResourceManager.GetString("CloudRecoveryCopyNow", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryDelete {
+            get { return ResourceManager.GetString("CloudRecoveryDelete", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryDeleteConfirm {
+            get { return ResourceManager.GetString("CloudRecoveryDeleteConfirm", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryRestore {
+            get { return ResourceManager.GetString("CloudRecoveryRestore", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryRestoreConfirm {
+            get { return ResourceManager.GetString("CloudRecoveryRestoreConfirm", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryConsentTitle {
+            get { return ResourceManager.GetString("CloudRecoveryConsentTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryConsentText {
+            get { return ResourceManager.GetString("CloudRecoveryConsentText", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryConsentAccept {
+            get { return ResourceManager.GetString("CloudRecoveryConsentAccept", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string CloudRecoveryConsentLater {
+            get { return ResourceManager.GetString("CloudRecoveryConsentLater", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string RecoveryFoundTitle {
+            get { return ResourceManager.GetString("RecoveryFoundTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string RecoveryFoundTextFormat {
+            get { return ResourceManager.GetString("RecoveryFoundTextFormat", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string RecoveryRestoreButton {
+            get { return ResourceManager.GetString("RecoveryRestoreButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string RecoveryStartFreshButton {
+            get { return ResourceManager.GetString("RecoveryStartFreshButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string RecoveryDownloading {
+            get { return ResourceManager.GetString("RecoveryDownloading", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string RecoveryRestored {
+            get { return ResourceManager.GetString("RecoveryRestored", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string RecoveryOutcomeKeyMismatch {
+            get { return ResourceManager.GetString("RecoveryOutcomeKeyMismatch", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string RecoveryOutcomeDownloadFailed {
+            get { return ResourceManager.GetString("RecoveryOutcomeDownloadFailed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string RecoveryOutcomeFailed {
+            get { return ResourceManager.GetString("RecoveryOutcomeFailed", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupUseCloud {
+            get { return ResourceManager.GetString("AutoBackupUseCloud", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string AutoBackupCloudFolderIos {
+            get { return ResourceManager.GetString("AutoBackupCloudFolderIos", resourceCulture) ?? string.Empty; }
+        }
     }
 }

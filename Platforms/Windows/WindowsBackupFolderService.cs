@@ -26,6 +26,8 @@ public sealed class WindowsBackupFolderService : IBackupFolderService
     /// <summary>Documents\Diarion Backups — the computer's own counterpart of the phone's folder.</summary>
     public BackupFolderPick? DeviceFolder => new(BackupFolderPick.DeviceToken, DevicePath);
 
+    public BackupFolderPick? CloudFolder => null;
+
     /// <summary>A picked folder's token is its path; the device token stands for <see cref="DevicePath"/>.</summary>
     private static string PathOf(string token) => token == BackupFolderPick.DeviceToken ? DevicePath : token;
 

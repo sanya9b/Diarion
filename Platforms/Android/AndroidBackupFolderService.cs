@@ -39,6 +39,8 @@ public sealed class AndroidBackupFolderService : IBackupFolderService
     public BackupFolderPick? DeviceFolder =>
         new(BackupFolderPick.DeviceToken, AndroidDeviceBackupFolder.DisplayName);
 
+    public BackupFolderPick? CloudFolder => null;
+
     public async Task<BackupFolderPick?> PickFolderAsync()
     {
         var launcher = Launcher ?? throw new InvalidOperationException("The folder picker is not registered yet.");

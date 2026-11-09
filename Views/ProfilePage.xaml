@@ -701,8 +701,53 @@
                                         Command="{Binding UseDeviceFolderCommand}"
                                         IsVisible="{Binding CanUseDeviceFolder}" />
 
+                                <!-- The app's own folder in iCloud Drive (spec 21, D1): outlives the app, no picker. -->
+                                <Button Style="{StaticResource SecondaryButton}" Text="{x:Static localization:AppResources.AutoBackupUseCloud}"
+                                        Command="{Binding UseCloudFolderCommand}"
+                                        IsVisible="{Binding CanUseCloudFolder}" />
+
                                 <Label Text="{x:Static localization:AppResources.AutoBackupKeepHint}" FontSize="11" TextColor="{DynamicResource Theme_Ocean_Dust}" />
                             </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- iCloud recovery (spec 21). Its BindingContext is CloudRecoveryViewModel, set in
+                     ProfilePage.xaml.cs. The switch is the consent: a copy of the database under this
+                     phone's key goes to the user's own iCloud container, and a fresh install offers it
+                     back before onboarding. Shown only where a container exists (iPhone). -->
+                <Border x:Name="CloudRecoveryCard" x:DataType="viewmodels:CloudRecoveryViewModel"
+                        Style="{StaticResource Card}" IsVisible="{Binding IsSupported}">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{x:Static localization:AppResources.CloudRecoveryTitle}" Style="{StaticResource SectionHeader}" />
+
+                        <Label Text="{x:Static localization:AppResources.CloudRecoveryDescription}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                        <Label Text="{x:Static localization:AppResources.CloudRecoveryUnavailable}" IsVisible="{Binding IsUnavailable}"
+                               FontSize="13" TextColor="{DynamicResource Theme_Amber}" />
+
+                        <VerticalStackLayout Spacing="12" IsVisible="{Binding IsAvailable}">
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                                <Label Grid.Column="0" Text="{x:Static localization:AppResources.CloudRecoveryEnableLabel}" VerticalOptions="Center" FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                <Switch Grid.Column="1" IsToggled="{Binding IsEnabled}" IsEnabled="{Binding IsNotBusy}" VerticalOptions="Center" />
+                            </Grid>
+
+                            <Label Text="{Binding StatusText}" FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+
+                            <Grid ColumnDefinitions="*, *" ColumnSpacing="12" IsVisible="{Binding IsEnabled}">
+                                <Button Style="{StaticResource SecondaryButton}" Grid.Column="0" Text="{x:Static localization:AppResources.CloudRecoveryCopyNow}"
+                                        Command="{Binding CopyNowCommand}" IsEnabled="{Binding IsNotBusy}" />
+                                <Button Style="{StaticResource SecondaryButton}" Grid.Column="1" Text="{x:Static localization:AppResources.CloudRecoveryDelete}"
+                                        Command="{Binding DeleteCopyCommand}" IsEnabled="{Binding IsNotBusy}" />
+                            </Grid>
+
+                            <!-- Replaces everything on this phone with the copy; it asks first. -->
+                            <Button Style="{StaticResource SecondaryButton}" Text="{x:Static localization:AppResources.CloudRecoveryRestore}"
+                                    Command="{Binding RestoreCommand}" IsEnabled="{Binding IsNotBusy}" />
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
