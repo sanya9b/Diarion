@@ -1796,10 +1796,10 @@
     <value>Welcome to Diarion</value>
   </data>
   <data name="OnboardingSubtitle" xml:space="preserve">
-    <value>Your private, offline diary</value>
+    <value>One diary for everything</value>
   </data>
   <data name="OnboardingPrivacyText" xml:space="preserve">
-    <value>Everything stays on your device. No cloud, no account — nothing to leak.</value>
+    <value>Mood, habits, planner, notes and finances in one database on your phone. Your data stays with you.</value>
   </data>
   <data name="OnboardingReminderLabel" xml:space="preserve">
     <value>Remind me to journal daily</value>

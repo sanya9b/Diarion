@@ -1673,10 +1673,10 @@
     <value>Ласкаво просимо до Diarion</value>
   </data>
   <data name="OnboardingSubtitle" xml:space="preserve">
-    <value>Ваш приватний офлайн-щоденник</value>
+    <value>Один щоденник для всього</value>
   </data>
   <data name="OnboardingPrivacyText" xml:space="preserve">
-    <value>Усе лишається на вашому пристрої. Без хмари й акаунтів — нічого витікати.</value>
+    <value>Настрій, звички, планер, нотатки й фінанси — в одній базі на вашому телефоні. Дані лишаються у вас.</value>
   </data>
   <data name="OnboardingReminderLabel" xml:space="preserve">
     <value>Нагадувати вести щоденник щодня</value>
