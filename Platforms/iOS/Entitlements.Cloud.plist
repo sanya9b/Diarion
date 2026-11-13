@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Spec 21: everything Entitlements.Widgets.plist has, plus the iCloud container the recovery copy
+	     and the "iCloud Drive" backup folder live in. A third file rather than a key added to the second,
+	     for the same reason the second exists: the provisioning profile must carry the same
+	     capabilities, and a build must stay possible with a profile that does not yet. Selected by
+	     Diarion.csproj with -p:DiarionCloud=true, which implies the widgets. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.org.diarion.app</string>
+	</array>
+	<key>com.apple.developer.icloud-container-identifiers</key>
+	<array>
+		<string>iCloud.org.diarion.app</string>
+	</array>
+	<key>com.apple.developer.icloud-services</key>
+	<array>
+		<string>CloudDocuments</string>
+	</array>
+	<key>com.apple.developer.ubiquity-container-identifiers</key>
+	<array>
+		<string>iCloud.org.diarion.app</string>
+	</array>
+</dict>
+</plist>

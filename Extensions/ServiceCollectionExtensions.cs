@@ -17,7 +17,12 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
         services.AddSingleton<IDatabaseSeeder, DatabaseSeeder>();
+#if IOS
+        // Spec 21, D5: the same key, also as a Keychain item that iCloud Keychain carries to the next iPhone.
+        services.AddSingleton<IEncryptionKeyProvider, IosKeychainKeyProvider>();
+#else
         services.AddSingleton<IEncryptionKeyProvider, SecureStorageKeyProvider>();
+#endif
         services.AddSingleton<IAppLockService, AppLockService>();
         services.AddSingleton<IBiometricService, BiometricService>();
         // Subscription state (spec 15). iOS talks to StoreKit 2 through the Swift facade; wherever
@@ -88,6 +93,15 @@ public static class ServiceCollectionExtensions
 #endif
         services.AddSingleton<IScheduledBackupStore, PreferencesScheduledBackupStore>();
         services.AddSingleton<IScheduledBackupService, ScheduledBackupService>();
+        // Spec 21: the recovery copy in the platform's cloud container, with the user's say-so.
+#if IOS
+        services.AddSingleton<Diarion.Services.Recovery.IRecoveryStore, IosRecoveryStore>();
+#else
+        services.AddSingleton<Diarion.Services.Recovery.IRecoveryStore, Diarion.Services.Recovery.NullRecoveryStore>();
+#endif
+        services.AddSingleton<Diarion.Services.Recovery.ICloudRecoverySettingsStore, PreferencesCloudRecoveryStore>();
+        services.AddSingleton<Diarion.Services.Recovery.CloudRecoveryService>();
+        services.AddSingleton<Diarion.Services.Recovery.ICloudRecoveryService>(sp => sp.GetRequiredService<Diarion.Services.Recovery.CloudRecoveryService>());
         services.AddSingleton<IExportService, ExportService>();
         services.AddSingleton<INavigationService, MauiNavigationService>();
         services.AddSingleton<IDialogService, MauiDialogService>();
@@ -183,6 +197,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<MoodIconSetViewModel>();
         services.AddTransient<SnapshotPreviewViewModel>();
         services.AddTransient<ScheduledBackupViewModel>();
+        services.AddTransient<CloudRecoveryViewModel>();
+        services.AddTransient<RecoveryViewModel>();
 
         return services;
     }
@@ -193,6 +209,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<LockPage>();
         services.AddTransient<PinSetupPage>();
         services.AddTransient<OnboardingPage>();
+        services.AddTransient<RecoveryPage>();
         services.AddTransient<DiaryDetailPage>();
         services.AddTransient<TodoDetailPage>();
         services.AddTransient<ProfilePage>();

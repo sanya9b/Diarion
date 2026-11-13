@@ -371,6 +371,8 @@ public class ScheduledBackupServiceTests : IDisposable
 
         public BackupFolderPick? DeviceFolder { get; set; } = new(BackupFolderPick.DeviceToken, "Phone");
 
+        public BackupFolderPick? CloudFolder { get; set; }
+
         public Task<BackupFolderPick?> PickFolderAsync() =>
             Task.FromResult<BackupFolderPick?>(new BackupFolderPick("tree://picked", "Picked"));
 

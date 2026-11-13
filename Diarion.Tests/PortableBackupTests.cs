@@ -98,6 +98,22 @@ public class PortableBackupTests : IDisposable
         }
 
         public void DropAllData() => throw new NotSupportedException();
+
+        public Exception? MigrationFailure => null;
+
+        public void ExportTo(string destinationPath, string password)
+        {
+            using var destination = new LiteDatabase(new ConnectionString { Filename = destinationPath, Password = password });
+            EncryptedLiteDatabaseFactory.CopyAllCollections(
+                _db ?? throw new InvalidOperationException("closed"), destination);
+        }
+
+        public void ReplaceDatabaseFile(string candidatePath)
+        {
+            Close();
+            File.Move(candidatePath, DatabasePath, overwrite: true);
+            Reopen();
+        }
     }
 
     // ---- helpers -----------------------------------------------------------

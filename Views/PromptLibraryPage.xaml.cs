@@ -18,6 +18,6 @@ public partial class PromptLibraryPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadAsync();
+        await Diarion.Services.PageLoadGuard.RunAsync(this, () => _viewModel.LoadAsync());
     }
 }

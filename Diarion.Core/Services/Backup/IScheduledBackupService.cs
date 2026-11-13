@@ -30,6 +30,9 @@ public interface IScheduledBackupService
     /// <summary>The folder on the phone, or null where there is none (see <see cref="IBackupFolderService.DeviceFolder"/>).</summary>
     BackupFolderPick? DeviceFolder { get; }
 
+    /// <summary>The app's folder in the cloud drive, or null (see <see cref="IBackupFolderService.CloudFolder"/>).</summary>
+    BackupFolderPick? CloudFolder { get; }
+
     /// <summary>
     /// Switches on. A null <paramref name="folder"/> means the phone itself — the default, which needs no
     /// picker; it throws where the platform has no device folder.

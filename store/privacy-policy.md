@@ -27,7 +27,7 @@
 
 ## Українською
 
-**Чинна з:** 25 жовтня 2026
+**Чинна з:** 10 листопада 2026
 **Розробник:** Кугай Вікторія Юріївна (фізична особа)
 **Контакт:** support@diarion.org
 
@@ -35,7 +35,9 @@
 
 Diarion не має акаунтів, серверів і синхронізації. Ваш щоденник зберігається на вашому пристрої й
 не надсилається ані розробнику, ані будь-кому іншому. Ми не збираємо статистику використання, не
-показуємо реклами і не використовуємо жодних аналітичних чи рекламних SDK.
+показуємо реклами і не використовуємо жодних аналітичних чи рекламних SDK. Єдине місце поза телефоном,
+куди щоденник може потрапити, — ваш власний iCloud, зашифрованим і лише якщо ви це ввімкнули (див.
+«iCloud» нижче).
 
 ### Які дані застосунок зберігає
 
@@ -104,10 +106,20 @@ Apple ID.
 
 Інших мережевих звернень у застосунку немає: ні телеметрії, ні перевірки оновлень, ні реклами.
 
+### iCloud — за вашим вибором
+
+На iPhone застосунок може зберігати копію щоденника у **вашому власному iCloud** (контейнер застосунку
+в iCloud Drive), щоб після перевстановлення чи на новому iPhone записи повернулись самі. Це вимкнено,
+доки ви не погодитесь: застосунок питає один раз, а перемикач є в Налаштуваннях → Дані. Копія
+зашифрована ключем вашого телефона (той самий, що шифрує базу; він живе у Keychain і може переноситись
+на ваші інші iPhone через iCloud Keychain) — ні Apple, ні розробник її прочитати не можуть. Передавання
+виконує сама iOS; серверів Diarion у цьому немає. Вимкнути можна будь-коли, разом із видаленням копії
+з iCloud. Туди ж, за бажанням, можуть іти й автоматичні копії з парольною фразою.
+
 ### Чого немає
 
 - Немає акаунтів і реєстрації.
-- Немає серверів Diarion — надіслати дані нікуди, бо немає куди.
+- Немає серверів Diarion — надіслати дані нікуди, бо немає куди. Копія в iCloud, якщо ви її ввімкнули, лежить у вашому iCloud, не в нас.
 - Немає аналітики, крешлітики, A/B-тестів і рекламних ідентифікаторів.
 - Немає передавання даних третім особам і продажу даних.
 - Немає відстеження між застосунками (App Tracking Transparency не використовується, бо нічого
@@ -139,13 +151,14 @@ support@diarion.org
 
 ## English
 
-**Effective:** 25 October 2026
+**Effective:** 10 November 2026
 **Developer:** Victoria Kuhai (individual)
 **Contact:** support@diarion.org
 
 ### In short
 
-Diarion has no accounts, no servers and no sync. Your diary is stored on your device and is not sent
+Diarion has no accounts, no servers and no sync. The one place outside your phone your diary can go
+is your own iCloud, encrypted and only if you turned that on (see "iCloud" below). Your diary is stored on your device and is not sent
 to the developer or to anyone else. We collect no usage statistics, show no ads, and bundle no
 analytics or advertising SDKs.
 
@@ -207,10 +220,20 @@ language model; nothing in the app uses it now.
 
 There are no other network calls: no telemetry, no update checks, no ads.
 
+### iCloud — your choice
+
+On iPhone the app can keep a copy of your diary in **your own iCloud** (the app's container in iCloud
+Drive), so that your entries come back by themselves after a reinstall or on a new iPhone. It is off
+until you agree: the app asks once, and the switch is in Settings → Data. The copy is encrypted with
+your phone's key (the same key that encrypts the database; it lives in the Keychain and can travel to
+your other iPhones through iCloud Keychain) — neither Apple nor the developer can read it. iOS itself
+does the transfer; no Diarion server is involved. You can turn it off at any time and delete the copy
+from iCloud. The automatic passphrase-protected backups can go to the same place if you choose.
+
 ### What there isn't
 
 - No accounts, no registration.
-- No Diarion servers — data cannot be sent anywhere because there is nowhere to send it.
+- No Diarion servers — data cannot be sent anywhere because there is nowhere to send it. The iCloud copy, if you turned it on, sits in your iCloud, not with us.
 - No analytics, crash analytics, A/B tests or advertising identifiers.
 - No sharing with or selling to third parties.
 - No cross-app tracking (App Tracking Transparency is not used, because there is nothing to track).

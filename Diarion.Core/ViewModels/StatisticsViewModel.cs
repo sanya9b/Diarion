@@ -61,6 +61,7 @@ public partial class StatisticsViewModel : BaseViewModel
     private readonly Diarion.Services.IFinanceService _financeService;
     private readonly Diarion.Services.INavigationService _navigationService;
     private readonly Diarion.Services.IDispatcherService _dispatcher;
+    private readonly Diarion.Diagnostics.ICrashReporter? _crashReporter;
 
     [ObservableProperty]
     private int _currentStreak;
@@ -207,8 +208,10 @@ public partial class StatisticsViewModel : BaseViewModel
         ViewModels.Statistics.HabitStatsViewModel habitStats,
         ViewModels.Statistics.CycleStatsViewModel cycleStats,
         ViewModels.Statistics.PeriodReviewViewModel review,
-        TourViewModel tour)
+        TourViewModel tour,
+        Diarion.Diagnostics.ICrashReporter? crashReporter = null)
     {
+        _crashReporter = crashReporter;
         _statisticsService = statisticsService;
         _diaryService = diaryService;
         _financeService = financeService;
@@ -465,6 +468,14 @@ public partial class StatisticsViewModel : BaseViewModel
             {
                 await CycleStats.LoadDataAsync(range);
             }
+        }
+        catch (Exception ex)
+        {
+            // Reached from commands as well as from the page, and an exception out of a command ends
+            // the app on iOS. A tab that could not be computed stays empty and the cause goes to the
+            // crash report in Settings.
+            System.Diagnostics.Debug.WriteLine($"Statistics load failed: {ex}");
+            _crashReporter?.Record("StatisticsViewModel.LoadStatisticsAsync (survived)", ex);
         }
         finally
         {

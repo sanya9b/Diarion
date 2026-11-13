@@ -30,6 +30,13 @@ public partial class OnboardingModule : ObservableObject
     /// <summary>Already localised — the catalogue is built per call, after the culture is set.</summary>
     public required string Title { get; init; }
 
+    /// <summary>
+    /// One line under the title saying what the module actually holds. The titles are the ones the
+    /// settings screen uses, which a returning user recognises and a new one cannot: "Reflection" or
+    /// "Want, Wish, Get" names nothing to somebody who has not yet seen the screen behind it.
+    /// </summary>
+    public required string Description { get; init; }
+
     public required OnboardingModuleGroup Group { get; init; }
 
     /// <summary>Writes the profile flag this module owns. Null when the module is only a tile.</summary>

@@ -25,14 +25,17 @@ public partial class StatisticsPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        // Before loading: the cycle tab appears and disappears with the setting, and selecting a tab
-        // that has just been removed would leave the page showing nothing.
-        await _viewModel.RefreshCycleTabAvailabilityAsync();
-        await _viewModel.LoadStatisticsAsync();
+        await Diarion.Services.PageLoadGuard.RunAsync(this, async () =>
+        {
+            // Before loading: the cycle tab appears and disappears with the setting, and selecting a tab
+            // that has just been removed would leave the page showing nothing.
+            await _viewModel.RefreshCycleTabAvailabilityAsync();
+            await _viewModel.LoadStatisticsAsync();
 
-        // After loading, not before: two of the four steps point at cards that only exist once there
-        // is something to put in them.
-        await _viewModel.Tour.StartAsync(TourId.Statistics);
+            // After loading, not before: two of the four steps point at cards that only exist once there
+            // is something to put in them.
+            await _viewModel.Tour.StartAsync(TourId.Statistics);
+        });
     }
 
     // --- Statistics guide (onboarding stage 3) ----------------------------------------------------

@@ -8,7 +8,7 @@ using LiteDB;
 
 namespace Diarion.Services.Database;
 
-public class DatabaseSeeder : IDatabaseSeeder
+public partial class DatabaseSeeder : IDatabaseSeeder
 {
     public void Seed(LiteDatabase database)
     {
@@ -42,7 +42,7 @@ public class DatabaseSeeder : IDatabaseSeeder
         // A sandbox run (Services/DebugSandbox.cs in the app) is for looking at the empty screens;
         // the mock diary would fill them.
         if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DIARION_SANDBOX_DIR")))
-            SeedMockDataIfEmpty(entriesCollection, todosCollection, habitsCollection);
+            SeedMockDataIfEmpty(database);
 #endif
     }
 
@@ -117,75 +117,4 @@ public class DatabaseSeeder : IDatabaseSeeder
             }
         }
     }
-
-#if DEBUG
-    private void SeedMockDataIfEmpty(ILiteCollection<DiaryEntry> entriesCollection, ILiteCollection<TodoItem> todosCollection, ILiteCollection<HabitDefinition> habitsCollection)
-    {
-        if (entriesCollection.Count() > 0) return;
-
-        var habits = habitsCollection.FindAll().ToList();
-        var random = new Random();
-        var today = DateTime.Today;
-
-        var startDate = new DateTime(today.Year > 2000 ? today.Year : 2026, 5, 10);
-        if (startDate > today) startDate = startDate.AddYears(-1);
-        int daysDiff = (int)(today.AddDays(3) - startDate).TotalDays;
-
-        var entriesToInsert = new System.Collections.Generic.List<DiaryEntry>();
-        var todosToInsert = new System.Collections.Generic.List<TodoItem>();
-
-        for (int i = 0; i <= daysDiff; i++)
-        {
-            var date = startDate.AddDays(i);
-            
-            var entry = new DiaryEntry
-            {
-                Id = Guid.NewGuid(),
-                Date = date,
-                CreatedAt = date.AddHours(20),
-                SleepStart = new TimeSpan(22, random.Next(0, 59), 0),
-                SleepEnd = new TimeSpan(7, random.Next(0, 59), 0),
-                SleepQuality = random.Next(2, DiaryEntry.MaxRating + 1),
-                HealthStatus = random.Next(3, DiaryEntry.MaxRating + 1),
-                CycleDay = random.Next(1, 28).ToString(),
-                IntimateLife = random.NextDouble() > 0.7 ? "Yes" : "No",
-                // Left blank so the localized reflection placeholders are visible in mock data.
-                Triggers = string.Empty,
-                Gratitude = string.Empty,
-                SoulFood = string.Empty,
-            };
-
-            foreach (var h in habits)
-            {
-                entry.HabitsList.Add(new HabitItem 
-                { 
-                    HabitId = h.Id, 
-                    Name = h.Name, 
-                    IsCompleted = random.NextDouble() > 0.4
-                });
-            }
-
-            entriesToInsert.Add(entry);
-
-            int tasksCount = random.Next(1, 5);
-            for (int t = 0; t < tasksCount; t++)
-            {
-                todosToInsert.Add(new TodoItem
-                {
-                    Id = Guid.NewGuid(),
-                    TargetDate = date,
-                    TaskDescription = $"Test task {t + 1}",
-                    IsCompleted = random.NextDouble() > 0.5,
-                    Priority = (TodoPriority)random.Next(0, 3),
-                    HasTime = random.NextDouble() > 0.5,
-                    TargetTime = new TimeSpan(random.Next(8, 20), random.Next(0, 5) * 10, 0),
-                    CreatedAt = date.AddHours(-1)
-                });
-            }
-        }
-
-        entriesCollection.InsertBulk(entriesToInsert);
-        todosCollection.InsertBulk(todosToInsert);
-    }
-#endif
 }

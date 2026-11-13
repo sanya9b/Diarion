@@ -36,6 +36,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "Mood",
             Title = AppResources.BlockMoodLabel,
+            Description = AppResources.OnboardingModuleMoodDescription,
             Group = OnboardingModuleGroup.DailyEntry,
             SetEnabled = (profile, enabled) => profile.IsMoodBlockVisible = enabled
         },
@@ -43,6 +44,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "Sleep",
             Title = AppResources.BlockSleepLabel,
+            Description = AppResources.OnboardingModuleSleepDescription,
             Group = OnboardingModuleGroup.DailyEntry,
             SetEnabled = (profile, enabled) => profile.IsSleepBlockVisible = enabled
         },
@@ -50,6 +52,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "Health",
             Title = AppResources.BlockHealthLabel,
+            Description = AppResources.OnboardingModuleHealthDescription,
             Group = OnboardingModuleGroup.DailyEntry,
             SetEnabled = (profile, enabled) => profile.IsHealthBlockVisible = enabled
         },
@@ -57,6 +60,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "Food",
             Title = AppResources.BlockFoodLabel,
+            Description = AppResources.OnboardingModuleFoodDescription,
             Group = OnboardingModuleGroup.DailyEntry,
             SetEnabled = (profile, enabled) => profile.IsFoodBlockVisible = enabled
         },
@@ -64,6 +68,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "GuidedPrompt",
             Title = AppResources.BlockGuidedPromptLabel,
+            Description = AppResources.OnboardingModuleGuidedPromptDescription,
             Group = OnboardingModuleGroup.DailyEntry,
             SetEnabled = (profile, enabled) => profile.IsGuidedPromptBlockVisible = enabled
         },
@@ -71,6 +76,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "Reflection",
             Title = AppResources.BlockReflectionLabel,
+            Description = AppResources.OnboardingModuleReflectionDescription,
             Group = OnboardingModuleGroup.DailyEntry,
             SetEnabled = (profile, enabled) => profile.IsReflectionBlockVisible = enabled
         },
@@ -79,6 +85,7 @@ public class OnboardingModuleService : IOnboardingModuleService
             // The one module with both halves: a block on the home screen and a screen of its own.
             Id = "Habits",
             Title = AppResources.BlockHabitsLabel,
+            Description = AppResources.OnboardingModuleHabitsDescription,
             Group = OnboardingModuleGroup.DailyEntry,
             SetEnabled = (profile, enabled) => profile.IsHabitsBlockVisible = enabled,
             QuickMenuId = "Habits"
@@ -90,6 +97,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "Notes",
             Title = AppResources.Notes,
+            Description = AppResources.OnboardingModuleNotesDescription,
             Group = OnboardingModuleGroup.Section,
             QuickMenuId = "Notes"
         },
@@ -97,6 +105,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "Reading",
             Title = AppResources.ReadingTrackerTitle,
+            Description = AppResources.OnboardingModuleReadingDescription,
             Group = OnboardingModuleGroup.Section,
             QuickMenuId = "Reading"
         },
@@ -104,6 +113,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "Moments",
             Title = AppResources.HappyMomentsTitle,
+            Description = AppResources.OnboardingModuleMomentsDescription,
             Group = OnboardingModuleGroup.Section,
             QuickMenuId = "Moments"
         },
@@ -111,6 +121,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "Deeds",
             Title = AppResources.GoodDeedsTitle,
+            Description = AppResources.OnboardingModuleDeedsDescription,
             Group = OnboardingModuleGroup.Section,
             QuickMenuId = "Deeds"
         },
@@ -118,6 +129,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "Wishlist",
             Title = AppResources.WishlistTitle,
+            Description = AppResources.OnboardingModuleWishlistDescription,
             Group = OnboardingModuleGroup.Section,
             QuickMenuId = "Wishlist"
         },
@@ -125,6 +137,7 @@ public class OnboardingModuleService : IOnboardingModuleService
         {
             Id = "Finance",
             Title = AppResources.FinanceTitle,
+            Description = AppResources.OnboardingModuleFinanceDescription,
             Group = OnboardingModuleGroup.Section,
             QuickMenuId = "Finance"
         }

@@ -121,6 +121,39 @@ public class ScheduledBackupViewModelTests
     }
 
     [Fact]
+    public void The_cloud_drive_is_offered_where_the_platform_has_one_and_taking_it_moves_the_copies_there()
+    {
+        // Spec 21, D1: the app's own folder in iCloud Drive, which outlives the app.
+        var cloud = new BackupFolderPick(BackupFolderPick.CloudToken, "iCloud Drive → Diarion → Backups");
+        _service.SetupGet(s => s.DeviceFolder).Returns(new BackupFolderPick(BackupFolderPick.DeviceToken, "On My iPhone → Diarion"));
+        _service.SetupGet(s => s.CloudFolder).Returns(cloud);
+        _service.Setup(s => s.SetFolder(It.IsAny<BackupFolderPick>()))
+                .Callback((BackupFolderPick f) => { _settings.FolderToken = f.Token; _settings.FolderName = f.DisplayName; });
+        _settings.IsEnabled = true;
+        _settings.FolderToken = BackupFolderPick.DeviceToken;
+        var vm = Create();
+
+        vm.CanUseCloudFolder.Should().BeTrue();
+        vm.UseCloudFolderCommand.Execute(null);
+
+        _service.Verify(s => s.SetFolder(cloud), Times.Once);
+        vm.FolderText.Should().Contain("iCloud Drive");
+        vm.CanUseCloudFolder.Should().BeFalse();
+        vm.CanUseDeviceFolder.Should().BeTrue("the way back to the phone stays open");
+    }
+
+    [Fact]
+    public void Without_a_cloud_drive_the_option_is_not_offered()
+    {
+        _service.SetupGet(s => s.CloudFolder).Returns((BackupFolderPick?)null);
+        _settings.IsEnabled = true;
+        _settings.FolderToken = BackupFolderPick.DeviceToken;
+        var vm = Create();
+
+        vm.CanUseCloudFolder.Should().BeFalse();
+    }
+
+    [Fact]
     public void The_phone_folder_is_named_in_the_current_language_not_from_the_stored_name()
     {
         _service.SetupGet(s => s.DeviceFolder).Returns(new BackupFolderPick(BackupFolderPick.DeviceToken, "Завантаження → Diarion"));

@@ -430,3 +430,28 @@ Writing now requires the "Diarion Base" auto-renewable subscription: monthly (di
 ```
 Existing-user access is decided on the device and cannot be shown in the sandbox: the app grants it when AppTransaction.originalAppVersion is 2 or lower in the Production environment, or when a 1.0 diary was already on the device at the first launch of 1.1. In the sandbox and TestFlight originalAppVersion is always "1.0", so every review install is treated as a new user. The rule is covered by unit tests (LegacyAccessDetectorTests) for production, sandbox and malformed values.
 ```
+
+## 11. Версія 1.2 → 1.3 — відновлення через iCloud (спека 21)
+
+> 2026-11-09. Застосунок уперше щось виносить за межі телефона сам: зашифровану копію бази у власний
+> iCloud користувача, лише після його згоди. Абзац «мережа — застосунок сам запитів не робить» у Notes
+> треба замінити на текст нижче; «No sync» лишається правдою (копія для відновлення, не синхронізація).
+> Політика приватності й сайт оновлені тим самим комітом (чинна з 10 листопада 2026).
+
+Текст для Notes (англійською, копіювати як є):
+
+iCloud recovery (new in this version): with the user's explicit consent — the app asks once, and
+there is a switch in Settings > Data — the app keeps an encrypted copy of its database in the app's
+own iCloud container (CloudDocuments), so that a reinstall or a new iPhone can restore the diary.
+The copy is encrypted with a key held in the user's Keychain (iCloud Keychain may sync it to the
+user's other devices); neither Apple nor the developer can read it. On a fresh install the app
+looks for such a copy and, if one exists, offers to restore it before onboarding; nothing is
+restored without a tap. iOS performs the transfer; the app has no server and makes no network
+requests of its own. The user can turn the feature off and delete the copy at any time. The
+passphrase-protected manual backups can optionally be written to the same iCloud Drive folder
+(Files > iCloud Drive > Diarion > Backups).
+
+To test: Settings > Data > "iCloud recovery" switch on (a copy is made at once); delete the app;
+reinstall; on first launch the app offers "Your diary is in iCloud" with Restore / Start fresh.
+Requires an iCloud account signed in on the test device.
+

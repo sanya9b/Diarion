@@ -72,8 +72,10 @@ public static class MoneyFormatter
     {
         try
         {
+            // A neutral culture (plain "en" after the language toggle) has the invariant region, whose
+            // currency "symbol" is the placeholder "¤¤"; only a real ISO 4217 code is a suggestion.
             var code = RegionInfo.CurrentRegion?.ISOCurrencySymbol;
-            return string.IsNullOrWhiteSpace(code) ? FallbackCode : code.ToUpperInvariant();
+            return code != null && code.Length == 3 && code.All(char.IsAsciiLetterUpper) ? code : FallbackCode;
         }
         catch
         {

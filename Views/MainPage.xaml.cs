@@ -155,25 +155,28 @@ public partial class MainPage : ContentPage
         // is installed in settings, so this is the moment the chat tile can appear — or disappear, if
         // the model was deleted or AI switched off while we were away — and the tile order is written
         // by the onboarding module picker, which is dismissed onto this screen.
-        await _viewModel.QuickMenuSection.RefreshAsync();
-
-        if (!_hasRenderedOnce)
+        await Diarion.Services.PageLoadGuard.RunAsync(this, async () =>
         {
-            _hasRenderedOnce = true;
-            Dispatcher.DispatchDelayed(InitialLoadDelay, () =>
+            await _viewModel.QuickMenuSection.RefreshAsync();
+
+            if (!_hasRenderedOnce)
             {
-                StartupTrace.Mark("MainPage delayed LoadEntriesCommand dispatch");
-                _viewModel.LoadEntriesCommand.Execute(null);
-            });
-            return;
-        }
+                _hasRenderedOnce = true;
+                Dispatcher.DispatchDelayed(InitialLoadDelay, () =>
+                {
+                    StartupTrace.Mark("MainPage delayed LoadEntriesCommand dispatch");
+                    _viewModel.LoadEntriesCommand.Execute(null);
+                });
+                return;
+            }
 
-        StartupTrace.Mark("MainPage immediate LoadEntriesCommand dispatch");
-        _viewModel.LoadEntriesCommand.Execute(null);
+            StartupTrace.Mark("MainPage immediate LoadEntriesCommand dispatch");
+            _viewModel.LoadEntriesCommand.Execute(null);
 
-        // Returning from settings after "show the guide again", and the ordinary case of the
-        // onboarding modal being dismissed onto this screen.
-        await TryStartTourAsync();
+            // Returning from settings after "show the guide again", and the ordinary case of the
+            // onboarding modal being dismissed onto this screen.
+            await TryStartTourAsync();
+        });
     }
 
     // --- Home-screen guide (onboarding stage 2) ---------------------------------------------------

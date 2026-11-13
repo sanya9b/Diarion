@@ -1915,6 +1915,45 @@
   <data name="OnboardingModulesSectionsGroup" xml:space="preserve">
     <value>Sections of their own</value>
   </data>
+  <data name="OnboardingModuleMoodDescription" xml:space="preserve">
+    <value>How the day went: a rating and what shaped it</value>
+  </data>
+  <data name="OnboardingModuleSleepDescription" xml:space="preserve">
+    <value>When you went to bed, when you got up, how you slept</value>
+  </data>
+  <data name="OnboardingModuleHealthDescription" xml:space="preserve">
+    <value>How you felt physically, with a note if you want one</value>
+  </data>
+  <data name="OnboardingModuleFoodDescription" xml:space="preserve">
+    <value>Breakfast, lunch, dinner: what you ate and whether you did</value>
+  </data>
+  <data name="OnboardingModuleGuidedPromptDescription" xml:space="preserve">
+    <value>A short question each day, so there is somewhere to start</value>
+  </data>
+  <data name="OnboardingModuleReflectionDescription" xml:space="preserve">
+    <value>Triggers, gratitude, what you did for yourself and for others</value>
+  </data>
+  <data name="OnboardingModuleHabitsDescription" xml:space="preserve">
+    <value>Daily tick boxes and the streaks they build</value>
+  </data>
+  <data name="OnboardingModuleNotesDescription" xml:space="preserve">
+    <value>Standalone notes, outside any particular day</value>
+  </data>
+  <data name="OnboardingModuleReadingDescription" xml:space="preserve">
+    <value>Books you have read, with the date you finished each</value>
+  </data>
+  <data name="OnboardingModuleMomentsDescription" xml:space="preserve">
+    <value>Bright memories, dated, to reread on a hard day</value>
+  </data>
+  <data name="OnboardingModuleDeedsDescription" xml:space="preserve">
+    <value>Small things you did for other people</value>
+  </data>
+  <data name="OnboardingModuleWishlistDescription" xml:space="preserve">
+    <value>Wishes in three steps, ticked off when they come true</value>
+  </data>
+  <data name="OnboardingModuleFinanceDescription" xml:space="preserve">
+    <value>Simple accounts, categories and what is left this month</value>
+  </data>
   <data name="OnboardingReminderTitle" xml:space="preserve">
     <value>One quiet reminder</value>
   </data>
@@ -2517,5 +2556,89 @@
   </data>
   <data name="WidgetPrivacyLockedDefault" xml:space="preserve">
     <value>While the app lock is on, the widgets show only a button until you choose otherwise here.</value>
+  </data>
+  <data name="CloudRecoveryTitle" xml:space="preserve">
+    <value>iCloud recovery</value>
+  </data>
+  <data name="CloudRecoveryDescription" xml:space="preserve">
+    <value>An encrypted copy of your diary is kept in your own iCloud, so it comes back by itself after a reinstall or on a new iPhone. Nothing in it is readable without this phone's key.</value>
+  </data>
+  <data name="CloudRecoveryEnableLabel" xml:space="preserve">
+    <value>Keep a copy in iCloud</value>
+  </data>
+  <data name="CloudRecoveryUnavailable" xml:space="preserve">
+    <value>iCloud is switched off on this iPhone, or no account is signed in.</value>
+  </data>
+  <data name="CloudRecoveryUnsupported" xml:space="preserve">
+    <value>Available on iPhone only for now.</value>
+  </data>
+  <data name="CloudRecoveryStatusNever" xml:space="preserve">
+    <value>No copy in iCloud yet.</value>
+  </data>
+  <data name="CloudRecoveryStatusFormat" xml:space="preserve">
+    <value>Last copy: {0}</value>
+  </data>
+  <data name="CloudRecoveryStatusFailed" xml:space="preserve">
+    <value>The last copy did not go through; it will be retried the next time the app opens.</value>
+  </data>
+  <data name="CloudRecoveryCopyNow" xml:space="preserve">
+    <value>Copy now</value>
+  </data>
+  <data name="CloudRecoveryDelete" xml:space="preserve">
+    <value>Delete the copy from iCloud</value>
+  </data>
+  <data name="CloudRecoveryDeleteConfirm" xml:space="preserve">
+    <value>Delete the copy from iCloud? Automatic copies will stop too.</value>
+  </data>
+  <data name="CloudRecoveryRestore" xml:space="preserve">
+    <value>Restore from iCloud</value>
+  </data>
+  <data name="CloudRecoveryRestoreConfirm" xml:space="preserve">
+    <value>Replace everything on this phone with the iCloud copy from {0}?</value>
+  </data>
+  <data name="CloudRecoveryConsentTitle" xml:space="preserve">
+    <value>Keep a copy in iCloud?</value>
+  </data>
+  <data name="CloudRecoveryConsentText" xml:space="preserve">
+    <value>Diarion can keep an encrypted copy of your diary in your own iCloud, so it comes back by itself after a reinstall or on a new iPhone. Nothing in it is readable without this phone's key. You can change this any time in Settings → Data.</value>
+  </data>
+  <data name="CloudRecoveryConsentAccept" xml:space="preserve">
+    <value>Turn on</value>
+  </data>
+  <data name="CloudRecoveryConsentLater" xml:space="preserve">
+    <value>Not now</value>
+  </data>
+  <data name="RecoveryFoundTitle" xml:space="preserve">
+    <value>Your diary is in iCloud</value>
+  </data>
+  <data name="RecoveryFoundTextFormat" xml:space="preserve">
+    <value>A copy from {0} was found in your iCloud. Restore it, or start fresh?</value>
+  </data>
+  <data name="RecoveryRestoreButton" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="RecoveryStartFreshButton" xml:space="preserve">
+    <value>Start fresh</value>
+  </data>
+  <data name="RecoveryDownloading" xml:space="preserve">
+    <value>Restoring from iCloud…</value>
+  </data>
+  <data name="RecoveryRestored" xml:space="preserve">
+    <value>Restored. Your entries are back.</value>
+  </data>
+  <data name="RecoveryOutcomeKeyMismatch" xml:space="preserve">
+    <value>This copy was made with another iPhone's key. Turn on iCloud Keychain on both phones, or restore a passphrase backup instead.</value>
+  </data>
+  <data name="RecoveryOutcomeDownloadFailed" xml:space="preserve">
+    <value>iCloud has not delivered the copy yet. Check the connection and try again.</value>
+  </data>
+  <data name="RecoveryOutcomeFailed" xml:space="preserve">
+    <value>The copy could not be restored.</value>
+  </data>
+  <data name="AutoBackupUseCloud" xml:space="preserve">
+    <value>Keep copies in iCloud Drive</value>
+  </data>
+  <data name="AutoBackupCloudFolderIos" xml:space="preserve">
+    <value>iCloud Drive → Diarion → Backups</value>
   </data>
 </root>

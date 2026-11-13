@@ -24,6 +24,7 @@ public class OnboardingModuleServiceTests
         modules.Should().NotBeEmpty();
         modules.Should().OnlyContain(m => m.IsSelected);
         modules.Should().OnlyContain(m => !string.IsNullOrWhiteSpace(m.Title));
+        modules.Should().OnlyContain(m => !string.IsNullOrWhiteSpace(m.Description));
         modules.Select(m => m.Id).Should().OnlyHaveUniqueItems();
     }
 

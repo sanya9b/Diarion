@@ -7,6 +7,11 @@
 [`privacy-policy.md`](privacy-policy.md) — жодного твердження, яке застосунок не виконує. Що
 лишається власнику — в кінці, розділ 6.
 
+> **2026-11-13, рішення власника:** сервер згодом буде, тому формулювання «без сервера», «записи не покидають
+> телефон» і «без хмари» зняті зі скріншотів, промо-тексту, опису, сайту й README. Продаємо щоденник, який
+> «лишається у вас»: зашифрована база, замок, копія з паролем, експорт. Тексти нижче — те, що стоїть у
+> App Store Connect для 1.3; політика приватності описує поточну поведінку й лишається як є.
+
 ---
 
 ## 1. Одна робота, яку продаємо
@@ -51,16 +56,16 @@ Diarion
 нотатки,настрій,звички,планер,трекер,журнал,приватно,шифрування,рефлексія,фінанси,сон,читання,мрії
 ```
 
-**Промо-текст** (151) — правиться без нового рев'ю, тож саме тут живе найсильніше речення.
+**Промо-текст** (150) — правиться без нового рев'ю, тож саме тут живе найсильніше речення.
 ```
-Немає акаунта, немає сервера, немає аналітики. Ви пишете — воно лишається на вашому телефоні. Резервна копія шифрується паролем, який знаєте тільки ви.
+Щоденник, настрій, звички, планер і фінанси в одному застосунку. База зашифрована на вашому телефоні, резервна копія — паролем, який знаєте тільки ви.
 ```
 
 **Опис**
 ```
 Щоденник, який лишається у вас.
 
-Diarion — застосунок для щоденних записів. Без акаунта, без синхронізації, без аналітики: усе, що ви напишете, лежить у базі на самому телефоні.
+Diarion — застосунок для щоденних записів. Без реєстрації, без аналітики, без реклами: усе, що ви напишете, лежить у зашифрованій базі на вашому телефоні.
 
 ЩО ВСЕРЕДИНІ
 
@@ -75,14 +80,14 @@ Diarion — застосунок для щоденних записів. Без 
 
 ПРИВАТНІСТЬ - СИЛЬНА СТОРОНА
 
-• Немає сервера — записи нікуди не надсилаються
+• База зашифрована на диску, ключ створюється на вашому пристрої
 • Замок на вході — Face ID або відбиток
 • Резервна копія шифрується паролем, який знаєте тільки ви
 • Експорт у JSON, CSV і Markdown — ваші записи ваші, і виносяться звідси в один дотик
 
-З МЕРЕЖІ НЕ ЙДЕ НІЧОГО
+ЩО ЙДЕ В МЕРЕЖУ
 
-Застосунок сам не робить жодного мережевого запиту: ні телеметрії, ні перевірки оновлень, ні реклами. Єдине звернення до мережі — оформлення й перевірка підписки, і його виконує сама iOS через App Store.
+Записи застосунок нікуди не надсилає; телеметрії, реклами й перевірки оновлень у ньому немає. Єдине звернення до мережі — оформлення й перевірка підписки, і його виконує сама iOS через App Store.
 
 ПІДПИСКА
 
@@ -114,16 +119,16 @@ Private diary and trackers
 notes,mood,habits,planner,tracker,journal,private,offline,encrypted,reflection,finance,sleep,books
 ```
 
-**Promotional text** (129)
+**Promotional text** (134)
 ```
-No account, no server, no analytics. You write it, it stays on your phone. Backups are encrypted with a passphrase only you know.
+Diary, mood, habits, planner and finances in one app. The database is encrypted on your phone; backups use a passphrase only you know.
 ```
 
 **Description**
 ```
 A diary that stays yours.
 
-Diarion is an app for daily entries. No account, no sync, no analytics: everything you write sits in a database on the phone itself.
+Diarion is an app for daily entries. No sign-up, no analytics, no ads: everything you write sits in an encrypted database on your phone.
 
 WHAT IS INSIDE
 
@@ -138,14 +143,14 @@ WHAT IS INSIDE
 
 PRIVACY IS THE STRONG SIDE
 
-• No server — entries are not sent anywhere
+• The database is encrypted on disk; the key is generated on your device
 • A lock on the way in — Face ID or fingerprint
 • Backups are encrypted with a passphrase only you know
 • Export to JSON, CSV and Markdown — your entries are yours, and they leave in one tap
 
-NOTHING GOES OVER THE NETWORK
+WHAT GOES OVER THE NETWORK
 
-The app makes no network requests of its own: no telemetry, no update checks, no ads. The one connection is buying and checking the subscription, and iOS makes it through the App Store.
+The app does not send your entries anywhere; it has no telemetry, no ads and no update checks. The one connection is buying and checking the subscription, and iOS makes it through the App Store.
 
 SUBSCRIPTION
 
@@ -162,21 +167,24 @@ Three themes, Ukrainian and English, and a daily reminder at a time that suits y
 
 ---
 
-## 3. Скриншоти — 6.9" iPhone (закриває 1.2)
+## 3. Скриншоти — 1.3 (uk та en-US, 6.5" 1284×2778 і 6.7"/6.9" 1320×2868)
 
-Шість кадрів, перший несе весь доказ. Підписи накладаються на кадр і потрібні обома мовами.
+Вісім кадрів, зняті на емуляторі з показовими даними Debug-сідера й «переодягнені» в iPhone скриптом
+`D:\WORK\tmp\store-shots\compose.py` (рамка, статус-бар, заголовок, коралова закладка, один чіп з фактом).
+Завантажені в App Store Connect 2026-11-13 для обох локалей.
 
-| # | Екран | Підпис UA | Caption EN |
-|---|---|---|---|
-| 1 | Щоденний запис, заповнений | Записи не покидають телефон | Your entries never leave the phone |
-| 2 | Дошка (статистика за місяць) | Місяць видно з одного екрана | A month at a glance |
-| 3 | Головна з quick-menu | Один застосунок замість п'яти | One app instead of five |
-| 4 | Планер | Задачі на день і нагадування | The day's tasks, with reminders |
-| 5 | Налаштування → замок і резервна копія | Замок і зашифрована копія | A lock, and an encrypted backup |
-| 6 | Онбординг, крок вибору модулів | Вимкніть те, чим не користуєтесь | Switch off what you do not use |
+| # | Екран | Заголовок UA | Headline EN | Чіп |
+|---|---|---|---|---|
+| 1 | Головна: настрій, сон | Щоденник, який лишається у вас | A diary that stays yours | Настрій по годинах |
+| 2 | Їжа та звички (темна) | Весь день за хвилину | The whole day in a minute | 4 з 5 звичок сьогодні |
+| 3 | Планувальник, годинна сітка | План на день, не на все життя | A plan for the day, not for life | Година за годиною |
+| 4 | Дошка статистики | Місяць на одному екрані | A month on one screen | Тиждень, 2 тижні, місяць |
+| 5 | Фінанси | Куди йдуть гроші | Where the money goes | Будь-яка валюта |
+| 6 | Трекер читання (рожева) | Полиця прочитаного | Your reading shelf | Рожева тема |
+| 7 | Список бажань | Мрії, які не губляться | Dreams that do not get lost | 2 з 6 збулися |
+| 8 | Трекер звички | Ціль по одному дню за раз | One day at a time | 33 дні відмічено |
 
-Кадр 1 — не найкрасивіший екран, а найпереконливіший: у пошуку видно перші **три**, і людина
-приймає рішення на першому. iPad не потрібен — застосунок оголошений iPhone-only (`UIDeviceFamily`).
+Перший кадр несе головне повідомлення. iPad не потрібен — застосунок оголошений iPhone-only (`UIDeviceFamily`).
 
 ---
 

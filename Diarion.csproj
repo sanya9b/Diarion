@@ -44,8 +44,8 @@
 		<ApplicationId>org.diarion.app</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
-		<ApplicationVersion>28</ApplicationVersion>
+		<ApplicationDisplayVersion>1.3</ApplicationDisplayVersion>
+		<ApplicationVersion>29</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -113,8 +113,19 @@
 	  entitlements from native/ios-widgets/DiarionWidgets.entitlements, which build-appex.sh writes.
 	  Without the flag nothing here applies and the app signs with the plain Entitlements.plist.
 	-->
+	<!--
+	  Spec 21: -p:DiarionCloud=true adds the iCloud container (recovery copy, "iCloud Drive" backup
+	  folder) and implies the widgets. Same rule as above: the profile must carry iCloud, so it is a
+	  flag, not the default, and the runtime treats a missing container as "not available".
+	-->
+	<PropertyGroup Condition="'$(DiarionCloud)' == 'true'">
+		<DiarionWidgets>true</DiarionWidgets>
+	</PropertyGroup>
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(DiarionWidgets)' == 'true'">
 		<CodesignEntitlements>Platforms\iOS\Entitlements.Widgets.plist</CodesignEntitlements>
+	</PropertyGroup>
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(DiarionCloud)' == 'true'">
+		<CodesignEntitlements>Platforms\iOS\Entitlements.Cloud.plist</CodesignEntitlements>
 	</PropertyGroup>
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(DiarionWidgets)' == 'true'">
 		<AdditionalAppExtensions Include="$(MSBuildProjectDirectory)/native/ios-widgets">

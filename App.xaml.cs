@@ -68,6 +68,8 @@ public partial class App : Application
         StartReminderCoordinator(services);
         // Widgets (spec 20): subscribes to the saves and publishes the first snapshot of this launch.
         services?.GetService<WidgetSnapshotCoordinator>()?.Start();
+        // iCloud recovery (spec 21): follows the saves so the background copy knows there is something new.
+        services?.GetService<Diarion.Services.Recovery.CloudRecoveryService>()?.Start();
         var deepLinks = services?.GetService<IDeepLinkService>();
 
         var window = new Window();
@@ -101,13 +103,18 @@ public partial class App : Application
         window.Created += async (s, e) =>
         {
             RefreshEntitlements(entitlements);
+            // Before onboarding: a fresh install whose iCloud holds a copy is offered it first (spec 21, D4).
+            await OfferCloudRecoveryAsync(window);
             await CheckOnboardingAsync(window);
             await CheckSecurityAsync(window, coldStart: true);
+            await AskCloudRecoveryConsentAsync(window);
             // A widget tap that started the app: by now the Shell is up and, without a lock, ready.
             deepLinks?.FlushPending();
             RetiredModelFiles.Sweep();
             ClearRetiredAppActions();
             StartScheduledBackup(services);
+            StartCloudRecoveryCopy(services);
+            ReportRolledBackMigration(services);
         };
         window.Resumed += async (s, e) =>
         {
@@ -141,6 +148,29 @@ public partial class App : Application
             }
         });
 #endif
+    }
+
+    /// <summary>
+    /// A schema migration that threw was rolled back and the app opened on the previous schema
+    /// (DatabaseContext.MigrationFailure). Nothing on screen says so; the crash report in Settings
+    /// does, which is how the failure gets back to the developer instead of staying a mystery.
+    /// </summary>
+    private static void ReportRolledBackMigration(IServiceProvider? services)
+    {
+        if (services is null) return;
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                var failure = services.GetService<Diarion.Services.Database.IDatabaseContext>()?.MigrationFailure;
+                if (failure is not null)
+                    services.GetService<ICrashReporter>()?.Record("Schema migration (rolled back)", failure);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Migration status check failed: {ex}");
+            }
+        });
     }
 
     /// <summary>
@@ -204,6 +234,9 @@ public partial class App : Application
     private static async Task CloseOnboardingAsync(INavigation navigation)
     {
         await navigation.PopModalAsync();
+        // The iCloud question comes right after onboarding and before the paywall: it is about the
+        // diary the person has just decided to keep, and an alert and a sheet must not stack.
+        await AskCloudRecoveryConsentAsync(IPlatformApplication.Current?.Services);
         WeakReferenceMessenger.Default.Send(new PaywallRequestedMessage(PaywallReason.AfterOnboarding));
         IPlatformApplication.Current?.Services.GetService<IDeepLinkService>()?.FlushPending();
     }
@@ -237,6 +270,121 @@ public partial class App : Application
         // The home screen is about to be looked at: a snapshot still waiting on its debounce goes out now.
         var coordinator = IPlatformApplication.Current?.Services.GetService<WidgetSnapshotCoordinator>();
         if (coordinator is not null) _ = coordinator.FlushAsync();
+        // Likewise the iCloud copy, if something was written and an hour has passed (spec 21, D3).
+        var recovery = IPlatformApplication.Current?.Services.GetService<Diarion.Services.Recovery.ICloudRecoveryService>();
+        if (recovery is not null) _ = Task.Run(() => recovery.FlushOnBackgroundAsync());
+    }
+
+    // --- iCloud recovery (spec 21) ----------------------------------------------------------------
+
+    /// <summary>
+    /// A fresh install (onboarding not yet completed) looks in the user's iCloud for a copy of the
+    /// diary and, finding one, asks before onboarding whether to restore it. Nothing is restored
+    /// without the tap, and a phone with no copy sees nothing of this: the search waits a few seconds
+    /// for iCloud's index at most.
+    /// </summary>
+    private async Task OfferCloudRecoveryAsync(Window window)
+    {
+        if (Preferences.Get(OnboardingCompletedKey, false)) return;
+
+        var services = window.Handler?.MauiContext?.Services;
+        var navigation = window.Page?.Navigation;
+        var recovery = services?.GetService<Diarion.Services.Recovery.ICloudRecoveryService>();
+        if (services == null || navigation == null || recovery is null || !recovery.IsSupported) return;
+
+        Diarion.Services.Recovery.RecoveryCopyInfo? copy;
+        try
+        {
+            copy = await Task.Run(async () =>
+                await recovery.IsAvailableAsync()
+                    ? await recovery.FindCopyAsync(TimeSpan.FromSeconds(6))
+                    : null);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"iCloud recovery search failed: {ex}");
+            return;
+        }
+        if (copy is null) return;
+
+        var page = services.GetService<Diarion.Views.RecoveryPage>();
+        if (page == null) return;
+
+        var finished = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        page.ViewModel.Prepare(copy);
+        page.ViewModel.Finished = restored => finished.TrySetResult(restored);
+
+        await navigation.PushModalAsync(page);
+        var restored = await finished.Task;
+        await navigation.PopModalAsync();
+
+        if (restored)
+        {
+            // The diary is back; onboarding was done on the phone it came from.
+            Preferences.Set(OnboardingCompletedKey, true);
+        }
+    }
+
+    /// <summary>
+    /// The one-time question for a phone that has not answered it (spec 21, D2): asked on the first
+    /// launch of a build that carries the feature, once onboarding is behind and no lock is up. "Not
+    /// now" is remembered; the switch in Settings → Data remains for later.
+    /// </summary>
+    private async Task AskCloudRecoveryConsentAsync(Window window)
+    {
+        if (_isLockShown || !Preferences.Get(OnboardingCompletedKey, false)) return;
+        await AskCloudRecoveryConsentAsync(window.Handler?.MauiContext?.Services);
+    }
+
+    private static async Task AskCloudRecoveryConsentAsync(IServiceProvider? services)
+    {
+        var recovery = services?.GetService<Diarion.Services.Recovery.ICloudRecoveryService>();
+        var dialogs = services?.GetService<IDialogService>();
+        if (recovery is null || dialogs is null || !recovery.NeedsDecision) return;
+
+        try
+        {
+            if (!await Task.Run(() => recovery.IsAvailableAsync())) return;
+
+            var yes = await dialogs.ShowConfirmationAsync(
+                Diarion.Resources.Localization.AppResources.CloudRecoveryConsentTitle,
+                Diarion.Resources.Localization.AppResources.CloudRecoveryConsentText,
+                Diarion.Resources.Localization.AppResources.CloudRecoveryConsentAccept,
+                Diarion.Resources.Localization.AppResources.CloudRecoveryConsentLater);
+
+            if (yes)
+            {
+                _ = Task.Run(() => recovery.EnableAsync());
+            }
+            else
+            {
+                recovery.Decline();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"iCloud recovery consent failed: {ex}");
+        }
+    }
+
+    /// <summary>The daily copy, on the same launch hook and after the same pause as the autocopies.</summary>
+    private static void StartCloudRecoveryCopy(IServiceProvider? services)
+    {
+        var recovery = services?.GetService<Diarion.Services.Recovery.ICloudRecoveryService>();
+        if (recovery is null || !recovery.IsSupported) return;
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(20));
+            try
+            {
+                await recovery.RunIfDueAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"iCloud recovery copy failed: {ex}");
+            }
+        });
     }
 
     /// <summary>A widget tap that arrived while the lock was up is played once the lock is gone.</summary>

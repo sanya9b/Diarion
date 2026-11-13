@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
 using Diarion.Helpers;
+using Diarion.Messages;
 using Diarion.Services.Database;
 
 namespace Diarion.Services;
@@ -97,17 +99,10 @@ public class BackupService : IBackupService
             var iterations = BackupKeyDeriver.CurrentIterations;
             var backupKey = BackupKeyDeriver.DeriveKey(passphrase, salt, iterations);
 
-            // Close the DB so the on-disk file is fully checkpointed before it is read, then reopen.
-            _dbContext.Close();
-            try
-            {
-                EncryptedLiteDatabaseFactory.ReencryptTo(
-                    dbPath, _keyProvider.GetOrCreateKey(), reencryptedPath, backupKey);
-            }
-            finally
-            {
-                _dbContext.Reopen();
-            }
+            // Through the live connection: the database is never closed for a copy. The previous
+            // version closed it for the seconds the re-encryption took, and any screen that loaded in
+            // that window threw out of a closed database (and, on iOS, took the app down with it).
+            _dbContext.ExportTo(reencryptedPath, backupKey);
 
             using (var payload = File.OpenRead(reencryptedPath))
             using (var output = File.Create(destinationPath))
@@ -161,20 +156,27 @@ public class BackupService : IBackupService
                 return prepared;
             }
 
+            BackupOutcome swapped;
             try
             {
-                if (!EncryptedLiteDatabaseFactory.IsValidEncryptedDatabase(
-                        candidatePath!,
-                        _keyProvider.GetOrCreateKey(),
-                        DatabaseConstants.EntriesCollection,
-                        MigrationRunner.CurrentVersion))
+                // Off the UI thread like the preparation: opening the candidate and swapping the files
+                // is quick, but the reopen behind the swap runs the migrations and the seeder.
+                swapped = await Task.Run(() =>
                 {
-                    // The candidate opened during preparation, so a failure here is the version gate
-                    // rather than the key — anything else would already have been reported above.
-                    return BackupOutcome.NewerSchema;
-                }
+                    if (!EncryptedLiteDatabaseFactory.IsValidEncryptedDatabase(
+                            candidatePath!,
+                            _keyProvider.GetOrCreateKey(),
+                            DatabaseConstants.EntriesCollection,
+                            MigrationRunner.CurrentVersion))
+                    {
+                        // The candidate opened during preparation, so a failure here is the version gate
+                        // rather than the key — anything else would already have been reported above.
+                        return BackupOutcome.NewerSchema;
+                    }
 
-                return SwapIn(candidatePath!, dbPath);
+                    _dbContext.ReplaceDatabaseFile(candidatePath!);
+                    return BackupOutcome.Success;
+                });
             }
             finally
             {
@@ -183,6 +185,12 @@ public class BackupService : IBackupService
                     SafeDelete(candidatePath);
                 }
             }
+
+            if (swapped == BackupOutcome.Success)
+            {
+                WeakReferenceMessenger.Default.Send(new DatabaseRestoredMessage());
+            }
+            return swapped;
         }
         catch (Exception ex)
         {
@@ -217,12 +225,12 @@ public class BackupService : IBackupService
         if (header == null)
         {
             // No envelope: either a pre-portable backup from this very device, or not ours at all.
-            return EncryptedLiteDatabaseFactory.IsValidEncryptedDatabase(
+            return await Task.Run(() => EncryptedLiteDatabaseFactory.IsValidEncryptedDatabase(
                 pickedPath, deviceKey, DatabaseConstants.EntriesCollection)
                 ? (pickedPath, BackupOutcome.Success)
                 : (null, LooksLikeLegacyBackup(pickedPath)
                     ? BackupOutcome.LegacyBackupFromAnotherDevice
-                    : BackupOutcome.NotADiarionBackup);
+                    : BackupOutcome.NotADiarionBackup));
         }
 
         var passphrase = await passphraseProvider();
@@ -231,6 +239,14 @@ public class BackupService : IBackupService
             return (null, BackupOutcome.Cancelled);
         }
 
+        // Everything from here is CPU: 600k rounds of PBKDF2, then the whole diary decrypted and
+        // encrypted again. On the UI thread that froze the screen for seconds on a large diary.
+        return await Task.Run(() => PrepareFromEnvelope(pickedPath, workingDirectory, header, passphrase, deviceKey));
+    }
+
+    private static (string? Path, BackupOutcome Outcome) PrepareFromEnvelope(
+        string pickedPath, string workingDirectory, PortableBackupFile.Header header, string passphrase, string deviceKey)
+    {
         var backupKey = BackupKeyDeriver.DeriveKey(passphrase, header.Salt, header.Iterations);
 
         var payloadPath = Path.Combine(workingDirectory, $"payload_{Guid.NewGuid():N}.tmp");
@@ -265,40 +281,6 @@ public class BackupService : IBackupService
         {
             SafeDelete(payloadPath);
         }
-    }
-
-    private BackupOutcome SwapIn(string candidatePath, string dbPath)
-    {
-        var rollbackPath = dbPath + ".importbak";
-        SafeDelete(rollbackPath);
-        _dbContext.Close();
-        try
-        {
-            if (File.Exists(dbPath))
-            {
-                File.Replace(candidatePath, dbPath, rollbackPath);
-            }
-            else
-            {
-                File.Move(candidatePath, dbPath);
-            }
-        }
-        catch
-        {
-            // Restore the original if the swap left the live DB missing.
-            if (!File.Exists(dbPath) && File.Exists(rollbackPath))
-            {
-                File.Copy(rollbackPath, dbPath, overwrite: true);
-            }
-            throw;
-        }
-        finally
-        {
-            _dbContext.Reopen();
-        }
-
-        SafeDelete(rollbackPath);
-        return BackupOutcome.Success;
     }
 
     /// <summary>

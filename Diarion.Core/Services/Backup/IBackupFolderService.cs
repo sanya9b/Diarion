@@ -15,7 +15,12 @@ public sealed record BackupFolderPick(string Token, string DisplayName)
     /// </summary>
     public const string DeviceToken = "device";
 
+    /// <summary>The app's own folder in the platform's cloud drive (spec 21, D1): iCloud Drive → Diarion → Backups on iOS.</summary>
+    public const string CloudToken = "cloud";
+
     public bool IsDevice => Token == DeviceToken;
+
+    public bool IsCloud => Token == CloudToken;
 }
 
 /// <summary>
@@ -41,6 +46,12 @@ public interface IBackupFolderService
     /// its token like any picked one.
     /// </summary>
     BackupFolderPick? DeviceFolder { get; }
+
+    /// <summary>
+    /// The app's folder in the platform's cloud drive, reachable without a picker; null where there is
+    /// none or the user is not signed in. Unlike the device folder it outlives the app.
+    /// </summary>
+    BackupFolderPick? CloudFolder { get; }
 
     /// <summary>Opens the platform's folder picker. Null when the user backed out.</summary>
     Task<BackupFolderPick?> PickFolderAsync();

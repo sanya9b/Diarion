@@ -16,7 +16,7 @@ public partial class HabitTrackerPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadAsync();
+        await Diarion.Services.PageLoadGuard.RunAsync(this, () => _viewModel.LoadAsync());
     }
 
     private async void OnCloseTapped(object? sender, TappedEventArgs e)
