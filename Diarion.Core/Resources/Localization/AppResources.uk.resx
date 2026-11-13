@@ -2641,4 +2641,19 @@
   <data name="AutoBackupCloudFolderIos" xml:space="preserve">
     <value>iCloud Drive → Diarion → Backups</value>
   </data>
+  <data name="ShareAppTitle" xml:space="preserve">
+    <value>Поділитись Diarion</value>
+  </data>
+  <data name="ShareAppDescription" xml:space="preserve">
+    <value>Знаєте когось, хто тримає свій день у п'яти застосунках? Надішліть посилання.</value>
+  </data>
+  <data name="ShareAppButton" xml:space="preserve">
+    <value>Поділитись посиланням</value>
+  </data>
+  <data name="ShareAppMessage" xml:space="preserve">
+    <value>Diarion — один щоденник для всього: настрій, звички, планер, нотатки й фінанси.</value>
+  </data>
+  <data name="StatsYearInPixelsShare" xml:space="preserve">
+    <value>Поділитись</value>
+  </data>
 </root>

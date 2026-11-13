@@ -3144,5 +3144,25 @@ public static string ClearAllDataSuccessMsg {
         public static string AutoBackupCloudFolderIos {
             get { return ResourceManager.GetString("AutoBackupCloudFolderIos", resourceCulture) ?? string.Empty; }
         }
+
+        public static string ShareAppTitle {
+            get { return ResourceManager.GetString("ShareAppTitle", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ShareAppDescription {
+            get { return ResourceManager.GetString("ShareAppDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ShareAppButton {
+            get { return ResourceManager.GetString("ShareAppButton", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string ShareAppMessage {
+            get { return ResourceManager.GetString("ShareAppMessage", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string StatsYearInPixelsShare {
+            get { return ResourceManager.GetString("StatsYearInPixelsShare", resourceCulture) ?? string.Empty; }
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace Diarion.Tests;
 
 public class ProfileViewModelTests
 {
-    private static ProfileViewModel Create(Mock<IProfileService> profile, Mock<INotificationService> notif, Mock<IAppLockService>? appLock = null)
+    private static ProfileViewModel Create(Mock<IProfileService> profile, Mock<INotificationService> notif, Mock<IAppLockService>? appLock = null, Mock<IShareService>? share = null)
     {
         return new ProfileViewModel(
             profile.Object,
@@ -24,7 +24,7 @@ public class ProfileViewModelTests
             new Mock<IExportService>().Object,
             new Mock<INavigationService>().Object,
             new Mock<Diarion.Diagnostics.ICrashReporter>().Object,
-            new Mock<IShareService>().Object,
+            (share ?? new Mock<IShareService>()).Object,
             new TourService(),
             new TourViewModel(profile.Object, new TourService()));
     }
@@ -172,5 +172,19 @@ public class ProfileViewModelTests
         vm.SelectedWidgetPrivacy = vm.WidgetPrivacyOptions.Single(o => o.Level == Diarion.Models.Widgets.WidgetPrivacyLevel.ButtonOnly);
         vm.ShowsWidgetTextWarning.Should().BeFalse();
         vm.ShowsWidgetLockedHint.Should().BeFalse("a chosen level is not the lock's default");
+    }
+
+    [Fact]
+    public async Task ShareApp_opens_the_system_sheet_with_the_site_link()
+    {
+        var share = new Mock<IShareService>();
+        var vm = Create(new Mock<IProfileService>(), new Mock<INotificationService>(), share: share);
+
+        await vm.ShareAppCommand.ExecuteAsync(null);
+
+        share.Verify(s => s.ShareLinkAsync(
+            Diarion.Resources.Localization.AppResources.ShareAppTitle,
+            Diarion.Resources.Localization.AppResources.ShareAppMessage,
+            "https://diarion.org"), Times.Once);
     }
 }

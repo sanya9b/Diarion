@@ -108,6 +108,13 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IHealthDataService, HealthDataService>();
         services.AddSingleton<IFileSystemService, MauiFileSystemService>();
         services.AddSingleton<IShareService, MauiShareService>();
+        // Rating request (growth, 2026-11-13): the policy is shared, the sheet is iOS-only for now.
+        services.AddSingleton<Diarion.Services.Review.IReviewPromptService, Diarion.Services.Review.ReviewPromptService>();
+#if IOS
+        services.AddSingleton<Diarion.Services.Review.IReviewPrompter, IosReviewPrompter>();
+#else
+        services.AddSingleton<Diarion.Services.Review.IReviewPrompter, NullReviewPrompter>();
+#endif
         services.AddSingleton<IFilePickerService, MauiFilePickerService>();
         services.AddSingleton<IDispatcherService, MauiDispatcherService>();
         // How much of the window the keyboard covers, for a formatting bar laid out under the note.

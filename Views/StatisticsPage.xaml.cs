@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Diarion.Models;
@@ -9,11 +11,13 @@ namespace Diarion.Views;
 public partial class StatisticsPage : ContentPage
 {
     private readonly StatisticsViewModel _viewModel;
+    private readonly Diarion.Services.IShareService _shareService;
 
-    public StatisticsPage(StatisticsViewModel viewModel)
+    public StatisticsPage(StatisticsViewModel viewModel, Diarion.Services.IShareService shareService)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _shareService = shareService;
         BindingContext = viewModel;
 
         TourOverlay.AnchorResolver = AnchorFor;
@@ -36,6 +40,29 @@ public partial class StatisticsPage : ContentPage
             // is something to put in them.
             await _viewModel.Tour.StartAsync(TourId.Statistics);
         });
+    }
+
+    /// <summary>
+    /// Renders the Year in Pixels area to a PNG in the cache folder and opens the share sheet. A view
+    /// capture rather than a redraw: what goes out is exactly what is on screen, in the current theme.
+    /// </summary>
+    private async void OnShareYearInPixels(object? sender, EventArgs e)
+    {
+        try
+        {
+            var shot = await YearInPixelsShareArea.CaptureAsync();
+            if (shot is null) return;
+            var path = Path.Combine(Microsoft.Maui.Storage.FileSystem.CacheDirectory, "diarion-year-in-pixels.png");
+            using (var file = File.Create(path))
+            {
+                await shot.CopyToAsync(file, Microsoft.Maui.Media.ScreenshotFormat.Png);
+            }
+            await _shareService.ShareFileAsync(Diarion.Resources.Localization.AppResources.StatsYearInPixels, path);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Year in Pixels share failed: {ex.Message}");
+        }
     }
 
     // --- Statistics guide (onboarding stage 3) ----------------------------------------------------

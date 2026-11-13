@@ -2641,4 +2641,19 @@
   <data name="AutoBackupCloudFolderIos" xml:space="preserve">
     <value>iCloud Drive → Diarion → Backups</value>
   </data>
+  <data name="ShareAppTitle" xml:space="preserve">
+    <value>Share Diarion</value>
+  </data>
+  <data name="ShareAppDescription" xml:space="preserve">
+    <value>Know someone who keeps their day in five apps? Send them the link.</value>
+  </data>
+  <data name="ShareAppButton" xml:space="preserve">
+    <value>Share link</value>
+  </data>
+  <data name="ShareAppMessage" xml:space="preserve">
+    <value>Diarion — one diary for everything: mood, habits, planner, notes and finances.</value>
+  </data>
+  <data name="StatsYearInPixelsShare" xml:space="preserve">
+    <value>Share</value>
+  </data>
 </root>

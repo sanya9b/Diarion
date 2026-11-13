@@ -19,6 +19,7 @@ namespace Diarion.ViewModels;
 public partial class MainViewModel : BaseViewModel
 {
     private readonly ICrashReporter? _crashReporter;
+    private readonly Diarion.Services.Review.IReviewPromptService? _reviewPrompt;
 
     private readonly IDiaryService _diaryService;
     private readonly IDiaryHabitSyncService _diaryHabitSyncService;
@@ -118,9 +119,11 @@ public partial class MainViewModel : BaseViewModel
         TourViewModel tour,
         IMoodIconSetService moodIconSets,
         QuickNoteViewModel quickNote,
-        ICrashReporter? crashReporter = null)
+        ICrashReporter? crashReporter = null,
+        Diarion.Services.Review.IReviewPromptService? reviewPrompt = null)
     {
         _crashReporter = crashReporter;
+        _reviewPrompt = reviewPrompt;
         using var trace = StartupTrace.Measure("MainViewModel..ctor");
         _diaryService = diaryService;
         _diaryHabitSyncService = diaryHabitSyncService;
@@ -347,6 +350,7 @@ public partial class MainViewModel : BaseViewModel
             entry.SyncToModel();
             if (!await WriteGate.TryAsync(() => _diaryService.SaveEntryAsync(entry.Model))) return;
             System.Diagnostics.Debug.WriteLine($"Auto-saved entry for {entry.Date:dd.MM.yyyy}");
+            await AfterEntrySavedAsync();
         });
     }
 
@@ -461,6 +465,7 @@ public partial class MainViewModel : BaseViewModel
             CurrentEntry.SyncToModel();
             if (!await WriteGate.TryAsync(() => _diaryService.SaveEntryAsync(CurrentEntry.Model))) return;
             await UpdateStreakAsync();
+            await AfterEntrySavedAsync();
         }
         catch (Exception ex)
         {
@@ -504,6 +509,12 @@ public partial class MainViewModel : BaseViewModel
             IsBusy = false;
         }
     }
+
+    /// <summary>
+    /// A saved entry is the moment the rating policy counts from: not launch, not a tap on a tab, but
+    /// the thing the app is for. The service decides whether this is the seventh such day.
+    /// </summary>
+    private Task AfterEntrySavedAsync() => _reviewPrompt?.MaybeRequestAsync() ?? Task.CompletedTask;
 
     private async Task UpdateStreakAsync()
     {

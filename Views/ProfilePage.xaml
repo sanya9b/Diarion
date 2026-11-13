@@ -307,6 +307,22 @@
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
+
+                <!-- Share the app (2026-11-13). One button, the system sheet, the site link: there is no
+                     referral programme behind it, just the easiest way to pass Diarion on. -->
+                <Border StrokeShape="RoundRectangle 20" StrokeThickness="1"
+                        Stroke="{DynamicResource Theme_Dust_Ocean}"
+                        BackgroundColor="{DynamicResource Theme_Snow_Black}"
+                        Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.2" />
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{x:Static localization:AppResources.ShareAppTitle}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Label Text="{x:Static localization:AppResources.ShareAppDescription}" FontSize="13" TextColor="{DynamicResource Theme_Ocean_Dust}" Margin="0,0,0,8" />
+                        <Button Style="{StaticResource SecondaryButton}" Text="{x:Static localization:AppResources.ShareAppButton}" Command="{Binding ShareAppCommand}" />
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
 
             <!-- ============ SCREEN TAB ============ -->

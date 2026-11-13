@@ -475,10 +475,20 @@
                         <Shadow Brush="{DynamicResource Theme_Shadow}" Offset="0,6" Radius="12" Opacity="0.15" />
                     </Border.Shadow>
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="{x:Static localization:AppResources.StatsYearInPixels}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
-                        <controls:YearInPixelsView HeightRequest="300"
-                                                   Items="{Binding MoodStats.MoodCalendar}"
-                                                   MutedColor="{DynamicResource Theme_Ocean_Dust}" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Label Grid.Column="0" VerticalOptions="Center" Text="{x:Static localization:AppResources.StatsYearInPixels}" FontAttributes="Bold" FontSize="12" CharacterSpacing="1.5" TextColor="{DynamicResource Theme_Coral}" />
+                            <!-- The year as a picture is the one thing people post from a mood diary; the
+                                 button captures the area below (grid plus the small site line) and hands it
+                                 to the system share sheet. -->
+                            <Button Grid.Column="1" Style="{StaticResource SecondaryButton}" HeightRequest="32" MinimumHeightRequest="32" Padding="12,0" FontSize="12"
+                                    Text="{x:Static localization:AppResources.StatsYearInPixelsShare}" Clicked="OnShareYearInPixels" />
+                        </Grid>
+                        <VerticalStackLayout x:Name="YearInPixelsShareArea" Spacing="6" Padding="6" BackgroundColor="{DynamicResource Theme_Snow_Black}">
+                            <controls:YearInPixelsView HeightRequest="300"
+                                                       Items="{Binding MoodStats.MoodCalendar}"
+                                                       MutedColor="{DynamicResource Theme_Ocean_Dust}" />
+                            <Label Text="diarion.org" FontSize="11" HorizontalOptions="End" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
 
