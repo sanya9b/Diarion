@@ -14,4 +14,14 @@ public class MauiShareService : IShareService
             File = new ShareFile(filePath)
         });
     }
+
+    public Task ShareLinkAsync(string title, string text, string url)
+    {
+        return Share.Default.RequestAsync(new ShareTextRequest
+        {
+            Title = title,
+            Text = text,
+            Uri = url
+        });
+    }
 }

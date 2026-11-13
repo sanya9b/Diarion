@@ -58,12 +58,12 @@ Diarion
 
 **Промо-текст** (150) — правиться без нового рев'ю, тож саме тут живе найсильніше речення.
 ```
-Щоденник, настрій, звички, планер і фінанси в одному застосунку. База зашифрована на вашому телефоні, резервна копія — паролем, який знаєте тільки ви.
+Один щоденник для всього: настрій по годинах, звички, планер, нотатки й фінанси. Дошка показує, що змінилось за період. Записуй. Накопичуй. Аналізуй.
 ```
 
 **Опис**
 ```
-Щоденник, який лишається у вас.
+Один щоденник для всього.
 
 Diarion — застосунок для щоденних записів. Без реєстрації, без аналітики, без реклами: усе, що ви напишете, лежить у зашифрованій базі на вашому телефоні.
 
@@ -121,12 +121,12 @@ notes,mood,habits,planner,tracker,journal,private,offline,encrypted,reflection,f
 
 **Promotional text** (134)
 ```
-Diary, mood, habits, planner and finances in one app. The database is encrypted on your phone; backups use a passphrase only you know.
+One diary for everything: mood by the hour, habits, planner, notes and finances. The dashboard shows what changed over a period. Record. Accumulate. Analyse.
 ```
 
 **Description**
 ```
-A diary that stays yours.
+One diary for everything.
 
 Diarion is an app for daily entries. No sign-up, no analytics, no ads: everything you write sits in an encrypted database on your phone.
 
@@ -169,20 +169,21 @@ Three themes, Ukrainian and English, and a daily reminder at a time that suits y
 
 ## 3. Скриншоти — 1.3 (uk та en-US, 6.5" 1284×2778 і 6.7"/6.9" 1320×2868)
 
-Вісім кадрів, зняті на емуляторі з показовими даними Debug-сідера й «переодягнені» в iPhone скриптом
+Дев'ять кадрів (з 2026-11-13; до повторної подачі було вісім), зняті на емуляторі з показовими даними Debug-сідера й «переодягнені» в iPhone скриптом
 `D:\WORK\tmp\store-shots\compose.py` (рамка, статус-бар, заголовок, коралова закладка, один чіп з фактом).
 Завантажені в App Store Connect 2026-11-13 для обох локалей.
 
 | # | Екран | Заголовок UA | Headline EN | Чіп |
 |---|---|---|---|---|
-| 1 | Головна: настрій, сон | Щоденник, який лишається у вас | A diary that stays yours | Настрій по годинах |
-| 2 | Їжа та звички (темна) | Весь день за хвилину | The whole day in a minute | 4 з 5 звичок сьогодні |
-| 3 | Планувальник, годинна сітка | План на день, не на все життя | A plan for the day, not for life | Година за годиною |
-| 4 | Дошка статистики | Місяць на одному екрані | A month on one screen | Тиждень, 2 тижні, місяць |
-| 5 | Фінанси | Куди йдуть гроші | Where the money goes | Будь-яка валюта |
-| 6 | Трекер читання (рожева) | Полиця прочитаного | Your reading shelf | Рожева тема |
-| 7 | Список бажань | Мрії, які не губляться | Dreams that do not get lost | 2 з 6 збулися |
-| 8 | Трекер звички | Ціль по одному дню за раз | One day at a time | 33 дні відмічено |
+| 1 | Головна: настрій, сон | Один щоденник для всього | One diary for everything | Настрій по годинах |
+| 2 | Статистика → Настрій → Рік, картка «Рік у пікселях» (демо-щоденник на 273 дні) | Рік у пікселях | A year in pixels | Записуй · Накопичуй · Аналізуй |
+| 3 | Їжа та звички (темна) | Весь день за хвилину | The whole day in a minute | 4 з 5 звичок сьогодні |
+| 4 | Планувальник, годинна сітка | План на день, не на все життя | A plan for the day, not for life | Година за годиною |
+| 5 | Дошка статистики | Місяць на одному екрані | A month on one screen | Тиждень, 2 тижні, місяць |
+| 6 | Фінанси | Куди йдуть гроші | Where the money goes | Будь-яка валюта |
+| 7 | Трекер читання (рожева) | Полиця прочитаного | Your reading shelf | Рожева тема |
+| 8 | Список бажань | Мрії, які не губляться | Dreams that do not get lost | 2 з 6 збулися |
+| 9 | Трекер звички | Ціль по одному дню за раз | One day at a time | 33 дні відмічено |
 
 Перший кадр несе головне повідомлення. iPad не потрібен — застосунок оголошений iPhone-only (`UIDeviceFamily`).
 
@@ -410,4 +411,41 @@ Diarion 1.1 (3). Що пройти, бажано на чистому встан�
 7. Загалом: усі екрани, гіди (Налаштування > Екран > "Показати гіди знову"), резервна копія і відновлення на іншому пристрої.
 
 Що помітили - скріншот і два слова, на якому екрані.
+```
+
+---
+
+## 8. Версія 1.3 — повторна подача 2026-11-13 (збірка 30)
+
+Збірку 29 власник зняв з рев'ю того ж дня (ASC: DEVELOPER_REJECTED), щоб подати 1.3 уже в новому
+позиціюванні — «один щоденник для всього», без «без сервера» і без акценту на мові
+(див. [`promotion-plan.md`](promotion-plan.md) §2) — і з трьома речами для росту: запит на оцінку
+після сьомого дня з записами, кнопка «Поділитись Diarion», Рік у пікселях як зображення. Разом із цим:
+промо-текст з трьома дієсловами (вище), перший рядок опису «Один щоденник для всього.», дев'ять
+скріншотів (§3, новий другий кадр — Рік у пікселях), привітання онбордингу без «офлайн». Відео-прев'ю,
+завантажені для збірки 29, лишились. Збірка зібрана з `cloud=false`, тому про iCloud у «Що нового» не
+йдеться.
+
+**«Що нового» у версії 1.3.**
+
+Українська:
+```
+Один щоденник для всього — і тепер ним легше ділитись:
+• Рік у пікселях можна зберегти як зображення й надіслати друзям — кнопка «Поділитись» над сіткою на Дошці
+• кнопка «Поділитись Diarion» у Налаштуваннях → Профіль
+• перед кожною міграцією бази робиться копія; якщо щось піде не так, застосунок відкриє попередню версію й запише причину у звіт про збій у Налаштуваннях
+• порожній головний екран більше не мовчить: причина потрапляє у той самий звіт
+• коротке пояснення до кожного розділу під час першого запуску
+• для англійської мови валюта за замовчуванням більше не показується знаком ¤
+```
+
+English:
+```
+One diary for everything — and now easier to share:
+• Year in Pixels can be saved as an image and sent to friends — the Share button above the grid on the Dashboard
+• a "Share Diarion" button in Settings → Profile
+• a copy is made before every database migration; if anything goes wrong, the app opens the previous version and writes the reason into the crash report in Settings
+• an empty home screen no longer stays silent: the reason lands in the same report
+• a short explanation for every section during the first launch
+• the default currency for English no longer shows as the ¤ sign
 ```

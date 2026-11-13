@@ -55,6 +55,8 @@ public class PortableBackupTests : IDisposable
             SharedPath = filePath;
             return Task.CompletedTask;
         }
+
+        public Task ShareLinkAsync(string title, string text, string url) => Task.CompletedTask;
     }
 
     private sealed class FakeFilePicker : IFilePickerService

@@ -1673,10 +1673,10 @@
     <value>Ласкаво просимо до Diarion</value>
   </data>
   <data name="OnboardingSubtitle" xml:space="preserve">
-    <value>Ваш приватний офлайн-щоденник</value>
+    <value>Один щоденник для всього</value>
   </data>
   <data name="OnboardingPrivacyText" xml:space="preserve">
-    <value>Усе лишається на вашому пристрої. Без хмари й акаунтів — нічого витікати.</value>
+    <value>Настрій, звички, планер, нотатки й фінанси — в одній базі на вашому телефоні. Дані лишаються у вас.</value>
   </data>
   <data name="OnboardingReminderLabel" xml:space="preserve">
     <value>Нагадувати вести щоденник щодня</value>
@@ -2640,5 +2640,20 @@
   </data>
   <data name="AutoBackupCloudFolderIos" xml:space="preserve">
     <value>iCloud Drive → Diarion → Backups</value>
+  </data>
+  <data name="ShareAppTitle" xml:space="preserve">
+    <value>Поділитись Diarion</value>
+  </data>
+  <data name="ShareAppDescription" xml:space="preserve">
+    <value>Знаєте когось, хто тримає свій день у п'яти застосунках? Надішліть посилання.</value>
+  </data>
+  <data name="ShareAppButton" xml:space="preserve">
+    <value>Поділитись посиланням</value>
+  </data>
+  <data name="ShareAppMessage" xml:space="preserve">
+    <value>Diarion — один щоденник для всього: настрій, звички, планер, нотатки й фінанси.</value>
+  </data>
+  <data name="StatsYearInPixelsShare" xml:space="preserve">
+    <value>Поділитись</value>
   </data>
 </root>

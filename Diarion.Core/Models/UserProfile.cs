@@ -120,6 +120,12 @@ public partial class UserProfile : ObservableObject
     /// <summary>The same marker for the settings guide. See <see cref="TourVersionSeen"/>.</summary>
     [ObservableProperty] private int _settingsTourVersionSeen;
 
+    /// <summary>
+    /// When the App Store rating sheet was last requested (date only); null until the first ask. On the
+    /// profile rather than in device preferences so the quiet period survives a restore from backup.
+    /// </summary>
+    [ObservableProperty] private DateTime? _reviewPromptedAt;
+
     // InsightPathHiddenBelowMilestone and IsInsightPathEnabled lived here until 2026-10-21, for the path to the
     // first hypothesis under the date (spec 17). The strip gave way to the streak tile; profiles saved
     // before still carry the two fields, and LiteDB ignores fields the class no longer has.

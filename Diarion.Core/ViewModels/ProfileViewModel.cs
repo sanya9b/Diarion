@@ -425,6 +425,11 @@ public partial class ProfileViewModel : BaseViewModel
         }
     }
 
+    /// <summary>The system share sheet with the site link: the only "referral" an app without accounts can have.</summary>
+    [RelayCommand]
+    public Task ShareAppAsync()
+        => _shareService.ShareLinkAsync(AppResources.ShareAppTitle, AppResources.ShareAppMessage, "https://diarion.org");
+
     [RelayCommand]
     public async Task ExportBackupAsync()
     {
