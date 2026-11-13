@@ -1757,6 +1757,58 @@ public static string ClearAllDataSuccessMsg {
             get { return ResourceManager.GetString("OnboardingModulesSectionsGroup", resourceCulture) ?? string.Empty; }
         }
 
+        public static string OnboardingModuleMoodDescription {
+            get { return ResourceManager.GetString("OnboardingModuleMoodDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleSleepDescription {
+            get { return ResourceManager.GetString("OnboardingModuleSleepDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleHealthDescription {
+            get { return ResourceManager.GetString("OnboardingModuleHealthDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleFoodDescription {
+            get { return ResourceManager.GetString("OnboardingModuleFoodDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleGuidedPromptDescription {
+            get { return ResourceManager.GetString("OnboardingModuleGuidedPromptDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleReflectionDescription {
+            get { return ResourceManager.GetString("OnboardingModuleReflectionDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleHabitsDescription {
+            get { return ResourceManager.GetString("OnboardingModuleHabitsDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleNotesDescription {
+            get { return ResourceManager.GetString("OnboardingModuleNotesDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleReadingDescription {
+            get { return ResourceManager.GetString("OnboardingModuleReadingDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleMomentsDescription {
+            get { return ResourceManager.GetString("OnboardingModuleMomentsDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleDeedsDescription {
+            get { return ResourceManager.GetString("OnboardingModuleDeedsDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleWishlistDescription {
+            get { return ResourceManager.GetString("OnboardingModuleWishlistDescription", resourceCulture) ?? string.Empty; }
+        }
+
+        public static string OnboardingModuleFinanceDescription {
+            get { return ResourceManager.GetString("OnboardingModuleFinanceDescription", resourceCulture) ?? string.Empty; }
+        }
+
         public static string OnboardingReminderTitle {
             get { return ResourceManager.GetString("OnboardingReminderTitle", resourceCulture) ?? string.Empty; }
         }

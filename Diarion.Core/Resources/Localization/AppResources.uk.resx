@@ -1792,6 +1792,45 @@
   <data name="OnboardingModulesSectionsGroup" xml:space="preserve">
     <value>Окремі розділи</value>
   </data>
+  <data name="OnboardingModuleMoodDescription" xml:space="preserve">
+    <value>Як минув день: оцінка й що на це вплинуло</value>
+  </data>
+  <data name="OnboardingModuleSleepDescription" xml:space="preserve">
+    <value>Коли лягли, коли встали, як спалося</value>
+  </data>
+  <data name="OnboardingModuleHealthDescription" xml:space="preserve">
+    <value>Самопочуття за день і кілька слів про здоров'я</value>
+  </data>
+  <data name="OnboardingModuleFoodDescription" xml:space="preserve">
+    <value>Сніданок, обід, вечеря: що їли і чи їли взагалі</value>
+  </data>
+  <data name="OnboardingModuleGuidedPromptDescription" xml:space="preserve">
+    <value>Коротке запитання, щоб було з чого почати запис</value>
+  </data>
+  <data name="OnboardingModuleReflectionDescription" xml:space="preserve">
+    <value>Тригери, вдячність, що зробили для себе й для інших</value>
+  </data>
+  <data name="OnboardingModuleHabitsDescription" xml:space="preserve">
+    <value>Щоденні галочки й серії без пропусків</value>
+  </data>
+  <data name="OnboardingModuleNotesDescription" xml:space="preserve">
+    <value>Окремі записи, не прив'язані до дня</value>
+  </data>
+  <data name="OnboardingModuleReadingDescription" xml:space="preserve">
+    <value>Прочитані книжки з датою, коли дочитали</value>
+  </data>
+  <data name="OnboardingModuleMomentsDescription" xml:space="preserve">
+    <value>Світлі спогади з датою, щоб перечитати у важкий день</value>
+  </data>
+  <data name="OnboardingModuleDeedsDescription" xml:space="preserve">
+    <value>Дрібниці, які ви зробили для інших</value>
+  </data>
+  <data name="OnboardingModuleWishlistDescription" xml:space="preserve">
+    <value>Бажання у три кроки й позначка, коли здійснилося</value>
+  </data>
+  <data name="OnboardingModuleFinanceDescription" xml:space="preserve">
+    <value>Прості рахунки, категорії й залишок за місяць</value>
+  </data>
   <data name="OnboardingReminderTitle" xml:space="preserve">
     <value>Одне тихе нагадування</value>
   </data>

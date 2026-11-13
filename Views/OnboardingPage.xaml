@@ -40,11 +40,17 @@
         </Style>
 
         <DataTemplate x:Key="ModuleRow" x:DataType="viewmodels:OnboardingModule">
+            <!-- The checkbox lines up with the title, not the centre of the pair: the description can
+                 wrap to two lines and a box drifting down with it looks attached to the wrong row. -->
             <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
                 <controls:RoundedCheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"
-                                          Color="{DynamicResource Theme_Coral}" VerticalOptions="Center" />
-                <Label Grid.Column="1" Text="{Binding Title}" VerticalOptions="Center"
-                       FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                                          Color="{DynamicResource Theme_Coral}" VerticalOptions="Start" />
+                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                    <Label Text="{Binding Title}"
+                           FontSize="14" TextColor="{DynamicResource Theme_Midnight_Snow}" />
+                    <Label Text="{Binding Description}" LineBreakMode="WordWrap"
+                           FontSize="12" TextColor="{DynamicResource Theme_Ocean_Dust}" />
+                </VerticalStackLayout>
             </Grid>
         </DataTemplate>
     </ContentPage.Resources>

@@ -1915,6 +1915,45 @@
   <data name="OnboardingModulesSectionsGroup" xml:space="preserve">
     <value>Sections of their own</value>
   </data>
+  <data name="OnboardingModuleMoodDescription" xml:space="preserve">
+    <value>How the day went: a rating and what shaped it</value>
+  </data>
+  <data name="OnboardingModuleSleepDescription" xml:space="preserve">
+    <value>When you went to bed, when you got up, how you slept</value>
+  </data>
+  <data name="OnboardingModuleHealthDescription" xml:space="preserve">
+    <value>How you felt physically, with a note if you want one</value>
+  </data>
+  <data name="OnboardingModuleFoodDescription" xml:space="preserve">
+    <value>Breakfast, lunch, dinner: what you ate and whether you did</value>
+  </data>
+  <data name="OnboardingModuleGuidedPromptDescription" xml:space="preserve">
+    <value>A short question each day, so there is somewhere to start</value>
+  </data>
+  <data name="OnboardingModuleReflectionDescription" xml:space="preserve">
+    <value>Triggers, gratitude, what you did for yourself and for others</value>
+  </data>
+  <data name="OnboardingModuleHabitsDescription" xml:space="preserve">
+    <value>Daily tick boxes and the streaks they build</value>
+  </data>
+  <data name="OnboardingModuleNotesDescription" xml:space="preserve">
+    <value>Standalone notes, outside any particular day</value>
+  </data>
+  <data name="OnboardingModuleReadingDescription" xml:space="preserve">
+    <value>Books you have read, with the date you finished each</value>
+  </data>
+  <data name="OnboardingModuleMomentsDescription" xml:space="preserve">
+    <value>Bright memories, dated, to reread on a hard day</value>
+  </data>
+  <data name="OnboardingModuleDeedsDescription" xml:space="preserve">
+    <value>Small things you did for other people</value>
+  </data>
+  <data name="OnboardingModuleWishlistDescription" xml:space="preserve">
+    <value>Wishes in three steps, ticked off when they come true</value>
+  </data>
+  <data name="OnboardingModuleFinanceDescription" xml:space="preserve">
+    <value>Simple accounts, categories and what is left this month</value>
+  </data>
   <data name="OnboardingReminderTitle" xml:space="preserve">
     <value>One quiet reminder</value>
   </data>
