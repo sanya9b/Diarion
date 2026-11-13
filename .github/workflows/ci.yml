@@ -39,7 +39,13 @@ jobs:
       # No parallelism flags on purpose: xUnit parallelization is disabled in the test project
       # because LiteDB's global mapper races. Plain `dotnet test` is the configuration that is
       # known to be stable, so this runs exactly that.
+      # The released-database fixtures (UpgradeFromReleasedBuildTests) were written on a Kyiv-time
+      # machine, and LiteDB stores DateTime as UTC and reads it back in the machine's zone: on a UTC
+      # runner every stored midnight comes back as 22:00 the day before and the day lookup misses. Pin
+      # the zone the fixtures were written in rather than loosen the lookup the app actually uses.
       - name: Test
+        env:
+          TZ: Europe/Kyiv
         run: dotnet test Diarion.Tests/Diarion.Tests.csproj --logger "trx;LogFileName=results.trx"
 
       - name: Upload test results

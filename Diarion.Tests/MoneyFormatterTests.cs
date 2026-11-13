@@ -136,4 +136,18 @@ public class MoneyFormatterTests
             CultureInfo.CurrentCulture = saved;
         }
     }
+
+    [Theory]
+    [InlineData("UAH", true)]
+    [InlineData("USD", true)]
+    [InlineData("XDR", false)]   // ICU's "world" region 001 on Linux
+    [InlineData("XXX", false)]
+    [InlineData("¤¤", false)]    // Windows' invariant region
+    [InlineData("001", false)]
+    [InlineData("", false)]
+    [InlineData(null, false)]
+    public void IsSuggestibleCode_AcceptsOnlyNationalIsoCodes(string? code, bool expected)
+    {
+        MoneyFormatter.IsSuggestibleCode(code).Should().Be(expected);
+    }
 }

@@ -72,16 +72,27 @@ public static class MoneyFormatter
     {
         try
         {
-            // A neutral culture (plain "en" after the language toggle) has the invariant region, whose
-            // currency "symbol" is the placeholder "¤¤"; only a real ISO 4217 code is a suggestion.
+            // A neutral culture (plain "en" after the language toggle) has no country: on Windows its
+            // region's currency "symbol" is the placeholder "¤¤", on Linux/ICU it is the world region
+            // "001" with "XDR". Neither is a suggestion anyone wants, so the culture is checked first and
+            // only a real, national ISO 4217 code gets through.
+            var culture = CultureInfo.CurrentCulture;
+            if (culture.IsNeutralCulture || string.IsNullOrEmpty(culture.Name)) return FallbackCode;
             var code = RegionInfo.CurrentRegion?.ISOCurrencySymbol;
-            return code != null && code.Length == 3 && code.All(char.IsAsciiLetterUpper) ? code : FallbackCode;
+            return IsSuggestibleCode(code) ? code! : FallbackCode;
         }
         catch
         {
             return FallbackCode;
         }
     }
+
+    /// <summary>
+    /// A national ISO 4217 code: three capital letters, not one of the X-codes (XDR, XXX, XAU…), which
+    /// ICU hands out for supranational regions and which no shop prices anything in.
+    /// </summary>
+    public static bool IsSuggestibleCode(string? code)
+        => code is { Length: 3 } && code.All(char.IsAsciiLetterUpper) && code[0] != 'X';
 
     /// <summary>
     /// Groups and rounds to two decimals in the current culture, then attaches the symbol. A negative
