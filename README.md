@@ -1,8 +1,8 @@
 # Diarion
 
 A private diary and life tracker for iOS and Android: daily entries, mood, sleep, habits,
-planner, notes, finances, reading and an optional cycle calendar. No account, no server, no
-analytics — everything stays in an encrypted database on the phone.
+planner, notes, finances, reading and an optional cycle calendar. No sign-up, no analytics —
+everything stays in an encrypted database on the phone.
 
 - App Store: <https://apps.apple.com/ua/app/diarion/id6814251806>
 - Website and privacy policy: <https://diarion.org>
