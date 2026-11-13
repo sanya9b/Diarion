@@ -121,4 +121,19 @@ public class MoneyFormatterTests
 
         profile.GetEffectiveCurrencyCode().Should().Be("PLN");
     }
+
+    [Fact]
+    public void DeviceDefaultCode_OnNeutralCulture_FallsBackInsteadOfPlaceholder()
+    {
+        var saved = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = new CultureInfo("en");
+            MoneyFormatter.DeviceDefaultCode().Should().Be(MoneyFormatter.FallbackCode);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = saved;
+        }
+    }
 }
